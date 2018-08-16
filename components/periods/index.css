@@ -1,0 +1,577 @@
+@charset "UTF-8";
+/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {
+    background-color: #fff;
+    border-color: #bf1616;
+    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);
+}*/
+.lt-full {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.zmiti-text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
+}
+
+.zmiti-play {
+  width: .8rem;
+  height: .8rem;
+  border-radius: 50%;
+  position: fixed;
+  z-index: 1000;
+  right: .5rem;
+  top: .5rem;
+}
+
+.zmiti-play.rotate {
+  -webkit-animation: rotate 5s linear infinite;
+  animation: rotate 5s linear infinite;
+}
+
+.symbin-left {
+  float: left !important;
+}
+
+.symbin-right {
+  float: right !important;
+}
+
+@-webkit-keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.wm-periods-ui {
+  overflow: hidden;
+  position: relative;
+}
+
+.wm-periods-ui > section {
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
+
+.wm-periods-ui > section.left {
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+}
+
+.wm-periods-ui > section.left1 {
+  -webkit-transform: translateX(-200%);
+  transform: translateX(-200%);
+}
+
+.wm-periods-ui .wm-periods-left {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: column;
+  background: #f3f3f3;
+  height: 100%;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: column;
+}
+
+.wm-periods-ui .wm-periods-left > div {
+  flex-grow: 1;
+  width: 97%;
+  margin: 10px auto;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: column;
+}
+
+.wm-periods-ui .wm-periods-left > header {
+  background: #fff;
+  height: 50px;
+  width: 100%;
+  line-height: 50px;
+}
+
+.wm-periods-ui .wm-periods-left > header > div {
+  font-size: 20px;
+  margin-left: 40px;
+  position: relative;
+}
+
+.wm-periods-ui .wm-periods-left > header > div:before {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  background: #cc0000;
+  top: 15px;
+  left: -10px;
+}
+
+.wm-periods-ui .wm-periods-left > header {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  background: #fff;
+}
+
+.wm-periods-ui .wm-periods-left > header button {
+  margin-right: 20px;
+}
+
+.wm-periods-ui .wm-periods-left > div > section {
+  cursor: pointer;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item {
+  width: 32.6%;
+  float: left;
+  margin: 10px 0;
+  background: #fff;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item:nth-of-type(3n-1) {
+  margin: 10px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > h2, .wm-periods-ui .wm-periods-left .wm-periods-item > footer {
+  height: 60px;
+  line-height: 60px;
+  font-weight: normal;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > h2 {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > h2 img {
+  width: 23px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > section {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  height: 80px;
+  padding: 20px;
+  font-size: 14px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > section > div:nth-of-type(1) {
+  width: 112px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > section > div:nth-of-type(2) {
+  flex-grow: 1;
+  -webkit-flex-grow: 1;
+  color: #888;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > section > div:nth-of-type(2) span {
+  display: inline-block;
+  height: 30px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > section span {
+  margin: 0 12px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > footer {
+  border-top: 1px solid #ccc;
+  text-indent: 20px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  height: 60px;
+  line-height: 60px;
+  color: #888;
+  font-size: 14px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > footer > div {
+  flex-grow: 1;
+  -webkit-flex-grow: 1;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > footer > div:nth-of-type(2) {
+  text-align: right;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > footer i {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > footer .wm-periods-del {
+  color: #666;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > footer .wm-periods-edit {
+  color: #56a4f3;
+  margin-right: 10px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div:hover {
+  box-shadow: 0 0 13px rgba(0, 0, 0, 0.3);
+  -webkit-transform: translateY(-2px);
+  transform: translateY(-2px);
+  -webkit-transition: 0.1s;
+  transition: 0.1s;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > h2 {
+  background: #f6f7fb;
+  font-weight: normal;
+  font-size: 16px;
+  text-indent: 20px;
+}
+
+.wm-periods-ui .wm-periods-left .wm-periods-item > div > h2 span {
+  color: #56a4f3;
+}
+
+.wm-periods-ui .wm-periods-rule > header,
+.wm-periods-ui .wm-periods-right-detail > header,
+.wm-periods-ui .wm-periods-right > header {
+  height: 60px;
+  line-height: 60px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  border-bottom: 1px solid #e5e3e3;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div,
+.wm-periods-ui .wm-periods-right-detail > header > div,
+.wm-periods-ui .wm-periods-right > header > div {
+  margin-right: 20px;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div:nth-of-type(1) span,
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(1) span,
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(1) span {
+  background: #e5e3e3;
+  padding: 3px 6px 3px 30px;
+  border-radius: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div:nth-of-type(1) span:before, .wm-periods-ui .wm-periods-rule > header > div:nth-of-type(1) span:after,
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(1) span:before,
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(1) span:after,
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(1) span:before,
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(1) span:after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 4px;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div:nth-of-type(1) span:before,
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(1) span:before,
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(1) span:before {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #4a5160;
+  border-left: none;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div:nth-of-type(1) span:after,
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(1) span:after,
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(1) span:after {
+  width: 0;
+  height: 0;
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid transparent;
+  border-right: 5px solid #4a5160;
+  top: 0;
+  left: 8px;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div:nth-of-type(2),
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(2),
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(2) {
+  font-size: 16px;
+  font-weight: bold;
+  position: relative;
+  padding-left: 20px;
+}
+
+.wm-periods-ui .wm-periods-rule > header > div:nth-of-type(2):before,
+.wm-periods-ui .wm-periods-right-detail > header > div:nth-of-type(2):before,
+.wm-periods-ui .wm-periods-right > header > div:nth-of-type(2):before {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  top: 20px;
+  left: 0;
+  background: #e5e3e3;
+}
+
+.wm-periods-ui .wm-periods-rule {
+  position: absolute;
+  width: 100%;
+  height: 90%;
+  top: -0px;
+  left: 100%;
+  padding: 0 18px;
+  background: #fff;
+  z-index: -1;
+}
+
+.wm-periods-ui .wm-periods-rule.active {
+  z-index: 10;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list header {
+  font-size: 16px;
+  height: 50px;
+  line-height: 50px;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list header span {
+  margin-left: 10px;
+  color: #56a4f3;
+  font-size: 14px;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list .wm-role-rule {
+  text-align: center;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  height: 100%;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list .wm-role-rule li.wm-role-item {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-right: none;
+  height: 100%;
+  overflow: auto;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list .wm-role-rule li.wm-role-item:last-of-type {
+  border-right: 1px solid #ccc;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list .wm-role-rule li.wm-role-item .wm-role-name {
+  background: #f3f3f3;
+  height: 50px;
+  line-height: 50px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list .wm-role-rule li.wm-role-item .wm-checkitem-weight {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  text-align: center;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  height: 30px;
+  line-height: 30px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-person-rule-list .wm-role-rule li.wm-role-item .wm-checkitem-weight > div {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-checkitem-rule-item {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  margin: 20px 6px;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-checkitem-rule-item i.ivu-icon-ios-plus, .wm-periods-ui .wm-periods-rule .wm-checkitem-rule-item i.ivu-icon-ios-minus-outline {
+  font-size: 20px;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-checkitem-rule-item input {
+  width: 100px;
+  margin-left: 0px;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-checkitem-rule-item > div {
+  -webkit-flex-grow: 1;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-checkitem-rule-item > div:last-of-type {
+  width: 50px;
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-rule-bottom {
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  background: #fff;
+  position: relative;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-rule-bottom:before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+.wm-periods-ui .wm-periods-rule .wm-rule-bottom button {
+  width: 100px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.wm-periods-ui .wm-periods-right-detail {
+  position: absolute;
+  width: 100%;
+  height: 90%;
+  top: -0px;
+  left: 200%;
+  padding: 0 18px;
+  background: #fff;
+}
+
+.wm-periods-ui .wm-periods-right-detail .wm-periods-not-list {
+  margin-top: 10px;
+}
+
+.wm-periods-ui .wm-periods-right-detail .wm-periods-not-list header {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.wm-periods-ui .wm-periods-right-detail .wm-periods-not-list header > div {
+  width: 200px;
+}
+
+.wm-periods-ui .wm-periods-right-detail .wm-periods-not-list .zmiti-periods-not-header-item {
+  width: 350px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+
+.wm-periods-ui .wm-periods-right-detail .wm-periods-not-list .zmiti-periods-not-header-item div {
+  margin-left: 10px;
+}
+
+.wm-periods-ui .wm-periods-right {
+  position: absolute;
+  width: 100%;
+  height: 90%;
+  top: -0px;
+  left: 100%;
+  padding: 0 18px;
+  background: #fff;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: column;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list {
+  margin-top: 20px;
+  position: relative;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list td {
+  position: relative;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list .wm-periods-title {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  position: absolute;
+  right: 0;
+  z-index: 100;
+  width: 80%;
+  margin-top: -12px;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  line-height: 44px;
+  font-size: 16px;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list .wm-periods-title > div:nth-of-type(1) {
+  line-height: 54px;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list .wm-periods-title span {
+  color: #0189df;
+  margin-left: 10px;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list .wm-periods-title button {
+  margin-right: 20px;
+}
+
+.wm-periods-ui .wm-periods-right .wm-periods-table-list .wm-periods-title button span, .wm-periods-ui .wm-periods-right .wm-periods-table-list .wm-periods-title button i {
+  color: #fff;
+}
+
+.ivu-table-body::-webkit-scrollbar, .wm-scroll::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 8px;
+  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 8px;
+}
+
+.ivu-table-body::-webkit-scrollbar-thumb, .wm-scroll::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.ivu-table-body::-webkit-scrollbar-track, .wm-scroll::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.wm-periods-dialog .ivu-form-item-label {
+  text-align: left !important;
+}

@@ -1,0 +1,540 @@
+﻿@import "../css/base.scss";
+
+.wm-periods-ui {
+    overflow: hidden;
+
+    @include pos(r);
+
+    & > section {
+        @include transition(0.3s);
+    }
+
+    & > section.left {
+        @include transform(translateX(-100%));
+    }
+
+    & > section.left1 {
+        @include transform(translateX(-200%));
+    }
+
+    .wm-periods-left {
+        @include displayFlex(column);
+
+        background: #f3f3f3;
+        height: 100%;
+
+        @include displayFlex(column);
+
+        & > div {
+            flex-grow: 1;
+            width: 97%;
+            margin: 10px auto;
+
+            @include displayFlex(column);
+        }
+
+        & > header {
+            background: #fff;
+            height: 50px;
+            width: 100%;
+            line-height: 50px;
+
+            & > div {
+                font-size: 20px;
+                margin-left: 40px;
+
+                @include pos(r);
+
+                &:before {
+                    content: "";
+
+                    @include pos(a);
+
+                    width: 2px;
+                    height: 20px;
+                    background: #cc0000;
+                    top: 15px;
+                    left: -10px;
+                }
+            }
+        }
+
+        & > header {
+            @include displayFlex(row);
+
+            justify-content: space-between;
+            -webkit-justify-content: space-between;
+            background: #fff;
+
+            button {
+                margin-right: 20px;
+            }
+        }
+
+        & > div {
+            & > section {
+                cursor: pointer;
+
+               // @include displayFlex(row);
+
+                flex-wrap: wrap;
+                -webkit-flex-wrap: wrap;
+                justify-content: space-between;
+            }
+        }
+
+        .wm-periods-item {
+            width: 32.6%;
+
+            float:left;
+
+            &:nth-of-type(3n-1) {
+                margin: 10px;
+            }
+
+            margin: 10px 0;
+            background: #fff;
+
+            & > div > h2, & > footer {
+                height: 60px;
+                line-height: 60px;
+                font-weight: normal;
+            }
+
+            & > div > h2 {
+                @include displayFlex(row);
+
+                justify-content: space-between;
+                -webkit-justify-content: space-between;
+
+                img {
+                    width: 23px;
+                    margin-right: 10px;
+                    cursor: pointer;
+                }
+            }
+
+            & > div > section {
+                @include displayFlex(row);
+
+                height: 80px;
+                padding: 20px;
+                font-size: 14px;
+
+                & > div {
+                    &:nth-of-type(1) {
+                        width: 112px;
+                    }
+
+                    &:nth-of-type(2) {
+                        flex-grow: 1;
+                        -webkit-flex-grow: 1;
+                        color: #888;
+
+                        span {
+                            display: inline-block;
+                            height: 30px;
+                        }
+                    }
+                }
+
+                span {
+                    margin: 0 12px;
+                }
+            }
+
+            & > footer {
+                border-top: 1px solid #ccc;
+                text-indent: 20px;
+
+                @include displayFlex(row);
+
+                height: 60px;
+                line-height: 60px;
+                color: #888;
+                font-size: 14px;
+
+                & > div {
+                    flex-grow: 1;
+                    -webkit-flex-grow: 1;
+
+                    &:nth-of-type(2) {
+                        text-align: right;
+                    }
+                }
+
+                i {
+                    font-size: 16px;
+                    vertical-align: middle;
+                }
+
+                .wm-periods-del {
+                    color: #666;
+                }
+
+                .wm-periods-edit {
+                    color: #56a4f3;
+                    margin-right: 10px;
+                }
+            }
+
+            & > div:hover {
+                box-shadow: 0 0 13px rgba(0, 0, 0, 0.3);
+
+                @include transform(translateY(-2px));
+                @include transition(0.1s);
+            }
+
+            & > div > h2 {
+                background: #f6f7fb;
+                font-weight: normal;
+                font-size: 16px;
+                text-indent: 20px;
+
+                span {
+                    color: #56a4f3;
+                }
+            }
+        }
+    }
+
+    .wm-periods-rule,
+    .wm-periods-right-detail,
+    .wm-periods-right {
+        & > header {
+            height: 60px;
+            line-height: 60px;
+
+            @include displayFlex(row);
+
+            border-bottom: 1px solid #e5e3e3;
+
+            & > div {
+                margin-right: 20px;
+
+                &:nth-of-type(1) {
+                    span {
+                        background: #e5e3e3;
+                        padding: 3px 6px 3px 30px;
+
+                        @include br(16px);
+
+                        cursor: pointer;
+
+                        @include pos(r);
+
+                        &:before,
+                        &:after {
+                            content: '';
+
+                            @include pos(a);
+
+                            left: 10px;
+                            top: 4px;
+                        }
+
+                        &:before {
+                            width: 12px;
+                            height: 12px;
+                            border: 2px solid #4a5160;
+                            border-left: none;
+                        }
+
+                        &:after {
+                            width: 0;
+                            height: 0;
+                            border-bottom: 5px solid transparent;
+                            border-top: 5px solid transparent;
+                            border-right: 5px solid #4a5160;
+                            top: 0;
+                            left: 8px;
+                        }
+                    }
+                }
+
+                &:nth-of-type(2) {
+                    font-size: 16px;
+                    font-weight: bold;
+
+                    @include pos(r);
+
+                    padding-left: 20px;
+
+                    &:before {
+                        content: '';
+
+                        @include pos(a);
+
+                        width: 2px;
+                        height: 20px;
+                        top: 20px;
+                        left: 0;
+                        background: #e5e3e3;
+                    }
+                }
+            }
+        }
+    }
+
+    .wm-periods-rule {
+        @include pos(a);
+
+        width: 100%;
+        height: 90%;
+        top: -0px;
+        left: 100%;
+
+        //left: 0;;
+        padding: 0 18px;
+        background: #fff;
+        z-index: -1;
+
+        &.active {
+            z-index: 10;
+        }
+
+        .wm-person-rule-list {
+            header {
+                font-size: 16px;
+                height: 50px;
+                line-height: 50px;
+
+                span {
+                    margin-left: 10px;
+                    color: #56a4f3;
+                    font-size: 14px;
+                }
+            }
+
+            .wm-role-rule {
+                text-align: center;
+
+                @include displayFlex(row);
+
+                height: 100%;
+
+                li.wm-role-item {
+                    -webkit-flex-grow: 1;
+                    flex-grow: 1;
+                    text-align: center;
+                    border: 1px solid #ccc;
+                    border-right: none;
+                    height: 100%;
+                    overflow: auto;
+
+                    &:last-of-type {
+                        border-right: 1px solid #ccc;
+                    }
+
+                    .wm-role-name {
+                        background: #f3f3f3;
+                        height: 50px;
+                        line-height: 50px;
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+
+                    .wm-checkitem-weight {
+                        @include displayFlex(row);
+
+                        text-align: center;
+                        justify-content: space-between;
+                        -webkit-justify-content: space-between;
+                        height: 30px;
+                        line-height: 30px;
+                        border-bottom: 1px solid #ccc;
+                        width: 100%;
+
+                        & > div {
+                            -webkit-flex-grow: 1;
+                            flex-grow: 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        .wm-checkitem-rule-item {
+            @include displayFlex(row);
+
+            margin: 20px 6px;
+
+            i.ivu-icon-ios-plus, i.ivu-icon-ios-minus-outline {
+                font-size: 20px;
+                vertical-align: middle;
+                cursor: pointer;
+                margin-top: 4px;
+            }
+
+            input {
+                width: 100px;
+                margin-left: 0px;
+            }
+
+            & > div {
+                -webkit-flex-grow: 1;
+
+                &:last-of-type {
+                    width: 50px;
+                    -webkit-flex-grow: 0;
+                    flex-grow: 0;
+                }
+            }
+        }
+
+        .wm-rule-bottom {
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            background: #fff;
+
+            @include pos(r);
+
+            &:before {
+                content: '';
+
+                @include pos(a);
+
+                height: 100%;
+                width: 100%;
+                left: 0;
+                top: 0;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+                z-index: -1;
+            }
+
+            button {
+                width: 100px;
+                height: 30px;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .wm-periods-right-detail {
+        @include pos(a);
+
+        width: 100%;
+        height: 90%;
+        top: -0px;
+        left: 200%;
+        padding: 0 18px;
+        background: #fff;
+
+        .wm-periods-not-list {
+            margin-top: 10px;
+
+            header {
+                @include displayFlex(row);
+
+                -webkit-justify-content: space-between;
+                justify-content: space-between;
+                font-size: 14px;
+
+                & > div {
+                    width: 200px;
+                }
+            }
+
+            .zmiti-periods-not-header-item {
+                width: 350px;
+
+                @include displayFlex(row);
+
+                -webkit-justify-content: space-between;
+                justify-content: space-between;
+
+                div {
+                    margin-left: 10px;
+                }
+            }
+        }
+
+        // @include transform(translate3d(200%,0,0));
+   
+    }
+
+    .wm-periods-right {
+        @include pos(a);
+
+        width: 100%;
+        height: 90%;
+        top: -0px;
+        left: 100%;
+        padding: 0 18px;
+        background: #fff;
+
+        // @include transform(translate3d(100%, 0, 0));
+
+        @include displayFlex(column);
+
+        .wm-periods-table-list {
+            margin-top: 20px;
+
+            td {
+                @include pos(r);
+            }
+
+            @include pos(r);
+
+            .wm-periods-title {
+                @include displayFlex(row);
+                @include pos(a);
+
+                right: 0;
+                z-index: 100;
+                width: 80%;
+                margin-top: -12px;
+                justify-content: space-between;
+                -webkit-justify-content: space-between;
+                line-height: 44px;
+                font-size: 16px;
+
+                & > div {
+                    &:nth-of-type(1) {
+                        line-height: 54px;
+                    }
+                }
+
+                span {
+                    color: #0189df;
+                    margin-left: 10px;
+                }
+
+                button {
+                    margin-right: 20px;
+
+                    span, i {
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.ivu-table-body::-webkit-scrollbar, .wm-scroll::-webkit-scrollbar { /*滚动条整体样式*/
+    width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 8px;
+}
+
+.ivu-table-body::-webkit-scrollbar-thumb, .wm-scroll::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.ivu-table-body::-webkit-scrollbar-track, .wm-scroll::-webkit-scrollbar-track { /*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.wm-periods-dialog {
+    //border:1px solid red;
+    .ivu-form-item-label {
+        text-align: left !important;
+    }
+}
