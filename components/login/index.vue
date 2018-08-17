@@ -1,34 +1,40 @@
 <template>
 	<div  class="wm-login-ui lt-full">
 		<header>
-			<img :src="imgs.logo"  />
-			<span>考评系统</span>
+			<div>
+				<div>
+					<img :src="imgs.logo"  />
+				</div>
+				<div>
+					<a href='#/register'>用户注册></a>
+				</div>
+			</div>
 		</header>
-		<section>
+		<section :style="{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}" > 
 			<div class="wm-login-C">
-				<img :src="imgs.loginTitle" alt="" class="wm-login-title">
-				<div class="wm-form-item">
-					<Icon type="person"></Icon><input autocomplete="off" v-model="username" type="text" placeholder="请输入账号">
+				<h2>公益广告上报系统</h2>
+				<div class="wm-login-form">
+					<div>
+						<label>
+							<img :src="imgs.loginPerson" alt="">
+							<input type="text" v-model="username" placeholder="请输入账号">
+						</label>
+						<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>
+					</div>
+					<div>
+						<label>
+							<img :src="imgs.loginLock" alt="">
+							<input type="text" v-model="password" placeholder="请输入密码">
+						</label>
+					</div>
+					<div>
+						<div>登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
+						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
+					</div>
 				</div>
-				<div class="wm-form-item">
-					<Icon type="locked"></Icon><input  autocomplete="off" @keydown.13='login' v-model="password" type="password" placeholder='请输入密码'>
-				</div>
-				<div class="wm-form-remember">
-					<Checkbox v-model="checked" >
-						<span>记住密码</span>
-					</Checkbox>
-				</div>
-				<div class="wm-form-login-btn">
-					<transition name='error'>
-						<div class="wm-form-errmsg" v-if='errorMsg'>
-							{{errorMsg}}
-						</div>
-					</transition>
-					<div class="wm-login-btn" @click='login'>登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
-				</div>
-				<div class="wm-copyright">
-					中国文明网 &copy;版权所有
-				</div>
+			</div>
+			<div class="wm-copyright">
+				中国文明网 &copy;版权所有
 			</div>
 		</section>
 	</div>
@@ -49,6 +55,7 @@
 				imgs:window.imgs,
 				username:'',
 				password:'',
+				loginError:'',
 				checked:false,
 				isLogined:false,
 				isMove:false,

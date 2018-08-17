@@ -1,35 +1,35 @@
 <template>
     <div class="layout">
-        <Layout v-if='$route.name !== "login"'>
+        <Layout v-if='$route.name !== "login" && $route.name !== "register"'>
             <Header>
                <div>
-                   <div class="layout-logo">
-                        <img :src="imgs.logo"  />
-                    </div>
                     <div class="wm-title">
-                        <img :src="imgs.titleBg" alt="">
-                        <span>{{userinfo.periodsname}}</span>
+                        <img :src="imgs.loginTitle" alt="">
                     </div>
                </div>
+               <div>
+                   <div>
+                       <span><img :src="imgs.search" alt=""></span><input type="text" placeholder="查询我的上报" />
+                   </div>
+               </div>
                <div class="wm-user-info">
-                   <img :src='imgs.man' />
-                   <span>{{userinfo.userrealname}}</span>
-                   <img @click='logout' :src="imgs.logout" alt="" class="wm-logout" title='退出登录'>
+                   <span><img :src='imgs.man' /></span>
+                   <span class="zmiti-text-overflow">不是你的不是你的不是你的不是你的</span>
+                   <div>
+                       <img :src="imgs.logout" alt="">
+                   </div>
                </div>
             </Header>
             <Layout class="wm-main-layout">
-                <div class="wm-tab-C" :style='{height:(viewH - 64)+"px"}'>
-                    <ul>
-                        <li v-if='userinfo.isadmin' @click='tab(0)' :class="{'active':$route.name === 'user'||$route.name === 'score'||$route.name ==='history'}">
-                            <router-link to='/user'><img :src='imgs.user' alt=""></router-link>
-                        </li>
-                        <li v-if='!userinfo.isadmin' @click='tab(1)' :class="{'active':$route.name === 'grade'}">
-                            <router-link to='/grade'><img :src='imgs.file' alt=""></router-link>
-                        </li>
-                        <li v-if='userinfo.isadmin' @click='tab(2)' :class="{'active':$route.name === 'periods'||$route.name === 'adminuser'||$route.name==='checkitem'}">
-                            <router-link to='/periods'><img :src='imgs.setting' alt=""></router-link>
-                        </li>
-                    </ul>
+                <div class="wm-tab-C" :style='{height:(viewH - 64- 10)+"px"}'>
+                   <div>
+                        <div class='wm-menu-item' :class="{'active':$route.name ==='myreport'}">
+                            <a href='#/myreport'>我的上报</a>
+                        </div>
+                        <div class='wm-menu-item' :class="{'active':$route.name ==='user'}">
+                            <a href='#/user'>个人中心</a>
+                        </div>
+                   </div>
                 </div>
                 <Layout>
                    <router-view></router-view>
@@ -55,42 +55,12 @@
 			return{
 				imgs:window.imgs,
                 viewH:document.documentElement.clientHeight,
-                openNames:['1'],
-                defaultLeftMenu:[],
                 tabIndex:0,
                 userinfo:{},
                 topMenu:[
                 ],
                 defaultMenu:[
-                    {
-                        name:'管理员设置',
-                        subMenu:[
-                            {
-                                name:'系统管理员管理',
-                                link:'/adminuser/'
-                            }
-                        ]
-                    },{
-                        name:'栏目设置',
-                        subMenu:[
-                            {
-                                name:'后台栏目管理',
-                                link:'/column/list'
-                            }
-                        ]
-                    },{
-                        name:'权限设置',
-                        subMenu:[
-                            {
-                                name:'角色管理',
-                                link:'/role/'
-                            },
-                            {
-                                name:'权限管理',
-                                link:'/purview/'
-                            }
-                        ]
-                    }
+                  
                 ],
                 menus:[]
 			}
@@ -101,18 +71,9 @@
             this.validateData = sysbinVerification.validate(this);
         },
         watch:{
-            $route(to){
-                switch(to.name){
-                    case 'rolepanel':
-                        this.menus = this.defaultMenu;
-                      
-                    break;
-                    case 'console':
-                        this.menus = this.defaultLeftMenu;
-                    break;
-                }
-               
-            }
+           $route(e){
+               console.log(e)
+           }
         },
 		mounted(){
            ///this.menus = this.defaultMenu.concat([]);
@@ -121,9 +82,6 @@
             var userinfo = symbinUtil.getUserInfo();
 
             this.userinfo = userinfo; 
-
-
-
         },
        
 		methods:{

@@ -9,65 +9,102 @@
 	}
 
 	.ivu-layout-header{
-		 background: -webkit-linear-gradient(left, #e4270e, #cc0000);
-		 background:linear-gradient(to left, #e4270e, #cc0000);
 		 @include displayFlex(row);
 		 justify-content: space-between;
+		 background:#fff;
 		 &>div{
-			 margin: 0 20px;
+			 //margin: 0 20px;
+
 
 			 &:nth-of-type(1){
+				 width: 300px;
 				 @include displayFlex(row);
 				 color:#fff;
+				 text-align: center;
 				 font-size:30px;
 				 font-weight: bold;
-
+				 background:#b30501;
 				 .wm-title{
-					 margin-left: 20px;
-					 img{
-						width: 280px;
-					 }
-					 @include pos(r);
-				 }
+					 margin: 0 auto;
+					 width: 100px;
 
-				 span{
-					 @include pos(a);
-					 right: 0;
-					 width: 50%;
-					 text-align: center;
-					 top: 10px;
-					 
+				 }
+				 
+			 }
+
+			 &:nth-of-type(2) {
+				 -webkit-flex-grow:1;
+				 flex-grow:1;
+				 div{
+					 margin-top: 14px;
+					  width: 400px;
+					  height: 36px;
+					  line-height: 36px;
+					  ;
+					  margin-left: 20px;
+					  @include br(18px);
+					  background:#eeeeee;
+					  border: none;
+					  padding: 0;
+					  @include pos(r);
+					  img{
+						  width: 20px;
+						  @include pos(a);
+						  top: 8px;
+						  left: 20px;;
+					  }
+					  span{
+					  }
+				 }
+				 input{
+					 width: 330px;
+					 height: 36px;
+					 line-height: 36px;;
+					 margin-left:40px;
+					 @include br(18px);
+					 background:transparent;
+					 border: none;
+					 padding: 0;
 					 font-size:14px;
-					 color:#e4270e;
+					 outline: none;
+					 padding-left: 20px;
 				 }
 			 }
 
 			 &.wm-user-info{
-				 @include displayBox(row);
-				 border-left:1px solid #b30501;
+				 //@include displayBox(row);
+				 min-width: 250px;
+				 @include pos(r);
 				 img{
-					 width: 40px;
-					 display: block;
-					 margin-left: 10px;
-
-					 &.wm-logout{
-						 width: 26px;
-						 cursor: pointer;
-					 }
+					width: 30px;
 					 
 				 }
+				 div{
+					 background: #b30501;
+					 @include pos(a);
+					 right: 0;
+					 width: 80px;
+					 top: 0;
+					 height: 100%;
+					 
+					 text-align: center;
+
+					 img{
+						 width: 30px;
+					 }
+				 }
 				 span{
-					 margin:0 40px 0 20px;
-					 display: block;
-					 font-size:16px;
-					 color:#fff;
+					 vertical-align: middle;
+
+					 margin:0 10px;
+					 display:inline-block;
+					 font-size:14px;
+					 max-width: 100px;
+					 @include pos(r);
+					 top: 0;
+					 z-index: 10;;
 				 }
-				 i{
-					 font-size:36px;
-					 color:#fff;
-					 display: block;
-					 cursor: pointer;
-				 }
+				  
 			 }
 		 }
 		 
@@ -76,35 +113,61 @@
 	}
 
 	.wm-user{
-		border:1px solid red;
 		img{
 			width: 50px;
 		}
 	}
 
 	.wm-tab-C{
-		background:#282828;
-		width: 50px;
-		text-align: center;
+		background:#eee;
+		width: 300px;
+		
 		padding-top: 5px;
 		cursor: pointer;
+
+		&>div{
+			background: #fff;
+			border:1px solid #fff;
+		}
+		.wm-menu-item{
+			background: #fff;
+			height: 40px;
+			line-height: 40px;
+			color:#333;
+			text-indent:3em;
+			a{
+				color:inherit;
+			};
+			@include pos(r);
+
+			&:nth-of-type(1){
+				margin-top: 10px;;
+			}
+
+			&.active{
+				color:#f00;
+				font-weight: bold;
+				background:rgba(204,0,0,.1);
+				&:before{
+					content:'';
+					width: 2px;
+					height: 100%;
+					background:#f00;
+					@include pos(a);
+					right: 0;
+					top: 0;
+
+				}
+
+
+			}
+		}
 		a{
 			display: block;
 			width: 100%;
 			height: 100%;
 		}
-		li{
-			&.active{
-				background: #7d1815;
-			}
-			height: 50px;
-			line-height: 50px;
-			&:nth-of-type(1){
-				img{
-					width: 18px;
-				}
-			}
-		}
+		
 		img{
 			width: 20px;
 		}
@@ -129,6 +192,7 @@
 
 	.wm-main-layout{
 		@include displayFlex(row);
+		margin-top: 10px;
 	}
 
 	.symbin-main-menu{

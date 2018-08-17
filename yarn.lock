@@ -2451,9 +2451,9 @@ iview-loader@^1.1.0:
   dependencies:
     loader-utils "^1.1.0"
 
-iview@^2.12.0:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/iview/-/iview-2.13.1.tgz#3517e963f2e34649df61de0e3554d4a0a291d27b"
+iview@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/iview/-/iview-3.0.0.tgz#1adc36a1ff7665d34316144b27f81c227b599475"
   dependencies:
     async-validator "^1.8.2"
     deepmerge "^2.1.0"
@@ -2462,6 +2462,7 @@ iview@^2.12.0:
     lodash.throttle "^4.1.1"
     popper.js "^1.14.1"
     tinycolor2 "^1.4.1"
+    v-click-outside-x "^3.0.0"
 
 jquery@^2.2.3:
   version "2.2.4"
@@ -4386,6 +4387,10 @@ utilx@0.0.5:
 uuid@^3.0.0, uuid@^3.0.1:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
+
+v-click-outside-x@^3.0.0:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/v-click-outside-x/-/v-click-outside-x-3.0.3.tgz#824c2551f9451e1c1cc62cc525c6084185d1fbf4"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"

@@ -4,9 +4,8 @@ var imgs = {
 	loginTitle :"./assets/images/login-title.png",
 	loginPerson :"./assets/images/login-person.png",
 	loginLock :"./assets/images/login-lock.png",
-	cloud :"./assets/images/cloud.png",
-	cloud1 :"./assets/images/cloud1.png",
 	open :"./assets/images/open.png",
+	search :"./assets/images/search.png",
 	loginBg:"./assets/images/login-bg.jpg",
 
 	man:'./assets/images/man.png',
