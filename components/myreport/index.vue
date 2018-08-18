@@ -1,13 +1,15 @@
 <template>
 	<div class="wm-user-ui">
-		 <Split v-model="split1">
-            <div slot="left" class="demo-split-pane">
-                Left Pane
-            </div>
-            <div slot="right" class="demo-split-pane">
-                Right Pane234
-            </div>
-        </Split>
+		   <div class="demo-split">
+		        <Split v-model="split1">
+		            <div slot="left" class="demo-split-pane">
+		                Left Pane
+		            </div>
+		            <div slot="right" class="demo-split-pane">
+		                Right Pane
+		            </div>
+		        </Split>
+		    </div>
 
 	</div>
 </template>
@@ -40,10 +42,10 @@
 		},
 
 		beforeCreate(){
-			var validate = sysbinVerification.validate(this);
+			//var validate = sysbinVerification.validate(this);
 			//symbinUtil.clearCookie('login');
 
-			this.validate = validate;
+			///this.validate = validate;
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();

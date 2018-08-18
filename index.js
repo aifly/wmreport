@@ -8,7 +8,7 @@ import User from './components/user/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
 import './components/css/index.css';
-import './components/css/theme.css';
+import 'iview/dist/styles/iview.css';
 
 Vue.use(VueRouter)
 Vue.use(iView)

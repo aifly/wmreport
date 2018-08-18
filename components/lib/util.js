@@ -14,6 +14,7 @@ var symbinUtil = {
 	},
 
 	getUserInfo(){
+		return 1;
 		var loginObj = {};
 		try {
 			loginObj = JSON.parse(this.getCookie('login'));
