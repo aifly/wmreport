@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {
     background-color: #fff;
     border-color: #bf1616;
@@ -49,149 +50,289 @@
   }
 }
 
-.wm-user-ui > div {
-  flex-grow: 1;
-  width: 97%;
-  margin: 10px auto;
+.wm-myreport-main-ui {
+  height: 100%;
+  position: relative;
+}
+
+.wm-myreport-main-ui .webuploader-container {
+  position: relative;
+}
+
+.wm-myreport-main-ui .webuploader-element-invisible {
+  position: absolute !important;
+  left: 0;
+  top: 0;
+  width: 100%;
+  opacity: 0;
+  border: 1px solid red;
+}
+
+.wm-myreport-main-ui .webuploader-pick {
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  cursor: pointer;
+  background: #00b7ee;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.wm-myreport-main-ui .webuploader-pick-hover {
+  background: #00a2d4;
+}
+
+.wm-myreport-main-ui .webuploader-pick-disable {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.wm-myreport-main-ui .wm-myreport-left {
+  background: #fff;
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  height: 100%;
   display: flex;
   display: -webkit-flex;
   flex-flow: column;
 }
 
-.wm-user-ui > div .wm-user-item {
-  height: 150px;
+.wm-myreport-main-ui .wm-myreport-left header {
+  height: 60px;
+  line-height: 60px;
+  text-indent: 2em;
   width: 100%;
-  background: #fff;
+  position: relative;
+  position: relative;
+}
+
+.wm-myreport-main-ui .wm-myreport-left header #wm-upload {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  left: 0;
+  height: 60px;
+  width: 200px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left header span {
+  margin-right: 20px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left header:before {
+  content: '';
+  position: absolute;
+  width: 98%;
+  left: 1%;
+  border-top: 1px solid #eeeeee;
+  bottom: 0;
+}
+
+.wm-myreport-main-ui .wm-myreport-left section {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  position: relative;
+}
+
+.wm-myreport-main-ui .wm-myreport-left section .wm-no-report {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  cursor: pointer;
   display: flex;
   display: -webkit-flex;
   flex-flow: row;
-}
-
-.wm-user-ui > div .wm-user-item > div {
-  flex-grow: 1;
-  height: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
   -webkit-justify-content: center;
   justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div {
   text-align: center;
 }
 
-.wm-user-ui > div .wm-user-item > div img {
-  width: 50px;
-}
-
-.wm-user-ui > div .wm-user-item > div > div {
-  margin: 10px auto;
-  width: 140px;
-  text-align: left;
-}
-
-.wm-user-ui > div .wm-user-item > div span.wm-modify-tel {
-  color: #00c1de;
-  cursor: pointer;
-}
-
-.wm-user-ui > div .wm-user-item > div.wm-user-head button {
-  width: 80px;
+.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {
+  width: 100px;
   display: block;
-  margin: 0 auto;
+  margin: 10px 0;
 }
 
-.wm-user-ui > div .wm-user-item > div.wm-user-head div {
-  text-align: center;
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list {
+  overflow: auto;
+  height: 500px;
 }
 
-.wm-user-ui > div .wm-user-item > div.wm-user-head img {
-  margin: 0 auto;
-  display: block;
-}
-
-.wm-user-ui > header {
-  background: #fff;
-  height: 50px;
-  width: 100%;
-  line-height: 50px;
-}
-
-.wm-user-ui > header > div {
-  font-size: 20px;
-  margin-left: 40px;
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li {
+  display: inline-block;
+  width: 18%;
+  margin: 12px;
+  height: 130px;
   position: relative;
 }
 
-.wm-user-ui > header > div:before {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 20px;
-  background: #cc0000;
-  top: 15px;
-  left: -10px;
-}
-
-.wm-user-ui,
-.wm-score-ui,
-.wm-periods-ui,
-.wm-checkitem-ui,
-.wm-adminuser-ui,
-.wm-history-ui {
-  background: #f3f3f3;
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {
+  width: 100%;
   height: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
 }
 
-.wm-user-ui > div,
-.wm-score-ui > div,
-.wm-periods-ui > div,
-.wm-checkitem-ui > div,
-.wm-adminuser-ui > div,
-.wm-history-ui > div {
-  flex-grow: 1;
-  width: 97%;
-  margin: 10px auto;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-item-name {
+  text-align: center;
+  margin: 4px 0;
+  font-size: 14px;
 }
 
-.wm-user-ui > header,
-.wm-score-ui > header,
-.wm-periods-ui > header,
-.wm-checkitem-ui > header,
-.wm-adminuser-ui > header,
-.wm-history-ui > header {
-  background: #fff;
-  height: 50px;
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress,
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {
+  position: absolute;
   width: 100%;
-  line-height: 50px;
+  height: 30px;
+  background: rgba(250, 184, 46, 0.7);
+  text-align: center;
+  top: 50%;
+  margin-top: -15px;
+  line-height: 30px;
+  color: #fff;
+  font-size: 14px;
 }
 
-.wm-user-ui > header > div,
-.wm-score-ui > header > div,
-.wm-periods-ui > header > div,
-.wm-checkitem-ui > header > div,
-.wm-adminuser-ui > header > div,
-.wm-history-ui > header > div {
-  font-size: 20px;
-  margin-left: 40px;
-  position: relative;
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-disabled-mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.7);
 }
 
-.wm-user-ui > header > div:before,
-.wm-score-ui > header > div:before,
-.wm-periods-ui > header > div:before,
-.wm-checkitem-ui > header > div:before,
-.wm-adminuser-ui > header > div:before,
-.wm-history-ui > header > div:before {
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {
+  color: #be0000;
+  font-size: 12px;
+  z-index: 10;
+  width: 85%;
+  padding-left: 20px;
+  left: 50%;
+  border: 1px solid #be0000;
+  border-radius: 3px;
+  -webkit-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span {
+  position: absolute;
+  left: 0;
+  top: 0px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  border: 1px solid #be0000;
+  border-radius: 50%;
+  left: 2px;
+  top: 5px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:after {
   content: "";
   position: absolute;
-  width: 2px;
+  width: 18px;
+  height: 2px;
+  background: #be0000;
+  left: 2px;
+  top: 13px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action {
+  position: absolute;
+  top: 10px;
+  right: 0;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon {
+  width: 20px;
   height: 20px;
-  background: #cc0000;
-  top: 15px;
-  left: -10px;
+  background: #fff;
+  border-radius: 2px;
+  position: absolute;
+  right: 10px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon:before {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #bbb;
+  left: 4px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  border-left: none;
+  border-top: none;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul {
+  display: block;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul {
+  display: none;
+  background: #fff;
+  width: 80px;
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li {
+  display: block;
+  height: 30px;
+  cursor: pointer;
+  line-height: 30px;
+  width: 100%;
+  margin: 0;
+  text-indent: .5em;
+  vertical-align: middle;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover {
+  background: #be0000;
+  color: #fff;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li i {
+  font-size: 20px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar,
+.wm-myreport-main-ui .wm-myreport-left .wm-scroll::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 8px;
+  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 8px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-thumb,
+.wm-myreport-main-ui .wm-myreport-left .wm-scroll::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-track,
+.wm-myreport-main-ui .wm-myreport-left .wm-scroll::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
 }

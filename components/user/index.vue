@@ -1,52 +1,53 @@
 <template>
 	<div class="wm-user-ui">
 		<header>
-			<div>我的资料</div>
+			<div>个人中心</div>
 		</header>
-		<div>
-			<div class="wm-user-item">
-				<div class="wm-user-head">
-					<img :src="imgs.man" alt="">
-					<div>{{userinfo.username}}</div>
-					<Button v-if='false' type='primary' size='small'>修改头像</Button>
+		<div class="wm-user-center">
+			<div>
+				<div class="wm-user-form-item">
+					<label for="">用户名：</label><input type="text"  v-model='userinfo.username'>
+					<div class="wm-user-error" v-if='userError'>{{userError}}</div>
 				</div>
-				<div>
-					<div>姓名：{{userinfo.username}}</div>
-					<div>部门：{{userinfo.departmentname||'--'}}</div>
+				<div class="wm-user-form-item">
+					<label for="">密码：</label><input type="password" v-model="userinfo.password">
+					<div class="wm-user-error" v-if='passError'>{{passError}}</div>
 				</div>
-				<div>
-					<div>性别：{{userinfo.usersex === 0 ? '女':'男'}}</div>
-					<div>职位：{{userinfo.userjob}}</div>
+				<div class="wm-user-form-item">
+					<label for="">确认密码：</label><input type="password" v-model="userinfo.repassword">
+					<div class="wm-user-error" v-if='repassError'>{{repassError}}</div>
 				</div>
-				<div>
-					<div>账号：{{userinfo.username}}</div>
-					<div>电话：{{userinfo.usermobile||"暂无"}}  <span v-if='false' class="wm-modify-tel">修改</span></div>
+				<div class="wm-user-form-item">
+					<label for="">姓名：</label><input type="text" v-model="userinfo.nickname">
+					<div class="wm-user-error" v-if='usernameError'>{{usernameError}}</div>
 				</div>
-				<div>
-					<div style="opacity:0">1</div>
-					<div>
-						<Button type="primary" @click="visible = true">修改密码</Button>
-					</div>
+				<div class="wm-user-form-item">
+					<label for="">手机：</label><input type="text" v-model="userinfo.mobile">
+					<div class="wm-user-error" v-if='mobileError'>{{mobileError}}</div>
+				</div>
+				<div class="wm-user-form-item ">
+					<label for="">单位：</label><input type="text" v-model="userinfo.companyname">
+					<div class="wm-user-error" v-if='companyError'>{{companyError}}</div>
+				</div>
+
+				<div class="wm-user-form-item " >
+					<label for="">地址：</label>
+					<Cascader v-model="userinfo.cityids"  :load-data="getCityById"  change-on-select :data='provinceList'></Cascader>
+				</div>
+
+				<div class="wm-user-form-item ">
+					<label for="">详细地址：</label><input type="text" v-model="userinfo.detailaddress">
+				</div>
+				<div class="wm-user-form-item ">
+					<label for="">邮箱：</label><input type="text"  v-model="userinfo.email">
+				</div>
+				<div class="wm-user-form-item wx-reg-btn" @click="modifyUser">
+					确 定
 				</div>
 			</div>
 		</div>
 
-		<Modal v-model="visible" title="修改密码" @on-ok="ok" ok-text="确认" cancel-text="取消" @on-cancel="cancel" class-name="adduser-cls" :loading='isLoading'>
-			<Form ref="formUser" :model="formUser"  :label-width="72" >
-				<FormItem label="原始密码：" prop="username">
-					<Input style="width:320px;" v-model="formUser.oldpassword" placeholder="原始密码" autocomplete="off" />
-				</FormItem>
-
-				<FormItem label="新密码：" prop="username">
-					<Input style="width:320px;" v-model="formUser.newpassword" placeholder="新密码" autocomplete="off" />
-				</FormItem>
-
-				<FormItem label="确认密码：" prop="username">
-					<Input style="width:320px;" v-model="formUser.surepassword" placeholder="确认密码" autocomplete="off" />
-				</FormItem>
-				
-			</Form>
-		</Modal>
+		
 	</div>
 </template>
 
@@ -54,9 +55,6 @@
 	import './index.css';
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
-
-	import $ from 'jquery';
-
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -65,11 +63,16 @@
 				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
-				formUser:{
-					oldpassword:'',
-					newpassword:'',
-					surepassword:''
-				},
+				userError:"",
+				companyError:"",
+				usernameError:"",
+				passError:"",
+				repassError:"",
+				mobileError:"",
+
+				provinceList:[],
+
+				
 				userinfo:{}
 			}
 		},
@@ -84,12 +87,91 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
-			if(this.userinfo.isadmin){
-				//window.location.hash = '/periods';
-			}
+			
+			
+			this.getCityData();
+			this.getCityById({__value:this.userinfo.provinceid*1+','+this.userinfo.cityid*1});
+
+			this.userinfo.cityids = [this.userinfo.provinceid*1,this.userinfo.cityid*1,this.userinfo.areaid*1]
+
 		},
 		
 		methods:{
+
+			getCityById(e,callback){
+				
+				var provinceId = e.__value.split(',')[0];
+				var cityid = e.__value.split(',')[1];
+				var s = this;
+				
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/share/getarealist',
+					data:{
+						cityid
+					},
+					success(data){
+						if(data.getret === 0){
+							console.log(data);
+							s.provinceList.forEach((item,i)=>{
+								if(item.value === provinceId*1){
+									item.children.forEach((child,k)=>{
+										if(child.value === cityid*1){
+											child.children = child.children || [];
+											data.list.map((d,l)=>{
+												child.children.push({
+													value:d.cityid,
+													label:d.name,
+													//loading: false
+												})
+											})
+											
+										}
+									})
+									callback();
+									
+								}
+								
+							});
+							
+
+						}
+					}
+
+				})
+			},
+			getCityData(){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/share/getcitylist/',
+					data:{},
+					success(data){
+						//console.log(data);
+						if(data.getret === 0){
+							data.list.map((item,i)=>{
+								var children = [];
+								item.children && item.children.map((child,l)=>{
+									children.push({
+										value:child.cityid,
+										label:child.name,
+										loading: false,
+										children:[]
+										
+									})
+								})
+								s.provinceList.push({
+									value:item.cityid,
+									label:item.name,
+									children,
+									loading: false
+								})
+							})
+						}
+					}
+				})
+			},
+			modifyUser(){
+
+			},
 			ok(){
 				if(this.formUser.newpassword  !== this.formUser.surepassword){
 					this.$Message.error('新密码和确认密码不一致');

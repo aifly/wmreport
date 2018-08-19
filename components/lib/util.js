@@ -1,4 +1,3 @@
-import $ from 'jquery'
 var symbinUtil = {
 	
 	getQueryString: function(name) {
@@ -14,16 +13,16 @@ var symbinUtil = {
 	},
 
 	getUserInfo(){
-		return 1;
+		
 		var loginObj = {};
 		try {
-			loginObj = JSON.parse(this.getCookie('login'));
+			loginObj = JSON.parse(localStorage.getItem('login'));
 		} catch (error) {
 			this.clearCookie('login');
 			window.location.hash = '/login';
 		}
 
-		return loginObj.userinfo;
+		return loginObj;
 	},
 
 	getStandard(fn) { //获取得分标准

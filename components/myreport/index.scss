@@ -4,132 +4,284 @@ $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
-.wm-user-ui{
-   
-    & > div {
-        flex-grow: 1;
-        width: 97%;
-        margin: 10px auto;
+.wm-myreport-main-ui {
+    height: 100%;
+    @include pos(r);
 
+    .webuploader-container {
+        position: relative;
+    }
+
+    .webuploader-element-invisible {
+        position: absolute !important;
+        left: 0;
+        top: 0;
+        width: 100%;
+        opacity:0;
+        border:1px solid red;
+    }
+
+    .webuploader-pick {
+        position: relative;
+        display: inline-block;
+        opacity:0;
+        cursor: pointer;
+        background: #00b7ee;
+       // padding: 10px 15px;
+        width: 100%;
+        color: #fff;
+        text-align: center;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .webuploader-pick-hover {
+        background: #00a2d4;
+    }
+
+    .webuploader-pick-disable {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+
+    .wm-myreport-left {
+        background: #fff;
+        
+        @include pos(a);
+        width: 100%;
+        overflow: hidden;
+
+        //border:1px solid red;
+        height: 100%;
         @include displayFlex(column);
 
-        .wm-user-item {
-            height: 150px;
+        header {
+            height: 60px;
+            line-height: 60px;
+            text-indent:2em;
             width: 100%;
-            background: #fff;
+            @include pos(r);
 
-            @include displayFlex(row);
+            #wm-upload{
+                @include pos(a);
+                top: 0;
+                overflow: hidden;
+                left: 0;;
+                height: 60px;
+                width: 200px;
+            }
 
-            & > div {
-                flex-grow: 1;
+            span{
+                margin-right: 20px;;
+            }
+
+            @include pos(r);
+
+            &:before {
+                content: '';
+
+                @include pos(a);
+
+                width: 98%;
+                left: 1%;
+                border-top: 1px solid #eeeeee;
+                bottom: 0;
+            }
+        }
+
+        section{
+            -webkit-flex-grow:1;
+            flex-grow:1;
+
+            @include pos(r);
+            
+            .wm-no-report{
+                width: 100%;
                 height: 100%;
-
-                @include displayFlex(column);
+                @include pos(a);
+                cursor: pointer;
+                @include displayFlex(row);
                 -webkit-justify-content: center;
                 justify-content: center;
-
-                img {
-                    width: 50px;
-				}
-				
-				&>div{
-                    margin: 10px auto;
-                    
-                    width: 140px;
-                    text-align: left;
-                    
-				}
-
-				span.wm-modify-tel{
-					color:#00c1de;
-					cursor: pointer;
-				}
-
-				text-align: center;
-                &.wm-user-head {
-
-                    button {
-                        width: 80px;
+                -webkit-align-items:center;
+                align-items:center;
+                &>div{
+                    text-align: center;
+                    img{
+                        width: 100px;
                         display: block;
-                        margin: 0 auto;
-                    }
-                    div{
-                        text-align: center;
-                    }
-
-                    img {
-                        margin: 0 auto;
-                        display: block;
+                        margin: 10px 0;
                     }
                 }
             }
         }
-    }
 
-    & > header {
-        background: #fff;
-        height: 50px;
-        width: 100%;
-        line-height: 50px;
 
-        & > div {
-            font-size: 20px;
-            margin-left: 40px;
+        .wm-report-list{
+            overflow: auto;
+            height: 500px;
+            li{
+                display: inline-block;
+                width: 18%;
+                margin: 12px;
+                height: 130px;
+                @include pos(r);
+                &>div.wm-report-item-bg {
+                    width: 100%;
+                    height: 100%;
+                }
+                .wm-report-item-name{
+                    text-align: center;
+                    margin: 4px 0;
+                    font-size:14px;
+                }
+                
+                .wm-file-progress,
+                .wm-file-disabled {
+                    @include pos(a);
+                    width: 100%;
+                    height: 30px;
+                    background:rgba(250,184,46,.7);
+                    text-align: center;
+                    top: 50%;
+                    margin-top: -15px;
+                    line-height: 30px;
+                    color:#fff;
+                    font-size:14px;
+                }
+                .wm-report-disabled-mask{
+                    @include pos(a);
+                    width: 100%;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    background: rgba(255,255,255,.7);
+                }
+                .wm-file-disabled {
+                    color: #be0000;
+                    font-size:12px;
+                    z-index: 10;
+                    width: 85%;
+                    padding-left: 20px;
+                    left: 50%;
+                    border:1px solid #be0000;
+                    @include br(3px);
+                    @include transform(translate3d(-50%,0,0));
+                    background:rgba(255,255,255,.8);
+                    span{
+                        @include pos(a);
+                        left: 0;
+                        top:0px;;
+                        &:before {
+                            content: '';
+                            width: 18px;
+                            height: 18px;
+                            @include pos(a);
+                            border: 1px solid #be0000;
+                            @include br();
+                            left: 2px;
+                            top: 5px;
+                        }
 
-            @include pos(r);
+                        &:after {
+                            content: "";
+                            @include pos(a);
+                            width: 18px;
+                            height: 2px;
+                            background: #be0000;
+                            left: 2px;
+                            top: 13px;
+                            @include transform(rotate(45deg));
 
-            &:before {
-                content: "";
 
-                @include pos(a);
+                        }
+                    }
+                }
 
-                width: 2px;
-                height: 20px;
-                background: #cc0000;
-                top: 15px;
-                left: -10px;
+                .wm-report-action{
+                    @include pos(a);
+                    top: 10px;
+                    right: 0;
+                    .wm-report-action-icon{
+                        width: 20px;
+                        height: 20px;
+                        background: #fff;
+                        @include br(2px);
+                        @include pos(a);
+                        right: 10px;
+                        &:before{
+                            content:"";
+                            @include pos(a);
+                            width: 12px;
+                            height: 12px;
+                            border:1px solid #bbb;
+                            left: 4px;;
+                            @include transform(rotate(45deg));
+                            border-left: none;
+                            border-top: none;
+                        }
+                    }
+
+                    &:hover{
+                        ul{
+                            display: block;
+                            
+                        }
+                    }
+
+                    ul{
+                        display: none;
+                        background:#fff;
+                        width: 80px;
+                        margin-top: 20px;
+                        margin-right: 10px;;
+                        li{
+                            &:hover{
+                                 background: #be0000;
+                                 color: #fff;
+                            }
+                            display: block;
+                            height: 30px;
+                            cursor: pointer;
+                            line-height: 30px;
+                            width: 100%;;
+                            margin: 0;
+                            text-indent: .5em;
+                            vertical-align: middle;
+                            i{
+                                font-size:20px;
+                                
+                            }
+                        }
+                    }
+                }
             }
         }
-    }
-}
 
+        .wm-report-list::-webkit-scrollbar,
+        .wm-scroll::-webkit-scrollbar {
+            /*滚动条整体样式*/
+            width: 8px;
+            /*高宽分别对应横竖滚动条的尺寸*/
+            height: 8px;
+        }
 
-.wm-user-ui,
-.wm-score-ui,
-.wm-periods-ui,
-.wm-checkitem-ui,
-.wm-adminuser-ui,
+        .wm-report-list::-webkit-scrollbar-thumb,
+        .wm-scroll::-webkit-scrollbar-thumb {
+            /*滚动条里面小方块*/
+            border-radius: 5px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+        }
 
-.wm-history-ui{
-    background: #f3f3f3;
-      height: 100%;
-    @include displayFlex(column);
-    &>div {
-        flex-grow: 1;
-        width: 97%;
-        margin: 10px auto;
-        @include displayFlex(column);
-        
-    }
-
-    &>header {
-        background: #fff;
-        height: 50px;
-        width: 100%;
-        line-height: 50px;
-        &>div {
-            font-size: 20px;
-            margin-left: 40px;
-            @include pos(r);
-            &:before {
-                content: "";
-                @include pos(a);
-                width: 2px;
-                height: 20px;
-                background: #cc0000;
-                top: 15px;
-                left: -10px;
-            }
+        .wm-report-list::-webkit-scrollbar-track,
+        .wm-scroll::-webkit-scrollbar-track {
+            /*滚动条里面轨道*/
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 0;
+            background: rgba(0, 0, 0, 0.1);
         }
     }
 }

@@ -14,10 +14,14 @@ var imgs = {
 	logout:'./assets/images/logout.png',
 	file:'./assets/images/file.png',
 	user:'./assets/images/user.png',
+	media:'./assets/images/media.png',
+	shangbao:'./assets/images/shangbao.png',
 	setting:'./assets/images/setting.png',
+	poster:'./assets/images/poster.png',
 	//smile:'./assets/images/smile.png',
 	titleBg:'./assets/images/title-bg.png',
-	ruleIco:'./assets/images/rule-ico.png'
+	ruleIco:'./assets/images/rule-ico.png',
+
 
 }
 
