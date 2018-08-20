@@ -1,24 +1,31 @@
 <template>
-	<div class="wm-myreport-main-ui">
-		 <Split v-model="split1">
-			<div slot="left" class="wm-myreport-left">
-				<header> 
-					 <span>我的上报</span> <Button icon='ios-cloud-upload-outline' size='small' type='primary'>上报</Button>
-				</header>
-				<section>
-					<div v-if='reportList.length<=0' class="wm-no-report">
-						<div>
-							<img :src="imgs.shangbao" alt="">
-							<Button type="primary" size='large'>点我上报</Button>
-						</div>
-					</div>
-				</section>
-			</div>
-			<div slot="right" class="wm-myreport-right">
-				Right Pane
-			</div>
-		</Split>
+	<div class="wm-adminuser-main-ui">
+		<header>
+			<div>用户管理</div>
+			<section>
+				<Button type="primary" icon='md-add-circle' @click="addNewAduser">新增用户</Button>
+			</section>
+		</header>
+		<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>
 
+		<Modal
+			v-model="visible"
+			:title="currentUserId === -1? '新增评委':'编辑评委'"
+			@on-ok="ok"
+			@on-cancel="cancel">
+			<Form ref="formAdmin" :model="formAdmin" :label-width="72" >
+				<FormItem label="账号：" prop="ratername">
+					<Input  v-model="formAdmin.username" placeholder="账号" autocomplete="off" />
+					
+				</FormItem>
+				<FormItem label="密码：" prop="userpwd">
+					<Input disabled v-model="formAdmin.userpwd" placeholder="密码" autocomplete="off" />
+				</FormItem>
+				<FormItem label="昵称：" prop="nickname">
+					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
+				</FormItem>
+			</Form>
+		</Modal>
 	</div>
 </template>
 
@@ -35,22 +42,74 @@
 				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
+				currentUserId:-1,
 				split1: 0.8,
+				viewH:window.innerHeight,
 
-				reportList:[
+				formAdmin:{
+					userpwd:'111111'
+				},
+				userList:[],
+				columns:[
 					{
-						reportid:'1',
-						reportname:'我的上报',
-						status:2,
-						thumi:"",
-						type:'jpg',
-						process:1,
-						bulk:'1.2M',
-						size:'1920*1080',
-						remark:'说明',
-						suffix:'jpg',
-						labels:''
-						
+						title:"用户名",
+						key:'username',
+						align:'center'
+					},
+					{
+						title:"昵称",
+						key:'nickname',
+						align:'center'
+					},{
+						title:'操作',
+						key:"action",
+						align:'center',
+						render:(h,params)=>{
+							return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    style: {
+                                        marginRight: '5px'
+                                    },
+                                    on: {
+                                        click: () => {
+											this.currentUserId = params.row.userid;
+											this.formAdmin = params.row;
+											this.visible = true;
+                                        }
+                                    }
+                                }, '编辑'),
+                                h('Poptip',{
+									props:{
+										confirm:true,
+										title:"确定要删除吗"
+									},
+									on:{
+										'on-ok':()=>{
+											this.delAdUser(params.row.userid);
+										},
+										
+									}
+								},[
+									h('Button', {
+										props: {
+											type: 'error',
+											size: 'small',
+											icon:'trash-a'
+										},
+										on: {
+											click: () => {
+												
+												//this.remove(params.index,params.row.employeeid)
+											}
+										}
+									}, '删除')
+								]),
+                            ]);
+						}
 					}
 				],
 
@@ -69,94 +128,119 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
+			//this.addadUser();
+			this.getaduserlist();
 			
 		},
 		
 		methods:{
 
-			upload(){
-				var uploader = WebUploader.create({
-					// 选完文件后，是否自动上传。
-					auto: false,
-					// swf文件路径
-					swf: './webuploader-0.1.5/Uploader.swf',
-					// 文件接收服务端。
-					server: 'http://api.zmiti.com/v2/fileupload',
-					// 选择文件的按钮。可选。
-					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
-					pick: '#picker',
-					chunked: true, //开启分片上传
-					threads: 1, //上传并发数
-					method: 'POST',
-				});
-				// 当有文件添加进来的时候
-				uploader.on('fileQueued', function (file) {
-					/* // webuploader事件.当选择文件后，文件被加载到文件队列中，触发该事件。等效于 uploader.onFileueued = function(file){...} ，类似js的事件定义。
-					$list.append('<div id="' + file.id + '" class="item">' +
-						'<h4 class="info">' + file.name + '</h4>' +
-						'<p class="state">等待上传...</p>' +
-						'</div>'); */
-				});
-				// 文件上传过程中创建进度条实时显示。
-				uploader.on('uploadProgress', function (file, percentage) {
-					/* var $li = $('#' + file.id),
-						$percent = $li.find('.progress .progress-bar');
-
-					// 避免重复创建
-					if (!$percent.length) {
-						$percent = $('<div class="progress progress-striped active">' +
-							'<div class="progress-bar" role="progressbar" style="width: 0%">' +
-							'</div>' +
-							'</div>').appendTo($li).find('.progress-bar');
-					}
-
-					$li.find('p.state').text('上传中');
-
-					$percent.css('width', percentage * 100 + '%'); */
-				});
-
-				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
-				uploader.on('uploadSuccess', function (file) {
-				//	$('#' + file.id).addClass('upload-state-done');
-				});
-
-				// 文件上传失败，显示上传出错。
-				uploader.on('uploadError', function (file) {
-					//$('#' + file.id).find('p.state').text('上传出错');
-				});
-
-				// 完成上传完了，成功或者失败，先删除进度条。
-				uploader.on('uploadComplete', function (file) {
-					/* $('#' + file.id).find('.progress').remove();
-					$('#' + file.id).find('p.state').text('已上传'); */
-				});
-            
-			},
-			ok(){
-				if(this.formUser.newpassword  !== this.formUser.surepassword){
-					this.$Message.error('新密码和确认密码不一致');
-					return false;
-				}
-				var s = this;
-
+			delAdUser(userid){
+					var s = this;
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmuser/modify_password',
+					url:window.config.baseUrl+'/wmadadmin/deladuser/',
 					validate:s.validate,
 					data:{
-						oldpassword:s.formUser.oldpassword,
-						password:s.formUser.newpassword,
-						repassword:s.formUser.surepassword
+						userid,
+						deltype:0,
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername
 					},success(data){
-
 						if(data.getret === 0){
-							s.$Message.warning('请重新登录');
-							window.location.hash =  '/login';
-						}else{
-							s.$Message.error('修改密码失败');
+							s.$Message.success(data.getmsg);
+							s.getaduserlist();
+						}
+						else{
+							s.$Message.error(data.getmsg);
 						}
 					}
 
 				})
+			},
+
+			addNewAduser(){
+				this.currentUserId = -1;
+				this.formAdmin = {
+					userpwd:'111111'
+				};
+				this.visible = true;
+			},
+			getaduserlist(){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/getaduserlist/',
+					//validate:s.validate,
+					data:{
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername
+					},
+					success(data){
+						console.log(data);
+						if(data.getret === 0){
+							s.userList = data.list;
+						}
+						else{
+							s.$Message.error(data.getmsg);
+						}
+					}
+
+				})
+			},
+
+
+			addadUser(){
+
+				 
+			},
+
+			 
+			ok(){
+				var s = this;
+
+				if(s.currentUserId<=-1){
+
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/addaduser/',
+						validate:s.validate,
+						data:{
+							username:s.formAdmin.username,
+							userpwd:s.formAdmin.userpwd,
+							nickname:s.formAdmin.nickname,
+							status:1,
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername
+						},success(data){
+							if(data.getret === 0){
+								s.$Message.success(data.getmsg);
+								s.getaduserlist();
+							}
+							else{
+								s.$Message.error(data.getmsg);
+							}
+						}
+	
+					})
+				}else{
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/editaduser/',
+						validate:s.validate,
+						data:{
+							username:s.formAdmin.username,
+							nickname:s.formAdmin.nickname,
+							userid:s.currentUserId,
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername
+						},success(data){
+							if(data.getret === 0){
+								s.$Message.success(data.getmsg);
+							}
+							else{
+								s.$Message.error(data.getmsg);
+							}
+						}
+	
+					})
+				}
 				
 			},
 			cancel(){

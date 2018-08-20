@@ -96,6 +96,7 @@
 
             this.userinfo = userinfo; 
             this.getSourceList();
+            
 
             
         },
@@ -107,6 +108,8 @@
             },
             getSourceList(){
 				var s = this;
+
+                var {obserable} = Vue;
 				
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadvuser/getsourcelist/',
@@ -117,6 +120,10 @@
 					success(data){
 						if(data.getret === 0){
                             s.sourceList = data.list;
+                            obserable.on("getCurrentSourceId",()=>{
+                                return data.list[0].resourceid;
+                            })
+
                             console.log(s.sourceList);
                         }
 					}

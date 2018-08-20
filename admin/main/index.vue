@@ -34,7 +34,7 @@
                         </div>
                    </div>
                 </div>
-                <Layout>
+                <Layout :style="{maxWidth:viewW-300+'px'}">
                    <router-view></router-view>
                 </Layout>
             </Layout>
@@ -58,8 +58,10 @@
 			return{
 				imgs:window.imgs,
                 viewH:document.documentElement.clientHeight,
+                viewW:window.innerWidth,
                 tabIndex:0,
                 userinfo:{},
+                
                 topMenu:[
                 ],
                 defaultMenu:[
@@ -85,7 +87,10 @@
             var userinfo = symbinUtil.getUserInfo();
 
             this.userinfo = userinfo; 
-            console.log(this.userinfo)
+            
+            window.onresize = ()=>{
+                this.viewW  = window.innerWidth;
+            }
         },
        
 		methods:{

@@ -6,6 +6,7 @@
 				<Button type="primary" icon='md-add-circle' @click="addRater">新增评委</Button>
 			</section>
 		</header>
+		<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='raterList' :columns='columns'   stripe></Table>
 		<Modal
 			v-model="visible"
 			:title="currentRateid === -1? '新增评委':'编辑评委'"
@@ -47,32 +48,92 @@
 		name:'zmitiindex',
 		data(){
 			return{
-				visible:true,
+				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
 				split1: 0.8,
+				viewH:window.innerHeight,
 				currentRateid:-1,
 
 				formAdmin:{
 					raterpwd:'111111'
 				},
-
-				reportList:[
+				columns:[
 					{
-						reportid:'1',
-						reportname:'我的上报',
-						status:2,
-						thumi:"",
-						type:'jpg',
-						process:1,
-						bulk:'1.2M',
-						size:'1920*1080',
-						remark:'说明',
-						suffix:'jpg',
-						labels:''
-						
+						title:"用户名",
+						key:'ratername',
+						align:'center'
+					},
+					{
+						title:'姓别',
+						key:'sex',
+						align:'center',
+						render:(h,params)=>{
+							return h('div',{},params.row.sex === 1 ? '男':'女')
+						}
+					},
+					{
+						title:"昵称",
+						key:'nickname',
+						align:'center'
+					},{
+						title :'手机号',
+						key:'mobile',
+						align:'center'
+					},{
+						title:'操作',
+						key:"action",
+						align:'center',
+						render:(h,params)=>{
+							return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    style: {
+                                        marginRight: '5px'
+                                    },
+                                    on: {
+                                        click: () => {
+											this.currentRateid = params.row.raterid;
+											this.formAdmin = params.row;
+											this.visible = true;
+                                        }
+                                    }
+                                }, '编辑'),
+                                h('Poptip',{
+									props:{
+										confirm:true,
+										title:"确定要删除吗"
+									},
+									on:{
+										'on-ok':()=>{
+											this.delRater(params.row.raterid);
+										},
+										
+									}
+								},[
+									h('Button', {
+										props: {
+											type: 'error',
+											size: 'small',
+											icon:'trash-a'
+										},
+										on: {
+											click: () => {
+												
+												//this.remove(params.index,params.row.employeeid)
+											}
+										}
+									}, '删除')
+								]),
+                            ]);
+						}
 					}
 				],
+
+				raterList:[],
 
 				
 				userinfo:{}
@@ -89,6 +150,7 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
+			this.getRaterlist();
 			
 		},
 		
@@ -98,23 +160,20 @@
 				this.currentRateid = -1;
 				this.visible = true;
 			},
-			
-			ok(){
 
-				
+			getRaterlist(){
 				var s = this;
 
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadadmin/addreview/',
-					validate:s.validate,
+					url:window.config.baseUrl+'/wmadadmin/getreviewlist/',
+					//validate:s.validate,
 					data:{
-						ratername:s.formAdmin.ratername,
-						raterpwd:s.formAdmin.raterpwd,
 						admintoken:s.userinfo.admintoken,
 						adminusername:s.userinfo.adminusername
 					},success(data){
+						
 						if(data.getret === 0){
-							s.$Message.success(data.getmsg);
+							s.raterList = data.list;
 						}
 						else{
 							s.$Message.error(data.getmsg);
@@ -122,7 +181,78 @@
 					}
 
 				})
+			},
+			delRater(raterid){
 				
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/delreview/',
+					validate:s.validate,
+					data:{
+						raterid,
+						deltype:0,
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername
+					},success(data){
+						if(data.getret === 0){
+							s.$Message.success(data.getmsg);
+							s.getRaterlist();
+						}
+						else{
+							s.$Message.error(data.getmsg);
+						}
+					}
+
+				})
+			},
+			
+			ok(){
+
+				
+				var s = this;
+
+				if(s.currentRateid<=-1){
+
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/addreview/',
+						validate:s.validate,
+						data:{
+							ratername:s.formAdmin.ratername,
+							raterpwd:s.formAdmin.raterpwd,
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername
+						},success(data){
+							if(data.getret === 0){
+								s.$Message.success(data.getmsg);
+							}
+							else{
+								s.$Message.error(data.getmsg);
+							}
+						}
+	
+					})
+				}else{
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/editreview/',
+						validate:s.validate,
+						data:{
+							ratername:s.formAdmin.ratername,
+							nickname:s.formAdmin.nickname,
+							mobile:s.formAdmin.mobile,
+							raterid:s.currentRateid,
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername
+						},success(data){
+							if(data.getret === 0){
+								s.$Message.success(data.getmsg);
+							}
+							else{
+								s.$Message.error(data.getmsg);
+							}
+						}
+	
+					})
+				}
 			},
 			cancel(){
 				this.formUser = {};

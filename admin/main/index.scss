@@ -120,10 +120,11 @@
 
 	.wm-tab-C{
 		background:#eee;
-		width: 300px;
+		width: 300px !important;
+
+		
 		
 		padding-top: 5px;
-		cursor: pointer;
 
 		&>div{
 			background: #fff;

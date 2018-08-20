@@ -175,6 +175,16 @@
   position: relative;
 }
 
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {
   width: 100%;
   height: 100%;
@@ -198,6 +208,46 @@
   line-height: 30px;
   color: #fff;
   font-size: 14px;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress {
+  z-index: 10;
+  background-color: #be0000;
+  border: 1px solid rgba(250, 184, 46, 0.7);
+  background-size: 3em 3em;
+  background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);
+  -webkit-animation: warning-animation 750ms infinite linear;
+  -moz-animation: warning-animation 750ms infinite linear;
+  animation: warning-animation 750ms infinite linear;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background-image: linear-gradient(to bottom, rgba(250, 184, 46, 0.7), rgba(250, 184, 46, 0.7) 15%, transparent 60%, rgba(250, 184, 46, 0.7));
+}
+
+@-webkit-keyframes warning-animation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 3em 0;
+  }
+}
+
+@keyframes warning-animation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 3em 0;
+  }
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-disabled-mask {
@@ -256,6 +306,7 @@
   position: absolute;
   top: 10px;
   right: 0;
+  z-index: 0;
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon {

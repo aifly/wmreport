@@ -49,69 +49,38 @@
   }
 }
 
-.wm-myreport-main-ui {
-  height: 100%;
-  position: relative;
-}
-
-.wm-myreport-main-ui .wm-myreport-left {
+.wm-adminuser-main-ui > header {
   background: #fff;
-  position: absolute;
+  height: 50px;
   width: 100%;
-  overflow: hidden;
-  height: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
-}
-
-.wm-myreport-main-ui .wm-myreport-left header {
-  height: 60px;
-  line-height: 60px;
-  text-indent: 2em;
-  width: 100%;
-  position: relative;
-}
-
-.wm-myreport-main-ui .wm-myreport-left header span {
-  margin-right: 20px;
-}
-
-.wm-myreport-main-ui .wm-myreport-left header:before {
-  content: '';
-  position: absolute;
-  width: 98%;
-  left: 1%;
-  border-top: 1px solid #eeeeee;
-  bottom: 0;
-}
-
-.wm-myreport-main-ui .wm-myreport-left section {
-  -webkit-flex-grow: 1;
-  flex-grow: 1;
-  position: relative;
-}
-
-.wm-myreport-main-ui .wm-myreport-left section .wm-no-report {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  cursor: pointer;
+  line-height: 50px;
   display: flex;
   display: -webkit-flex;
   flex-flow: row;
-  -webkit-justify-content: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  align-items: center;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
 }
 
-.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div {
-  text-align: center;
+.wm-adminuser-main-ui > header > section {
+  margin-right: 30px;
 }
 
-.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {
-  width: 100px;
-  display: block;
-  margin: 10px 0;
+.wm-adminuser-main-ui > header > div {
+  font-size: 20px;
+  margin-left: 40px;
+  position: relative;
+}
+
+.wm-adminuser-main-ui > header > div:before {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  background: #cc0000;
+  top: 15px;
+  left: -10px;
+}
+
+.wm-adminuser-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {
+  left: 30px;
 }

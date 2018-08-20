@@ -15,16 +15,17 @@
 					</div>
 					<div v-else class="wm-report-list" :style="{height:viewH - 60-60-20+'px'}">
 						<ul>
-							<li  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+							<li class="wm-report-item" v-for='(report,i) in reportList' :key="i">
 								<div class='wm-report-item-bg' :style="{background:'url('+report.thumi+') no-repeat center',backgroundSize:'cover'}"></div>
 								<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
+								<div v-if='!report.isLoaded' class="wm-uploading"></div>
 								<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
-								<span class="wm-file-disabled" v-if='report.status===2'>
+								<span class="wm-file-disabled" v-if='report.status === 2'>
 									<span>
 									</span>
 									被管理员发回，不可用
 								</span>
-								<div class="wm-report-action">
+								<div class="wm-report-action" v-if='report.isLoaded'>
 									<div class="wm-report-action-icon"></div>
 									<ul>
 										<li>
@@ -53,7 +54,7 @@
 	import './index.css';
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
-
+	import Vue from 'vue';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -74,7 +75,7 @@
 						type:'jpg',
 						process:'0%',
 						bulk:'1.2M',
-						isLoaded:true,
+						isLoaded:false,
 						size:'1920*1080',
 						remark:'说明',
 						suffix:'jpg',
@@ -95,7 +96,9 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
-			this.upload(); 
+			setTimeout(() => {
+				this.upload(); 
+			}, 100);
 			for(var i = 0;i<0;i++){
 
 				this.reportList.push({
@@ -119,6 +122,11 @@
 
 			upload(){
 
+				var {obserable} = Vue;
+				var id  = obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+
 				var s = this;
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
@@ -137,7 +145,7 @@
 					formData:{
 						username:s.userinfo.username,
 						usertoken:s.userinfo.accesstoken,
-						resourceid:1
+						resourceid:id
 					}
 				});
 				// 当有文件添加进来的时候

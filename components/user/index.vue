@@ -171,6 +171,26 @@
 			},
 			modifyUser(){
 
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/updateuser',
+					validate:s.validate,
+					data:{
+						username:s.userinfo.username,
+						usertoken:s.userinfo.usertoken,
+						nickname:s.userinfo.nickname
+					},success(data){
+						console.log(data);
+						/* if(data.getret === 0){
+							s.$Message.warning('请重新登录');
+							window.location.hash =  '/login';
+						}else{
+							s.$Message.error('修改密码失败');
+						} */
+					}
+
+				})
+
 			},
 			ok(){
 				if(this.formUser.newpassword  !== this.formUser.surepassword){
