@@ -177,16 +177,19 @@
 					validate:s.validate,
 					data:{
 						username:s.userinfo.username,
-						usertoken:s.userinfo.usertoken,
+						accesstoken:s.userinfo.accesstoken,
 						nickname:s.userinfo.nickname
 					},success(data){
 						console.log(data);
-						/* if(data.getret === 0){
-							s.$Message.warning('请重新登录');
-							window.location.hash =  '/login';
+						 if(data.getret === 0){
+							s.$Message.success(data.getmsg);
+							data.list.username = s.userinfo.username;
+							data.list.accesstoken = s.userinfo.accesstoken;
+							window.localStorage.setItem('login',JSON.stringify(data.list));
+							///window.location.hash =  '/login';
 						}else{
 							s.$Message.error('修改密码失败');
-						} */
+						} 
 					}
 
 				})
