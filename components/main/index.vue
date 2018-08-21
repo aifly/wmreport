@@ -128,28 +128,33 @@
                 this.tabIndex = index;
             },
             getSourceList(){
-				var s = this;
+      				var s = this;
 
-                var {obserable} = Vue;
-				
-				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadvuser/getsourcelist/',
-					data:{
-						username:s.userinfo.username,
-						usertoken:s.userinfo.accesstoken
-					},
-					success(data){
-						if(data.getret === 0){
-                            s.sourceList = data.list;
-                            obserable.on("getCurrentSourceId",()=>{
-                                return data.list[0].resourceid;
-                            })
+              var {obserable} = Vue;
+      				
+      				symbinUtil.ajax({
+      					url:window.config.baseUrl+'/wmadvuser/getsourcelist/',
+      					data:{
+      						username:s.userinfo.username,
+      						usertoken:s.userinfo.accesstoken
+      					},
+      					success(data){
+      						if(data.getret === 0){
+                                  s.sourceList = data.list;
+                                  obserable.on("getCurrentSourceId",()=>{
+                                      return data.list[0].resourceid;
+                                  })
 
-                            console.log(s.sourceList);
-                        }
-					}
-				})
-			},
+                                  obserable.on("getFeildList",()=>{
+                                      
+                                      return JSON.parse(data.list[0].tablefield).collectionitems;
+                                  })
+
+                                  console.log(s.sourceList);
+                              }
+      					}
+      				})
+      			},
            
             loadMenu(option,fn){
                 var s = this;

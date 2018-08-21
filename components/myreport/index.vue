@@ -15,8 +15,8 @@
 					</div>
 					<div v-else class="wm-report-list" :style="{height:viewH - 60-60-20+'px'}">
 						<ul>
-							<li class="wm-report-item" v-for='(report,i) in reportList' :key="i">
-								<div class='wm-report-item-bg' :style="{background:'url('+report.thumi+') no-repeat center',backgroundSize:'cover'}"></div>
+							<li @click='showReportDetail(report)' class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+								<div class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:'cover'}"></div>
 								<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 								<div v-if='!report.isLoaded' class="wm-uploading"></div>
 								<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
@@ -36,7 +36,7 @@
 										</li>
 									</ul>
 								</div>
-								<div class="wm-report-item-name">{{report.reportname}}</div>
+								<div class="wm-report-item-name">{{report.newfilename}}</div>
 							</li>	
 						</ul>
 					</div>
@@ -83,7 +83,7 @@
 		name:'zmitiindex',
 		data(){
 			return{
-				visible:true,
+				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
 				tag:"",
@@ -152,9 +152,15 @@
 			}
 
 			this.getConfigFile();
+			this.getMyreportList();
 		},
 		
 		methods:{
+
+			showReportDetail(report){
+				this.visible = true;
+				this.formAdmin = report;
+			},
 
 			deltag(name){
 
@@ -172,7 +178,7 @@
 			},
 			
 			getConfigFile(){
-				var s = this;
+				/*var s = this;
 				$.getJSON('./components/myreport/data.json',(data)=>{
 					console.log(data);
 					s.configList = data.collectionitems;
@@ -182,7 +188,45 @@
 							s.ruleValidate[col.field] = { required: true, message: col.name+'不能为空', trigger: 'blur' }
 						}
 					})
-				})
+				})*/
+			},
+
+			getMyreportList(){
+				var s = this;
+				var {obserable} = Vue;
+				var t = setInterval(()=>{
+					var id  = obserable.trigger({
+						type:'getCurrentSourceId'
+					})
+					var tableFields = obserable.trigger({
+						type:"getFeildList"
+					})
+					this.configList = tableFields;
+					if(id){
+						clearInterval(t);
+						symbinUtil.ajax({
+							url:window.config.baseUrl+"/wmadvuser/getmyreportdata",
+							data:{
+								username:s.userinfo.username,
+								accesstoken:s.userinfo.accesstoken,
+								resourceid:id
+							},
+							success(data){
+								if(data.getret === 0){
+									data.list.forEach((item)=>{
+										item.isLoaded = true;
+									})
+									s.reportList = data.list;
+
+									console.log(s.reportList[0]);
+								}
+								console.log(data);
+							}
+						})
+					}
+					
+				},20)
+
 			},
 
 			upload(){
@@ -211,10 +255,12 @@
 						username:s.userinfo.username,
 						usertoken:s.userinfo.accesstoken,
 						resourceid:id,
-						filetitle:"",
+						filetitle:"123",
 						filedesc:"",
 						publicadtype:"图片-zmiti",
-						userlabel:""
+						userlabel:"测试",
+						author:"123",
+						telphone:'110'
 
 					}
 				});
@@ -296,14 +342,11 @@
 				uploader.upload();
 			},
 			ok(){
-				if(this.formUser.newpassword  !== this.formUser.surepassword){
-					this.$Message.error('新密码和确认密码不一致');
-					return false;
-				}
+				 
 				var s = this;
 
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmuser/modify_password',
+					url:window.config.baseUrl+'/wmadvuser/editreport',
 					validate:s.validate,
 					data:{
 						oldpassword:s.formUser.oldpassword,

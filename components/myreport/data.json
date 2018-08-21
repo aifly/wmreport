@@ -5,43 +5,67 @@
             "name":"名称",
             "type":"text",
             "notnull":1,
-            "field": "filetitle"
+            "default":"",
+            "fieldtype":"varchar",
+            "fieldname": "filetitle",
+            "length":64,
+            "loading":true
         },
         {
             "name": "作者",
             "type": "text",
             "notnull": 0,
-            "field": "author"
+            "default":"",
+            "fieldtype":"varchar",
+            "fieldname": "author",
+            "length":64,
+            "loading":true
         },
         {
             "name": "电话",
             "type": "text",
             "notnull": 0,
-            "field": "telphone"
+            "default":"",
+            "fieldtype":"varchar",
+            "fieldname": "telphone",
+            "length":64,
+            "loading":true
         },
         {
             "name": "说明",
             "type": "textarea",
-            "notnull": 0,
-            "field": "filedesc"
+            "notnull": 1,
+            "default":"",
+            "fieldtype":"text",
+            "fieldname": "filedesc",
+            "loading":true
         },
         {
             "name": "类型",
             "type": "select",
-            "field": "syslabel1",
+            "notnull": 1,
+            "default":"",
+            "fieldtype":"varchar",
+            "fieldname": "publicadtype",
+            "ismultiselection":0,
             "data":[
                 "图片-zmiti",
                 "视频-zmiti",
                 "音频-zmiti",
                 "动漫-zmiti"
             ],
-            "notnull": 1
-        }, {
+            "length":64,
+            "loading":true
+        }, 
+        {
             "name": "标签",
             "type": "label",
-            "field": "userlabel",
-            "loading":true,
-            "notnull": 0
+            "notnull": 0,
+            "default":"",
+            "fieldtype":"varchar",
+            "fieldname": "userlabel",
+            "length":"255",
+            "loading":true
         }
     ]
 }
