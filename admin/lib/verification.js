@@ -2,7 +2,7 @@ import symbinUtil from './util';
 var sysbinVerification = {
 	validate($this){
 		try{
-			var obj = JSON.parse(symbinUtil.getCookie('adminlogin'));
+			var obj = JSON.parse(localStorage.getItem('adminlogin'));;
 			
 			if(obj){
 				return obj.userinfo;

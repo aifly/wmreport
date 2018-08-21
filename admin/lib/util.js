@@ -15,7 +15,8 @@ var symbinUtil = {
 	getUserInfo(){
 		var loginObj = {};
 		try {
-			loginObj = JSON.parse(this.getCookie('adminlogin'));
+			loginObj = JSON.parse(localStorage.getItem('adminlogin'));;
+
 		} catch (error) {
 			this.clearCookie('adminlogin');
 			window.location.hash = '/login';

@@ -212,7 +212,7 @@
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress {
   z-index: 10;
-  background-color: #be0000;
+  background-color: #f5a420;
   border: 1px solid rgba(250, 184, 46, 0.7);
   background-size: 3em 3em;
   background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);
@@ -386,4 +386,17 @@
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 0;
   background: rgba(0, 0, 0, 0.1);
+}
+
+.wm-tags input {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 110px;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.wm-tags input::-webkit-input-placeholder {
+  color: #ddd;
 }

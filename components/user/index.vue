@@ -10,11 +10,13 @@
 					<div class="wm-user-error" v-if='userError'>{{userError}}</div>
 				</div>
 				<div class="wm-user-form-item">
-					<label for="">密码：</label><input type="password" v-model="userinfo.password">
+					<label for="">密码：</label><input :disabled='!showPassWord' type="password" v-model="userinfo.password">
+					<Button type='primary' @click='modifyPwd'>{{showPassWord?'确定':'修改密码'}}</Button>
 					<div class="wm-user-error" v-if='passError'>{{passError}}</div>
 				</div>
-				<div class="wm-user-form-item">
+				<div class="wm-user-form-item" v-if='showPassWord'>
 					<label for="">确认密码：</label><input type="password" v-model="userinfo.repassword">
+					
 					<div class="wm-user-error" v-if='repassError'>{{repassError}}</div>
 				</div>
 				<div class="wm-user-form-item">
@@ -64,6 +66,7 @@
 				imgs:window.imgs,
 				isLoading:false,
 				userError:"",
+				showPassWord:false,
 				companyError:"",
 				usernameError:"",
 				passError:"",
@@ -97,6 +100,51 @@
 		},
 		
 		methods:{
+
+			modifyPwd(){
+				if(!this.showPassWord){
+					this.showPassWord = true;
+				}else{
+					var s = this;
+					if(!this.userinfo.password){
+						this.passError ='密码不能为空';
+						setTimeout(() => {
+							this.passError ='';
+						}, 2000);
+						return;
+					}
+
+					if(this.userinfo.repassword !== this.userinfo.password){
+						this.repassError ='两次密码不一致';
+						setTimeout(() => {
+							this.repassError ='';
+						}, 2000);
+						return;
+					};
+
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadvuser/updateuserpwd/',
+						data:{
+							username:s.userinfo.username,
+							accesstoken:s.userinfo.accesstoken,
+							userpwd:s.userinfo.password
+						},
+						success(data){
+							console.log(data);
+							if(data.getret === 0){
+								
+								s.$Message.success('修改密码成功,请重新登录');
+								setTimeout(() => {
+									window.location.hash = '#/login';
+								}, 400);
+							}
+							else{
+								s.$Message.error('修改密码失败');
+							}
+						}
+					})
+				}
+			},
 
 			getCityById(e,callback){
 				
@@ -178,7 +226,14 @@
 					data:{
 						username:s.userinfo.username,
 						accesstoken:s.userinfo.accesstoken,
-						nickname:s.userinfo.nickname
+						nickname:s.userinfo.nickname,
+						mobile:s.userinfo.mobile,
+						detailaddress:s.userinfo.detailaddress,
+						email:s.userinfo.email,
+						provinceid:s.userinfo.cityids[0],
+						cityid:s.userinfo.cityids[1],
+						areaid:s.userinfo.cityids[2],
+						companyname:s.userinfo.companyname
 					},success(data){
 						console.log(data);
 						 if(data.getret === 0){

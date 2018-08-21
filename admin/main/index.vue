@@ -15,7 +15,7 @@
                <div class="wm-user-info">
                    <span><img :src='imgs.man' /></span>
                    <span class="zmiti-text-overflow">{{userinfo.adminusername}}</span>
-                   <div>
+                   <div @click="logout">
                        <img :src="imgs.logout" alt="">
                    </div>
                </div>
@@ -77,7 +77,7 @@
         },
         watch:{
            $route(e){
-               console.log(e)
+               //console.log(e)
            }
         },
 		mounted(){
@@ -130,9 +130,12 @@
             logout(){
                 var s = this;
                 symbinUtil.ajax({
-                    url:window.config.baseUrl+'/wmuser/loginout/',
-                    data:{},
-                    validate:s.userinfo,
+                    url:window.config.baseUrl+'/wmadadmin/exitlogin/',
+                    data:{
+                        adminusername:s.userinfo.adminusername,
+						admintoken:s.userinfo.admintoken
+                    },
+                    
                     success(data){
                         if(data.getret === 0){
                             s.$Message.success('注销成功');

@@ -47,6 +47,29 @@
 			</div>
 		</Split>
 
+
+		<Modal
+			v-model="visible"
+			title="编辑作品信息"
+			@on-ok="ok"
+			@on-cancel="cancel">
+			<Form ref="formAdmin" :model="formAdmin" :label-width="72" :rules="ruleValidate">
+				<FormItem :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
+					<Input v-if='item.type === "text"'  v-model="formAdmin[item.field]" :placeholder="item.name" autocomplete="off" />
+					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formAdmin[item.field]" :placeholder="item.name" autocomplete="off"/>
+					<Select v-model="formAdmin[item.field]" v-if='item.type === "select"'>
+						<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
+					</Select>
+
+					<div class="wm-tags" v-if='item.type === "label"'>
+						<input placeholder="按回车添加标签" type="text" v-model="tag" @keydown.13='addTag' />
+						<Tag @on-close="deltag(tag)" closable :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" v-for="(tag,i) in formAdmin.tagList" :key='i'>{{tag}}</Tag>
+					</div>
+				</FormItem>
+				 
+			</Form>
+		</Modal>
+
 	</div>
 </template>
 
@@ -60,12 +83,22 @@
 		name:'zmitiindex',
 		data(){
 			return{
-				visible:false,
+				visible:true,
 				imgs:window.imgs,
 				isLoading:false,
+				tag:"",
+				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
 				viewH:window.innerHeight,
-
+				configList:[],
+				formAdmin:{
+					tagList:[]
+				},
+				ruleValidate: {
+                     
+                    
+                },
+				
 				reportList:[
 					{
 						reportid:'1',
@@ -89,6 +122,7 @@
 		},
 
 		beforeCreate(){
+			window.s = this;
 			//var validate = sysbinVerification.validate(this);
 			//symbinUtil.clearCookie('login');
 
@@ -116,9 +150,40 @@
 					labels:''
 				})
 			}
+
+			this.getConfigFile();
 		},
 		
 		methods:{
+
+			deltag(name){
+
+				var index = this.formAdmin.tagList.indexOf(name);
+				this.formAdmin.tagList.splice(index,1);
+			},
+
+			addTag(){
+				if(!this.tag){
+					return;
+				}
+				
+				this.formAdmin.tagList.push(this.tag);
+				this.tag = '';
+			},
+			
+			getConfigFile(){
+				var s = this;
+				$.getJSON('./components/myreport/data.json',(data)=>{
+					console.log(data);
+					s.configList = data.collectionitems;
+					data.collectionitems.map((col,i)=>{
+						s.formAdmin[col.field] = '';
+						if(col.notnull){
+							s.ruleValidate[col.field] = { required: true, message: col.name+'不能为空', trigger: 'blur' }
+						}
+					})
+				})
+			},
 
 			upload(){
 
@@ -145,7 +210,12 @@
 					formData:{
 						username:s.userinfo.username,
 						usertoken:s.userinfo.accesstoken,
-						resourceid:id
+						resourceid:id,
+						filetitle:"",
+						filedesc:"",
+						publicadtype:"图片-zmiti",
+						userlabel:""
+
 					}
 				});
 				// 当有文件添加进来的时候

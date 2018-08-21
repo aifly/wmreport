@@ -63,7 +63,12 @@ $color: #be0000;
         height: 50px;
         margin: 4px 0;
         line-height: 50px;
-        ;
+        
+        button{
+            @include pos(a);
+            right: 10px;
+            top: 8px;
+        };
         &.wm-require {
             label {
                 @include pos(r);
@@ -88,7 +93,7 @@ $color: #be0000;
         }
 
         @include pos(r);
-        .wm-reg-error {
+        .wm-user-error {
             @include pos(a);
             color: #ff0000;
             left: 102%;

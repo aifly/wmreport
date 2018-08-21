@@ -121,6 +121,12 @@
   left: -40px;
 }
 
+.wm-user-ui .wm-user-form-item button {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
 .wm-user-ui .wm-user-form-item .ivu-cascader {
   position: absolute;
   z-index: 10;
@@ -132,7 +138,7 @@
   outline: none;
 }
 
-.wm-user-ui .wm-user-form-item .wm-reg-error {
+.wm-user-ui .wm-user-form-item .wm-user-error {
   position: absolute;
   color: #ff0000;
   left: 102%;

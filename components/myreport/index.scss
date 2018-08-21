@@ -160,9 +160,11 @@ $color: #be0000;
                     color:#fff;
                     font-size:14px;
                 }
+
+               
                 .wm-file-progress{
                     z-index: 10;;
-                    background-color:#be0000;
+                    background-color:#f5a420;
                     border: 1px solid rgba(250, 184, 46, .7);
                   //  box-shadow: 1vw 3vh 10vh rgba(250, 184, 46, .7);
                     background-size: 3em 3em;
@@ -336,6 +338,22 @@ $color: #be0000;
             -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
             border-radius: 0;
             background: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+}
+
+.wm-tags {
+    input {
+        border: 1px solid #ddd;
+        @include br(4px);
+        width: 110px;
+        text-align: center;
+        box-sizing:border-box;
+        outline: none;
+
+        &::-webkit-input-placeholder{
+            color:#ddd;
         }
     }
 }

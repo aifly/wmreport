@@ -104,7 +104,9 @@
 							var p = param.list;
 							
 							symbinUtil.clearCookie('adminlogin');
-							symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
+							//symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
+
+							window.localStorage.setItem('adminlogin',JSON.stringify(p));
 
 							if(_this.checked){
 								window.localStorage.setItem('wm_adminusername',_this.username);

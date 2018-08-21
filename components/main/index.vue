@@ -15,7 +15,7 @@
                <div class="wm-user-info">
                    <span><img :src='imgs.man' /></span>
                    <span class="zmiti-text-overflow">{{userinfo.nickname}}</span>
-                   <div title='退出'>
+                   <div title='退出' @click="logout">
                        <img :src="imgs.logout" alt="">
                    </div>
                </div>
@@ -102,7 +102,28 @@
         },
        
 		methods:{
-            
+            logout(){
+                var s = this;
+                
+                symbinUtil.ajax({
+                    url:window.config.baseUrl+'/wmadvuser/exitlogin',
+                    data:{
+                        username:s.userinfo.username,
+                        accesstoken:s.userinfo.accesstoken
+                    },
+                    success(data){
+                        if(data.getret === 0){
+                            s.$Message.success('注销成功');
+                            setTimeout(() => {
+                                window.location.hash = '#/login';
+                            }, 500);
+                        }
+                        else{
+                            s.$Message.error('注销失败');
+                        }
+                    }
+                })
+            },
             tab(index){
                 this.tabIndex = index;
             },
@@ -157,23 +178,8 @@
                         
                     }
                 })
-            },
-            logout(){
-                var s = this;
-                symbinUtil.ajax({
-                    url:window.config.baseUrl+'/wmuser/loginout/',
-                    data:{},
-                    validate:s.userinfo,
-                    success(data){
-                        if(data.getret === 0){
-                            s.$Message.success('注销成功');
-                            symbinUtil.clearCookie('login');
-                            window.location.hash = '/login';
-                            window.sessionStorage.clear();
-                        }
-                    }
-                });
             }
+          
 		}
 	}
 </script>
