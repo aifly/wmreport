@@ -14,8 +14,8 @@
                </div>
                <div class="wm-user-info">
                    <span><img :src='imgs.man' /></span>
-                   <span class="zmiti-text-overflow">不是你的不是你的不是你的不是你的</span>
-                   <div>
+                   <span class="zmiti-text-overflow">{{userinfo.nickname}}</span>
+                   <div title='退出' @click="logout">
                        <img :src="imgs.logout" alt="">
                    </div>
                </div>
@@ -23,12 +23,22 @@
             <Layout class="wm-main-layout">
                 <div class="wm-tab-C" :style='{height:(viewH - 64- 10)+"px"}'>
                    <div>
-                        <div class='wm-menu-item' :class="{'active':$route.name ==='myreport'}">
-                            <a href='#/myreport'>我的上报</a>
-                        </div>
-                        <div class='wm-menu-item' :class="{'active':$route.name ==='user'}">
-                            <a href='#/user'>个人中心</a>
-                        </div>
+                      <Menu width='300' :open-names="['1']"  >
+                            <Submenu name="1">
+                                <template slot="title">
+                                    <Icon type="ios-paper" />
+                                    作品评选
+                                </template>
+                                    <a href='#/rate'>
+                                      <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                                      </MenuItem>
+                                    </a>
+                            </Submenu>
+                            <a href='#/user/'> 
+                                <MenuItem name="13">个人中心 </MenuItem>
+                            </a>
+                           
+                        </Menu>
                    </div>
                 </div>
                 <Layout>
@@ -57,6 +67,7 @@
                 viewH:document.documentElement.clientHeight,
                 tabIndex:0,
                 userinfo:{},
+                sourceList:[],
                 topMenu:[
                 ],
                 defaultMenu:[
@@ -82,14 +93,65 @@
             var userinfo = symbinUtil.getUserInfo();
 
             this.userinfo = userinfo; 
+            this.getSourceList();
+            
+
+            
         },
        
 		methods:{
-            
+            logout(){
+                var s = this;
+                
+                symbinUtil.ajax({
+                    url:window.config.baseUrl+'/wmadvuser/exitlogin',
+                    data:{
+                        username:s.userinfo.username,
+                        accesstoken:s.userinfo.accesstoken
+                    },
+                    success(data){
+                        if(data.getret === 0){
+                            s.$Message.success('注销成功');
+                            setTimeout(() => {
+                                window.location.hash = '#/login';
+                            }, 500);
+                        }
+                        else{
+                            s.$Message.error('注销失败');
+                        }
+                    }
+                })
+            },
             tab(index){
                 this.tabIndex = index;
             },
-           
+            getSourceList(){
+                var s = this;
+
+                var {obserable} = Vue;
+                symbinUtil.ajax({
+                    url:window.config.baseUrl+'/wmreview/checkresources/',
+                    data:{
+                        ratername:s.userinfo.ratername,
+                        accesstoken:s.userinfo.accesstoken
+                    },
+                    success(data){
+                        if(data.getret === 0){
+                                s.sourceList = data.list;
+                                obserable.on("getCurrentSourceId",()=>{
+                                    return data.list[0].resourceid;
+                                })
+
+                                obserable.on("getFeildList",()=>{
+                                    
+                                    return JSON.parse(data.list[0].tablefield).collectionitems;
+                                })
+
+                                console.log(s.sourceList);
+                            }
+                    }
+                })
+            },
             loadMenu(option,fn){
                 var s = this;
                 return;
@@ -117,23 +179,8 @@
                         
                     }
                 })
-            },
-            logout(){
-                var s = this;
-                symbinUtil.ajax({
-                    url:window.config.baseUrl+'/wmuser/loginout/',
-                    data:{},
-                    validate:s.userinfo,
-                    success(data){
-                        if(data.getret === 0){
-                            s.$Message.success('注销成功');
-                            symbinUtil.clearCookie('login');
-                            window.location.hash = '/login';
-                            window.sessionStorage.clear();
-                        }
-                    }
-                });
             }
+          
 		}
 	}
 </script>

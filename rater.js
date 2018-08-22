@@ -1,13 +1,12 @@
 import Vue from "vue";
-import Obserable from './components/lib/obserable';
-import Main from './components/main/index';
-import Login from './components/login/index'
-import Register from './components/register/index';
-import MyReport from './components/myreport/index';
-import User from './components/user/index';
+import Obserable from './rater/lib/obserable';
+import Main from './rater/main/index';
+import Login from './rater/login/index'
+import Rate from './rater/rate/index';
+import User from './rater/user/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
-import './components/css/index.css';
+import './rater/css/index.css';
 import 'iview/dist/styles/iview.css';
 
 Vue.use(VueRouter)
@@ -31,14 +30,9 @@ const router = new VueRouter({
 			props: true
 		},
 		{
-			path: '/register/',
-			name: 'register',
-			component: Register,
-			props:true
-		},{
-			path:'/myreport/',
-			name:'myreport',
-			component: MyReport,
+			path: '/rate/',
+			name: 'rate',
+			component: Rate,
 			props:true
 		}, {
 			path: '/user/',
@@ -64,8 +58,6 @@ new Vue({
 	methods: {},
 	components: {
 		Main,
-		Login,
-		Register
 	},
 	mounted() {
 

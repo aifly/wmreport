@@ -86,7 +86,7 @@
 					 width: 80px;
 					 top: 0;
 					 height: 100%;
-					 
+					 cursor: pointer;
 					 text-align: center;
 
 					 img{
@@ -122,13 +122,35 @@
 		background:#eee;
 		width: 300px;
 		
-		padding-top: 5px;
-		cursor: pointer;
+	
 
 		&>div{
 			background: #fff;
 			border:1px solid #fff;
 		}
+
+		.ivu-menu-vertical .ivu-menu-item:hover,
+		.ivu-menu-vertical .ivu-menu-submenu-title:hover{
+			color:#b30501;
+		}
+
+		.ivu-menu-item-active,
+		.ivu-menu-item-selected{
+			&:not(.ivu-menu-submenu){
+				color:#b30501 !important;
+				background:rgba(179,5,1,.1) !important;
+
+				&:after{
+					background:#b30501 !important;
+				}
+				
+			}
+			a{
+				display: block;
+				width: 100%;
+			}
+		}
+
 		.wm-menu-item{
 			background: #fff;
 			height: 40px;
@@ -137,6 +159,7 @@
 			text-indent:3em;
 			a{
 				color:inherit;
+				
 			};
 			@include pos(r);
 
@@ -166,6 +189,7 @@
 			display: block;
 			width: 100%;
 			height: 100%;
+			color: inherit;
 		}
 		
 		img{

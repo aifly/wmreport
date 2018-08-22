@@ -24,11 +24,11 @@
 					<div>
 						<label>
 							<img :src="imgs.loginLock" alt="">
-							<input type="text" v-model="password" placeholder="请输入密码">
+							<input @keydown.13='login' type="password" v-model="password" placeholder="请输入密码">
 						</label>
 					</div>
 					<div>
-						<div>登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
+						<div @click="login">登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
 						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
 					</div>
 				</div>
@@ -61,7 +61,6 @@
 				showLoading:false,
 				showError:false,
 				errorMsg:'',
-				loginType:"员工登录",
 				viewH:document.documentElement.clientHeight
 			}
 		},
@@ -70,19 +69,14 @@
 		
 		methods:{
 			toastError(msg =  '用户名不能为空'){
-				this.errorMsg = msg;
- 				this.showError = true;
+				this.loginError = msg;
  				setTimeout(()=>{
- 					this.errorMsg = '';
- 					this.showError = false;
+ 					this.loginError = '';
  				},2000)
 			},
 			login(){
 				var _this = this;
-				
-				var isAdmin = this.loginType === '超级管理员登录';
 
-				
 				if(!this.username){
 					this.toastError();
  					return;
@@ -91,44 +85,36 @@
 					this.toastError('密码不能为空');
  					return;
 				}
-
+				
 				this.showLoading = true;
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmuser/login/',
+					url:window.config.baseUrl+'/wmreview/login/',
 					data:{
-						username:_this.username,
-						userpwd:_this.password
+						ratername:_this.username,
+						raterpwd:_this.password
 					},
-					fn(data){
+					success(data){
 						if(data.getret === 0){
 							var param = data;
 							delete param.getret;
 							delete param.getmsg;
+
+							var p = param.list;
 							
-							if(data.userinfo.isinselect === 0 && data.userinfo.isadmin === 0){
-								_this.showLoading = false;
-								_this.toastError(_this.username+'不参与评分');
-								return;
-							}
-							
-							symbinUtil.clearCookie('login');
-							symbinUtil.setCookie('login',JSON.stringify(param),1);
+							symbinUtil.clearCookie('raterlogin');
+							//symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
+
+							window.localStorage.setItem('raterlogin',JSON.stringify(p));
 
 							if(_this.checked){
-								window.localStorage.setItem('wm_username',_this.username);
-								window.localStorage.setItem('wm_password',_this.password);
+								window.localStorage.setItem('wm_raterusername',_this.username);
+								window.localStorage.setItem('wm_raterloginpassword',_this.password);
 							}else{
-								window.localStorage.setItem('wm_username','');
-								window.localStorage.setItem('wm_password','');
+								window.localStorage.setItem('wm_raterusername','');
+								window.localStorage.setItem('wm_raterloginpassword','');
 							}
-						
-							if(data.isadmin){
-								//window.location.hash = '/periods/';
-								window.location.href = window.location.href.split('#')[0]+'#/periods/'
-							}else{
-								//window.location.hash = '/user/';
-								window.location.href = window.location.href.split('#')[0]+'#/user/'
-							}
+							window.location.hash = '#/rate/';
+							
 							_this.$Message.success('登录成功~');
 							
 							window.location.reload();
@@ -142,8 +128,8 @@
 				
 			},
 			checkCache(){
-				var username = window.localStorage.getItem('wm_username'),
-					password = window.localStorage.getItem('wm_password');
+				var username = window.localStorage.getItem('wm_raterusername'),
+					password = window.localStorage.getItem('wm_raterloginpassword');
 				
 				if(username && password){
 					this.username = username;

@@ -25,7 +25,8 @@
 					</RadioGroup>
 				</FormItem>
 				<FormItem label="密码：" prop="raterpwd">
-					<Input disabled v-model="formAdmin.raterpwd" placeholder="密码" autocomplete="off" />
+					<Input ref='pass' :disabled='!showPass' v-model="formAdmin.raterpwd" placeholder="密码" autocomplete="off" />
+					<Button type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
 				</FormItem>
 				<FormItem label="昵称：" prop="nickname">
 					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
@@ -52,6 +53,7 @@
 				imgs:window.imgs,
 				isLoading:false,
 				split1: 0.8,
+				showPass:false,
 				viewH:window.innerHeight,
 				currentRateid:-1,
 
@@ -156,6 +158,32 @@
 		
 		methods:{
 
+			modifyPass(){
+				if(!this.showPass){
+					this.showPass = true;
+					this.$refs['pass'].focus();
+
+				}else{
+					if(!this.formAdmin.raterpwd){
+						this.$Message.error('密码不能为空');
+						return;
+					}
+					var s = this;
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/updatereviewpwd',
+						data:{
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername,
+							raterid:s.formAdmin.raterid,
+							raterpwd:s.formAdmin.raterpwd
+						},
+						success(data){
+							s.$Message[data.getret === 0 ?'success':'error'](data.getmsg);
+						}
+					})
+				}
+			},
+
 			addRater(){
 				this.currentRateid = -1;
 				this.visible = true;
@@ -224,6 +252,7 @@
 						},success(data){
 							if(data.getret === 0){
 								s.$Message.success(data.getmsg);
+								s.getRaterlist();
 							}
 							else{
 								s.$Message.error(data.getmsg);

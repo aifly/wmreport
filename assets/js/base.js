@@ -17,7 +17,7 @@ var imgs = {
 	media:'./assets/images/media.png',
 	shangbao:'./assets/images/shangbao.png',
 	setting:'./assets/images/setting.png',
-	poster:'./assets/images/poster.png',
+	poster:'./assets/images/poster1.png',
 	//smile:'./assets/images/smile.png',
 	titleBg:'./assets/images/title-bg.png',
 	ruleIco:'./assets/images/rule-ico.png',

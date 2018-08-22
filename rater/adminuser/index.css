@@ -49,52 +49,29 @@
   }
 }
 
-.wm-checkitem-ui .wm-checkitem-header {
-  text-align: right;
-  padding-bottom: 10px;
-}
-
-.wm-user-ui,
-.wm-score-ui,
-.wm-history-ui {
-  background: #f3f3f3;
-  height: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
-}
-
-.wm-user-ui > div,
-.wm-score-ui > div,
-.wm-history-ui > div {
-  flex-grow: 1;
-  width: 97%;
-  margin: 10px auto;
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: column;
-}
-
-.wm-user-ui > header,
-.wm-score-ui > header,
-.wm-history-ui > header {
+.wm-adminuser-main-ui > header {
   background: #fff;
   height: 50px;
   width: 100%;
   line-height: 50px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
 }
 
-.wm-user-ui > header > div,
-.wm-score-ui > header > div,
-.wm-history-ui > header > div {
+.wm-adminuser-main-ui > header > section {
+  margin-right: 30px;
+}
+
+.wm-adminuser-main-ui > header > div {
   font-size: 20px;
   margin-left: 40px;
   position: relative;
 }
 
-.wm-user-ui > header > div:before,
-.wm-score-ui > header > div:before,
-.wm-history-ui > header > div:before {
+.wm-adminuser-main-ui > header > div:before {
   content: "";
   position: absolute;
   width: 2px;
@@ -102,4 +79,8 @@
   background: #cc0000;
   top: 15px;
   left: -10px;
+}
+
+.wm-adminuser-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {
+  left: 30px;
 }

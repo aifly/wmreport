@@ -1,0 +1,83 @@
+﻿@import "../css/base.scss";
+
+$baseColor: #fcffb4;
+$viewW: 750px;
+$color: #be0000;
+
+.wm-rater-main-ui{
+    background: #fff;
+     &>header {
+         height: 50px;
+         width: 100%;
+         line-height: 50px;
+         
+         &>div {
+             font-size: 18px;
+             margin-left: 40px;
+             @include pos(r);
+             &:nth-of-type(1){
+                 @include pos(a);
+                 left: 0;
+                 top: 0;
+             }
+         }
+
+         .wm-rate-tabs{
+             width: 50%;
+             margin: 0 auto;
+             ul{
+                 @include displayFlex(row);
+                 -webkit-justify-content:space-around;
+                 justify-content:space-around;
+
+                 li{
+                    padding: 0 20px;
+                    cursor: pointer;
+                   &.active{
+                       color:#cc0000;
+                       @include pos(r);
+                       &:before{
+                           content:'';
+                           @include pos(a);
+                           width: 100%;
+                           height: 2px;
+                           background:#cc0000;
+                           left: 0;
+                           bottom: 0;
+                       }
+                   }  
+                 }
+             }
+         }
+     }
+
+     .ivu-poptip-confirm .ivu-poptip-body .ivu-icon{
+         left: 30px;
+     }
+     
+}
+
+.ivu-table-body::-webkit-scrollbar,
+.wm-scroll::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 8px;
+    /*高宽分别对应横竖滚动条的尺寸*/
+    height: 8px;
+}
+
+.ivu-table-body::-webkit-scrollbar-thumb,
+.wm-scroll::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.ivu-table-body::-webkit-scrollbar-track,
+.wm-scroll::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0.1);
+}

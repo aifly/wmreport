@@ -173,6 +173,7 @@
   margin: 12px;
   height: 130px;
   position: relative;
+  cursor: pointer;
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {
@@ -363,16 +364,16 @@
   font-size: 20px;
 }
 
-.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar,
-.wm-myreport-main-ui .wm-myreport-left .wm-scroll::-webkit-scrollbar {
+.wm-report-list::-webkit-scrollbar,
+.wm-myreport-right::-webkit-scrollbar {
   /*滚动条整体样式*/
   width: 8px;
   /*高宽分别对应横竖滚动条的尺寸*/
   height: 8px;
 }
 
-.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-thumb,
-.wm-myreport-main-ui .wm-myreport-left .wm-scroll::-webkit-scrollbar-thumb {
+.wm-report-list::-webkit-scrollbar-thumb,
+.wm-myreport-right::-webkit-scrollbar-thumb {
   /*滚动条里面小方块*/
   border-radius: 5px;
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
@@ -381,11 +382,165 @@
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-track,
-.wm-myreport-main-ui .wm-myreport-left .wm-scroll::-webkit-scrollbar-track {
+.wm-myreport-main-ui .wm-myreport-left .wm-myreport-right::-webkit-scrollbar-track {
   /*滚动条里面轨道*/
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 0;
   background: rgba(0, 0, 0, 0.1);
+}
+
+.wm-myreport-main-ui .wm-myreport-right {
+  background: #fff;
+  overflow: auto;
+  height: 100%;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  min-height: 30px;
+  line-height: 30px;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(1) {
+  text-align: center;
+  width: 60px;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(2) {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-tag-list-C {
+  width: 100%;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  width: 95%;
+  margin: 40px auto 0;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(1) {
+  width: 40px;
+  text-align: right;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input {
+  width: 90%;
+  margin-left: 10%;
+  border: 1px solid #eee;
+  text-align: center;
+  position: relative;
+  outline: none;
+  border-radius: 4px;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {
+  color: #ddd;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) {
+  width: 50px;
+  position: relative;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  top: 5px;
+  left: 10px;
+  border: 1px solid #f5a420;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 1px;
+  background: #f5a420;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {
+  width: 1px;
+  height: 10px;
+}
+
+.wm-myreport-main-ui .wm-myreport-right .wm-tag-list {
+  width: 85%;
+  margin: 10px auto;
+}
+
+.wm-myreport-main-ui .wm-right-thumb {
+  width: 95%;
+  margin: 0 auto;
+  height: 130px;
+}
+
+.wm-myreport-main-ui .wm-report-C {
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  position: fixed !important;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.wm-myreport-main-ui .wm-report-C > div {
+  max-width: 80vw;
+  max-height: 80vh;
+}
+
+.wm-myreport-main-ui .wm-report-C .wm-report-close {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  right: 20px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  top: 20px;
+  z-index: 10;
+}
+
+.wm-myreport-main-ui .wm-report-C .wm-report-close:before, .wm-myreport-main-ui .wm-report-C .wm-report-close:after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.wm-myreport-main-ui .wm-report-C .wm-report-close:after {
+  width: 2px;
+  height: 20px;
 }
 
 .wm-tags input {

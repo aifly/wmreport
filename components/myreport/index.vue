@@ -15,7 +15,7 @@
 					</div>
 					<div v-else class="wm-report-list" :style="{height:viewH - 60-60-20+'px'}">
 						<ul>
-							<li @click='showReportDetail(report)' class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+							<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
 								<div class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:'cover'}"></div>
 								<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 								<div v-if='!report.isLoaded' class="wm-uploading"></div>
@@ -28,7 +28,7 @@
 								<div class="wm-report-action" v-if='report.isLoaded'>
 									<div class="wm-report-action-icon"></div>
 									<ul>
-										<li>
+										<li @click='showReportDetail(report)'>
 											<Icon type="ios-create" /> 编辑
 										</li>
 										<li>
@@ -36,14 +36,64 @@
 										</li>
 									</ul>
 								</div>
-								<div class="wm-report-item-name">{{report.newfilename}}</div>
+								<div :title='report.newfilename' class="wm-report-item-name zmiti-text-overflow">{{report.newfilename}}</div>
 							</li>	
 						</ul>
 					</div>
 				</section>
 			</div>
-			<div slot="right" class="wm-myreport-right">
-				Right Pane
+			<div slot="right" class="wm-myreport-right wm-scroll">
+				<div class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
+					
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>大小：</div>
+					<div>{{reportList[currentReportIndex].filesize}}{{reportList[currentReportIndex].filesizeunit}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>时间：</div>
+					<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>描述：</div>
+					<div>{{reportList[currentReportIndex].filedesc}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>格式：</div>
+					<div>{{reportList[currentReportIndex].fileextname}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>尺寸：</div>
+					<div>{{reportList[currentReportIndex].fileattr}}</div>
+				</div>
+				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+					<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+					<div v-if='item.type === "text" ||item.type === "textarea"'>{{reportList[currentReportIndex][item.fieldname]}}</div>
+
+					<div v-if='item.type === "select"'>
+						<Select v-model="formAdmin[item.fieldname]" size='small'>
+							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
+						</Select>
+					</div>
+
+					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+						<div class="wm-userlabel-header">
+							<div>标签</div>
+							<div><input type="text" placeholder="输入标签名" /></div>
+							<div>
+								<div class="wm-add-label">
+
+								</div>
+							</div>
+							
+						</div>
+						<div class="wm-tag-list">
+							<Tag :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+						</div>
+					</section>
+				</div>
+
+
 			</div>
 		</Split>
 
@@ -55,9 +105,9 @@
 			@on-cancel="cancel">
 			<Form ref="formAdmin" :model="formAdmin" :label-width="72" :rules="ruleValidate">
 				<FormItem :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
-					<Input v-if='item.type === "text"'  v-model="formAdmin[item.field]" :placeholder="item.name" autocomplete="off" />
-					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formAdmin[item.field]" :placeholder="item.name" autocomplete="off"/>
-					<Select v-model="formAdmin[item.field]" v-if='item.type === "select"'>
+					<Input v-if='item.type === "text"'  v-model="formAdmin[item.fieldname]" :placeholder="item.name" autocomplete="off" />
+					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formAdmin[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
+					<Select v-model="formAdmin[item.fieldname]" v-if='item.type === "select"'>
 						<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
 					</Select>
 
@@ -69,6 +119,13 @@
 				 
 			</Form>
 		</Modal>
+
+		<div class="lt-full wm-report-C" v-if='showPreview'>
+			<span class="wm-report-close" @click="closePreview"></span>
+			<div v-if='1||reportList[currentReportIndex].fileextname=== "png" ||reportList[currentReportIndex].fileextname=== "jpg" ||reportList[currentReportIndex].fileextname=== "jpeg" || reportList[currentReportIndex].fileextname=== "gif"||reportList[currentReportIndex].fileextname=== "bmp"'>
+				<img :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="">
+			</div>
+		</div>
 
 	</div>
 </template>
@@ -87,6 +144,8 @@
 				imgs:window.imgs,
 				isLoading:false,
 				tag:"",
+				currentReportIndex:0,
+				showPreview:false,
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
 				viewH:window.innerHeight,
@@ -95,7 +154,10 @@
 					tagList:[]
 				},
 				ruleValidate: {
-                     
+                     author:{
+						 required:true,
+						 trigger:'blur'
+					 }
                     
                 },
 				
@@ -133,33 +195,44 @@
 			setTimeout(() => {
 				this.upload(); 
 			}, 100);
-			for(var i = 0;i<0;i++){
-
-				this.reportList.push({
-					reportid:i+1,
-					reportname:'我的上报',
-					status:2,
-					thumi:imgs.poster,
-					type:'jpg',
-					process:1,
-					bulk:'1.2M',
-					isLoaded:true,
-					size:'1920*1080',
-					remark:'说明',
-					suffix:'jpg',
-					labels:''
-				})
+			 
+			window.onkeydown = (e)=>{
+				if(e.keyCode === 27 || e.keyCode === 8){
+					this.closePreview();
+				}
 			}
-
 			this.getConfigFile();
 			this.getMyreportList();
+
+			this.$Notice.info({
+				title: '双击上报作品可以预览'
+			});
 		},
 		
 		methods:{
+			closePreview(){
+				this.showPreview = false;
+			},
 
+			previewReport(){//双击预览作品、
+				this.showPreview = true;
+			},
+
+			showDetail(report,index){
+				this.currentReportIndex = index;
+				this.formAdmin = report;
+				//this.currentReport = report;
+			},
 			showReportDetail(report){
 				this.visible = true;
 				this.formAdmin = report;
+				var s = this;
+				this.configList.map((col,i)=>{
+					//s.formAdmin[col.fieldname] = '';
+					if(col.notnull){
+						s.ruleValidate[col.fieldname] = { required: true, message: col.name+'不能为空', trigger: 'blur' }
+					}
+				})
 			},
 
 			deltag(name){
@@ -172,7 +245,8 @@
 				if(!this.tag){
 					return;
 				}
-				
+		
+				this.formAdmin.tagList = this.formAdmin.tagList || [];
 				this.formAdmin.tagList.push(this.tag);
 				this.tag = '';
 			},
@@ -183,7 +257,7 @@
 					console.log(data);
 					s.configList = data.collectionitems;
 					data.collectionitems.map((col,i)=>{
-						s.formAdmin[col.field] = '';
+						s.formAdmin[col.fieldname] = '';
 						if(col.notnull){
 							s.ruleValidate[col.field] = { required: true, message: col.name+'不能为空', trigger: 'blur' }
 						}
@@ -201,8 +275,18 @@
 					var tableFields = obserable.trigger({
 						type:"getFeildList"
 					})
-					this.configList = tableFields;
+					
 					if(id){
+
+						this.configList = tableFields.concat([]);
+						this.configList.map((col,i)=>{
+							///s.formAdmin[col.fieldname] = '';
+							if(col.notnull){
+								setTimeout(() => {
+									s.ruleValidate[col.fieldname] = { required: true, message: col.name + '不能为空', trigger: 'blur' }
+								}, 1000);
+							}
+						})
 						clearInterval(t);
 						symbinUtil.ajax({
 							url:window.config.baseUrl+"/wmadvuser/getmyreportdata",
@@ -215,12 +299,11 @@
 								if(data.getret === 0){
 									data.list.forEach((item)=>{
 										item.isLoaded = true;
-									})
-									s.reportList = data.list;
+									});
 
-									console.log(s.reportList[0]);
+									s.reportList = data.list;
+									//s.currentReport = s.reportList[0];
 								}
-								console.log(data);
 							}
 						})
 					}
@@ -336,6 +419,7 @@
 				// 完成上传完了，成功或者失败，先删除进度条。
 				uploader.on('uploadComplete', function (file) {
 					console.log('uploadComplete');
+					s.getMyreportList();
 					/* $('#' + file.id).find('.progress').remove();
 					$('#' + file.id).find('p.state').text('已上传'); */
 				});
@@ -347,12 +431,12 @@
 
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadvuser/editreport',
-					validate:s.validate,
 					data:{
-						oldpassword:s.formUser.oldpassword,
-						password:s.formUser.newpassword,
-						repassword:s.formUser.surepassword
-					},success(data){
+						username:s.userinfo.username,
+						accesstoken:s.userinfo.accesstoken,
+						fieldlist:'',
+					},
+					success(data){
 
 						if(data.getret === 0){
 							s.$Message.warning('请重新登录');

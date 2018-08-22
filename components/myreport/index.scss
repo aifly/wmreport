@@ -127,6 +127,7 @@ $color: #be0000;
                 margin: 12px;
                 height: 130px;
                 @include pos(r);
+                cursor: pointer;
 
                 .wm-uploading{
                      @include pos(a);
@@ -315,16 +316,17 @@ $color: #be0000;
             }
         }
 
-        .wm-report-list::-webkit-scrollbar,
-        .wm-scroll::-webkit-scrollbar {
+        
+         @at-root.wm-report-list::-webkit-scrollbar,
+         .wm-myreport-right::-webkit-scrollbar {
             /*滚动条整体样式*/
             width: 8px;
             /*高宽分别对应横竖滚动条的尺寸*/
             height: 8px;
         }
 
-        .wm-report-list::-webkit-scrollbar-thumb,
-        .wm-scroll::-webkit-scrollbar-thumb {
+         @at-root.wm-report-list::-webkit-scrollbar-thumb,
+         .wm-myreport-right::-webkit-scrollbar-thumb {
             /*滚动条里面小方块*/
             border-radius: 5px;
             -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
@@ -333,11 +335,169 @@ $color: #be0000;
         }
 
         .wm-report-list::-webkit-scrollbar-track,
-        .wm-scroll::-webkit-scrollbar-track {
+         .wm-myreport-right::-webkit-scrollbar-track {
             /*滚动条里面轨道*/
             -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
             border-radius: 0;
             background: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+
+    .wm-myreport-right{
+        background:#fff;
+        overflow:auto;
+        height: 100%;
+
+        .wm-myreport-item{
+            @include displayFlex(row);
+            min-height: 30px;
+            line-height: 30px;;
+            &>div{
+
+                &:nth-of-type(1){
+                    text-align:center;
+                    width: 60px;
+                }
+                &:nth-of-type(2){
+                    -webkit-flex-grow:1;
+                    flex-grow:1;
+                    
+
+                }
+
+            }
+        }
+
+
+        .wm-tag-list-C{
+            width: 100%;
+            
+        }
+
+        .wm-userlabel-header{
+            @include displayFlex(row);
+            width: 95%;
+            margin: 40px auto 0;
+
+            &>div{
+                &:nth-of-type(1){
+                    width: 40px;
+                    text-align:right;
+                }
+                &:nth-of-type(2){
+                    -webkit-flex-grow:1;
+                    flex-grow:1;
+                    
+                    overflow: hidden;
+                    @include pos(r);
+                    input{
+                        width: 90%;
+                        margin-left: 10%;
+                        //border:none;
+                        border:1px solid #eee;
+                        text-align: center;
+                        @include pos(r);
+                        outline: none;
+                        @include br(4px);
+                        &::-webkit-input-placeholder{
+                            color:#ddd;
+                        }
+                    }
+                }
+                &:nth-of-type(3){
+                    width: 50px;
+                    @include pos(r);
+                    &>div{
+                        @include pos(a);
+                        width: 20px;
+                        height: 20px;
+                        @include br();
+                        top: 5px;
+                        left: 10px;;
+                        border:1px solid #f5a420;
+                        &:before,&:after{
+                            content:'';
+                            @include pos(a);
+                            width: 10px;
+                            height: 1px;
+                            background: #f5a420;
+                            left: 50%;
+                            top: 50%;
+                            @include transform(translate3d(-50%,-50%,0));
+                        }
+                        &:after{
+                            width: 1px;
+                            height: 10px;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        .wm-tag-list{
+            width:85%;
+            margin: 10px auto;
+        }
+
+
+        
+    }
+
+    .wm-right-thumb{
+        width: 95%;
+        margin: 0 auto;
+        height: 130px;
+    }
+
+
+    .wm-report-C{
+        background:rgba(0,0,0,.8);
+        z-index: 1000;
+        position: fixed !important;
+
+        
+        @include displayFlex(row);
+
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-align-items:center;
+        align-items:center;
+
+        &>div{
+            max-width: 80vw;
+            max-height: 80vh;
+        }
+
+        .wm-report-close{
+            $color:#fff;
+            @include pos(a);
+            width:34px;
+            height: 34px;
+            @include br();
+            cursor: pointer;
+            border:2px solid $color;
+            right: 20px;
+            @include transform(rotate(45deg));
+            top: 20px;
+            z-index: 10;
+             &:before,
+             &:after {
+                 content: '';
+                 @include pos(a);
+                 width: 20px;
+                 height: 2px;
+                 background: $color;
+                 left: 50%;
+                 top: 50%;
+                 @include transform(translate3d(-50%, -50%, 0));
+             }
+
+             &:after {
+                 width: 2px;
+                 height: 20px;
+             }
         }
     }
 
