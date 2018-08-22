@@ -9,16 +9,14 @@
   height: 100%;
   position: absolute;
   left: 0;
-  top: 0;
-}
+  top: 0; }
 
 .zmiti-text-overflow {
   overflow: hidden;
   white-space: nowrap;
   word-break: break-all;
   text-overflow: ellipsis;
-  -webkit-text-overflow: ellipsis;
-}
+  -webkit-text-overflow: ellipsis; }
 
 .zmiti-play {
   width: .8rem;
@@ -27,95 +25,67 @@
   position: fixed;
   z-index: 1000;
   right: .5rem;
-  top: .5rem;
-}
-
-.zmiti-play.rotate {
-  -webkit-animation: rotate 5s linear infinite;
-  animation: rotate 5s linear infinite;
-}
+  top: .5rem; }
+  .zmiti-play.rotate {
+    -webkit-animation: rotate 5s linear infinite;
+    animation: rotate 5s linear infinite; }
 
 .symbin-left {
-  float: left !important;
-}
+  float: left !important; }
 
 .symbin-right {
-  float: right !important;
-}
+  float: right !important; }
 
 @-webkit-keyframes rotate {
   to {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
+    transform: rotate(360deg); } }
 .wm-rater-main-ui {
-  background: #fff;
-}
-
-.wm-rater-main-ui > header {
-  height: 50px;
-  width: 100%;
-  line-height: 50px;
-}
-
-.wm-rater-main-ui > header > div {
-  font-size: 18px;
-  margin-left: 40px;
-  position: relative;
-}
-
-.wm-rater-main-ui > header > div:nth-of-type(1) {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.wm-rater-main-ui > header .wm-rate-tabs {
-  width: 50%;
-  margin: 0 auto;
-}
-
-.wm-rater-main-ui > header .wm-rate-tabs ul {
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: row;
-  -webkit-justify-content: space-around;
-  justify-content: space-around;
-}
-
-.wm-rater-main-ui > header .wm-rate-tabs ul li {
-  padding: 0 20px;
-  cursor: pointer;
-}
-
-.wm-rater-main-ui > header .wm-rate-tabs ul li.active {
-  color: #cc0000;
-  position: relative;
-}
-
-.wm-rater-main-ui > header .wm-rate-tabs ul li.active:before {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background: #cc0000;
-  left: 0;
-  bottom: 0;
-}
-
-.wm-rater-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {
-  left: 30px;
-}
+  background: #fff; }
+  .wm-rater-main-ui .wm-rater-header {
+    height: 50px;
+    width: 100%;
+    line-height: 50px; }
+    .wm-rater-main-ui .wm-rater-header > div {
+      font-size: 18px;
+      margin-left: 40px;
+      position: relative; }
+      .wm-rater-main-ui .wm-rater-header > div:nth-of-type(1) {
+        position: absolute;
+        left: 0;
+        top: 0; }
+    .wm-rater-main-ui .wm-rater-header .wm-rate-tabs {
+      width: 50%;
+      margin: 0 auto; }
+      .wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul {
+        display: flex;
+        display: -webkit-flex;
+        flex-flow: row;
+        -webkit-justify-content: space-around;
+        justify-content: space-around; }
+        .wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul li {
+          padding: 0 20px;
+          cursor: pointer; }
+          .wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul li.active {
+            color: #cc0000;
+            position: relative; }
+            .wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul li.active:before {
+              content: '';
+              position: absolute;
+              width: 100%;
+              height: 2px;
+              background: #cc0000;
+              left: 0;
+              bottom: 0; }
+  .wm-rater-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {
+    left: 30px; }
 
 .ivu-table-body::-webkit-scrollbar,
 .wm-scroll::-webkit-scrollbar {
   /*滚动条整体样式*/
   width: 8px;
   /*高宽分别对应横竖滚动条的尺寸*/
-  height: 8px;
-}
+  height: 8px; }
 
 .ivu-table-body::-webkit-scrollbar-thumb,
 .wm-scroll::-webkit-scrollbar-thumb {
@@ -123,13 +93,13 @@
   border-radius: 5px;
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background: rgba(0, 0, 0, 0.2);
-}
+  background: rgba(0, 0, 0, 0.2); }
 
 .ivu-table-body::-webkit-scrollbar-track,
 .wm-scroll::-webkit-scrollbar-track {
   /*滚动条里面轨道*/
   -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.1);
-}
+  background: rgba(0, 0, 0, 0.1); }
+
+/*# sourceMappingURL=index.css.map */

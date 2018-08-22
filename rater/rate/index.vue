@@ -1,15 +1,22 @@
 <template>
 	<div class="wm-rater-main-ui">
-		<header>
-			<div>2018年公益广告</div>
-			<div class="wm-rate-tabs">
-				<ul>
-					<li @click='getRateDataById(0)' :class="{'active':currentType === 0}">全部(12)</li>
-					<li @click='getRateDataById(1)' :class="{'active':currentType === 1}">待评</li>
-					<li @click='getRateDataById(2)' :class="{'active':currentType === 2}">已评</li>
-				</ul>
+		<Split v-model='scale'>
+			<div slot='left'>
+				<header class="wm-rater-header">
+					<div>2018年公益广告</div>
+					<div class="wm-rate-tabs">
+						<ul>
+							<li @click='getRateDataById(0)' :class="{'active':currentType === 0}">全部(12)</li>
+							<li @click='getRateDataById(1)' :class="{'active':currentType === 1}">待评</li>
+							<li @click='getRateDataById(2)' :class="{'active':currentType === 2}">已评</li>
+						</ul>
+					</div>
+				</header>
 			</div>
-		</header>
+			<div slot='right'>
+				aaa
+			</div>
+		</Split>
 		
 	</div>
 </template>
@@ -24,6 +31,7 @@
 		name:'zmitiindex',
 		data(){
 			return{
+				scale:.8,
 				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
