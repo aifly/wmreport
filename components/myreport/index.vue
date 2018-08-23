@@ -16,8 +16,9 @@
 					<div v-else class="wm-report-list" :style="{height:viewH - 60-60-20+'px'}">
 						<ul>
 							<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
-								<div class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:'cover'}"></div>
+								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
 								<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
+								
 								<div v-if='!report.isLoaded' class="wm-uploading"></div>
 								<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
 								<span class="wm-file-disabled" v-if='report.status === 2'>
@@ -36,7 +37,7 @@
 										</li>
 									</ul>
 								</div>
-								<div :title='report.newfilename' class="wm-report-item-name zmiti-text-overflow">{{report.newfilename}}</div>
+								<div :title='report.newfilename' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 							</li>	
 						</ul>
 					</div>
@@ -55,10 +56,6 @@
 					<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>
 				</div>
 				<div class="wmmyreport-title wm-myreport-item">
-					<div>描述：</div>
-					<div>{{reportList[currentReportIndex].filedesc}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
 					<div>格式：</div>
 					<div>{{reportList[currentReportIndex].fileextname}}</div>
 				</div>
@@ -68,27 +65,33 @@
 				</div>
 				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
 					<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-					<div v-if='item.type === "text" ||item.type === "textarea"'>{{reportList[currentReportIndex][item.fieldname]}}</div>
+					<div v-if='item.type === "text" ||item.type === "textarea"' @dblclick="editItem(item)" >
+						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
+						<input @keydown.13="modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)" v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+					</div>
 
-					<div v-if='item.type === "select"'>
-						<Select v-model="formAdmin[item.fieldname]" size='small'>
+					<div  v-if='item.type ===  "select" && item.canedit'>
+						<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model="formAdmin[item.fieldname]" size='small'  style="width:100px">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
 						</Select>
+					</div>
+					<div @dblclick="editItem(item)" v-if='item.type === "select" && !item.canedit'>
+						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 					</div>
 
 					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 						<div class="wm-userlabel-header">
 							<div>标签</div>
-							<div><input type="text" placeholder="输入标签名" /></div>
+							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
 							<div>
-								<div class="wm-add-label">
+								<div class="wm-add-label" @click='addTagByDetail(item.fieldname)'>
 
 								</div>
 							</div>
 							
 						</div>
 						<div class="wm-tag-list">
-							<Tag :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+							<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 						</div>
 					</section>
 				</div>
@@ -122,8 +125,67 @@
 
 		<div class="lt-full wm-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
-			<div v-if='1||reportList[currentReportIndex].fileextname=== "png" ||reportList[currentReportIndex].fileextname=== "jpg" ||reportList[currentReportIndex].fileextname=== "jpeg" || reportList[currentReportIndex].fileextname=== "gif"||reportList[currentReportIndex].fileextname=== "bmp"'>
-				<img :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="">
+			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
+				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
+					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+					<div  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+						<div v-if='item.type === "text" ||item.type === "textarea"' >
+							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+						</div>
+						<div v-if='item.type === "select"'>
+							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+						</div>
+						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+							<div>标签：</div>
+							<div class="wm-tag-list">
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
+				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
+				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
+					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+						<div v-if='item.type === "text" ||item.type === "textarea"' >
+							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+						</div>
+						<div v-if='item.type === "select"'>
+							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+						</div>
+						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+							<div>标签：</div>
+							<div class="wm-tag-list">
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
+				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
+				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
+					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+						<div v-if='item.type === "text" ||item.type === "textarea"' >
+							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+						</div>
+						<div v-if='item.type === "select"'>
+							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+						</div>
+						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+							<div>标签：</div>
+							<div class="wm-tag-list">
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+							</div>
+						</section>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -146,6 +208,8 @@
 				tag:"",
 				currentReportIndex:0,
 				showPreview:false,
+				showMaskDetail:false,
+				detailtag:'',
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
 				viewH:window.innerHeight,
@@ -158,25 +222,9 @@
 						 required:true,
 						 trigger:'blur'
 					 }
-                    
                 },
 				
-				reportList:[
-					{
-						reportid:'1',
-						reportname:'我的上报',
-						status:0,
-						thumi:imgs.poster,
-						type:'jpg',
-						process:'0%',
-						bulk:'1.2M',
-						isLoaded:false,
-						size:'1920*1080',
-						remark:'说明',
-						suffix:'jpg',
-						labels:''
-					}
-				],
+				reportList:[{}],
 				userinfo:{}
 			}
 		},
@@ -200,6 +248,17 @@
 				if(e.keyCode === 27 || e.keyCode === 8){
 					this.closePreview();
 				}
+				if(this.showPreview){
+					if(e.keyCode === 37 ){
+						this.currentReportIndex--;
+						this.currentReportIndex %= this.reportList.length;
+						
+					}
+					else if(e.keyCode === 39){
+						this.currentReportIndex++;
+						this.currentReportIndex %= this.reportList.length;
+					}
+				}
 			}
 			this.getConfigFile();
 			this.getMyreportList();
@@ -207,11 +266,124 @@
 			this.$Notice.info({
 				title: '双击上报作品可以预览'
 			});
+			
 		},
 		
 		methods:{
+
+			
+
+			editReportByItem(p){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/editresource',
+					data:p,
+					success(data){
+						s.$Message[data.getret === 0 ? 'success':'error'](data.getmsg);
+						if(data.getret === 0){
+							s.configList.forEach((it)=>{
+								it.canedit = false;
+							});
+							s.configList = s.configList.concat([]);
+						}
+					}
+				})
+			},
+			removeTag(filename,index){
+				
+				var s = this;
+				var id  = Vue.obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+
+				this.formAdmin.tagList.splice(index,1);
+				this.detailtag = '';
+				
+				var p = {
+					username:s.userinfo.username,
+					usertoken:s.userinfo.accesstoken,
+					resourceid:id,
+					id:s.formAdmin.id,
+					[filename]:this.formAdmin.tagList.join(',')
+				}
+			
+				this.editReportByItem(p);
+				setTimeout(() => {
+					this.getMyreportList();
+				}, 400);
+			},
+			addTagByDetail(item){
+				if(!this.detailtag){
+					this.$Message.error('标签名不能为空');
+					return;
+				}
+				var s = this;
+				var id  = Vue.obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+
+				this.formAdmin.tagList.push(this.detailtag);
+				this.detailtag = '';
+				
+				var p = {
+					username:s.userinfo.username,
+					usertoken:s.userinfo.accesstoken,
+					resourceid:id,
+					id:s.formAdmin.id,
+					[item.fieldname]:this.formAdmin.tagList.join(',')
+				}
+			
+				this.editReportByItem(p);
+				setTimeout(() => {
+					this.getMyreportList();
+				}, 400);
+			},
+
+			modifyPublicadtype(key){
+				var s = this;
+				var id  = Vue.obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+				
+				var p = {
+					username:s.userinfo.username,
+					usertoken:s.userinfo.accesstoken,
+					resourceid:id,
+					id:s.formAdmin.id,
+					[key]:s.formAdmin[key]
+				}
+				this.editReportByItem(p)
+			},
+
+			modifyReport(model,key){
+				
+
+				var s = this;
+				var id  = Vue.obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+				
+				var p = {
+					username:s.userinfo.username,
+					usertoken:s.userinfo.accesstoken,
+					resourceid:id,
+					id:s.formAdmin.id,
+					[key]:model
+				}
+				this.editReportByItem(p)
+			},
+
+			editItem(item){
+				console.log(item);
+				this.configList.forEach((it)=>{
+					it.canedit = false;
+				});
+				item.canedit = true;
+				this.configList = this.configList.concat([]);
+			},
 			closePreview(){
 				this.showPreview = false;
+				this.showMaskDetail = false;
 			},
 
 			previewReport(){//双击预览作品、
@@ -221,11 +393,13 @@
 			showDetail(report,index){
 				this.currentReportIndex = index;
 				this.formAdmin = report;
+				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 				//this.currentReport = report;
 			},
 			showReportDetail(report){
 				this.visible = true;
 				this.formAdmin = report;
+				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 				var s = this;
 				this.configList.map((col,i)=>{
 					//s.formAdmin[col.fieldname] = '';
@@ -302,6 +476,8 @@
 									});
 
 									s.reportList = data.list;
+									s.formAdmin = s.reportList[s.currentReportIndex ];
+									s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
 									//s.currentReport = s.reportList[0];
 								}
 							}
@@ -426,24 +602,32 @@
 				uploader.upload();
 			},
 			ok(){
-				 
+				
+				var {obserable} = Vue;
 				var s = this;
-
+				var id  = obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+				
+				var p = {
+					username:s.userinfo.username,
+					usertoken:s.userinfo.accesstoken,
+					resourceid:id,
+					id:s.formAdmin.id
+				}
+				for(var attr in s.formAdmin){
+					if(s.formAdmin[attr] && attr !== 'username' && attr !== 'tagList'){
+						p[attr] = s.formAdmin[attr]
+					}
+					if(attr === 'tagList' && s.formAdmin[attr].length){
+						p.userlabel = s.formAdmin[attr].join(',')
+					}
+				}
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadvuser/editreport',
-					data:{
-						username:s.userinfo.username,
-						accesstoken:s.userinfo.accesstoken,
-						fieldlist:'',
-					},
+					url:window.config.baseUrl+'/wmadvuser/editresource',
+					data:p,
 					success(data){
-
-						if(data.getret === 0){
-							s.$Message.warning('请重新登录');
-							window.location.hash =  '/login';
-						}else{
-							s.$Message.error('修改密码失败');
-						}
+						s.$Message[data.getret === 0 ? 'success':'error'](data.getmsg);
 					}
 
 				})

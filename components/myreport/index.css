@@ -189,6 +189,11 @@
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {
   width: 100%;
   height: 100%;
+  border: 1px solid #eee;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg.active {
+  border-color: #f5a420;
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-item-name {
@@ -389,28 +394,35 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
-.wm-myreport-main-ui .wm-myreport-right {
-  background: #fff;
-  overflow: auto;
-  height: 100%;
-}
-
-.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item {
+.wm-myreport-main-ui .wm-myreport-item {
   display: flex;
   display: -webkit-flex;
   flex-flow: row;
-  min-height: 30px;
-  line-height: 30px;
+  min-height: 24px;
+  line-height: 24px;
 }
 
-.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(1) {
+.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(1) {
   text-align: center;
   width: 60px;
 }
 
-.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(2) {
+.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(2) {
   -webkit-flex-grow: 1;
   flex-grow: 1;
+  cursor: pointer;
+}
+
+.wm-myreport-main-ui .wm-myreport-item > div input {
+  height: 24px;
+  border: 1px solid #eee;
+  outline: none;
+}
+
+.wm-myreport-main-ui .wm-myreport-right {
+  background: #fff;
+  overflow: auto;
+  height: 100%;
 }
 
 .wm-myreport-main-ui .wm-myreport-right .wm-tag-list-C {
@@ -458,6 +470,7 @@
 
 .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div {
   position: absolute;
+  cursor: pointer;
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -509,7 +522,112 @@
 
 .wm-myreport-main-ui .wm-report-C > div {
   max-width: 80vw;
-  max-height: 80vh;
+  max-height: 60vh;
+  position: relative;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .xlsx, .wm-myreport-main-ui .wm-report-C > div .pdf, .wm-myreport-main-ui .wm-report-C > div .doc, .wm-myreport-main-ui .wm-report-C > div .ppt {
+  display: block;
+  margin: 0 auto;
+  position: relative !important;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail {
+  padding: 10px;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  min-width: 300px;
+  bottom: 0;
+  left: 50%;
+  -webkit-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide {
+  height: 40px;
+  overflow: hidden;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {
+  -webkit-transform: rotate(225deg);
+  transform: rotate(225deg);
+  top: 4px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {
+  top: 8px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-audio {
+  position: relative;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {
+  bottom: -40px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span {
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {
+  content: '';
+  right: -12px;
+  top: 0px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #fff;
+  border-left: none;
+  border-top: none;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {
+  top: 4px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item div {
+  padding-right: 2px;
+  text-align: left;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item .wm-tag-list-C {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item .wm-tag-list-C > div:nth-of-type(1) {
+  width: 40px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item .wm-tag-list-C > div:nth-of-type(2) {
+  margin-left: 20px;
+  max-width: 200px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div img {
+  width: auto;
+  height: auto;
+  max-height: 60vh;
+  max-width: 80vh;
+}
+
+.wm-myreport-main-ui .wm-report-C > div video {
+  width: auto;
+  max-height: 60vh;
 }
 
 .wm-myreport-main-ui .wm-report-C .wm-report-close {

@@ -6,6 +6,7 @@ $color: #be0000;
 
 .wm-myreport-main-ui {
     height: 100%;
+
     @include pos(r);
 
     .webuploader-container {
@@ -17,17 +18,18 @@ $color: #be0000;
         left: 0;
         top: 0;
         width: 100%;
-        opacity:0;
-        border:1px solid red;
+        opacity: 0;
+        border: 1px solid red;
     }
 
     .webuploader-pick {
         position: relative;
         display: inline-block;
-        opacity:0;
+        opacity: 0;
         cursor: pointer;
         background: #00b7ee;
-       // padding: 10px 15px;
+
+        // padding: 10px 15px;
         width: 100%;
         color: #fff;
         text-align: center;
@@ -44,36 +46,39 @@ $color: #be0000;
         pointer-events: none;
     }
 
-
     .wm-myreport-left {
         background: #fff;
-        
+
         @include pos(a);
+
         width: 100%;
         overflow: hidden;
 
         //border:1px solid red;
         height: 100%;
+
         @include displayFlex(column);
 
         header {
             height: 60px;
             line-height: 60px;
-            text-indent:2em;
+            text-indent: 2em;
             width: 100%;
+
             @include pos(r);
 
-            #wm-upload{
+            #wm-upload {
                 @include pos(a);
+
                 top: 0;
                 overflow: hidden;
-                left: 0;;
+                left: 0;
                 height: 60px;
                 width: 200px;
             }
 
-            span{
-                margin-right: 20px;;
+            span {
+                margin-right: 20px;
             }
 
             @include pos(r);
@@ -90,25 +95,31 @@ $color: #be0000;
             }
         }
 
-        section{
-            -webkit-flex-grow:1;
-            flex-grow:1;
+        section {
+            -webkit-flex-grow: 1;
+            flex-grow: 1;
 
             @include pos(r);
-            
-            .wm-no-report{
+
+            .wm-no-report {
                 width: 100%;
                 height: 100%;
+
                 @include pos(a);
+
                 cursor: pointer;
+
                 @include displayFlex(row);
+
                 -webkit-justify-content: center;
                 justify-content: center;
-                -webkit-align-items:center;
-                align-items:center;
-                &>div{
+                -webkit-align-items: center;
+                align-items: center;
+
+                & > div {
                     text-align: center;
-                    img{
+
+                    img {
                         width: 100px;
                         display: block;
                         margin: 10px 0;
@@ -117,64 +128,75 @@ $color: #be0000;
             }
         }
 
-
-        .wm-report-list{
+        .wm-report-list {
             overflow: auto;
             height: 500px;
-            li{
+
+            li {
                 display: inline-block;
                 width: 18%;
                 margin: 12px;
                 height: 130px;
+
                 @include pos(r);
+
                 cursor: pointer;
 
-                .wm-uploading{
-                     @include pos(a);
-                     width: 100%;
-                     height: 100%;
-                     background: rgba(0, 0, 0, 0.8);
-                     left: 0;
-                     top: 0;
-                     z-index: 0;
-                }
-                &>div.wm-report-item-bg {
+                .wm-uploading {
+                    @include pos(a);
+
                     width: 100%;
                     height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    left: 0;
+                    top: 0;
+                    z-index: 0;
                 }
-                .wm-report-item-name{
+
+                & > div.wm-report-item-bg {
+                    width: 100%;
+                    height: 100%;
+                    border: 1px solid #eee;
+
+                    &.active {
+                        border-color: #f5a420;
+                    }
+                }
+
+                .wm-report-item-name {
                     text-align: center;
                     margin: 4px 0;
-                    font-size:14px;
+                    font-size: 14px;
                 }
-                
+
                 .wm-file-progress,
                 .wm-file-disabled {
                     @include pos(a);
+
                     width: 100%;
                     height: 30px;
-                    background:rgba(250,184,46,.7);
+                    background: rgba(250, 184, 46, 0.7);
                     text-align: center;
                     top: 50%;
                     margin-top: -15px;
                     line-height: 30px;
-                    color:#fff;
-                    font-size:14px;
+                    color: #fff;
+                    font-size: 14px;
                 }
 
-               
-                .wm-file-progress{
-                    z-index: 10;;
-                    background-color:#f5a420;
-                    border: 1px solid rgba(250, 184, 46, .7);
-                  //  box-shadow: 1vw 3vh 10vh rgba(250, 184, 46, .7);
+                .wm-file-progress {
+                    z-index: 10;
+                    background-color: #f5a420;
+                    border: 1px solid rgba(250, 184, 46, 0.7);
+
+                    //  box-shadow: 1vw 3vh 10vh rgba(250, 184, 46, .7);
                     background-size: 3em 3em;
-                    background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, .7) 0.9em, rgba(250, 184, 46, .7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, .7) 3.1em);
+                    background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);
                     -webkit-animation: warning-animation 750ms infinite linear;
                     -moz-animation: warning-animation 750ms infinite linear;
                     animation: warning-animation 750ms infinite linear;
 
-                    &:before{
+                    &:before {
                         content: '';
                         position: absolute;
                         top: 0;
@@ -182,16 +204,15 @@ $color: #be0000;
                         right: 0;
                         bottom: 0;
                         height: 100%;
-                        background-image: linear-gradient(to bottom, rgba(250, 184, 46, .7), rgba(250, 184, 46, .7) 15%, transparent 60%, rgba(250, 184, 46, .7));
+                        background-image: linear-gradient(to bottom, rgba(250, 184, 46, 0.7), rgba(250, 184, 46, 0.7) 15%, transparent 60%, rgba(250, 184, 46, 0.7));
                     }
-                    
-
-
                 }
+
                 @-webkit-keyframes warning-animation {
                     0% {
                         background-position: 0 0;
                     }
+
                     100% {
                         background-position: 3em 0;
                     }
@@ -201,114 +222,137 @@ $color: #be0000;
                     0% {
                         background-position: 0 0;
                     }
+
                     100% {
                         background-position: 3em 0;
                     }
                 }
 
-
-                .wm-report-disabled-mask{
+                .wm-report-disabled-mask {
                     @include pos(a);
+
                     width: 100%;
                     height: 100%;
                     left: 0;
                     top: 0;
-                    background: rgba(255,255,255,.7);
+                    background: rgba(255, 255, 255, 0.7);
                 }
+
                 .wm-file-disabled {
                     color: #be0000;
-                    font-size:12px;
+                    font-size: 12px;
                     z-index: 10;
                     width: 85%;
                     padding-left: 20px;
                     left: 50%;
-                    border:1px solid #be0000;
+                    border: 1px solid #be0000;
+
                     @include br(3px);
-                    @include transform(translate3d(-50%,0,0));
-                    background:rgba(255,255,255,.8);
-                    span{
+                    @include transform(translate3d(-50%, 0, 0));
+
+                    background: rgba(255, 255, 255, 0.8);
+
+                    span {
                         @include pos(a);
+
                         left: 0;
-                        top:0px;;
+                        top: 0px;
+
                         &:before {
                             content: '';
                             width: 18px;
                             height: 18px;
+
                             @include pos(a);
+
                             border: 1px solid #be0000;
-                            @include br();
+
+                            @include br;
+
                             left: 2px;
                             top: 5px;
                         }
 
                         &:after {
                             content: "";
+
                             @include pos(a);
+
                             width: 18px;
                             height: 2px;
                             background: #be0000;
                             left: 2px;
                             top: 13px;
+
                             @include transform(rotate(45deg));
-
-
                         }
                     }
                 }
 
-                .wm-report-action{
+                .wm-report-action {
                     @include pos(a);
+
                     top: 10px;
                     right: 0;
                     z-index: 0;
-                    .wm-report-action-icon{
+
+                    .wm-report-action-icon {
                         width: 20px;
                         height: 20px;
                         background: #fff;
+
                         @include br(2px);
                         @include pos(a);
+
                         right: 10px;
-                        &:before{
-                            content:"";
+
+                        &:before {
+                            content: "";
+
                             @include pos(a);
+
                             width: 12px;
                             height: 12px;
-                            border:1px solid #bbb;
-                            left: 4px;;
+                            border: 1px solid #bbb;
+                            left: 4px;
+
                             @include transform(rotate(45deg));
+
                             border-left: none;
                             border-top: none;
                         }
                     }
 
-                    &:hover{
-                        ul{
+                    &:hover {
+                        ul {
                             display: block;
                         }
                     }
 
-                    ul{
+                    ul {
                         display: none;
-                        background:#fff;
+                        background: #fff;
                         width: 80px;
                         margin-top: 20px;
-                        margin-right: 10px;;
-                        li{
-                            &:hover{
-                                 background: #be0000;
-                                 color: #fff;
+                        margin-right: 10px;
+
+                        li {
+                            &:hover {
+                                background: #be0000;
+                                color: #fff;
                             }
+
                             display: block;
                             height: 30px;
                             cursor: pointer;
                             line-height: 30px;
-                            width: 100%;;
+                            width: 100%;
                             margin: 0;
                             text-indent: .5em;
                             vertical-align: middle;
-                            i{
-                                font-size:20px;
-                                
+
+                            i {
+                                font-size: 20px;
                             }
                         }
                     }
@@ -316,17 +360,17 @@ $color: #be0000;
             }
         }
 
-        
-         @at-root.wm-report-list::-webkit-scrollbar,
-         .wm-myreport-right::-webkit-scrollbar {
+        @at-root .wm-report-list::-webkit-scrollbar,
+        .wm-myreport-right::-webkit-scrollbar {
             /*滚动条整体样式*/
             width: 8px;
+
             /*高宽分别对应横竖滚动条的尺寸*/
             height: 8px;
         }
 
-         @at-root.wm-report-list::-webkit-scrollbar-thumb,
-         .wm-myreport-right::-webkit-scrollbar-thumb {
+        @at-root .wm-report-list::-webkit-scrollbar-thumb,
+        .wm-myreport-right::-webkit-scrollbar-thumb {
             /*滚动条里面小方块*/
             border-radius: 5px;
             -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
@@ -335,7 +379,7 @@ $color: #be0000;
         }
 
         .wm-report-list::-webkit-scrollbar-track,
-         .wm-myreport-right::-webkit-scrollbar-track {
+        .wm-myreport-right::-webkit-scrollbar-track {
             /*滚动条里面轨道*/
             -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
             border-radius: 0;
@@ -343,177 +387,328 @@ $color: #be0000;
         }
     }
 
+    .wm-myreport-item {
+        @include displayFlex(row);
 
-    .wm-myreport-right{
-        background:#fff;
-        overflow:auto;
-        height: 100%;
+        min-height: 24px;
+        line-height: 24px;
 
-        .wm-myreport-item{
-            @include displayFlex(row);
-            min-height: 30px;
-            line-height: 30px;;
-            &>div{
+        & > div {
+            &:nth-of-type(1) {
+                text-align: center;
+                width: 60px;
+            }
 
-                &:nth-of-type(1){
-                    text-align:center;
-                    width: 60px;
-                }
-                &:nth-of-type(2){
-                    -webkit-flex-grow:1;
-                    flex-grow:1;
-                    
+            &:nth-of-type(2) {
+                -webkit-flex-grow: 1;
+                flex-grow: 1;
 
-                }
+                //border:1px solid red;
+                cursor: pointer;
+            }
 
+            input {
+                height: 24px;
+                border: 1px solid #eee;
+                outline: none;
             }
         }
+    }
 
+    .wm-myreport-right {
+        background: #fff;
+        overflow: auto;
+        height: 100%;
 
-        .wm-tag-list-C{
+        .wm-tag-list-C {
             width: 100%;
-            
         }
 
-        .wm-userlabel-header{
+        .wm-userlabel-header {
             @include displayFlex(row);
+
             width: 95%;
             margin: 40px auto 0;
 
-            &>div{
-                &:nth-of-type(1){
+            & > div {
+                &:nth-of-type(1) {
                     width: 40px;
-                    text-align:right;
+                    text-align: right;
                 }
-                &:nth-of-type(2){
-                    -webkit-flex-grow:1;
-                    flex-grow:1;
-                    
+
+                &:nth-of-type(2) {
+                    -webkit-flex-grow: 1;
+                    flex-grow: 1;
                     overflow: hidden;
+
                     @include pos(r);
-                    input{
+
+                    input {
                         width: 90%;
                         margin-left: 10%;
+
                         //border:none;
-                        border:1px solid #eee;
+                        border: 1px solid #eee;
                         text-align: center;
+
                         @include pos(r);
+
                         outline: none;
+
                         @include br(4px);
-                        &::-webkit-input-placeholder{
-                            color:#ddd;
+
+                        &::-webkit-input-placeholder {
+                            color: #ddd;
                         }
                     }
                 }
-                &:nth-of-type(3){
+
+                &:nth-of-type(3) {
                     width: 50px;
+
                     @include pos(r);
-                    &>div{
+
+                    & > div {
                         @include pos(a);
+
+                        cursor: pointer;
                         width: 20px;
                         height: 20px;
-                        @include br();
+
+                        @include br;
+
                         top: 5px;
-                        left: 10px;;
-                        border:1px solid #f5a420;
-                        &:before,&:after{
-                            content:'';
+                        left: 10px;
+                        border: 1px solid #f5a420;
+
+                        &:before, &:after {
+                            content: '';
+
                             @include pos(a);
+
                             width: 10px;
                             height: 1px;
                             background: #f5a420;
                             left: 50%;
                             top: 50%;
-                            @include transform(translate3d(-50%,-50%,0));
+
+                            @include transform(translate3d(-50%, -50%, 0));
                         }
-                        &:after{
+
+                        &:after {
                             width: 1px;
                             height: 10px;
                         }
-
                     }
                 }
             }
         }
 
-        .wm-tag-list{
-            width:85%;
+        .wm-tag-list {
+            width: 85%;
             margin: 10px auto;
         }
-
-
-        
     }
 
-    .wm-right-thumb{
+    .wm-right-thumb {
         width: 95%;
         margin: 0 auto;
         height: 130px;
     }
 
-
-    .wm-report-C{
-        background:rgba(0,0,0,.8);
+    .wm-report-C {
+        background: rgba(0, 0, 0, 0.8);
         z-index: 1000;
         position: fixed !important;
 
-        
         @include displayFlex(row);
 
         -webkit-justify-content: center;
         justify-content: center;
-        -webkit-align-items:center;
-        align-items:center;
+        -webkit-align-items: center;
+        align-items: center;
 
-        &>div{
+        & > div {
             max-width: 80vw;
-            max-height: 80vh;
+            max-height: 60vh;
+
+            @include pos(r);
+
+            .xlsx, .pdf, .doc, .ppt {
+                display: block;
+                margin: 0 auto;
+                position: relative !important;
+            }
+
+            .wm-report-detail {
+                padding: 10px;
+                box-sizing: border-box;
+
+                @include pos(a);
+
+                width: 100%;
+                min-width: 300px;
+                bottom: 0;
+                left: 50%;
+
+                @include transform(translate3d(-50%, 0, 0));
+
+                background: rgba(0, 0, 0, 0.7);
+                color: #fff;
+
+                @include transition(0.4s);
+
+                &.hide {
+                    height: 40px;
+                    overflow: hidden;
+
+                    & > span {
+                        &:before, &:after {
+                            @include transform(rotate(225deg));
+
+                            top: 4px;
+                        }
+
+                        &:after {
+                            top: 8px;
+                        }
+                    }
+                }
+
+                &.wm-audio {
+                    @include pos(r);
+
+                    .wm-myreport-title {}
+                }
+
+                &.wm-video-detail {
+                    &.hide {
+                        bottom: -40px;
+                    }
+                }
+
+                & > span {
+                    @include pos(a);
+
+                    right: 30px;
+                    top: 10px;
+                    cursor: pointer;
+
+                    &:before, &:after {
+                        content: '';
+                        right: -12px;
+                        top: 0px;
+
+                        @include pos(a);
+
+                        width: 8px;
+                        height: 8px;
+                        border: 1px solid #fff;
+                        border-left: none;
+                        border-top: none;
+
+                        @include transform(rotate(45deg));
+                    }
+
+                    &:after {
+                        top: 4px;
+                    }
+                }
+
+                .wm-myreport-item {
+                    div {
+                        padding-right: 2px;
+                        text-align: left;
+                    }
+
+                    .wm-tag-list-C {
+                        @include displayFlex(row);
+
+                        -webkit-flex-grow: 1;
+                        flex-grow: 1;
+
+                        & > div {
+                            &:nth-of-type(1) {
+                                width: 40px;
+                            }
+
+                            &:nth-of-type(2) {
+                                margin-left: 20px;
+                                max-width: 200px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            img {
+                width: auto;
+                height: auto;
+                max-height: 60vh;
+                max-width: 80vh;
+            }
+
+            video {
+                width: auto;
+                max-height: 60vh;
+            }
         }
 
-        .wm-report-close{
-            $color:#fff;
+        .wm-report-close {
+            $color: #fff;
+
             @include pos(a);
-            width:34px;
+
+            width: 34px;
             height: 34px;
-            @include br();
+
+            @include br;
+
             cursor: pointer;
-            border:2px solid $color;
+            border: 2px solid $color;
             right: 20px;
+
             @include transform(rotate(45deg));
+
             top: 20px;
             z-index: 10;
-             &:before,
-             &:after {
-                 content: '';
-                 @include pos(a);
-                 width: 20px;
-                 height: 2px;
-                 background: $color;
-                 left: 50%;
-                 top: 50%;
-                 @include transform(translate3d(-50%, -50%, 0));
-             }
 
-             &:after {
-                 width: 2px;
-                 height: 20px;
-             }
+            &:before,
+            &:after {
+                content: '';
+
+                @include pos(a);
+
+                width: 20px;
+                height: 2px;
+                background: $color;
+                left: 50%;
+                top: 50%;
+
+                @include transform(translate3d(-50%, -50%, 0));
+            }
+
+            &:after {
+                width: 2px;
+                height: 20px;
+            }
         }
     }
-
 }
 
 .wm-tags {
     input {
         border: 1px solid #ddd;
+
         @include br(4px);
+
         width: 110px;
         text-align: center;
-        box-sizing:border-box;
+        box-sizing: border-box;
         outline: none;
 
-        &::-webkit-input-placeholder{
-            color:#ddd;
+        &::-webkit-input-placeholder {
+            color: #ddd;
         }
     }
 }
