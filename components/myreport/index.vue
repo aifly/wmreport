@@ -33,7 +33,16 @@
 											<Icon type="ios-create" /> 编辑
 										</li>
 										<li>
-											<Icon type="ios-trash-outline" /> 删除
+
+										    <Poptip	
+										    	style="color:#000"
+										        confirm
+										        title="确定要删除此作品吗?"
+										        @on-ok="deleteReport"
+										        >
+										        <div class="wm-del-ico"><Icon type="ios-trash-outline" /> 删除</div>
+										    </Poptip>
+											
 										</li>
 									</ul>
 								</div>
@@ -140,7 +149,7 @@
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 							<div>标签：</div>
 							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 							</div>
 						</section>
 					</div>
@@ -161,7 +170,7 @@
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 							<div>标签：</div>
 							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 							</div>
 						</section>
 					</div>
@@ -181,7 +190,7 @@
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 							<div>标签：</div>
 							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 							</div>
 						</section>
 					</div>
@@ -271,7 +280,27 @@
 		
 		methods:{
 
-			
+			deleteReport(){
+				var s = this;
+				var id  = Vue.obserable.trigger({
+					type:'getCurrentSourceId'
+				})
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/delresource/',
+					data:{
+						username:s.userinfo.username,
+						usertoken:s.userinfo.accesstoken,
+						resourceid:id,
+						id:s.formAdmin.id
+					},
+					success(data){
+						s.$Message[data.getret === 0?'success':'error'](data.getmsg);
+						console.log(data);
+						s.currentReportIndex  = 0;
+						s.getMyreportList();
+					}
+				})
+			},
 
 			editReportByItem(p){
 				var s = this;
