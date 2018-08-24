@@ -21,6 +21,10 @@ var imgs = {
 	//smile:'./assets/images/smile.png',
 	titleBg:'./assets/images/title-bg.png',
 	ruleIco:'./assets/images/rule-ico.png',
+	imgIco:'./assets/images/img-ico.png',
+	videoIco:'./assets/images/video-ico.png',
+	audioIco:'./assets/images/audio-ico.png',
+	dongmanIco:'./assets/images/dongman-ico.png',
 
 
 }

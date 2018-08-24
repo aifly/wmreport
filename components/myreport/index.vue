@@ -3,57 +3,94 @@
 		 <Split v-model="split1">
 			<div slot="left" class="wm-myreport-left">
 				<header > 
-					 <span>我的上报</span> <Button icon='ios-cloud-upload-outline' size='small' type='primary'>上报</Button>
-					 <div id='wm-upload'>1</div>
+					 <span>我的上报</span>
+					 <ul>
+						 <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key="i" :class="{'active':currentType === i}">
+							 <img v-if='i===0' :src="imgs.imgIco" alt="">
+							 <img v-if='i===1' :src="imgs.videoIco" alt="">
+							 <img v-if='i===2' :src="imgs.audioIco" alt="">
+							 <img v-if='i===3' :src="imgs.dongmanIco" alt="">
+							 上报{{menu.split('-')[0]}}
+						 </li>
+					 </ul>
 				</header>
 				<section>
-					<div v-if='reportList.length<=0' class="wm-no-report">
-						<div >
-							<img :src="imgs.shangbao" alt="">
-							<Button type="primary" size='large'>点我上报</Button>
+					<div class="wm-myreport-list-C">
+						<div v-show='reportList.length<=0' class="wm-no-report">
+							<div >
+								<img :src="imgs.shangbao" alt="">
+								<Button type="primary" size='large'>点我上报</Button>
+								<div class="wm-upload" ></div>
+							</div>
+						</div>
+						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20-50+'px'}">
+							<ul>
+								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
+									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
+									
+									<div v-if='!report.isLoaded' class="wm-uploading"></div>
+									<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
+									<span class="wm-file-disabled" v-if='report.status === 2'>
+										<span>
+										</span>
+										被管理员发回，不可用
+									</span>
+									<div class="wm-report-action" v-if='report.isLoaded'>
+										<div class="wm-report-action-icon"></div>
+										<ul>
+											<li @click='showReportDetail(report)'>
+												<Icon type="ios-create" /> 编辑
+											</li>
+											<li>
+
+												<Poptip	
+													style="color:#000"
+													confirm
+													title="确定要删除此作品吗?"
+													@on-ok="deleteReport(i)"
+													>
+													<div class="wm-del-ico"><Icon type="ios-trash-outline" /> 删除</div>
+												</Poptip>
+												
+											</li>
+										</ul>
+									</div>
+									<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+								</li>	
+							</ul>
 						</div>
 					</div>
-					<div v-else class="wm-report-list" :style="{height:viewH - 60-60-20+'px'}">
-						<ul>
-							<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
-								<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
-								
-								<div v-if='!report.isLoaded' class="wm-uploading"></div>
-								<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
-								<span class="wm-file-disabled" v-if='report.status === 2'>
-									<span>
-									</span>
-									被管理员发回，不可用
-								</span>
-								<div class="wm-report-action" v-if='report.isLoaded'>
-									<div class="wm-report-action-icon"></div>
-									<ul>
-										<li @click='showReportDetail(report)'>
-											<Icon type="ios-create" /> 编辑
-										</li>
-										<li>
-
-										    <Poptip	
-										    	style="color:#000"
-										        confirm
-										        title="确定要删除此作品吗?"
-										        @on-ok="deleteReport"
-										        >
-										        <div class="wm-del-ico"><Icon type="ios-trash-outline" /> 删除</div>
-										    </Poptip>
-											
-										</li>
-									</ul>
-								</div>
-								<div :title='report.newfilename' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-							</li>	
-						</ul>
-					</div>
+					<footer class="wm-report-footer">
+						<div v-show='currentType === 0 ' >
+							<div class="wm-upload"></div>
+							<div class="lt-full">
+								<Icon type="md-add" /> <span>点击添加图片</span>
+							</div>
+						</div>
+						<div v-show='currentType === 1 ' class="wm-uplad-add-video">
+							<div class="wm-upload"></div>
+							<div class="lt-full">
+								<Icon type="md-add" /> <span>点击添加视频</span>
+							</div>
+						</div>
+						<div v-show='currentType === 2 ' class="wm-uplad-add-audio">
+							<div class="wm-upload"></div>
+							<div class="lt-full">
+								<Icon type="md-add" /> <span>点击添加音频</span>
+							</div>
+						</div>
+						<div v-show='currentType === 3 ' class="wm-uplad-add-dongman">
+							<div class="wm-upload"></div>
+							<div class="lt-full">
+								<Icon type="md-add" /> <span>点击添加动漫</span>
+							</div>
+						</div>
+					</footer>
 				</section>
 			</div>
-			<div slot="right" class="wm-myreport-right wm-scroll">
-				<div class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
+			<div slot="right" class="wm-myreport-right wm-scroll" v-if='reportList[currentReportIndex]'>
+				<div   class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
 					
 				</div>
 				<div class="wmmyreport-title wm-myreport-item">
@@ -215,10 +252,13 @@
 				imgs:window.imgs,
 				isLoading:false,
 				tag:"",
+				currentType:0,
+				publicadtype:"",
 				currentReportIndex:0,
 				showPreview:false,
 				showMaskDetail:false,
 				detailtag:'',
+				menus:[],
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
 				viewH:window.innerHeight,
@@ -233,7 +273,7 @@
 					 }
                 },
 				
-				reportList:[{}],
+				reportList:[],
 				userinfo:{}
 			}
 		},
@@ -249,10 +289,25 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
-			setTimeout(() => {
-				this.upload(); 
-			}, 100);
-			 
+			this.getMyreportList();
+
+			var {obserable} = Vue;
+			var t = setInterval(()=>{
+				
+				var id  = obserable.trigger({
+					type:'getCurrentSourceId'
+				});
+				if(id){
+					clearInterval(t);
+					setTimeout(() => {
+						this.upload(id);
+					}, 1000);
+				}
+			},20)
+
+			obserable.on('searchReport',data=>{
+				this.searchByKW(data);
+			})
 			window.onkeydown = (e)=>{
 				if(e.keyCode === 27 || e.keyCode === 8){
 					this.closePreview();
@@ -270,7 +325,7 @@
 				}
 			}
 			this.getConfigFile();
-			this.getMyreportList();
+			
 
 			this.$Notice.info({
 				title: '双击上报作品可以预览'
@@ -280,7 +335,25 @@
 		
 		methods:{
 
-			deleteReport(){
+			changeCurrentType(index){
+				var s = this;
+				this.currentType = index;
+				var id  = Vue.obserable.trigger({
+					type:'getCurrentSourceId'
+				});
+				this.upload(id);
+				this.currentReportIndex = 0;
+				this.filterReportList();
+				if(s.reportList.length<=0){
+					return;
+				}
+			
+				s.formAdmin = s.reportList[s.currentReportIndex ];
+				s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+
+			},
+
+			deleteReport(i){
 				var s = this;
 				var id  = Vue.obserable.trigger({
 					type:'getCurrentSourceId'
@@ -296,10 +369,24 @@
 					success(data){
 						s.$Message[data.getret === 0?'success':'error'](data.getmsg);
 						console.log(data);
-						s.currentReportIndex  = 0;
+						s.reportList.splice(i,1);
+
+						s.currentReportIndex  = s.reportList.length -1;
 						s.getMyreportList();
+						
 					}
 				})
+			},
+
+			searchByKW(kw){
+				var s = this;
+				if(kw){
+					s.reportList = s.reportList.filter((item)=>{
+						return item.filetitle.indexOf(kw)>-1;
+					});
+				}else{
+					s.getMyreportList();
+				}
 			},
 
 			editReportByItem(p){
@@ -468,6 +555,12 @@
 				})*/
 			},
 
+			filterReportList(){
+				
+				this.reportList = this.defaultReportList.filter((item)=>{
+					return item.publicadtype === this.menus[this.currentType];
+				})
+			},
 			getMyreportList(){
 				var s = this;
 				var {obserable} = Vue;
@@ -479,17 +572,25 @@
 						type:"getFeildList"
 					})
 					
-					if(id){
 
+					
+					if(id){
+						
 						this.configList = tableFields.concat([]);
+
 						this.configList.map((col,i)=>{
+							
 							///s.formAdmin[col.fieldname] = '';
+							if(col.fieldname === 'publicadtype'){
+								s.menus = col.data.concat([]);
+							}
 							if(col.notnull){
 								setTimeout(() => {
 									s.ruleValidate[col.fieldname] = { required: true, message: col.name + '不能为空', trigger: 'blur' }
 								}, 1000);
 							}
 						})
+						
 						clearInterval(t);
 						symbinUtil.ajax({
 							url:window.config.baseUrl+"/wmadvuser/getmyreportdata",
@@ -503,10 +604,16 @@
 									data.list.forEach((item)=>{
 										item.isLoaded = true;
 									});
-
 									s.reportList = data.list;
-									s.formAdmin = s.reportList[s.currentReportIndex ];
-									s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+									s.defaultReportList = data.list.concat([]);
+									if(s.reportList.length>0){
+
+										s.filterReportList();
+										if( s.currentReportIndex>-1){
+											s.formAdmin = s.reportList[ s.currentReportIndex ];
+											s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+										}
+									}
 									//s.currentReport = s.reportList[0];
 								}
 							}
@@ -517,14 +624,27 @@
 
 			},
 
-			upload(){
+			upload(id){
 
-				var {obserable} = Vue;
-				var id  = obserable.trigger({
-					type:'getCurrentSourceId'
-				})
-
+				
 				var s = this;
+				var data = s.configList.filter((item)=>{return  item.fieldname === 'publicadtype'})[0].data
+				
+				var p = {
+						username:s.userinfo.username,
+						usertoken:s.userinfo.accesstoken,
+						resourceid:id,
+						filetitle:"",
+						filedesc:"",
+						publicadtype:data[s.currentType],
+						userlabel:"",
+						author:"",
+						telphone:''
+				}
+				this.p = p;
+				if(s.uploader){
+					s.uploader.destroy();
+				}
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
 					auto: true,
@@ -535,27 +655,26 @@
 					server: window.config.baseUrl+'/wmadvuser/uploadfile/',
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
-					pick: '#wm-upload',
+					pick: '.wm-upload',
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
-					formData:{
-						username:s.userinfo.username,
-						usertoken:s.userinfo.accesstoken,
-						resourceid:id,
-						filetitle:"123",
-						filedesc:"",
-						publicadtype:"图片-zmiti",
-						userlabel:"测试",
-						author:"123",
-						telphone:'110'
-
-					}
+					formData:p
 				});
+
+				uploader.on("beforeFileQueued",function(file){
+					var data = s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0]?s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0].data:[]
+					s.publicadtype = {data:data[s.currentType]}||'';
+				});
+
+				s.uploader = uploader;
+
 				// 当有文件添加进来的时候
 				uploader.on('fileQueued', function (file) {
+
+				
 					 
-					s.reportList.push({
+					s.reportList.unshift({
 						reportid:file.id,
 						reportname:file.name,
 						status:0,
@@ -568,6 +687,7 @@
 						suffix:file.ext,
 						labels:''
 					})
+					uploader.upload();
 					/* // webuploader事件.当选择文件后，文件被加载到文件队列中，触发该事件。等效于 uploader.onFileueued = function(file){...} ，类似js的事件定义。
 					$list.append('<div id="' + file.id + '" class="item">' +
 						'<h4 class="info">' + file.name + '</h4>' +
@@ -628,7 +748,7 @@
 					/* $('#' + file.id).find('.progress').remove();
 					$('#' + file.id).find('p.state').text('已上传'); */
 				});
-				uploader.upload();
+				
 			},
 			ok(){
 				

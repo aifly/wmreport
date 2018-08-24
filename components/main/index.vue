@@ -9,7 +9,7 @@
                </div>
                <div>
                    <div>
-                       <span><img :src="imgs.search" alt=""></span><input type="text" placeholder="查询我的上报" />
+                       <span><img :src="imgs.search" alt=""></span><input type="text" v-model='kw'  placeholder="查询我的上报" />
                    </div>
                </div>
                <div class="wm-user-info">
@@ -70,6 +70,7 @@
                 tabIndex:0,
                 userinfo:{},
                 sourceList:[],
+                kw:"",
                 topMenu:[
                 ],
                 defaultMenu:[
@@ -97,10 +98,16 @@
             this.userinfo = userinfo; 
             this.getSourceList();
             
-
-            
         },
-       
+        watch:{
+            kw(val){
+                var s = this;
+                Vue.obserable.trigger({
+                    type:"searchReport",
+                    data:val
+                });
+            }
+        },
 		methods:{
             logout(){
                 var s = this;
@@ -128,33 +135,33 @@
                 this.tabIndex = index;
             },
             getSourceList(){
-      				var s = this;
+      			var s = this;
 
-              var {obserable} = Vue;
+                var {obserable} = Vue;
       				
-      				symbinUtil.ajax({
-      					url:window.config.baseUrl+'/wmadvuser/getsourcelist/',
-      					data:{
-      						username:s.userinfo.username,
-      						usertoken:s.userinfo.accesstoken
-      					},
-      					success(data){
-      						if(data.getret === 0){
-                                  s.sourceList = data.list;
-                                  obserable.on("getCurrentSourceId",()=>{
-                                      return data.list[0].resourceid;
-                                  })
+                symbinUtil.ajax({
+                    url:window.config.baseUrl+'/wmadvuser/getsourcelist/',
+                    data:{
+                        username:s.userinfo.username,
+                        usertoken:s.userinfo.accesstoken
+                    },
+                    success(data){
+                        if(data.getret === 0){
+                                s.sourceList = data.list;
+                                obserable.on("getCurrentSourceId",()=>{
+                                    return data.list[0].resourceid;
+                                })
 
-                                  obserable.on("getFeildList",()=>{
-                                      
-                                      return JSON.parse(data.list[0].tablefield).collectionitems;
-                                  })
+                                obserable.on("getFeildList",()=>{
+                                    
+                                    return JSON.parse(data.list[0].tablefield).collectionitems;
+                                })
 
-                                  console.log(s.sourceList);
-                              }
-      					}
-      				})
-      			},
+                                
+                            }
+                    }
+                })
+            },
            
             loadMenu(option,fn){
                 var s = this;

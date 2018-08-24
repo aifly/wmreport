@@ -55230,16 +55230,14 @@
 	                success: function success(data) {
 	                    if (data.getret === 0) {
 	                        s.sourceList = data.list;
-	                        obserable.on("getCurrentSourceId", function () {
-	                            return data.list[0].resourceid;
+
+	                        obserable.on("getCurrentSource", function () {
+	                            return data.list[0];
 	                        });
 
 	                        obserable.on("getFeildList", function () {
-
 	                            return JSON.parse(data.list[0].tablefield).collectionitems;
 	                        });
-
-	                        console.log(s.sourceList);
 	                    }
 	                }
 	            });
@@ -55807,16 +55805,62 @@
 
 	// <template>
 	// 	<div class="wm-rater-main-ui">
-	// 		<header>
-	// 			<div>2018年公益广告</div>
-	// 			<div class="wm-rate-tabs">
-	// 				<ul>
-	// 					<li @click='getRateDataById(0)' :class="{'active':currentType === 0}">全部(12)</li>
-	// 					<li @click='getRateDataById(1)' :class="{'active':currentType === 1}">待评</li>
-	// 					<li @click='getRateDataById(2)' :class="{'active':currentType === 2}">已评</li>
-	// 				</ul>
+	// 		<Split v-model='scale'>
+	// 			<div slot='left'>
+	// 				<header class="wm-rater-header">
+	// 					<div>{{resourceName}}</div>
+	// 					<div class="wm-rate-tabs">
+	// 						<ul>
+	// 							<li @click='getRateDataById(0)' :class="{'active':currentType === 0}">全部(12)</li>
+	// 							<li @click='getRateDataById(1)' :class="{'active':currentType === 1}">待评</li>
+	// 							<li @click='getRateDataById(2)' :class="{'active':currentType === 2}">已评</li>
+	// 						</ul>
+	// 					</div>
+	// 				</header>
+	// 				<header class="wm-rater-search-where">
+	// 					<span>筛选条件：</span>
+	// 					<ul>
+	// 						<li v-for="(condition , i ) in conditions" :key="i">
+	// 							{{condition.split('-')[0]}}
+	// 						</li>
+	// 					</ul>
+	// 				</header>
+	// 				<section class='wm-scroll' :style="{height:viewH - 200+'px',overflow:'auto'}">
+	// 					<ul class="wm-report-list">
+	// 						<li v-for="(report,i) in reportList " :key="i">
+	// 							<div class="wm-report-item">
+	// 								<div class="wm-report-detail">
+	// 									<div class="wm-report-pcbilethum">
+	// 										<div>
+	// 											<img :src="report.pcbilethum" alt="">
+	// 										</div>
+	// 									</div>
+	// 									<div>
+	// 										<div  v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"||item.fieldname === "userlabel"' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+	// 											<div v-if='item.fieldname !== "userlabel"'>{{item.name}}：</div>
+	// 											<div  v-if='item.fieldname !== "userlabel"' :class="item.fieldname">
+	// 												<span>{{report[item.fieldname]}}</span>
+	// 											</div>
+	// 											<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+	// 												<div style="width:60px;text-align:center">标签：</div>
+	// 												<div class="wm-tag-list">
+	// 													<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (report[item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 												</div>
+	// 											</section>
+	// 										</div>
+	// 									</div>
+	// 								</div>
+	// 							</div>
+	// 							<div class="wm-report-rate-C">
+	// 							</div>
+	// 						</li>
+	// 					</ul>
+	// 				</section>
 	// 			</div>
-	// 		</header>
+	// 			<div slot='right'>
+	// 				aaa
+	// 			</div>
+	// 		</Split>
 	//
 	// 	</div>
 	// </template>
@@ -55840,25 +55884,34 @@
 
 	var _libUtil2 = _interopRequireDefault(_libUtil);
 
+	var _vue = __webpack_require__(1);
+
+	var _vue2 = _interopRequireDefault(_vue);
+
 	exports['default'] = {
 		props: ['obserable'],
 		name: 'zmitiindex',
 		data: function data() {
 			return {
+				scale: .8,
 				visible: false,
 				imgs: window.imgs,
 				isLoading: false,
 				currentType: 0,
 				split1: 0.8,
+				colorList: ['default', 'success', 'primary', 'error', 'warning', 'red', 'orange', 'gold', 'yellow'],
 				showPass: false,
 				viewH: window.innerHeight,
 				currentRateid: -1,
+				resourceName: '',
+				conditions: [],
 
 				formAdmin: {
 					raterpwd: '111111'
 				},
 
-				raterList: [],
+				reportList: [],
+				configList: [],
 
 				userinfo: {}
 			};
@@ -55872,9 +55925,29 @@
 			///this.validate = validate;
 		},
 		mounted: function mounted() {
+			var _this = this;
+
 			this.userinfo = _libUtil2['default'].getUserInfo();
 
 			this.getRaterlist();
+			window.s = this;
+
+			var t = setInterval(function () {
+				var configList = _vue2['default'].obserable.trigger({
+					type: 'getFeildList'
+				});
+				if (configList) {
+					clearInterval(t);
+					_this.configList = configList;
+					_this.conditions = _this.configList.filter(function (item) {
+						return item.fieldname === 'publicadtype';
+					})[0].data;
+
+					_this.resourceName = _vue2['default'].obserable.trigger({
+						type: 'getCurrentSource'
+					}).resourcecnname;
+				}
+			}, 30);
 		},
 
 		methods: {
@@ -55913,15 +55986,15 @@
 				var s = this;
 
 				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/wmreview/checkgradingwork/',
+					url: window.config.baseUrl + '/wmreview/getresourcesall/',
 					//validate:s.validate,
 					data: {
 						ratername: s.userinfo.ratername,
-						accesstoken: s.userinfo.accesstoken
+						accesstoken: s.userinfo.accesstoken,
+						resourceid: 1
 					}, success: function success(data) {
-						console.log(data);
 						if (data.getret === 0) {
-							s.raterList = data.list;
+							s.reportList = data.list;
 						} else {
 							s.$Message.error(data.getmsg);
 						}
@@ -56042,7 +56115,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-rater-main-ui {\n  background: #fff;\n}\n\n.wm-rater-main-ui > header {\n  height: 50px;\n  width: 100%;\n  line-height: 50px;\n}\n\n.wm-rater-main-ui > header > div {\n  font-size: 18px;\n  margin-left: 40px;\n  position: relative;\n}\n\n.wm-rater-main-ui > header > div:nth-of-type(1) {\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.wm-rater-main-ui > header .wm-rate-tabs {\n  width: 50%;\n  margin: 0 auto;\n}\n\n.wm-rater-main-ui > header .wm-rate-tabs ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-around;\n  justify-content: space-around;\n}\n\n.wm-rater-main-ui > header .wm-rate-tabs ul li {\n  padding: 0 20px;\n  cursor: pointer;\n}\n\n.wm-rater-main-ui > header .wm-rate-tabs ul li.active {\n  color: #cc0000;\n  position: relative;\n}\n\n.wm-rater-main-ui > header .wm-rate-tabs ul li.active:before {\n  content: '';\n  position: absolute;\n  width: 100%;\n  height: 2px;\n  background: #cc0000;\n  left: 0;\n  bottom: 0;\n}\n\n.wm-rater-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {\n  left: 30px;\n}\n\n.ivu-table-body::-webkit-scrollbar,\n.wm-scroll::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.ivu-table-body::-webkit-scrollbar-thumb,\n.wm-scroll::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.ivu-table-body::-webkit-scrollbar-track,\n.wm-scroll::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-rater-main-ui {\n  background: #fff;\n}\n\n.wm-rater-main-ui .wm-rater-header {\n  height: 50px;\n  width: 100%;\n  line-height: 50px;\n  border-bottom: 1px solid #eee;\n}\n\n.wm-rater-main-ui .wm-rater-header > div {\n  font-size: 18px;\n  margin-left: 40px;\n  position: relative;\n}\n\n.wm-rater-main-ui .wm-rater-header > div:nth-of-type(1) {\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.wm-rater-main-ui .wm-rater-header .wm-rate-tabs {\n  width: 50%;\n  margin: 0 auto;\n}\n\n.wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-around;\n  justify-content: space-around;\n}\n\n.wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul li {\n  padding: 0 20px;\n  cursor: pointer;\n}\n\n.wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul li.active {\n  color: #cc0000;\n  position: relative;\n}\n\n.wm-rater-main-ui .wm-rater-header .wm-rate-tabs ul li.active:before {\n  content: '';\n  position: absolute;\n  width: 100%;\n  height: 2px;\n  background: #cc0000;\n  left: 0;\n  bottom: 0;\n}\n\n.wm-rater-main-ui .wm-rater-search-where {\n  width: 100%;\n  height: 50px;\n  margin-top: 2px;\n  line-height: 50px;\n  border: 1px solid #eee;\n  position: relative;\n}\n\n.wm-rater-main-ui .wm-rater-search-where > span {\n  position: absolute;\n  left: 30px;\n  color: #000;\n}\n\n.wm-rater-main-ui .wm-rater-search-where ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: flex;\n  max-width: 600px;\n  width: 24vw;\n  margin-left: 80px;\n  justify-content: space-around;\n  -webkit-justify-content: space-around;\n}\n\n.wm-rater-main-ui .wm-report-list {\n  border-left: 1px solid #ddd;\n  box-sizing: border-box;\n  border-top: 1px solid #ddd;\n}\n\n.wm-rater-main-ui .wm-report-list li {\n  border-right: 1px solid #ddd;\n  border-bottom: 1px solid #ddd;\n  float: left;\n  width: 100%;\n  box-sizing: border-box;\n  /* @include displayFlex(row);\r\n             justify-content: space-between; */\n}\n\n.wm-rater-main-ui .wm-report-list li > div {\n  float: left;\n}\n\n.wm-rater-main-ui .wm-report-list li > div:nth-of-type(1) {\n  width: 70%;\n  -webkit-flex-grow: 3;\n  flex-grow: 3;\n  border-right: 1px solid #ddd;\n}\n\n.wm-rater-main-ui .wm-report-list li > div:nth-of-type(2) {\n  width: 24vw;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin-right: 20px;\n  padding: 20px;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .wm-report-pcbilethum {\n  width: 230px;\n  height: 130px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  background: #f4f4f4;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  overflow: hidden;\n  margin-right: 20px;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .wm-report-pcbilethum img {\n  width: 100%;\n  height: auto;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .wm-myreport-item {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  min-height: 24px;\n  line-height: 24px;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 60px;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .wm-myreport-item > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-rater-main-ui .wm-report-list li > div .wm-report-detail .filedesc {\n  height: 70px;\n  max-width: 17vw;\n  overflow: hidden;\n}\n\n.wm-rater-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {\n  left: 30px;\n}\n\n.ivu-table-body::-webkit-scrollbar,\n.wm-scroll::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.ivu-table-body::-webkit-scrollbar-thumb,\n.wm-scroll::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.ivu-table-body::-webkit-scrollbar-track,\n.wm-scroll::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n", ""]);
 
 	// exports
 
@@ -56051,7 +56124,7 @@
 /* 111 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-rater-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>2018年公益广告</div>\r\n\t\t\t<div class=\"wm-rate-tabs\">\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li @click='getRateDataById(0)' :class=\"{'active':currentType === 0}\">全部(12)</li>\r\n\t\t\t\t\t<li @click='getRateDataById(1)' :class=\"{'active':currentType === 1}\">待评</li>\r\n\t\t\t\t\t<li @click='getRateDataById(2)' :class=\"{'active':currentType === 2}\">已评</li>\r\n\t\t\t\t</ul>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-rater-main-ui\">\r\n\t\t<Split v-model='scale'>\r\n\t\t\t<div slot='left'>\r\n\t\t\t\t<header class=\"wm-rater-header\">\r\n\t\t\t\t\t<div>{{resourceName}}</div>\r\n\t\t\t\t\t<div class=\"wm-rate-tabs\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @click='getRateDataById(0)' :class=\"{'active':currentType === 0}\">全部(12)</li>\r\n\t\t\t\t\t\t\t<li @click='getRateDataById(1)' :class=\"{'active':currentType === 1}\">待评</li>\r\n\t\t\t\t\t\t\t<li @click='getRateDataById(2)' :class=\"{'active':currentType === 2}\">已评</li>\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</header>\r\n\t\t\t\t<header class=\"wm-rater-search-where\">\r\n\t\t\t\t\t<span>筛选条件：</span>\r\n\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t<li v-for=\"(condition , i ) in conditions\" :key=\"i\">\r\n\t\t\t\t\t\t\t{{condition.split('-')[0]}}\r\n\t\t\t\t\t\t</li>\r\n\t\t\t\t\t</ul>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section class='wm-scroll' :style=\"{height:viewH - 200+'px',overflow:'auto'}\">\r\n\t\t\t\t\t<ul class=\"wm-report-list\">\r\n\t\t\t\t\t\t<li v-for=\"(report,i) in reportList \" :key=\"i\">\r\n\t\t\t\t\t\t\t<div class=\"wm-report-item\">\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-detail\">\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-pcbilethum\">\r\n\t\t\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t\t<div  v-if='item.fieldname === \"filetitle\"||item.fieldname === \"filedesc\"||item.fieldname === \"userlabel\"' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t\t\t\t\t\t<div v-if='item.fieldname !== \"userlabel\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t\t\t\t\t\t<div  v-if='item.fieldname !== \"userlabel\"' :class=\"item.fieldname\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t<span>{{report[item.fieldname]}}</span>\r\n\t\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<div style=\"width:60px;text-align:center\">标签：</div>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (report[item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-report-rate-C\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</li>\r\n\t\t\t\t\t</ul>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot='right'>\r\n\t\t\t\taaa\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\t\t\r\n\t</div>\r\n";
 
 /***/ }),
 /* 112 */

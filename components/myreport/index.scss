@@ -18,16 +18,15 @@ $color: #be0000;
         left: 0;
         top: 0;
         width: 100%;
-        opacity: 0;
-        border: 1px solid red;
     }
 
     .webuploader-pick {
         position: relative;
         display: inline-block;
-        opacity: 0;
+        height: 100%;
         cursor: pointer;
         background: #00b7ee;
+        opacity: 0;
 
         // padding: 10px 15px;
         width: 100%;
@@ -62,7 +61,8 @@ $color: #be0000;
         header {
             height: 60px;
             line-height: 60px;
-            text-indent: 2em;
+
+            //  text-indent: 2em;
             width: 100%;
 
             @include pos(r);
@@ -75,10 +75,91 @@ $color: #be0000;
                 left: 0;
                 height: 60px;
                 width: 200px;
+
+                & > div {
+                    width: 100% !important;
+                    height: 100% !important;
+                }
             }
 
             span {
-                margin-right: 20px;
+                font-size: 16px;
+                margin-left: 20px;
+
+                @include pos(a);
+            }
+
+            ul {
+                @include displayFlex(flex);
+
+                margin: 0 auto;
+                max-width: 600px;
+                width: 40vw;
+                justify-content: space-around;
+                -webkit-justify-content: space-around;
+
+                li {
+                    cursor: pointer;
+                    text-align: center;
+                    width: 23%;
+                    margin: 0 10px;
+
+                    @include pos(r);
+
+                    &.active {
+                        &:before {
+                            content: '';
+
+                            @include transition(0.3s);
+
+                            @include pos(a);
+
+                            width: 100%;
+                            height: 2px;
+                            left: 0;
+                            bottom: 0;
+                            background: #f5a420;
+                        }
+                    }
+
+                    &:nth-of-type(1) {
+                        &.active {
+                            &:before {
+                                background: #f5a420;
+                            }
+                        }
+                    }
+
+                    &:nth-of-type(2) {
+                        &.active {
+                            &:before {
+                                background: #86be24;
+                            }
+                        }
+                    }
+
+                    &:nth-of-type(3) {
+                        &.active {
+                            &:before {
+                                background: #63aee5;
+                            }
+                        }
+                    }
+
+                    &:nth-of-type(4) {
+                        &.active {
+                            &:before {
+                                background: #5c8ee3;
+                            }
+                        }
+                    }
+
+                    img {
+                        width: 20px;
+                        vertical-align: middle;
+                        margin-right: 10px;
+                    }
+                }
             }
 
             @include pos(r);
@@ -99,7 +180,88 @@ $color: #be0000;
             -webkit-flex-grow: 1;
             flex-grow: 1;
 
+            @include displayFlex(column);
+
+            .wm-myreport-list-C {
+                -webkit-flex-grow: 1;
+                flex-grow: 1;
+            }
+
+            .wm-report-footer {
+                height: 50px;
+                line-height: 50px;
+                -webkit-justify-content: space-around;
+                justify-content: space-around;
+
+                @include displayFlex(row);
+
+                -webkit-justify-content: center;
+                justify-content: center;
+                -webkit-align-items: center;
+                align-items: center;
+
+                .wm-upload {
+                    z-index: 10000;
+                    cursor: pointer;
+
+                    div:nth-of-type(2){
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+                }
+
+                & > div {
+                    width: 120px;
+                    text-align: center;
+                    height: 30px;
+                    cursor: pointer;
+
+                    @include br(4px);
+
+                    line-height: 30px;
+                    background: #f5a420;
+                    color: #fff;
+
+                    div:nth-of-type(2) {
+                        @include pos(a);
+
+                        z-index: 10;
+                    }
+
+                    @include pos(r);
+
+                    &.wm-uplad-add-video {
+                        background: #86be24;
+                    }
+
+                    &.wm-uplad-add-audio {
+                        background: #63aee5;
+                    }
+
+                    &.wm-uplad-add-dongman {
+                        background: #5c8ee3;
+                    }
+
+                    & > span {
+                        @include pos(a);
+
+                        width: 100%;
+                        height: 100%;
+                        left: 0;
+                        top: 0;
+                        z-index: 100;
+                    }
+
+                    i {
+                        vertical-align: middle;
+                        font-size: 16px;
+                    }
+                }
+            }
+
             @include pos(r);
+
+            z-index: 1000;
 
             .wm-no-report {
                 width: 100%;
@@ -118,11 +280,47 @@ $color: #be0000;
 
                 & > div {
                     text-align: center;
+                    overflow: hidden;
+
+                    @include pos(r);
 
                     img {
                         width: 100px;
                         display: block;
                         margin: 10px 0;
+                    }
+                }
+                .wm-upload{
+                    position: absolute !important;
+                    &>div:nth-of-type(2){
+                        z-index: 1000;
+                        @include pos(a);
+                        left: 0;
+                        top: 0;
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+                }
+
+                @at-root .wm-upload {
+                    @include pos(a);
+
+                    width: 100%;
+                    z-index: 100;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+
+                    input[type='file'] {
+                        @include pos(a);
+
+                        width: 100%;
+                        height: 100%;
+                        left: 0;
+                        top: 0;
+                        z-index: 100;
+                        opacity: 0;
+                        cursor: pointer;
                     }
                 }
             }
@@ -131,6 +329,10 @@ $color: #be0000;
         .wm-report-list {
             overflow: auto;
             height: 500px;
+
+            ul{
+                margin-top: 30px;
+            }
 
             li {
                 display: inline-block;
@@ -294,7 +496,7 @@ $color: #be0000;
 
                     top: 10px;
                     right: 0;
-                    z-index:1000;
+                    z-index: 1000;
 
                     .wm-report-action-icon {
                         width: 20px;
@@ -326,8 +528,9 @@ $color: #be0000;
                     &:hover {
                         ul {
                             display: block;
-                            i{
-                                color:#ff
+
+                            i {
+                                color: #ff;
                             }
                         }
                     }
@@ -339,42 +542,44 @@ $color: #be0000;
                         margin-top: 20px;
                         margin-right: 10px;
 
-                        .wm-del-ico{
-
+                        .wm-del-ico {
                             width: 100%;
                             height: 100%;
-                            text-align:center;
+                            text-align: center;
+
                             @include pos(a);
+
                             left: 0;
                             top: 0;
                             text-indent: -.4rem;
-                            i{
+
+                            i {
                                 vertical-align: middle;
                             }
                         }
 
                         li {
-
-                            .ivu-poptip-rel{
+                            .ivu-poptip-rel {
                                 width: 100%;
                                 height: 100%;
                                 left: 0;
                                 top: 0;
+
                                 @include pos(a);
                             }
+
                             &:hover {
                                 background: #be0000;
                                 color: #fff;
-                                div{
-                                    color:#fff;
-                                }
-                                .ivu-poptip-body-message{
-                                    color:#000;
-                                }
-                            } 
 
+                                div {
+                                    color: #fff;
+                                }
 
-                           
+                                .ivu-poptip-body-message {
+                                    color: #000;
+                                }
+                            }
 
                             display: block;
                             height: 30px;
@@ -385,10 +590,11 @@ $color: #be0000;
                             text-indent: .5em;
                             vertical-align: middle;
 
-                            &>div{
+                            & > div {
                                 @include pos(a);
+
                                 left: 0;
-                                top:0;
+                                top: 0;
                                 width: 100%;
                                 height: 100%;
                             }

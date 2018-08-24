@@ -55066,7 +55066,7 @@
 	//                </div>
 	//                <div>
 	//                    <div>
-	//                        <span><img :src="imgs.search" alt=""></span><input type="text" placeholder="查询我的上报" />
+	//                        <span><img :src="imgs.search" alt=""></span><input type="text" v-model='kw'  placeholder="查询我的上报" />
 	//                    </div>
 	//                </div>
 	//                <div class="wm-user-info">
@@ -55144,6 +55144,7 @@
 	            tabIndex: 0,
 	            userinfo: {},
 	            sourceList: [],
+	            kw: "",
 	            topMenu: [],
 	            defaultMenu: [],
 	            menus: []
@@ -55167,7 +55168,15 @@
 	        this.userinfo = userinfo;
 	        this.getSourceList();
 	    },
-
+	    watch: {
+	        kw: function kw(val) {
+	            var s = this;
+	            _vue2['default'].obserable.trigger({
+	                type: "searchReport",
+	                data: val
+	            });
+	        }
+	    },
 	    methods: {
 	        logout: function logout() {
 	            var s = this;
@@ -55215,8 +55224,6 @@
 
 	                            return JSON.parse(data.list[0].tablefield).collectionitems;
 	                        });
-
-	                        console.log(s.sourceList);
 	                    }
 	                }
 	            });
@@ -55468,7 +55475,7 @@
 /* 63 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n    <div class=\"layout\">\r\n        <Layout v-if='$route.name !== \"login\" && $route.name !== \"register\"'>\r\n            <Header>\r\n               <div>\r\n                    <div class=\"wm-title\">\r\n                        <img :src=\"imgs.loginTitle\" alt=\"\">\r\n                    </div>\r\n               </div>\r\n               <div>\r\n                   <div>\r\n                       <span><img :src=\"imgs.search\" alt=\"\"></span><input type=\"text\" placeholder=\"查询我的上报\" />\r\n                   </div>\r\n               </div>\r\n               <div class=\"wm-user-info\">\r\n                   <span><img :src='imgs.man' /></span>\r\n                   <span class=\"zmiti-text-overflow\">{{userinfo.nickname}}</span>\r\n                   <div title='退出' @click=\"logout\">\r\n                       <img :src=\"imgs.logout\" alt=\"\">\r\n                   </div>\r\n               </div>\r\n            </Header>\r\n            <Layout class=\"wm-main-layout\">\r\n                <div class=\"wm-tab-C\" :style='{height:(viewH - 64- 10)+\"px\"}'>\r\n                   <div>\r\n                      <Menu width='300' :open-names=\"['1']\"  >\r\n                            <Submenu name=\"1\">\r\n                                <template slot=\"title\">\r\n                                    <Icon type=\"ios-paper\" />\r\n                                    我的上报\r\n                                </template>\r\n                              \r\n                                    <a href='#/myreport'>\r\n                                      <MenuItem :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"myreport\"}' :key='i' v-for=\"(item,i) in sourceList\" :name=\"item.resourceid\">{{item.resourcecnname}}\r\n                                      </MenuItem>\r\n                                    </a>\r\n                                \r\n                            </Submenu>\r\n                            <a href='#/user/'> \r\n                                <MenuItem name=\"13\">个人中心 </MenuItem>\r\n                            </a>\r\n                           \r\n                        </Menu>\r\n                   </div>\r\n                </div>\r\n                <Layout>\r\n                   <router-view></router-view>\r\n                </Layout>\r\n            </Layout>\r\n        </Layout>\r\n        <div v-else>\r\n            <router-view></router-view>\r\n        </div>\r\n    </div>\r\n";
+	module.exports = "\r\n    <div class=\"layout\">\r\n        <Layout v-if='$route.name !== \"login\" && $route.name !== \"register\"'>\r\n            <Header>\r\n               <div>\r\n                    <div class=\"wm-title\">\r\n                        <img :src=\"imgs.loginTitle\" alt=\"\">\r\n                    </div>\r\n               </div>\r\n               <div>\r\n                   <div>\r\n                       <span><img :src=\"imgs.search\" alt=\"\"></span><input type=\"text\" v-model='kw'  placeholder=\"查询我的上报\" />\r\n                   </div>\r\n               </div>\r\n               <div class=\"wm-user-info\">\r\n                   <span><img :src='imgs.man' /></span>\r\n                   <span class=\"zmiti-text-overflow\">{{userinfo.nickname}}</span>\r\n                   <div title='退出' @click=\"logout\">\r\n                       <img :src=\"imgs.logout\" alt=\"\">\r\n                   </div>\r\n               </div>\r\n            </Header>\r\n            <Layout class=\"wm-main-layout\">\r\n                <div class=\"wm-tab-C\" :style='{height:(viewH - 64- 10)+\"px\"}'>\r\n                   <div>\r\n                      <Menu width='300' :open-names=\"['1']\"  >\r\n                            <Submenu name=\"1\">\r\n                                <template slot=\"title\">\r\n                                    <Icon type=\"ios-paper\" />\r\n                                    我的上报\r\n                                </template>\r\n                              \r\n                                    <a href='#/myreport'>\r\n                                      <MenuItem :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"myreport\"}' :key='i' v-for=\"(item,i) in sourceList\" :name=\"item.resourceid\">{{item.resourcecnname}}\r\n                                      </MenuItem>\r\n                                    </a>\r\n                                \r\n                            </Submenu>\r\n                            <a href='#/user/'> \r\n                                <MenuItem name=\"13\">个人中心 </MenuItem>\r\n                            </a>\r\n                           \r\n                        </Menu>\r\n                   </div>\r\n                </div>\r\n                <Layout>\r\n                   <router-view></router-view>\r\n                </Layout>\r\n            </Layout>\r\n        </Layout>\r\n        <div v-else>\r\n            <router-view></router-view>\r\n        </div>\r\n    </div>\r\n";
 
 /***/ }),
 /* 64 */
@@ -56193,47 +56200,94 @@
 	// 		 <Split v-model="split1">
 	// 			<div slot="left" class="wm-myreport-left">
 	// 				<header >
-	// 					 <span>我的上报</span> <Button icon='ios-cloud-upload-outline' size='small' type='primary'>上报</Button>
-	// 					 <div id='wm-upload'>1</div>
+	// 					 <span>我的上报</span>
+	// 					 <ul>
+	// 						 <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key="i" :class="{'active':currentType === i}">
+	// 							 <img v-if='i===0' :src="imgs.imgIco" alt="">
+	// 							 <img v-if='i===1' :src="imgs.videoIco" alt="">
+	// 							 <img v-if='i===2' :src="imgs.audioIco" alt="">
+	// 							 <img v-if='i===3' :src="imgs.dongmanIco" alt="">
+	// 							 上报{{menu.split('-')[0]}}
+	// 						 </li>
+	// 					 </ul>
 	// 				</header>
 	// 				<section>
-	// 					<div v-if='reportList.length<=0' class="wm-no-report">
-	// 						<div >
-	// 							<img :src="imgs.shangbao" alt="">
-	// 							<Button type="primary" size='large'>点我上报</Button>
+	// 					<div class="wm-myreport-list-C">
+	// 						<div v-show='reportList.length<=0' class="wm-no-report">
+	// 							<div >
+	// 								<img :src="imgs.shangbao" alt="">
+	// 								<Button type="primary" size='large'>点我上报</Button>
+	// 								<div class="wm-upload" ></div>
+	// 							</div>
+	// 						</div>
+	// 						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20-50+'px'}">
+	// 							<ul>
+	// 								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+	// 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
+	// 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
+	//
+	// 									<div v-if='!report.isLoaded' class="wm-uploading"></div>
+	// 									<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
+	// 									<span class="wm-file-disabled" v-if='report.status === 2'>
+	// 										<span>
+	// 										</span>
+	// 										被管理员发回，不可用
+	// 									</span>
+	// 									<div class="wm-report-action" v-if='report.isLoaded'>
+	// 										<div class="wm-report-action-icon"></div>
+	// 										<ul>
+	// 											<li @click='showReportDetail(report)'>
+	// 												<Icon type="ios-create" /> 编辑
+	// 											</li>
+	// 											<li>
+	//
+	// 												<Poptip	
+	// 													style="color:#000"
+	// 													confirm
+	// 													title="确定要删除此作品吗?"
+	// 													@on-ok="deleteReport(i)"
+	// 													>
+	// 													<div class="wm-del-ico"><Icon type="ios-trash-outline" /> 删除</div>
+	// 												</Poptip>
+	//
+	// 											</li>
+	// 										</ul>
+	// 									</div>
+	// 									<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+	// 								</li>	
+	// 							</ul>
 	// 						</div>
 	// 					</div>
-	// 					<div v-else class="wm-report-list" :style="{height:viewH - 60-60-20+'px'}">
-	// 						<ul>
-	// 							<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
-	// 								<div class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:'cover'}"></div>
-	// 								<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
-	// 								<div v-if='!report.isLoaded' class="wm-uploading"></div>
-	// 								<div class="wm-report-disabled-mask" v-if='report.status===2'></div>
-	// 								<span class="wm-file-disabled" v-if='report.status === 2'>
-	// 									<span>
-	// 									</span>
-	// 									被管理员发回，不可用
-	// 								</span>
-	// 								<div class="wm-report-action" v-if='report.isLoaded'>
-	// 									<div class="wm-report-action-icon"></div>
-	// 									<ul>
-	// 										<li @click='showReportDetail(report)'>
-	// 											<Icon type="ios-create" /> 编辑
-	// 										</li>
-	// 										<li>
-	// 											<Icon type="ios-trash-outline" /> 删除
-	// 										</li>
-	// 									</ul>
-	// 								</div>
-	// 								<div :title='report.newfilename' class="wm-report-item-name zmiti-text-overflow">{{report.newfilename}}</div>
-	// 							</li>	
-	// 						</ul>
-	// 					</div>
+	// 					<footer class="wm-report-footer">
+	// 						<div v-show='currentType === 0 ' >
+	// 							<div class="wm-upload"></div>
+	// 							<div class="lt-full">
+	// 								<Icon type="md-add" /> <span>点击添加图片</span>
+	// 							</div>
+	// 						</div>
+	// 						<div v-show='currentType === 1 ' class="wm-uplad-add-video">
+	// 							<div class="wm-upload"></div>
+	// 							<div class="lt-full">
+	// 								<Icon type="md-add" /> <span>点击添加视频</span>
+	// 							</div>
+	// 						</div>
+	// 						<div v-show='currentType === 2 ' class="wm-uplad-add-audio">
+	// 							<div class="wm-upload"></div>
+	// 							<div class="lt-full">
+	// 								<Icon type="md-add" /> <span>点击添加音频</span>
+	// 							</div>
+	// 						</div>
+	// 						<div v-show='currentType === 3 ' class="wm-uplad-add-dongman">
+	// 							<div class="wm-upload"></div>
+	// 							<div class="lt-full">
+	// 								<Icon type="md-add" /> <span>点击添加动漫</span>
+	// 							</div>
+	// 						</div>
+	// 					</footer>
 	// 				</section>
 	// 			</div>
-	// 			<div slot="right" class="wm-myreport-right wm-scroll">
-	// 				<div class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
+	// 			<div slot="right" class="wm-myreport-right wm-scroll" v-if='reportList[currentReportIndex]'>
+	// 				<div   class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
 	//
 	// 				</div>
 	// 				<div class="wmmyreport-title wm-myreport-item">
@@ -56245,10 +56299,6 @@
 	// 					<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>
 	// 				</div>
 	// 				<div class="wmmyreport-title wm-myreport-item">
-	// 					<div>描述：</div>
-	// 					<div>{{reportList[currentReportIndex].filedesc}}</div>
-	// 				</div>
-	// 				<div class="wmmyreport-title wm-myreport-item">
 	// 					<div>格式：</div>
 	// 					<div>{{reportList[currentReportIndex].fileextname}}</div>
 	// 				</div>
@@ -56258,27 +56308,33 @@
 	// 				</div>
 	// 				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
 	// 					<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-	// 					<div v-if='item.type === "text" ||item.type === "textarea"'>{{reportList[currentReportIndex][item.fieldname]}}</div>
+	// 					<div v-if='item.type === "text" ||item.type === "textarea"' @dblclick="editItem(item)" >
+	// 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						<input @keydown.13="modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)" v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+	// 					</div>
 	//
-	// 					<div v-if='item.type === "select"'>
-	// 						<Select v-model="formAdmin[item.fieldname]" size='small'>
+	// 					<div  v-if='item.type ===  "select" && item.canedit'>
+	// 						<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model="formAdmin[item.fieldname]" size='small'  style="width:100px">
 	// 							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
 	// 						</Select>
+	// 					</div>
+	// 					<div @dblclick="editItem(item)" v-if='item.type === "select" && !item.canedit'>
+	// 						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 	// 					</div>
 	//
 	// 					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 	// 						<div class="wm-userlabel-header">
 	// 							<div>标签</div>
-	// 							<div><input type="text" placeholder="输入标签名" /></div>
+	// 							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
 	// 							<div>
-	// 								<div class="wm-add-label">
+	// 								<div class="wm-add-label" @click='addTagByDetail(item.fieldname)'>
 	//
 	// 								</div>
 	// 							</div>
 	//
 	// 						</div>
 	// 						<div class="wm-tag-list">
-	// 							<Tag :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 							<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 	// 						</div>
 	// 					</section>
 	// 				</div>
@@ -56312,8 +56368,67 @@
 	//
 	// 		<div class="lt-full wm-report-C" v-if='showPreview'>
 	// 			<span class="wm-report-close" @click="closePreview"></span>
-	// 			<div v-if='1||reportList[currentReportIndex].fileextname=== "png" ||reportList[currentReportIndex].fileextname=== "jpg" ||reportList[currentReportIndex].fileextname=== "jpeg" || reportList[currentReportIndex].fileextname=== "gif"||reportList[currentReportIndex].fileextname=== "bmp"'>
-	// 				<img :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="">
+	// 			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
+	// 				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+	// 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
+	// 					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+	// 					<div  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+	// 						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+	// 						<div v-if='item.type === "text" ||item.type === "textarea"' >
+	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						</div>
+	// 						<div v-if='item.type === "select"'>
+	// 							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+	// 						</div>
+	// 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+	// 							<div>标签：</div>
+	// 							<div class="wm-tag-list">
+	// 								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 							</div>
+	// 						</section>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	// 			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
+	// 				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
+	// 				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
+	// 					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+	// 					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+	// 						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+	// 						<div v-if='item.type === "text" ||item.type === "textarea"' >
+	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						</div>
+	// 						<div v-if='item.type === "select"'>
+	// 							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+	// 						</div>
+	// 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+	// 							<div>标签：</div>
+	// 							<div class="wm-tag-list">
+	// 								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 							</div>
+	// 						</section>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	// 			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
+	// 				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
+	// 				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
+	// 					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+	// 						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+	// 						<div v-if='item.type === "text" ||item.type === "textarea"' >
+	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						</div>
+	// 						<div v-if='item.type === "select"'>
+	// 							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+	// 						</div>
+	// 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+	// 							<div>标签：</div>
+	// 							<div class="wm-tag-list">
+	// 								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 							</div>
+	// 						</section>
+	// 					</div>
+	// 				</div>
 	// 			</div>
 	// 		</div>
 	//
@@ -56328,6 +56443,8 @@
 	});
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	__webpack_require__(80);
 
@@ -56352,8 +56469,13 @@
 				imgs: window.imgs,
 				isLoading: false,
 				tag: "",
+				currentType: 0,
+				publicadtype: "",
 				currentReportIndex: 0,
 				showPreview: false,
+				showMaskDetail: false,
+				detailtag: '',
+				menus: [],
 				colorList: ['default', 'success', 'primary', 'error', 'warning', 'red', 'orange', 'gold', 'yellow'],
 				split1: 0.8,
 				viewH: window.innerHeight,
@@ -56366,23 +56488,9 @@
 						required: true,
 						trigger: 'blur'
 					}
-
 				},
 
-				reportList: [{
-					reportid: '1',
-					reportname: '我的上报',
-					status: 0,
-					thumi: imgs.poster,
-					type: 'jpg',
-					process: '0%',
-					bulk: '1.2M',
-					isLoaded: false,
-					size: '1920*1080',
-					remark: '说明',
-					suffix: 'jpg',
-					labels: ''
-				}],
+				reportList: [],
 				userinfo: {}
 			};
 		},
@@ -56399,17 +56507,41 @@
 			var _this = this;
 
 			this.userinfo = _libUtil2['default'].getUserInfo();
-			setTimeout(function () {
-				_this.upload();
-			}, 100);
+			this.getMyreportList();
 
+			var obserable = _vue2['default'].obserable;
+
+			var t = setInterval(function () {
+
+				var id = obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+				if (id) {
+					clearInterval(t);
+					setTimeout(function () {
+						_this.upload(id);
+					}, 1000);
+				}
+			}, 20);
+
+			obserable.on('searchReport', function (data) {
+				_this.searchByKW(data);
+			});
 			window.onkeydown = function (e) {
 				if (e.keyCode === 27 || e.keyCode === 8) {
 					_this.closePreview();
 				}
+				if (_this.showPreview) {
+					if (e.keyCode === 37) {
+						_this.currentReportIndex--;
+						_this.currentReportIndex %= _this.reportList.length;
+					} else if (e.keyCode === 39) {
+						_this.currentReportIndex++;
+						_this.currentReportIndex %= _this.reportList.length;
+					}
+				}
 			};
 			this.getConfigFile();
-			this.getMyreportList();
 
 			this.$Notice.info({
 				title: '双击上报作品可以预览'
@@ -56417,8 +56549,168 @@
 		},
 
 		methods: {
+
+			changeCurrentType: function changeCurrentType(index) {
+				var s = this;
+				this.currentType = index;
+				var id = _vue2['default'].obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+				this.upload(id);
+				this.currentReportIndex = 0;
+				this.filterReportList();
+				if (s.reportList.length <= 0) {
+					return;
+				}
+
+				s.formAdmin = s.reportList[s.currentReportIndex];
+				s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+			},
+
+			deleteReport: function deleteReport(i) {
+				var s = this;
+				var id = _vue2['default'].obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadvuser/delresource/',
+					data: {
+						username: s.userinfo.username,
+						usertoken: s.userinfo.accesstoken,
+						resourceid: id,
+						id: s.formAdmin.id
+					},
+					success: function success(data) {
+						s.$Message[data.getret === 0 ? 'success' : 'error'](data.getmsg);
+						console.log(data);
+						s.reportList.splice(i, 1);
+
+						s.currentReportIndex = s.reportList.length - 1;
+						s.getMyreportList();
+					}
+				});
+			},
+
+			searchByKW: function searchByKW(kw) {
+				var s = this;
+				if (kw) {
+					s.reportList = s.reportList.filter(function (item) {
+						return item.filetitle.indexOf(kw) > -1;
+					});
+				} else {
+					s.getMyreportList();
+				}
+			},
+
+			editReportByItem: function editReportByItem(p) {
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadvuser/editresource',
+					data: p,
+					success: function success(data) {
+						s.$Message[data.getret === 0 ? 'success' : 'error'](data.getmsg);
+						if (data.getret === 0) {
+							s.configList.forEach(function (it) {
+								it.canedit = false;
+							});
+							s.configList = s.configList.concat([]);
+						}
+					}
+				});
+			},
+			removeTag: function removeTag(filename, index) {
+				var _this2 = this;
+
+				var s = this;
+				var id = _vue2['default'].obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+
+				this.formAdmin.tagList.splice(index, 1);
+				this.detailtag = '';
+
+				var p = _defineProperty({
+					username: s.userinfo.username,
+					usertoken: s.userinfo.accesstoken,
+					resourceid: id,
+					id: s.formAdmin.id
+				}, filename, this.formAdmin.tagList.join(','));
+
+				this.editReportByItem(p);
+				setTimeout(function () {
+					_this2.getMyreportList();
+				}, 400);
+			},
+			addTagByDetail: function addTagByDetail(item) {
+				var _this3 = this;
+
+				if (!this.detailtag) {
+					this.$Message.error('标签名不能为空');
+					return;
+				}
+				var s = this;
+				var id = _vue2['default'].obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+
+				this.formAdmin.tagList.push(this.detailtag);
+				this.detailtag = '';
+
+				var p = _defineProperty({
+					username: s.userinfo.username,
+					usertoken: s.userinfo.accesstoken,
+					resourceid: id,
+					id: s.formAdmin.id
+				}, item.fieldname, this.formAdmin.tagList.join(','));
+
+				this.editReportByItem(p);
+				setTimeout(function () {
+					_this3.getMyreportList();
+				}, 400);
+			},
+
+			modifyPublicadtype: function modifyPublicadtype(key) {
+				var s = this;
+				var id = _vue2['default'].obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+
+				var p = _defineProperty({
+					username: s.userinfo.username,
+					usertoken: s.userinfo.accesstoken,
+					resourceid: id,
+					id: s.formAdmin.id
+				}, key, s.formAdmin[key]);
+				this.editReportByItem(p);
+			},
+
+			modifyReport: function modifyReport(model, key) {
+
+				var s = this;
+				var id = _vue2['default'].obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
+
+				var p = _defineProperty({
+					username: s.userinfo.username,
+					usertoken: s.userinfo.accesstoken,
+					resourceid: id,
+					id: s.formAdmin.id
+				}, key, model);
+				this.editReportByItem(p);
+			},
+
+			editItem: function editItem(item) {
+				console.log(item);
+				this.configList.forEach(function (it) {
+					it.canedit = false;
+				});
+				item.canedit = true;
+				this.configList = this.configList.concat([]);
+			},
 			closePreview: function closePreview() {
 				this.showPreview = false;
+				this.showMaskDetail = false;
 			},
 
 			previewReport: function previewReport() {
@@ -56429,11 +56721,13 @@
 			showDetail: function showDetail(report, index) {
 				this.currentReportIndex = index;
 				this.formAdmin = report;
+				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 				//this.currentReport = report;
 			},
 			showReportDetail: function showReportDetail(report) {
 				this.visible = true;
 				this.formAdmin = report;
+				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 				var s = this;
 				this.configList.map(function (col, i) {
 					//s.formAdmin[col.fieldname] = '';
@@ -56473,8 +56767,15 @@
 	   })*/
 			},
 
+			filterReportList: function filterReportList() {
+				var _this4 = this;
+
+				this.reportList = this.defaultReportList.filter(function (item) {
+					return item.publicadtype === _this4.menus[_this4.currentType];
+				});
+			},
 			getMyreportList: function getMyreportList() {
-				var _this2 = this;
+				var _this5 = this;
 
 				var s = this;
 				var obserable = _vue2['default'].obserable;
@@ -56489,15 +56790,21 @@
 
 					if (id) {
 
-						_this2.configList = tableFields.concat([]);
-						_this2.configList.map(function (col, i) {
+						_this5.configList = tableFields.concat([]);
+
+						_this5.configList.map(function (col, i) {
+
 							///s.formAdmin[col.fieldname] = '';
+							if (col.fieldname === 'publicadtype') {
+								s.menus = col.data.concat([]);
+							}
 							if (col.notnull) {
 								setTimeout(function () {
 									s.ruleValidate[col.fieldname] = { required: true, message: col.name + '不能为空', trigger: 'blur' };
 								}, 1000);
 							}
 						});
+
 						clearInterval(t);
 						_libUtil2['default'].ajax({
 							url: window.config.baseUrl + "/wmadvuser/getmyreportdata",
@@ -56511,8 +56818,16 @@
 									data.list.forEach(function (item) {
 										item.isLoaded = true;
 									});
-
 									s.reportList = data.list;
+									s.defaultReportList = data.list.concat([]);
+									if (s.reportList.length > 0) {
+
+										s.filterReportList();
+										if (s.currentReportIndex > -1) {
+											s.formAdmin = s.reportList[s.currentReportIndex];
+											s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+										}
+									}
 									//s.currentReport = s.reportList[0];
 								}
 							}
@@ -56521,14 +56836,28 @@
 				}, 20);
 			},
 
-			upload: function upload() {
-				var obserable = _vue2['default'].obserable;
-
-				var id = obserable.trigger({
-					type: 'getCurrentSourceId'
-				});
+			upload: function upload(id) {
 
 				var s = this;
+				var data = s.configList.filter(function (item) {
+					return item.fieldname === 'publicadtype';
+				})[0].data;
+
+				var p = {
+					username: s.userinfo.username,
+					usertoken: s.userinfo.accesstoken,
+					resourceid: id,
+					filetitle: "",
+					filedesc: "",
+					publicadtype: data[s.currentType],
+					userlabel: "",
+					author: "",
+					telphone: ''
+				};
+				this.p = p;
+				if (s.uploader) {
+					s.uploader.destroy();
+				}
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
 					auto: true,
@@ -56539,27 +56868,28 @@
 					server: window.config.baseUrl + '/wmadvuser/uploadfile/',
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
-					pick: '#wm-upload',
+					pick: '.wm-upload',
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
-					formData: {
-						username: s.userinfo.username,
-						usertoken: s.userinfo.accesstoken,
-						resourceid: id,
-						filetitle: "123",
-						filedesc: "",
-						publicadtype: "图片-zmiti",
-						userlabel: "测试",
-						author: "123",
-						telphone: '110'
-
-					}
+					formData: p
 				});
+
+				uploader.on("beforeFileQueued", function (file) {
+					var data = s.configList.filter(function (item) {
+						return item.fieldname === 'publicadtype';
+					})[0] ? s.configList.filter(function (item) {
+						return item.fieldname === 'publicadtype';
+					})[0].data : [];
+					s.publicadtype = { data: data[s.currentType] } || '';
+				});
+
+				s.uploader = uploader;
+
 				// 当有文件添加进来的时候
 				uploader.on('fileQueued', function (file) {
 
-					s.reportList.push({
+					s.reportList.unshift({
 						reportid: file.id,
 						reportname: file.name,
 						status: 0,
@@ -56572,6 +56902,7 @@
 						suffix: file.ext,
 						labels: ''
 					});
+					uploader.upload();
 					/* // webuploader事件.当选择文件后，文件被加载到文件队列中，触发该事件。等效于 uploader.onFileueued = function(file){...} ，类似js的事件定义。
 	    $list.append('<div id="' + file.id + '" class="item">' +
 	    	'<h4 class="info">' + file.name + '</h4>' +
@@ -56629,27 +56960,34 @@
 					/* $('#' + file.id).find('.progress').remove();
 	    $('#' + file.id).find('p.state').text('已上传'); */
 				});
-				uploader.upload();
 			},
 			ok: function ok() {
+				var obserable = _vue2['default'].obserable;
 
 				var s = this;
+				var id = obserable.trigger({
+					type: 'getCurrentSourceId'
+				});
 
+				var p = {
+					username: s.userinfo.username,
+					usertoken: s.userinfo.accesstoken,
+					resourceid: id,
+					id: s.formAdmin.id
+				};
+				for (var attr in s.formAdmin) {
+					if (s.formAdmin[attr] && attr !== 'username' && attr !== 'tagList') {
+						p[attr] = s.formAdmin[attr];
+					}
+					if (attr === 'tagList' && s.formAdmin[attr].length) {
+						p.userlabel = s.formAdmin[attr].join(',');
+					}
+				}
 				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/wmadvuser/editreport',
-					data: {
-						username: s.userinfo.username,
-						accesstoken: s.userinfo.accesstoken,
-						fieldlist: ''
-					},
+					url: window.config.baseUrl + '/wmadvuser/editresource',
+					data: p,
 					success: function success(data) {
-
-						if (data.getret === 0) {
-							s.$Message.warning('请重新登录');
-							window.location.hash = '/login';
-						} else {
-							s.$Message.error('修改密码失败');
-						}
+						s.$Message[data.getret === 0 ? 'success' : 'error'](data.getmsg);
 					}
 
 				});
@@ -56700,7 +57038,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-myreport-main-ui {\n  height: 100%;\n  position: relative;\n}\n\n.wm-myreport-main-ui .webuploader-container {\n  position: relative;\n}\n\n.wm-myreport-main-ui .webuploader-element-invisible {\n  position: absolute !important;\n  left: 0;\n  top: 0;\n  width: 100%;\n  opacity: 0;\n  border: 1px solid red;\n}\n\n.wm-myreport-main-ui .webuploader-pick {\n  position: relative;\n  display: inline-block;\n  opacity: 0;\n  cursor: pointer;\n  background: #00b7ee;\n  width: 100%;\n  color: #fff;\n  text-align: center;\n  border-radius: 3px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .webuploader-pick-hover {\n  background: #00a2d4;\n}\n\n.wm-myreport-main-ui .webuploader-pick-disable {\n  opacity: 0.6;\n  pointer-events: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left {\n  background: #fff;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  height: 100%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header {\n  height: 60px;\n  line-height: 60px;\n  text-indent: 2em;\n  width: 100%;\n  position: relative;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload {\n  position: absolute;\n  top: 0;\n  overflow: hidden;\n  left: 0;\n  height: 60px;\n  width: 200px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header span {\n  margin-right: 20px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header:before {\n  content: '';\n  position: absolute;\n  width: 98%;\n  left: 1%;\n  border-top: 1px solid #eeeeee;\n  bottom: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div {\n  text-align: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {\n  width: 100px;\n  display: block;\n  margin: 10px 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list {\n  overflow: auto;\n  height: 500px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li {\n  display: inline-block;\n  width: 18%;\n  margin: 12px;\n  height: 130px;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.8);\n  left: 0;\n  top: 0;\n  z-index: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {\n  width: 100%;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-item-name {\n  text-align: center;\n  margin: 4px 0;\n  font-size: 14px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress,\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  position: absolute;\n  width: 100%;\n  height: 30px;\n  background: rgba(250, 184, 46, 0.7);\n  text-align: center;\n  top: 50%;\n  margin-top: -15px;\n  line-height: 30px;\n  color: #fff;\n  font-size: 14px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress {\n  z-index: 10;\n  background-color: #f5a420;\n  border: 1px solid rgba(250, 184, 46, 0.7);\n  background-size: 3em 3em;\n  background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);\n  -webkit-animation: warning-animation 750ms infinite linear;\n  -moz-animation: warning-animation 750ms infinite linear;\n  animation: warning-animation 750ms infinite linear;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress:before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  height: 100%;\n  background-image: linear-gradient(to bottom, rgba(250, 184, 46, 0.7), rgba(250, 184, 46, 0.7) 15%, transparent 60%, rgba(250, 184, 46, 0.7));\n}\n\n@-webkit-keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n@keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-disabled-mask {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(255, 255, 255, 0.7);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  color: #be0000;\n  font-size: 12px;\n  z-index: 10;\n  width: 85%;\n  padding-left: 20px;\n  left: 50%;\n  border: 1px solid #be0000;\n  border-radius: 3px;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(255, 255, 255, 0.8);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span {\n  position: absolute;\n  left: 0;\n  top: 0px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:before {\n  content: '';\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  border: 1px solid #be0000;\n  border-radius: 50%;\n  left: 2px;\n  top: 5px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:after {\n  content: \"\";\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #be0000;\n  left: 2px;\n  top: 13px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action {\n  position: absolute;\n  top: 10px;\n  right: 0;\n  z-index: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon {\n  width: 20px;\n  height: 20px;\n  background: #fff;\n  border-radius: 2px;\n  position: absolute;\n  right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon:before {\n  content: \"\";\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  border: 1px solid #bbb;\n  left: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: none;\n  border-top: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul {\n  display: block;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul {\n  display: none;\n  background: #fff;\n  width: 80px;\n  margin-top: 20px;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li {\n  display: block;\n  height: 30px;\n  cursor: pointer;\n  line-height: 30px;\n  width: 100%;\n  margin: 0;\n  text-indent: .5em;\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover {\n  background: #be0000;\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li i {\n  font-size: 20px;\n}\n\n.wm-report-list::-webkit-scrollbar,\n.wm-myreport-right::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.wm-report-list::-webkit-scrollbar-thumb,\n.wm-myreport-right::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-track,\n.wm-myreport-main-ui .wm-myreport-left .wm-myreport-right::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n\n.wm-myreport-main-ui .wm-myreport-right {\n  background: #fff;\n  overflow: auto;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  min-height: 30px;\n  line-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 60px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list-C {\n  width: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 95%;\n  margin: 40px auto 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(1) {\n  width: 40px;\n  text-align: right;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input {\n  width: 90%;\n  margin-left: 10%;\n  border: 1px solid #eee;\n  text-align: center;\n  position: relative;\n  outline: none;\n  border-radius: 4px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) {\n  width: 50px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div {\n  position: absolute;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  top: 5px;\n  left: 10px;\n  border: 1px solid #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 1px;\n  background: #f5a420;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  width: 1px;\n  height: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list {\n  width: 85%;\n  margin: 10px auto;\n}\n\n.wm-myreport-main-ui .wm-right-thumb {\n  width: 95%;\n  margin: 0 auto;\n  height: 130px;\n}\n\n.wm-myreport-main-ui .wm-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-report-C > div {\n  max-width: 80vw;\n  max-height: 80vh;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close {\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  cursor: pointer;\n  border: 2px solid #fff;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 20px;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:before, .wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 20px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  width: 2px;\n  height: 20px;\n}\n\n.wm-tags input {\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  width: 110px;\n  text-align: center;\n  box-sizing: border-box;\n  outline: none;\n}\n\n.wm-tags input::-webkit-input-placeholder {\n  color: #ddd;\n}\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-myreport-main-ui {\n  height: 100%;\n  position: relative;\n}\n\n.wm-myreport-main-ui .webuploader-container {\n  position: relative;\n}\n\n.wm-myreport-main-ui .webuploader-element-invisible {\n  position: absolute !important;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n\n.wm-myreport-main-ui .webuploader-pick {\n  position: relative;\n  display: inline-block;\n  height: 100%;\n  cursor: pointer;\n  background: #00b7ee;\n  opacity: 0;\n  width: 100%;\n  color: #fff;\n  text-align: center;\n  border-radius: 3px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .webuploader-pick-hover {\n  background: #00a2d4;\n}\n\n.wm-myreport-main-ui .webuploader-pick-disable {\n  opacity: 0.6;\n  pointer-events: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left {\n  background: #fff;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  height: 100%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header {\n  height: 60px;\n  line-height: 60px;\n  width: 100%;\n  position: relative;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload {\n  position: absolute;\n  top: 0;\n  overflow: hidden;\n  left: 0;\n  height: 60px;\n  width: 200px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload > div {\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header span {\n  font-size: 16px;\n  margin-left: 20px;\n  position: absolute;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: flex;\n  margin: 0 auto;\n  max-width: 600px;\n  width: 40vw;\n  justify-content: space-around;\n  -webkit-justify-content: space-around;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li {\n  cursor: pointer;\n  text-align: center;\n  width: 23%;\n  margin: 0 10px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li.active:before {\n  content: '';\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  position: absolute;\n  width: 100%;\n  height: 2px;\n  left: 0;\n  bottom: 0;\n  background: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(1).active:before {\n  background: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(2).active:before {\n  background: #86be24;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(3).active:before {\n  background: #63aee5;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(4).active:before {\n  background: #5c8ee3;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li img {\n  width: 20px;\n  vertical-align: middle;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header:before {\n  content: '';\n  position: absolute;\n  width: 98%;\n  left: 1%;\n  border-top: 1px solid #eeeeee;\n  bottom: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n  position: relative;\n  z-index: 1000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-myreport-list-C {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer {\n  height: 50px;\n  line-height: 50px;\n  -webkit-justify-content: space-around;\n  justify-content: space-around;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer .wm-upload {\n  z-index: 10000;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer .wm-upload div:nth-of-type(2) {\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div {\n  width: 120px;\n  text-align: center;\n  height: 30px;\n  cursor: pointer;\n  border-radius: 4px;\n  line-height: 30px;\n  background: #f5a420;\n  color: #fff;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div div:nth-of-type(2) {\n  position: absolute;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-video {\n  background: #86be24;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-audio {\n  background: #63aee5;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-dongman {\n  background: #5c8ee3;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div > span {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div i {\n  vertical-align: middle;\n  font-size: 16px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div {\n  text-align: center;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {\n  width: 100px;\n  display: block;\n  margin: 10px 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload {\n  position: absolute !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload > div:nth-of-type(2) {\n  z-index: 1000;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-upload {\n  position: absolute;\n  width: 100%;\n  z-index: 100;\n  height: 100%;\n  left: 0;\n  top: 0;\n}\n\n.wm-upload input[type='file'] {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 100;\n  opacity: 0;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list {\n  overflow: auto;\n  height: 500px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list ul {\n  margin-top: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li {\n  display: inline-block;\n  width: 18%;\n  margin: 12px;\n  height: 130px;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.8);\n  left: 0;\n  top: 0;\n  z-index: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {\n  width: 100%;\n  height: 100%;\n  border: 1px solid #eee;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg.active {\n  border-color: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-item-name {\n  text-align: center;\n  margin: 4px 0;\n  font-size: 14px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress,\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  position: absolute;\n  width: 100%;\n  height: 30px;\n  background: rgba(250, 184, 46, 0.7);\n  text-align: center;\n  top: 50%;\n  margin-top: -15px;\n  line-height: 30px;\n  color: #fff;\n  font-size: 14px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress {\n  z-index: 10;\n  background-color: #f5a420;\n  border: 1px solid rgba(250, 184, 46, 0.7);\n  background-size: 3em 3em;\n  background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);\n  -webkit-animation: warning-animation 750ms infinite linear;\n  -moz-animation: warning-animation 750ms infinite linear;\n  animation: warning-animation 750ms infinite linear;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress:before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  height: 100%;\n  background-image: linear-gradient(to bottom, rgba(250, 184, 46, 0.7), rgba(250, 184, 46, 0.7) 15%, transparent 60%, rgba(250, 184, 46, 0.7));\n}\n\n@-webkit-keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n@keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-disabled-mask {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(255, 255, 255, 0.7);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  color: #be0000;\n  font-size: 12px;\n  z-index: 10;\n  width: 85%;\n  padding-left: 20px;\n  left: 50%;\n  border: 1px solid #be0000;\n  border-radius: 3px;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(255, 255, 255, 0.8);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span {\n  position: absolute;\n  left: 0;\n  top: 0px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:before {\n  content: '';\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  border: 1px solid #be0000;\n  border-radius: 50%;\n  left: 2px;\n  top: 5px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:after {\n  content: \"\";\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #be0000;\n  left: 2px;\n  top: 13px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action {\n  position: absolute;\n  top: 10px;\n  right: 0;\n  z-index: 1000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon {\n  width: 20px;\n  height: 20px;\n  background: #fff;\n  border-radius: 2px;\n  position: absolute;\n  right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon:before {\n  content: \"\";\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  border: 1px solid #bbb;\n  left: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: none;\n  border-top: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul {\n  display: block;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul i {\n  color: #ff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul {\n  display: none;\n  background: #fff;\n  width: 80px;\n  margin-top: 20px;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul .wm-del-ico {\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  position: absolute;\n  left: 0;\n  top: 0;\n  text-indent: -.4rem;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul .wm-del-ico i {\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li {\n  display: block;\n  height: 30px;\n  cursor: pointer;\n  line-height: 30px;\n  width: 100%;\n  margin: 0;\n  text-indent: .5em;\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li .ivu-poptip-rel {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover {\n  background: #be0000;\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover div {\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover .ivu-poptip-body-message {\n  color: #000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li > div {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li i {\n  font-size: 20px;\n}\n\n.wm-report-list::-webkit-scrollbar,\n.wm-myreport-right::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.wm-report-list::-webkit-scrollbar-thumb,\n.wm-myreport-right::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-track,\n.wm-myreport-main-ui .wm-myreport-left .wm-myreport-right::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n\n.wm-myreport-main-ui .wm-myreport-item {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  min-height: 24px;\n  line-height: 24px;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 60px;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-right {\n  background: #fff;\n  overflow: auto;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list-C {\n  width: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 95%;\n  margin: 40px auto 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(1) {\n  width: 40px;\n  text-align: right;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input {\n  width: 90%;\n  margin-left: 10%;\n  border: 1px solid #eee;\n  text-align: center;\n  position: relative;\n  outline: none;\n  border-radius: 4px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) {\n  width: 50px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div {\n  position: absolute;\n  cursor: pointer;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  top: 5px;\n  left: 10px;\n  border: 1px solid #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 1px;\n  background: #f5a420;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  width: 1px;\n  height: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list {\n  width: 85%;\n  margin: 10px auto;\n}\n\n.wm-myreport-main-ui .wm-right-thumb {\n  width: 95%;\n  margin: 0 auto;\n  height: 130px;\n}\n\n.wm-myreport-main-ui .wm-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-report-C > div {\n  max-width: 80vw;\n  max-height: 60vh;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .xlsx, .wm-myreport-main-ui .wm-report-C > div .pdf, .wm-myreport-main-ui .wm-report-C > div .doc, .wm-myreport-main-ui .wm-report-C > div .ppt {\n  display: block;\n  margin: 0 auto;\n  position: relative !important;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail {\n  padding: 10px;\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n  min-width: 300px;\n  bottom: 0;\n  left: 50%;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(0, 0, 0, 0.7);\n  color: #fff;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide {\n  height: 40px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  -webkit-transform: rotate(225deg);\n  transform: rotate(225deg);\n  top: 4px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  top: 8px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-audio {\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {\n  bottom: -40px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span {\n  position: absolute;\n  right: 30px;\n  top: 10px;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {\n  content: '';\n  right: -12px;\n  top: 0px;\n  position: absolute;\n  width: 8px;\n  height: 8px;\n  border: 1px solid #fff;\n  border-left: none;\n  border-top: none;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {\n  top: 4px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item div {\n  padding-right: 2px;\n  text-align: left;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item .wm-tag-list-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item .wm-tag-list-C > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item .wm-tag-list-C > div:nth-of-type(2) {\n  margin-left: 20px;\n  max-width: 200px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div img {\n  width: auto;\n  height: auto;\n  max-height: 60vh;\n  max-width: 80vh;\n}\n\n.wm-myreport-main-ui .wm-report-C > div video {\n  width: auto;\n  max-height: 60vh;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close {\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  cursor: pointer;\n  border: 2px solid #fff;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 20px;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:before, .wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 20px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  width: 2px;\n  height: 20px;\n}\n\n.wm-tags input {\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  width: 110px;\n  text-align: center;\n  box-sizing: border-box;\n  outline: none;\n}\n\n.wm-tags input::-webkit-input-placeholder {\n  color: #ddd;\n}\n", ""]);
 
 	// exports
 
@@ -56709,7 +57047,7 @@
 /* 82 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-myreport-main-ui\">\r\n\t\t <Split v-model=\"split1\">\r\n\t\t\t<div slot=\"left\" class=\"wm-myreport-left\">\r\n\t\t\t\t<header > \r\n\t\t\t\t\t <span>我的上报</span> <Button icon='ios-cloud-upload-outline' size='small' type='primary'>上报</Button>\r\n\t\t\t\t\t <div id='wm-upload'>1</div>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section>\r\n\t\t\t\t\t<div v-if='reportList.length<=0' class=\"wm-no-report\">\r\n\t\t\t\t\t\t<div >\r\n\t\t\t\t\t\t\t<img :src=\"imgs.shangbao\" alt=\"\">\r\n\t\t\t\t\t\t\t<Button type=\"primary\" size='large'>点我上报</Button>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div v-else class=\"wm-report-list\" :style=\"{height:viewH - 60-60-20+'px'}\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click.prevent='showDetail(report,i)'  class=\"wm-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t<div class='wm-report-item-bg' :style=\"{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:'cover'}\"></div>\r\n\t\t\t\t\t\t\t\t<span v-if='!report.isLoaded' class=\"wm-file-progress\">{{report.process}}</span>\r\n\t\t\t\t\t\t\t\t<div v-if='!report.isLoaded' class=\"wm-uploading\"></div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-disabled-mask\" v-if='report.status===2'></div>\r\n\t\t\t\t\t\t\t\t<span class=\"wm-file-disabled\" v-if='report.status === 2'>\r\n\t\t\t\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t被管理员发回，不可用\r\n\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t\t<li @click='showReportDetail(report)'>\r\n\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-create\" /> 编辑\r\n\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t<li>\r\n\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-trash-outline\" /> 删除\r\n\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div :title='report.newfilename' class=\"wm-report-item-name zmiti-text-overflow\">{{report.newfilename}}</div>\r\n\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-myreport-right wm-scroll\">\r\n\t\t\t\t<div class=\"wm-right-thumb\" :style=\"{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}\">\r\n\t\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>大小：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].filesize}}{{reportList[currentReportIndex].filesizeunit}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>时间：</div>\r\n\t\t\t\t\t<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>描述：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].filedesc}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>格式：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].fileextname}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>尺寸：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].fileattr}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"'>{{reportList[currentReportIndex][item.fieldname]}}</div>\r\n\r\n\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" size='small'>\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\">\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i' closable v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\ttitle=\"编辑作品信息\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" :rules=\"ruleValidate\">\r\n\t\t\t\t<FormItem :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'> \r\n\t\t\t\t\t<Input v-if='item.type === \"text\"'  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Input v-if='item.type === \"textarea\" ' :type=\"item.type\"  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t</Select>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.type === \"label\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"tag\" @keydown.13='addTag' />\r\n\t\t\t\t\t\t<Tag @on-close=\"deltag(tag)\" closable :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" v-for=\"(tag,i) in formAdmin.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\t\t<div class=\"lt-full wm-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div v-if='1||reportList[currentReportIndex].fileextname=== \"png\" ||reportList[currentReportIndex].fileextname=== \"jpg\" ||reportList[currentReportIndex].fileextname=== \"jpeg\" || reportList[currentReportIndex].fileextname=== \"gif\"||reportList[currentReportIndex].fileextname=== \"bmp\"'>\r\n\t\t\t\t<img :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-myreport-main-ui\">\r\n\t\t <Split v-model=\"split1\">\r\n\t\t\t<div slot=\"left\" class=\"wm-myreport-left\">\r\n\t\t\t\t<header > \r\n\t\t\t\t\t <span>我的上报</span>\r\n\t\t\t\t\t <ul>\r\n\t\t\t\t\t\t <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key=\"i\" :class=\"{'active':currentType === i}\">\r\n\t\t\t\t\t\t\t <img v-if='i===0' :src=\"imgs.imgIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===1' :src=\"imgs.videoIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===2' :src=\"imgs.audioIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===3' :src=\"imgs.dongmanIco\" alt=\"\">\r\n\t\t\t\t\t\t\t 上报{{menu.split('-')[0]}}\r\n\t\t\t\t\t\t </li>\r\n\t\t\t\t\t </ul>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section>\r\n\t\t\t\t\t<div class=\"wm-myreport-list-C\">\r\n\t\t\t\t\t\t<div v-show='reportList.length<=0' class=\"wm-no-report\">\r\n\t\t\t\t\t\t\t<div >\r\n\t\t\t\t\t\t\t\t<img :src=\"imgs.shangbao\" alt=\"\">\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='large'>点我上报</Button>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload\" ></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='reportList.length>0' class=\"wm-report-list\" :style=\"{height:viewH - 60-60-20-50+'px'}\">\r\n\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click.prevent='showDetail(report,i)'  class=\"wm-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg' :style=\"{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}\"></div>\r\n\t\t\t\t\t\t\t\t\t<span v-if='!report.isLoaded' class=\"wm-file-progress\">{{report.process}}</span>\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<div v-if='!report.isLoaded' class=\"wm-uploading\"></div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-disabled-mask\" v-if='report.status===2'></div>\r\n\t\t\t\t\t\t\t\t\t<span class=\"wm-file-disabled\" v-if='report.status === 2'>\r\n\t\t\t\t\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t\t被管理员发回，不可用\r\n\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click='showReportDetail(report)'>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-create\" /> 编辑\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li>\r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Poptip\t\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"color:#000\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tconfirm\r\n\t\t\t\t\t\t\t\t\t\t\t\t\ttitle=\"确定要删除此作品吗?\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t@on-ok=\"deleteReport(i)\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"wm-del-ico\"><Icon type=\"ios-trash-outline\" /> 删除</div>\r\n\t\t\t\t\t\t\t\t\t\t\t\t</Poptip>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<footer class=\"wm-report-footer\">\r\n\t\t\t\t\t\t<div v-show='currentType === 0 ' >\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\"></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加图片</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 1 ' class=\"wm-uplad-add-video\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\"></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加视频</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 2 ' class=\"wm-uplad-add-audio\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\"></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加音频</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 3 ' class=\"wm-uplad-add-dongman\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\"></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加动漫</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</footer>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-myreport-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<div   class=\"wm-right-thumb\" :style=\"{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}\">\r\n\t\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>大小：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].filesize}}{{reportList[currentReportIndex].filesizeunit}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>时间：</div>\r\n\t\t\t\t\t<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>格式：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].fileextname}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wmmyreport-title wm-myreport-item\">\r\n\t\t\t\t\t<div>尺寸：</div>\r\n\t\t\t\t\t<div>{{reportList[currentReportIndex].fileattr}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input @keydown.13=\"modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)\" v-if='item.canedit' type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\" && item.canedit'>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div @dblclick=\"editItem(item)\" v-if='item.type === \"select\" && !item.canedit'>\r\n\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item.fieldname)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i' closable v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\ttitle=\"编辑作品信息\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" :rules=\"ruleValidate\">\r\n\t\t\t\t<FormItem :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'> \r\n\t\t\t\t\t<Input v-if='item.type === \"text\"'  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Input v-if='item.type === \"textarea\" ' :type=\"item.type\"  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t</Select>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.type === \"label\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"tag\" @keydown.13='addTag' />\r\n\t\t\t\t\t\t<Tag @on-close=\"deltag(tag)\" closable :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" v-for=\"(tag,i) in formAdmin.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\t\t<div class=\"lt-full wm-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div  v-if='reportList[currentReportIndex].fileextname !== \"mp3\" &&reportList[currentReportIndex].fileextname!== \"webm\" &&reportList[currentReportIndex].fileextname !== \"mp4\" && reportList[currentReportIndex].fileextname!== \"aac\"&&reportList[currentReportIndex].fileextname!== \"wma\"&&reportList[currentReportIndex].fileextname!== \"ogg\"'>\r\n\t\t\t\t<img :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc pdf ppt xls docx html css scss js vb shtml zip\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t</div>\r\n";
 
 /***/ }),
 /* 83 */

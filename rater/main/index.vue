@@ -138,16 +138,18 @@
                     success(data){
                         if(data.getret === 0){
                                 s.sourceList = data.list;
-                                obserable.on("getCurrentSourceId",()=>{
-                                    return data.list[0].resourceid;
-                                })
+                              
+                                obserable.on("getCurrentSource",()=>{
+                                    return data.list[0];
+                                });
+                              
+
+
 
                                 obserable.on("getFeildList",()=>{
-                                    
                                     return JSON.parse(data.list[0].tablefield).collectionitems;
-                                })
+                                });
 
-                                console.log(s.sourceList);
                             }
                     }
                 })
