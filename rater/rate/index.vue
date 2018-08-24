@@ -20,7 +20,11 @@
 						</li>
 					</ul>
 				</header>
-				<section class='wm-scroll' :style="{height:viewH - 200+'px',overflow:'auto'}">
+				<header class="wm-report-list-title">
+					<div>介绍</div>
+					<div>点评</div>
+				</header>
+				<section class='wm-scroll' :style="{height:viewH - 230+'px',overflow:'auto'}">
 					<ul class="wm-report-list">
 						<li v-for="(report,i) in reportList " :key="i">
 							<div class="wm-report-item">
@@ -47,13 +51,60 @@
 								</div>
 							</div>
 							<div class="wm-report-rate-C">
+								<div class="wm-report-rate-input">
+									<Input type='textarea' v-model='report.comments' placeholder='请输入您的评价' />
+								</div>
+								<div class="wm-report-rate-btns">
+									<div>
+										<div class="wm-report-adopt" @click='checkReport(report,100)'>
+											<span>通过</span>
+										</div>
+										<div class="wm-report-reject" @click='checkReport(report,0)'>
+											<span>拒绝</span>
+										</div>
+									</div>
+								</div>
 							</div>
 						</li>
 					</ul>
 				</section>
 			</div>
-			<div slot='right'>
-				aaa
+			<div slot='right' v-if='reportList.length>0' class="wm-myreport-right wm-scroll">
+				<div   class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
+					
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>大小：</div>
+					<div>{{reportList[currentReportIndex].filesize}}{{reportList[currentReportIndex].filesizeunit}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>时间：</div>
+					<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>格式：</div>
+					<div>{{reportList[currentReportIndex].fileextname}}</div>
+				</div>
+				<div class="wmmyreport-title wm-myreport-item">
+					<div>尺寸：</div>
+					<div>{{reportList[currentReportIndex].fileattr}}</div>
+				</div>
+				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+					<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+					<div v-if='item.type === "text" ||item.type === "textarea"' >
+						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
+					</div>
+
+					<div  v-if='item.type === "select" && !item.canedit'>
+						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+					</div>
+
+					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+						<div class="wm-tag-list">
+							<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i' closable v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+						</div>
+					</section>
+				</div>
 			</div>
 		</Split>
 		
@@ -75,6 +126,7 @@
 				imgs:window.imgs,
 				isLoading:false,
 				currentType:0,
+				currentReportIndex:0,
 				split1: 0.8,
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				showPass:false,
@@ -107,7 +159,7 @@
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
 			
-			this.getRaterlist();
+			
 			window.s = this;
 
 			var t = setInterval(()=>{
@@ -121,41 +173,36 @@
 						return item.fieldname === 'publicadtype'
 					})[0].data;
 
-					this.resourceName = Vue.obserable.trigger({
+					var data = Vue.obserable.trigger({
 						type:'getCurrentSource'
-					}).resourcecnname;
+					});
+					this.resourceName  = data.resourceName;
+					this.resourceid  = data.resourceid;
+					this.getRaterlist();
 				}
 			},30);
 		},
 		
 		methods:{
 
-			modifyPass(){
-				if(!this.showPass){
-					this.showPass = true;
-					this.$refs['pass'].focus();
+			checkReport(report,score){
+				var s = this;
+				symbinUtil.ajax({
 
-				}else{
-					if(!this.formAdmin.raterpwd){
-						this.$Message.error('密码不能为空');
-						return;
+					url:window.config.baseUrl+"/wmreview/gradingwork",
+					data:{
+						ratername:s.userinfo.ratername,
+						accesstoken:s.userinfo.accesstoken,
+						worksid:report.id,
+						score,
+						comments:report.comments
+					},
+					success(data){
+						s.$Message[data.getret === 0?'success':'error'](data.getmsg);
 					}
-					var s = this;
-					symbinUtil.ajax({
-						url:window.config.baseUrl+'/wmadadmin/updatereviewpwd',
-						data:{
-							admintoken:s.userinfo.admintoken,
-							adminusername:s.userinfo.adminusername,
-							raterid:s.formAdmin.raterid,
-							raterpwd:s.formAdmin.raterpwd
-						},
-						success(data){
-							s.$Message[data.getret === 0 ?'success':'error'](data.getmsg);
-						}
-					})
-				}
-			},
 
+				})				
+			},
 			getRateDataById(index){
 
 				this.currentType = index;
@@ -175,7 +222,7 @@
 					data:{
 						ratername:s.userinfo.ratername,
 						accesstoken:s.userinfo.accesstoken,
-						resourceid:1
+						resourceid:s.resourceid
 					},success(data){
 						if(data.getret === 0){
 							s.reportList = data.list;
