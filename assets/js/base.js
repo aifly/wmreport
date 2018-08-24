@@ -1,7 +1,8 @@
 var imgs = {
 	logo :"./assets/images/logo.png",
 	loginLogo :"./assets/images/login-logo.png",
-	loginTitle :"./assets/images/login-title.png",
+	loginTitle :"./assets/images/raterlogo.png",
+	userLoginTitle :"./assets/images/userlogo.png",
 	loginPerson :"./assets/images/login-person.png",
 	loginLock :"./assets/images/login-lock.png",
 	open :"./assets/images/open.png",

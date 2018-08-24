@@ -4,7 +4,7 @@
             <Header>
                <div>
                     <div class="wm-title">
-                        <img :src="imgs.loginTitle" alt="">
+                        <img :src="imgs.userLoginTitle" alt="">
                     </div>
                </div>
                <div>
