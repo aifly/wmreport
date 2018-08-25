@@ -25,43 +25,7 @@ var symbinUtil = {
 		return loginObj;
 	},
 
-	getStandard(fn) { //获取得分标准
-		
-		if(window.sessionStorage.getItem('wm_standard')){
-			fn && fn(JSON.parse(window.sessionStorage.getItem('wm_standard')));
-			//return;
-		}
-
-		var loginObj = '',
-			validate = {};
-		
-		try {
-			loginObj = JSON.parse(this.getCookie('login'));
-			validate.username = loginObj.userinfo.username;
-			validate.usertoken = loginObj.userinfo.usertoken;
-		} catch (error) {
-			window.sessionStorage.clear();
-			this.clearCookie('login');
-			window.location.hash = '/login';
-		}
-
-		this.ajax({
-			url: window.config.baseUrl + '/wmuser/getcheckitem/',
-			validate,
-			data:{
-			},
-			success(data){
-				fn && fn(data.list);
-				console.log(data.list,' ---------- ')
-				window.sessionStorage.setItem('wm_standard', JSON.stringify(data.list));
-			}
-		})
-		return;
-		$.getJSON('/components/data/standard.json',(data)=>{
-			fn && fn(data.list);
-			window.sessionStorage.setItem('wm_standard', JSON.stringify(data.list));
-		})
-	},
+ 
 
 	ajax(option){
 		var opt = option.data || {};
@@ -79,11 +43,10 @@ var symbinUtil = {
 				option.fnError && option.fnError();
 			}
 		}).done((dt)=>{
-			if(dt.getret === 1300){
-				this.clearCookie('login');
+			if (dt.getret === 1000) {
+				window.localStorage['adminogin'] = '';
 				window.location.hash = '/login';
-			}else{
-			}
+			} else {}
 			option.fn && option.fn(dt);
 			option.success && option.success(dt);
 		})

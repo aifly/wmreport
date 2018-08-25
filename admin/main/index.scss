@@ -2,16 +2,13 @@
 .layout{
 	.layout-logo{
 		color: #FFF;
-		img{
-			height: 35px;
-			width: auto;
-		}
+		width: 300px;
 	}
 
 	.ivu-layout-header{
 		 @include displayFlex(row);
 		 justify-content: space-between;
-		 background:#fff;
+		 background:#373d41;
 		 &>div{
 			 //margin: 0 20px;
 
@@ -26,7 +23,7 @@
 				 background:#b30501;
 				 .wm-title{
 					 margin: 0 auto;
-					 width: 100px;
+					 width: 300px;
 
 				 }
 				 
@@ -35,7 +32,9 @@
 			 &:nth-of-type(2) {
 				 -webkit-flex-grow:1;
 				 flex-grow:1;
+				 
 				 div{
+					 
 					 margin-top: 14px;
 					  width: 400px;
 					  height: 36px;
@@ -43,9 +42,11 @@
 					  ;
 					  margin-left: 20px;
 					  @include br(18px);
-					  background:#eeeeee;
+					  //background:#eeeeee;
+					  background:#21262a;
 					  border: none;
 					  padding: 0;
+					 
 					  @include pos(r);
 					  img{
 						  width: 20px;
@@ -68,6 +69,10 @@
 					 font-size:14px;
 					 outline: none;
 					 padding-left: 20px;
+					color:#fff;
+					&::-webkit-input-placeholder{
+						color:#eee;
+					}
 				 }
 			 }
 
@@ -95,8 +100,8 @@
 					 }
 				 }
 				 span{
-					 vertical-align: middle;
-
+					vertical-align: middle;
+					color:#fff;
 					 margin:0 10px;
 					 display:inline-block;
 					 font-size:14px;
@@ -120,12 +125,8 @@
 	}
 
 	.wm-tab-C{
-		background:#eee;
+		background:#333645;
 		width: 300px !important;
-
-		
-		
-		padding-top: 5px;
 
 		&>div{
 			background: #fff;
@@ -194,7 +195,7 @@
 
 	.wm-main-layout{
 		@include displayFlex(row);
-		margin-top: 10px;
+		//margin-top: 10px;
 	}
 
 	.symbin-main-menu{
@@ -222,6 +223,9 @@
 	}
 	.ivu-menu-item > a > i{
 		margin-right: 6px;
+	}
+	.ivu-menu-item>a{
+		color:rgba(255, 255, 255, 0.7);
 	}
 	.ivu-menu-submenu .ivu-menu-item{
 		padding-left: 24px!important;

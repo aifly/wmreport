@@ -9,7 +9,8 @@ import Rater from './admin/rater/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
 import './admin/css/index.css';
-import 'iview/dist/styles/iview.css';
+import './components/css/admin.less'
+///import 'iview/dist/styles/iview.css';
 
 Vue.use(VueRouter)
 Vue.use(iView)

@@ -60,7 +60,6 @@ var config = {
                 ]
             }
         ],
-
         loaders: [{
             test: /\.js|\.es6$/,
             exclude: /node_modules/,
@@ -69,6 +68,10 @@ var config = {
             test: /\.vue$/,
             exclude: /node_modules/,
             loaders: ['vue-loader']
+        }, {
+            test: /\.less$/,
+            exclude: /node_modules/,
+            loader: 'style-loader!css-loader!less-loader'
         }, {
             test: /\.(css)$/,
             loader: 'style-loader!css-loader'

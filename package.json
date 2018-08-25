@@ -30,7 +30,7 @@
     "iview-loader": "^1.1.0",
     "jquery": "^2.2.3",
     "less": "^2.5.3",
-    "less-loader": "^2.2.2",
+    "less-loader": "^4.1.0",
     "less-plugin-clean-css": "^1.5.1",
     "open-browser-webpack-plugin": "^0.0.5",
     "style-loader": "^0.13.0",

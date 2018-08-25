@@ -151,11 +151,10 @@
                                 obserable.on("getCurrentSourceId",()=>{
                                     return data.list[0].resourceid;
                                 })
-
                                 obserable.on("getFeildList",()=>{
-                                    
-                                    return JSON.parse(data.list[0].tablefield).collectionitems;
+                                    return JSON.parse(data.list[0].tablefield).fieldlist;
                                 })
+
 
                                 
                             }

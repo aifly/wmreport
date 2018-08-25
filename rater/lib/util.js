@@ -79,8 +79,8 @@ var symbinUtil = {
 				option.fnError && option.fnError();
 			}
 		}).done((dt)=>{
-			if(dt.getret === 1300){
-				this.clearCookie('login');
+			if(dt.getret === 1000){
+				window.localStorage['raterlogin'] = '';
 				window.location.hash = '/login';
 			}else{
 			}

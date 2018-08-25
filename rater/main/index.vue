@@ -9,12 +9,12 @@
                </div>
                <div>
                    <div>
-                       <span><img :src="imgs.search" alt=""></span><input type="text" placeholder="查询我的上报" />
+                       <span><img :src="imgs.search" alt=""></span><input type="text" placeholder="查询上报" @keydown="searchByKw" v-model='kw'/>
                    </div>
                </div>
                <div class="wm-user-info">
                    <span><img :src='imgs.man' /></span>
-                   <span class="zmiti-text-overflow">{{userinfo.nickname}}</span>
+                   <span class="zmiti-text-overflow">{{userinfo.ratername}}</span>
                    <div title='退出' @click="logout">
                        <img :src="imgs.logout" alt="">
                    </div>
@@ -29,7 +29,7 @@
                                     <Icon type="ios-paper" />
                                     作品评选
                                 </template>
-                                    <a href='#/rate'>
+                                    <a href='#/rater'>
                                       <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
                                       </MenuItem>
                                     </a>
@@ -73,7 +73,8 @@
                 defaultMenu:[
                   
                 ],
-                menus:[]
+                menus:[],
+                kw:'',
 			}
 		},
 		components:{
@@ -100,13 +101,28 @@
         },
        
 		methods:{
+            searchByKw(){
+                clearTimeout( this.timer );
+                var s = this;
+                if(!s.kw){
+                    return;
+                }
+                this.timer = setTimeout(() => {
+                    var {obserable} = Vue;
+                    obserable.trigger({
+                        type:"searchReportByKw",
+                        data:s.kw
+                    })
+                }, 400);
+                console.log(this.kw)
+            },
             logout(){
                 var s = this;
                 
                 symbinUtil.ajax({
-                    url:window.config.baseUrl+'/wmadvuser/exitlogin',
+                    url:window.config.baseUrl+'/wmreview/exitlogin',
                     data:{
-                        username:s.userinfo.username,
+                        ratername:s.userinfo.ratername,
                         accesstoken:s.userinfo.accesstoken
                     },
                     success(data){

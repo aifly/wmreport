@@ -4,11 +4,11 @@
             <Header>
                <div>
                     <div class="wm-title">
-                        <img :src="imgs.loginTitle" alt="">
+                        <img :src="imgs.adminLoginTitle" alt="">
                     </div>
                </div>
                <div>
-                   <div>
+                   <div v-if='false'>
                        <span><img :src="imgs.search" alt=""></span><input type="text" placeholder="查询我的上报" />
                    </div>
                </div>
@@ -22,17 +22,33 @@
             </Header>
             <Layout class="wm-main-layout">
                 <div class="wm-tab-C" :style='{height:(viewH - 64- 10)+"px"}'>
-                   <div>
-                        <div class='wm-menu-item' :class="{'active':$route.name ==='adminuser'}">
-                            <a href='#/adminuser'>用户管理</a>
-                        </div>
-                        <div class='wm-menu-item' :class="{'active':$route.name ==='rater'}">
-                            <a href='#/rater'>评委管理</a>
-                        </div>
-                        <div class='wm-menu-item' :class="{'active':$route.name ==='user'}">
+
+                    <Menu width='300' :open-names="['1']"  theme='dark'>
+                        <Submenu name="1">
+                            <template slot="title">
+                                <Icon type="ios-paper" />
+                                人员管理
+                            </template>
+                                   <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                                    </MenuItem> -->
+                                    <MenuItem name='reporter' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
+                                        <a href='#/adminuser'>
+                                            上报人员管理
+                                        </a>
+                                    </MenuItem>
+                                   <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                                    </MenuItem> -->
+                                    <MenuItem name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
+                                        <a href='#/rater'>
+                                            评委管理
+                                        </a>
+                                    </MenuItem>
+                        </Submenu>
+                         <MenuItem name='user' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
                             <a href='#/user'>个人中心</a>
-                        </div>
-                   </div>
+                        </MenuItem>
+                        
+                    </Menu>
                 </div>
                 <Layout :style="{maxWidth:viewW-300+'px'}">
                    <router-view></router-view>

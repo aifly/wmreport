@@ -204,7 +204,7 @@ $color: #be0000;
                     z-index: 10000;
                     cursor: pointer;
 
-                    div:nth-of-type(2){
+                    div:nth-of-type(2) {
                         width: 100% !important;
                         height: 100% !important;
                     }
@@ -290,11 +290,15 @@ $color: #be0000;
                         margin: 10px 0;
                     }
                 }
-                .wm-upload{
+
+                .wm-upload {
                     position: absolute !important;
-                    &>div:nth-of-type(2){
+
+                    & > div:nth-of-type(2) {
                         z-index: 1000;
+
                         @include pos(a);
+
                         left: 0;
                         top: 0;
                         width: 100% !important;
@@ -330,13 +334,13 @@ $color: #be0000;
             overflow: auto;
             height: 500px;
 
-            ul{
+            ul {
                 margin-top: 30px;
             }
 
             li {
                 display: inline-block;
-                width: 18%;
+                width: 230px;
                 margin: 12px;
                 height: 130px;
 
@@ -636,23 +640,27 @@ $color: #be0000;
     }
 
     .wm-myreport-item {
-        @include displayFlex(row);
-
         min-height: 24px;
         line-height: 24px;
+        max-width: 90%;
+        margin: 4px auto;
+        float: left;
+        width: 100%;
+        background:#f4f4f4;
 
         & > div {
+            float: left;
+
             &:nth-of-type(1) {
                 text-align: center;
-                width: 60px;
+                width: 20%;
+                margin-left: 2%;
             }
 
             &:nth-of-type(2) {
-                -webkit-flex-grow: 1;
-                flex-grow: 1;
-
-                //border:1px solid red;
+                width: 78%;
                 cursor: pointer;
+                min-height: 30px;
             }
 
             input {
@@ -759,9 +767,18 @@ $color: #be0000;
     }
 
     .wm-right-thumb {
-        width: 95%;
         margin: 0 auto;
         height: 130px;
+        width: 230px;
+
+        @include displayFlex(row);
+
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-align-items: center;
+        align-items: center;
+        overflow: hidden;
+
     }
 
     .wm-report-C {
@@ -864,6 +881,8 @@ $color: #be0000;
                 }
 
                 .wm-myreport-item {
+                    //background:#f4f4f4;
+                    background:transparent;
                     div {
                         padding-right: 2px;
                         text-align: left;

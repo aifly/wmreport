@@ -111,11 +111,11 @@
 					};
 
 					symbinUtil.ajax({
-						url:window.config.baseUrl+'/wmreview/updateuserpwd/',
+						url:window.config.baseUrl+'/wmreview/updatereviewpwd/',
 						data:{
-							username:s.userinfo.ratername,
+							ratername:s.userinfo.ratername,
 							accesstoken:s.userinfo.accesstoken,
-							userpwd:s.userinfo.password
+							raterpwd:s.userinfo.password
 						},
 						success(data){
 							console.log(data);

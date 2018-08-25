@@ -4,6 +4,9 @@ $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
+body{
+    overflow: hidden;
+}
 .wm-rater-main-ui{
     background: #fff;
      .wm-rater-header {
@@ -54,7 +57,7 @@ $color: #be0000;
      .wm-rater-search-where{
          width: 100%;
          height: 50px;
-         margin-top: 2px;
+         margin: 2px 0;
          line-height: 50px;
 
          border:1px solid #eee;
@@ -72,6 +75,27 @@ $color: #be0000;
               margin-left: 80px;;
               justify-content: space-around;
               -webkit-justify-content: space-around;
+
+              li{
+                  cursor: pointer;
+                  @include pos(r);
+                  width: 140px;
+                  font-size:14px;
+                  text-align: center;
+                  &.active{
+                      color:#b20000;
+                     &:before{
+                         content:'';
+                         @include pos(a);
+                         width: 100%;
+                         height: 2px;
+                         background: #b20000;
+                         left: 0;
+                         bottom: 0;
+
+                     }
+                  }
+              }
          }
      }
       .wm-report-list-title{
@@ -85,7 +109,8 @@ $color: #be0000;
          &>div{
             &:nth-of-type(1){
               width: 60%;
-              border-right:1px solid #eee;
+              border-right:1px solid #ddd;
+              margin-left: -5px;
             }
             &:nth-of-type(2){
               width: 40%;
@@ -97,12 +122,48 @@ $color: #be0000;
          border-left: 1px solid  $color;
          box-sizing: border-box;
          border-top: 1px solid  $color;
+         .wm-load-more{
+             width: 100%;
+             height: 40px;
+             line-height: 40px;
+             text-align: center;
+             cursor: pointer;
+             float: left;
+             -webkit-user-select: none;
+         }
          li {
              border-right: 1px solid  $color;
              border-bottom: 1px solid  $color;
              float: left;
              width: 100%;
              box-sizing: border-box;
+             @include pos(r);
+            height: 170px;;
+
+            &.reportitem-enter-active,
+            &.reportitem-leave-active
+           {
+                @include transition(.3s);
+            }
+
+            &.reportitem-enter,
+            &.reportitem-leave-to
+           {
+                height: 0;
+                overflow: hidden;
+            }
+            &.active{
+                 &:before {
+                     content: "";
+                     width: 100%;
+                     height: 100%;
+                     left: 0;
+                     top: 0;
+                     @include pos(a);
+                     box-shadow: 0 0 10px rgba(0,0,0, .2),
+                     0 0 10px rgba(0, 0, 0, .2) inset;
+                 }
+            }
              /* @include displayFlex(row);
              justify-content: space-between; */
            //  min-height: 160px;
@@ -148,18 +209,23 @@ $color: #be0000;
                         }
                     }
 
-                    .wm-myreport-item {
+                    @at-root.wm-myreport-item {
                         @include displayFlex(row);
                         min-height: 24px;
                         line-height: 24px;
+                        width: 100%;
                         &>div {
                             &:nth-of-type(1) {
                                 text-align: center;
-                                width: 60px;
+                               width: 20%;
                             }
                             &:nth-of-type(2) {
-                                -webkit-flex-grow: 1;
-                                flex-grow: 1; //border:1px solid red;
+
+                                overflow: hidden;
+                                width: 80%;
+                                
+                                
+                                
                              
                             }
                             input {
@@ -220,6 +286,38 @@ $color: #be0000;
                         text-align:center;
                         line-height: 70px;
                       }
+                        &.reject-enter-active,
+                        &.reject-leave-active,
+                        &.pass-enter-active,
+                        &.pass-leave-active {
+                           @include transition(.3s);
+                        }
+
+                        &.reject-enter,
+                        &.reject-leave-to,
+                        &.pass-enter,
+                        &.pass-leave-to
+                        {
+                          width: 0;
+                          height: 0;
+                          overflow: hidden;
+                        }
+                        &.pass {
+                            background: #fff;
+                            color: yellowgreen;
+                            &::before{
+                                border-color:yellowgreen;
+                            }
+                            cursor: text;
+                        }
+                        &.reject {
+                            cursor: text;
+                            background: #fff;
+                            color: #b20000;
+                            &::before,&:after {
+                                background:#b20000;
+                            }
+                        }
                   }
                   .wm-report-adopt{
                       background:yellowgreen;
@@ -234,6 +332,8 @@ $color: #be0000;
                         border-right:none;
                         border-top:none;
                         top:8px;;
+
+                      
                       }
                   }
                   .wm-report-reject{
@@ -262,15 +362,17 @@ $color: #be0000;
                 }
              }
          }
+
      }
 
      .wm-myreport-right {
         background: #fff;
-        overflow: auto;
+        //overflow: auto;
         height: 100%;
 
         .wm-tag-list-C {
             width: 100%;
+           
         }
 
         .wm-userlabel-header {
@@ -357,14 +459,404 @@ $color: #be0000;
             width: 85%;
             margin: 10px auto;
         }
+
+        .wm-myreport-item {
+            min-height: 24px;
+            line-height: 24px;
+            max-width: 90%;
+            margin: 4px auto;
+            float: left;
+            width: 100%;
+            &>div {
+                float: left;
+                &:nth-of-type(1) {
+                    text-align: center;
+                    width: 20%;
+                    margin-left: 2%;
+                }
+                &:nth-of-type(2) {
+                    width: 78%;
+                    cursor: pointer;
+                }
+                input {
+                    height: 24px;
+                    border: 1px solid #eee;
+                    outline: none;
+                }
+            }
+        }
+
+
+          .wm-report-detail {
+              padding: 10px;
+              box-sizing: border-box;
+              @include pos(a);
+              width: 100%;
+              min-width: 300px;
+              bottom: 0;
+              left: 50%;
+              @include transform(translate3d(-50%, 0, 0));
+              background: rgba(0, 0, 0, 0.7);
+              color: #fff;
+              @include transition(0.4s);
+              &.hide {
+                  height: 40px;
+                  overflow: hidden;
+                  &>span {
+                      &:before,
+                      &:after {
+                          @include transform(rotate(225deg));
+                          top: 4px;
+                      }
+                      &:after {
+                          top: 8px;
+                      }
+                  }
+              }
+              &.wm-audio {
+                  @include pos(r);
+                  .wm-myreport-title {}
+              }
+              &.wm-video-detail {
+                  &.hide {
+                      bottom: -40px;
+                  }
+              }
+              &>span {
+                  @include pos(a);
+                  right: 30px;
+                  top: 10px;
+                  cursor: pointer;
+                  &:before,
+                  &:after {
+                      content: '';
+                      right: -12px;
+                      top: 0px;
+                      @include pos(a);
+                      width: 8px;
+                      height: 8px;
+                      border: 1px solid #fff;
+                      border-left: none;
+                      border-top: none;
+                      @include transform(rotate(45deg));
+                  }
+                  &:after {
+                      top: 4px;
+                  }
+              }
+              .wm-myreport-item {
+                  div {
+                     // padding-right: 2px;
+                      text-align: left;
+                  }
+                  .wm-tag-list-C {
+                      @include displayFlex(row);
+                      -webkit-flex-grow: 1;
+                      flex-grow: 1;
+                      &>div {
+                          &:nth-of-type(1) {
+                              width: 40px;
+                          }
+                          &:nth-of-type(2) {
+                              margin-left: 20px;
+                              max-width: 200px;
+                          }
+                      }
+                  }
+              }
+          }
+
+          
     }
 
-    .wm-right-thumb {
-        width: 95%;
-        margin: 0 auto;
-        height: 130px;
-    }
 
+     .wm-report-C {
+         background: rgba(0, 0, 0, 0.8);
+         z-index: 1000;
+         position: fixed !important;
+         @include displayFlex(row);
+         -webkit-justify-content: center;
+         justify-content: center;
+         -webkit-align-items: center;
+         align-items: center;
+         &>div {
+             max-width: 80vw;
+             max-height: 60vh;
+             @include pos(r);
+             .xlsx,
+             .pdf,
+             .doc,
+             .ppt {
+                 display: block;
+                 margin: 0 auto;
+                 position: relative !important;
+             }
+             .wm-report-detail {
+                 padding: 10px;
+                 box-sizing: border-box;
+                 @include pos(a);
+                 width: 100%;
+                 min-width: 300px;
+                 bottom: 0;
+                 left: 50%;
+                 @include transform(translate3d(-50%, 0, 0));
+                 background: rgba(0, 0, 0, 0.7);
+                 color: #fff;
+                 @include transition(0.4s);
+                 &.hide {
+                     height: 40px;
+                     overflow: hidden;
+                     &>span {
+                         &:before,
+                         &:after {
+                             @include transform(rotate(225deg));
+                             top: 4px;
+                         }
+                         &:after {
+                             top: 8px;
+                         }
+                     }
+                 }
+                 &.wm-audio {
+                     @include pos(r);
+                     .wm-myreport-title {}
+                 }
+                 &.wm-video-detail {
+                     &.hide {
+                         bottom: -40px;
+                     }
+                 }
+                 &>span {
+                     @include pos(a);
+                     right: 30px;
+                     top: 10px;
+                     cursor: pointer;
+                     &:before,
+                     &:after {
+                         content: '';
+                         right: -12px;
+                         top: 0px;
+                         @include pos(a);
+                         width: 8px;
+                         height: 8px;
+                         border: 1px solid #fff;
+                         border-left: none;
+                         border-top: none;
+                         @include transform(rotate(45deg));
+                     }
+                     &:after {
+                         top: 4px;
+                     }
+                 }
+                 .wm-myreport-item {
+                     div {
+                        // padding-right: 2px;
+                         text-align: left;
+                     }
+                     .wm-tag-list-C {
+                         @include displayFlex(row);
+                         -webkit-flex-grow: 1;
+                         flex-grow: 1;
+                         &>div {
+                             &:nth-of-type(1) {
+                                 width: 40px;
+                             }
+                             &:nth-of-type(2) {
+                                 margin-left: 20px;
+                                 max-width: 200px;
+                             }
+                         }
+                     }
+                 }
+             }
+             img {
+                 width: auto;
+                 height: auto;
+                 max-height: 60vh;
+                 max-width: 80vh;
+             }
+             video {
+                 width: auto;
+                 max-height: 60vh;
+             }
+         }
+
+         &>.wm-report-check-in-mask{
+             width: 300px;
+             height:200px;
+             background:#232323;
+             @include pos(a);
+             right: 40px;
+             bottom: 40px;
+             @include br(6px);
+
+             @include transition(.4s);
+             &.hide{
+                 @include transform(translate(0,50px));
+                 opacity: 0;
+             }
+
+             &>div{
+                 &:nth-of-type(1){
+                    padding: 10px;
+                    @include br(6px);
+                    textarea{
+                        background:#0f0f0f;
+                        border: none;
+                        resize: none;
+                        height: 100px;
+                        color:#fff;
+                        &::-webkit-input-placeholder{
+                            color:#fff;
+                        }
+                    }   
+                 }
+                 &:nth-of-type(2){
+                    @include displayFlex(row);
+                    justify-content:space-evenly;
+                    
+                    &>div{
+                        width: 40px;
+                        height: 40px;
+                        
+                    }
+
+                    .wm-report-adopt,
+                    .wm-report-reject {
+                        width: 50px;
+                        height: 50px;
+                        cursor: pointer;
+                        @include br();
+                        margin: 4px 0;
+                        color: #fff;
+                        @include pos(r);
+                        span {
+                            @include pos(a);
+                            width: 100%;
+                            height: 100%;
+                            text-align: center;
+                            line-height: 70px;
+                        }
+                        &.reject-enter-active,
+                        &.reject-leave-active,
+                        &.pass-enter-active,
+                        &.pass-leave-active {
+                            @include transition(.3s);
+                        }
+                        &.reject-enter,
+                        &.reject-leave-to,
+                        &.pass-enter,
+                        &.pass-leave-to {
+                            width: 0;
+                            height: 0;
+                            overflow: hidden;
+                        }
+                        &.pass {
+                            background:transparent;
+                            color: #fff;;
+                            &::before {
+                                border-color: #fff;
+                            }
+                            cursor: text;
+                        }
+                        &.reject {
+                            cursor: text;
+                            background:transparent;
+                            color: #b20000;
+                            &::before,
+                            &:after {
+                                background: #b20000;
+                            }
+                        }
+                    }
+
+                    .wm-report-adopt {
+                        background: yellowgreen;
+                        &:before {
+                            content: "";
+                            @include pos(a);
+                            width: 20px;
+                            height: 12px;
+                            @include transform(rotate(-40deg) skew(10deg));
+                            left: 14px;
+                            border: 3px solid #fff;
+                            border-right: none;
+                            border-top: none;
+                            top: 8px;
+                            ;
+                        }
+                    }
+
+                    .wm-report-reject {
+                        background: #b20000;
+                        &:before,
+                        &:after {
+                            content: "";
+                            @include pos(a);
+                            width: 20px;
+                            height: 3px;
+                            left: 50%;
+                            background: #fff;
+                            border-right: none;
+                            border-top: none;
+                            top: 50%;
+                            margin-top: -8px;
+                            @include transform( translate3d(-50%, -50%, 0) rotate(45deg));
+                        }
+                        &:after {
+                            width: 3px;
+                            height: 20px;
+                        }
+                    }
+
+                 }
+             }
+
+         }
+         .wm-report-close {
+             $color: #fff;
+             @include pos(a);
+             width: 34px;
+             height: 34px;
+             @include br;
+             cursor: pointer;
+             border: 2px solid $color;
+             right: 20px;
+             @include transform(rotate(45deg));
+             top: 20px;
+             z-index: 10;
+             &:before,
+             &:after {
+                 content: '';
+                 @include pos(a);
+                 width: 20px;
+                 height: 2px;
+                 background: $color;
+                 left: 50%;
+                 top: 50%;
+                 @include transform(translate3d(-50%, -50%, 0));
+             }
+             &:after {
+                 width: 2px;
+                 height: 20px;
+             }
+         }
+     }
+
+     .wm-right-thumb {
+         margin: 0 auto;
+         height: 130px;
+         width: 230px;
+         @include displayFlex(row);
+         -webkit-justify-content: center;
+         justify-content: center;
+         -webkit-align-items: center;
+         align-items: center;
+         overflow: hidden;
+     }
+    .wm-report-detail-content{
+        width: 70%;
+    }
 
 
 
@@ -375,6 +867,7 @@ $color: #be0000;
 }
 
 .ivu-table-body::-webkit-scrollbar,
+.ivu-scroll-container::-webkit-scrollbar,
 .wm-scroll::-webkit-scrollbar {
     /*滚动条整体样式*/
     width: 8px;
@@ -383,6 +876,7 @@ $color: #be0000;
 }
 
 .ivu-table-body::-webkit-scrollbar-thumb,
+.ivu-scroll-container::-webkit-scrollbar-thumb,
 .wm-scroll::-webkit-scrollbar-thumb {
     /*滚动条里面小方块*/
     border-radius: 5px;
@@ -392,6 +886,7 @@ $color: #be0000;
 }
 
 .ivu-table-body::-webkit-scrollbar-track,
+.ivu-scroll-container::-webkit-scrollbar-track,
 .wm-scroll::-webkit-scrollbar-track {
     /*滚动条里面轨道*/
     -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);

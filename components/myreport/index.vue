@@ -62,25 +62,25 @@
 						</div>
 					</div>
 					<footer class="wm-report-footer">
-						<div v-show='currentType === 0 ' >
+						<div v-show='currentType === 0 && reportList.length>0' >
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加图片</span>
 							</div>
 						</div>
-						<div v-show='currentType === 1 ' class="wm-uplad-add-video">
+						<div v-show='currentType === 1 && reportList.length>0' class="wm-uplad-add-video">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加视频</span>
 							</div>
 						</div>
-						<div v-show='currentType === 2 ' class="wm-uplad-add-audio">
+						<div v-show='currentType === 2 && reportList.length>0' class="wm-uplad-add-audio">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加音频</span>
 							</div>
 						</div>
-						<div v-show='currentType === 3 ' class="wm-uplad-add-dongman">
+						<div v-show='currentType === 3 && reportList.length>0' class="wm-uplad-add-dongman">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加动漫</span>
@@ -90,30 +90,17 @@
 				</section>
 			</div>
 			<div slot="right" class="wm-myreport-right wm-scroll" v-if='reportList[currentReportIndex]'>
-				<div   class="wm-right-thumb" :style="{background:'url('+(reportList[currentReportIndex].pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'cover'}">
-					
+				<div   class="wm-right-thumb">
+					<div>
+						<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
+					</div>
 				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>大小：</div>
-					<div>{{reportList[currentReportIndex].filesize}}{{reportList[currentReportIndex].filesizeunit}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>时间：</div>
-					<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>格式：</div>
-					<div>{{reportList[currentReportIndex].fileextname}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>尺寸：</div>
-					<div>{{reportList[currentReportIndex].fileattr}}</div>
-				</div>
-				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-					<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-					<div v-if='item.type === "text" ||item.type === "textarea"' @dblclick="editItem(item)" >
+				
+				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}} :</div>
+					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						<input @keydown.13="modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)" v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+						<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
 					</div>
 
 					<div  v-if='item.type ===  "select" && item.canedit'>
@@ -130,7 +117,7 @@
 							<div>标签</div>
 							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
 							<div>
-								<div class="wm-add-label" @click='addTagByDetail(item.fieldname)'>
+								<div class="wm-add-label" @click='addTagByDetail(item)'>
 
 								</div>
 							</div>
@@ -297,6 +284,7 @@
 				var id  = obserable.trigger({
 					type:'getCurrentSourceId'
 				});
+				console.log(id)
 				if(id){
 					clearInterval(t);
 					setTimeout(() => {
@@ -437,7 +425,7 @@
 				var id  = Vue.obserable.trigger({
 					type:'getCurrentSourceId'
 				})
-
+				this.formAdmin.tagList = this.formAdmin.tagList||[];
 				this.formAdmin.tagList.push(this.detailtag);
 				this.detailtag = '';
 				
@@ -473,11 +461,10 @@
 
 			modifyReport(model,key){
 				
-
 				var s = this;
-				var id  = Vue.obserable.trigger({
+				var id = Vue.obserable.trigger({
 					type:'getCurrentSourceId'
-				})
+				});
 				
 				var p = {
 					username:s.userinfo.username,
@@ -565,16 +552,18 @@
 				var s = this;
 				var {obserable} = Vue;
 				var t = setInterval(()=>{
+
+
 					var id  = obserable.trigger({
 						type:'getCurrentSourceId'
 					})
 					var tableFields = obserable.trigger({
 						type:"getFeildList"
 					})
-					
-
+				
 					
 					if(id){
+
 						
 						this.configList = tableFields.concat([]);
 
@@ -610,8 +599,8 @@
 
 										s.filterReportList();
 										if( s.currentReportIndex>-1){
-											s.formAdmin = s.reportList[ s.currentReportIndex ];
-											s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+											s.formAdmin = s.reportList[ s.currentReportIndex ]||{};
+										    s.formAdmin && s.formAdmin.userlabel &&(s.formAdmin.tagList = s.formAdmin.userlabel.split(','));
 										}
 									}
 									//s.currentReport = s.reportList[0];
@@ -670,9 +659,10 @@
 				s.uploader = uploader;
 
 				// 当有文件添加进来的时候
+				var i = 0;
 				uploader.on('fileQueued', function (file) {
 
-				
+					i++;
 					 
 					s.reportList.unshift({
 						reportid:file.id,
@@ -696,7 +686,8 @@
 				});
 				// 文件上传过程中创建进度条实时显示。
 				uploader.on('uploadProgress', function (file, percentage) {
-					console.log(percentage * 100|0 + '%')
+
+					
 					var index = -1;
 					var scale = (percentage * 100|0);
 					s.reportList.forEach((item,i)=>{
@@ -742,9 +733,13 @@
 				});
 
 				// 完成上传完了，成功或者失败，先删除进度条。
+				var iNow = 0;
 				uploader.on('uploadComplete', function (file) {
-					console.log('uploadComplete');
-					s.getMyreportList();
+					iNow++;
+					if(iNow === i){
+						s.getMyreportList();
+					}
+					//
 					/* $('#' + file.id).find('.progress').remove();
 					$('#' + file.id).find('p.state').text('已上传'); */
 				});

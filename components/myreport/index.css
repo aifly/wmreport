@@ -342,7 +342,7 @@
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li {
   display: inline-block;
-  width: 18%;
+  width: 230px;
   margin: 12px;
   height: 130px;
   position: relative;
@@ -610,22 +610,29 @@
 }
 
 .wm-myreport-main-ui .wm-myreport-item {
-  display: flex;
-  display: -webkit-flex;
-  flex-flow: row;
   min-height: 24px;
   line-height: 24px;
+  max-width: 90%;
+  margin: 4px auto;
+  float: left;
+  width: 100%;
+  background: #f4f4f4;
+}
+
+.wm-myreport-main-ui .wm-myreport-item > div {
+  float: left;
 }
 
 .wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(1) {
   text-align: center;
-  width: 60px;
+  width: 20%;
+  margin-left: 2%;
 }
 
 .wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(2) {
-  -webkit-flex-grow: 1;
-  flex-grow: 1;
+  width: 78%;
   cursor: pointer;
+  min-height: 30px;
 }
 
 .wm-myreport-main-ui .wm-myreport-item > div input {
@@ -717,9 +724,17 @@
 }
 
 .wm-myreport-main-ui .wm-right-thumb {
-  width: 95%;
   margin: 0 auto;
   height: 130px;
+  width: 230px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .wm-myreport-main-ui .wm-report-C {
@@ -809,6 +824,10 @@
 
 .wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {
   top: 4px;
+}
+
+.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item {
+  background: transparent;
 }
 
 .wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-item div {
