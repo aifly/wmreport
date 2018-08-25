@@ -188,8 +188,9 @@ $color: #be0000;
             }
 
             .wm-report-footer {
-                height: 50px;
-                line-height: 50px;
+                background:#f4f4f4;
+                height: 80px;
+                line-height: 70px;
                 -webkit-justify-content: space-around;
                 justify-content: space-around;
 
@@ -199,6 +200,17 @@ $color: #be0000;
                 justify-content: center;
                 -webkit-align-items: center;
                 align-items: center;
+
+                @include pos(r);
+                &:before{
+                    content:"";
+                    width: 100%;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    @include pos(a);
+                    box-shadow:0 0 10px rgba(0,0,0,.5) inset;
+                }
 
                 .wm-upload {
                     z-index: 10000;
@@ -211,7 +223,7 @@ $color: #be0000;
                 }
 
                 & > div {
-                    width: 120px;
+                    width: 160px;
                     text-align: center;
                     height: 30px;
                     cursor: pointer;
@@ -220,6 +232,19 @@ $color: #be0000;
 
                     line-height: 30px;
                     background: #f5a420;
+
+
+                    .wm-upload-tip{
+                        top: 26px;
+                        @include pos(a);
+                        color:#999;
+                        width:100%;
+                        text-align:center;
+
+
+                    }
+
+
                     color: #fff;
 
                     div:nth-of-type(2) {
@@ -343,6 +368,8 @@ $color: #be0000;
                 width: 230px;
                 margin: 12px;
                 height: 130px;
+                background:#f4f4f4;
+
 
                 @include pos(r);
 
@@ -764,6 +791,31 @@ $color: #be0000;
             width: 85%;
             margin: 10px auto;
         }
+        .wm-myreport-item{
+            background:transparent;
+            & > div {
+            float: left;
+
+            &:nth-of-type(1) {
+                text-align: center;
+                width: 30%;
+                text-align: right;
+                margin-left: 2%;
+            }
+
+            &:nth-of-type(2) {
+                width: 68%;
+                cursor: pointer;
+                min-height: 30px;
+            }
+
+            input {
+                height: 24px;
+                border: 1px solid #eee;
+                outline: none;
+            }
+        }
+        }
     }
 
     .wm-right-thumb {
@@ -880,12 +932,22 @@ $color: #be0000;
                     }
                 }
 
-                .wm-myreport-item {
+                .wm-myreport-field-item {
                     //background:#f4f4f4;
                     background:transparent;
-                    div {
-                        padding-right: 2px;
+                    @include displayFlex(row);
+
+
+                    &>div {
+                        //padding-right: 2px;
                         text-align: left;
+                        line-height: 30px;
+
+                        &:nth-of-type(1){
+                            width: 60px;
+                            text-align:right;
+                            margin-right: 20px;
+                        }
                     }
 
                     .wm-tag-list-C {
@@ -960,6 +1022,8 @@ $color: #be0000;
                 height: 20px;
             }
         }
+
+
     }
 }
 

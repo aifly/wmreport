@@ -23,7 +23,7 @@
 								<div class="wm-upload" ></div>
 							</div>
 						</div>
-						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20-50+'px'}">
+						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20- 80+'px'}">
 							<ul>
 								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
@@ -67,6 +67,7 @@
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加图片</span>
 							</div>
+							<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
 						</div>
 						<div v-show='currentType === 1 && reportList.length>0' class="wm-uplad-add-video">
 							<div class="wm-upload"></div>
@@ -97,7 +98,7 @@
 				</div>
 				
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}} :</div>
+					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
 						<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
@@ -108,6 +109,7 @@
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
 						</Select>
 					</div>
+					
 					<div @dblclick="editItem(item)" v-if='item.type === "select" && !item.canedit'>
 						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 					</div>
@@ -162,20 +164,20 @@
 				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
+					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname !== "userlabel" && (item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+						<div v-if='item.fieldname !== "userlabel" &&(item.type === "text" ||item.type === "textarea")' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
 						</div>
 						<div v-if='item.type === "select"'>
 							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 						</div>
-						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-							<div>标签：</div>
-							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-							</div>
-						</section>
+
+						<div v-if='item.fieldname === "userlabel"'>标签：</div>
+						<div v-if='item.fieldname === "userlabel"' class="wm-tag-list">
+							<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+						</div>
+						
 					</div>
 				</div>
 			</div>
@@ -183,7 +185,7 @@
 				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
 				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
 					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
 						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
 						<div v-if='item.type === "text" ||item.type === "textarea"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
@@ -203,7 +205,7 @@
 			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
 				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
 				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
-					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
 						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
 						<div v-if='item.type === "text" ||item.type === "textarea"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
@@ -477,7 +479,9 @@
 			},
 
 			editItem(item){
-				console.log(item);
+				if(!item.edit){
+					return;
+				}
 				this.configList.forEach((it)=>{
 					it.canedit = false;
 				});
