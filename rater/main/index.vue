@@ -29,10 +29,10 @@
                                     <Icon type="ios-paper" />
                                     作品评选
                                 </template>
-                                    <a href='#/rater'>
-                                      <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
-                                      </MenuItem>
-                                    </a>
+                                <a href='#/rater'>
+                                    <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                                    </MenuItem>
+                                </a>
                             </Submenu>
                             <a href='#/user/'> 
                                 <MenuItem name="13">个人中心 </MenuItem>

@@ -21,9 +21,8 @@
                </div>
             </Header>
             <Layout class="wm-main-layout">
-                <div class="wm-tab-C" :style='{height:(viewH - 64- 10)+"px"}'>
-
-                    <Menu width='300' :open-names="['1']"  theme='dark'>
+                <div class="wm-tab-C" :style='{height:(viewH - 64)+"px"}'>
+                    <Menu width='300'   theme='dark'>
                         <Submenu name="1">
                             <template slot="title">
                                 <Icon type="ios-paper" />
@@ -31,22 +30,43 @@
                             </template>
                                    <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
                                     </MenuItem> -->
-                                    <MenuItem name='reporter' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
-                                        <a href='#/adminuser'>
-                                            上报人员管理
-                                        </a>
+                                    <MenuItem name='/reporter' to='adminuser' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
+                                        上报人员管理
                                     </MenuItem>
                                    <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
                                     </MenuItem> -->
-                                    <MenuItem name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
-                                        <a href='#/rater'>
-                                            评委管理
-                                        </a>
+                                    <MenuItem to='/rater' name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
+                                        评委管理
                                     </MenuItem>
                         </Submenu>
-                         <MenuItem name='user' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
-                            <a href='#/user'>个人中心</a>
-                        </MenuItem>
+                        <Submenu name='2'>
+                            <template slot="title">
+                                <Icon type="ios-paper" />
+                                我的
+                            </template>
+                            <MenuItem name='user' to='/user' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
+                                    个人中心
+                            </MenuItem>
+                        </Submenu>
+                        <Submenu name='3'>
+                            <template slot="title">
+                                <Icon type="ios-paper-plane" />
+                                上报管理
+                            </template>
+                           
+                            <MenuItem name='vote' to='/vote' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "vote"}'>
+                                投票管理
+                            </MenuItem>
+                        </Submenu>
+                        <Submenu name='4'>
+                            <template slot="title">
+                                <Icon type="ios-paper-plane" />
+                                征集管理
+                            </template>
+                             <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
+                                {{resource.resourcecnname}}
+                            </MenuItem>
+                        </Submenu>
                         
                     </Menu>
                 </div>
@@ -78,11 +98,7 @@
                 tabIndex:0,
                 userinfo:{},
                 
-                topMenu:[
-                ],
-                defaultMenu:[
-                  
-                ],
+                resourceList:[],
                 menus:[]
 			}
 		},
@@ -107,9 +123,37 @@
             window.onresize = ()=>{
                 this.viewW  = window.innerWidth;
             }
+
+            this.getResourceList();
+
+            setTimeout(() => {
+                $('.ivu-menu-submenu-title').trigger('click')
+                
+            }, 100);
         },
        
 		methods:{
+
+            getResourceList(){
+                var s = this;
+                symbinUtil.ajax({
+                    url:window.config.baseUrl+'/wmadadmin/getsourcelist/',
+                    data:{
+                        admintoken:s.userinfo.admintoken,
+					    adminusername:s.userinfo.adminusername,
+                    },
+                    success(data){
+                        if(data.getret === 0){
+                            s.resourceList = data.list;
+                            Vue.obserable.on('getResource',()=>{
+                                return data.list;
+                            });
+                        }
+
+                    }
+                })
+			},
+
             
             tab(index){
                 this.tabIndex = index;

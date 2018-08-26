@@ -60,25 +60,29 @@
 
 	var _adminMainIndex2 = _interopRequireDefault(_adminMainIndex);
 
-	var _adminLoginIndex = __webpack_require__(17);
-
-	var _adminLoginIndex2 = _interopRequireDefault(_adminLoginIndex);
-
-	var _adminRegisterIndex = __webpack_require__(24);
-
-	var _adminRegisterIndex2 = _interopRequireDefault(_adminRegisterIndex);
-
-	var _adminAdminuserIndex = __webpack_require__(31);
+	var _adminAdminuserIndex = __webpack_require__(17);
 
 	var _adminAdminuserIndex2 = _interopRequireDefault(_adminAdminuserIndex);
 
-	var _adminUserIndex = __webpack_require__(36);
+	var _adminUserIndex = __webpack_require__(22);
 
 	var _adminUserIndex2 = _interopRequireDefault(_adminUserIndex);
 
-	var _adminRaterIndex = __webpack_require__(41);
+	var _adminVoteIndex = __webpack_require__(27);
+
+	var _adminVoteIndex2 = _interopRequireDefault(_adminVoteIndex);
+
+	var _adminLoginIndex = __webpack_require__(126);
+
+	var _adminLoginIndex2 = _interopRequireDefault(_adminLoginIndex);
+
+	var _adminRaterIndex = __webpack_require__(34);
 
 	var _adminRaterIndex2 = _interopRequireDefault(_adminRaterIndex);
+
+	var _adminCollectionIndex = __webpack_require__(39);
+
+	var _adminCollectionIndex2 = _interopRequireDefault(_adminCollectionIndex);
 
 	var _iview = __webpack_require__(46);
 
@@ -103,34 +107,34 @@
 		routes: [
 		//{path: '*', name: 'error', component: FError },
 		{
-			path: '/login/',
-			name: 'login',
-			component: _adminLoginIndex2['default'],
-			props: true
-		}, {
-			path: '/',
-			name: 'login',
-			component: _adminLoginIndex2['default'],
-			props: true
-		}, {
-			path: '/register/',
-			name: 'register',
-			component: _adminRegisterIndex2['default'],
-			props: true
-		}, {
 			path: '/adminuser/',
 			name: 'adminuser',
 			component: _adminAdminuserIndex2['default'],
 			props: true
 		}, {
-			path: '/rater/',
-			name: 'rater',
-			component: _adminRaterIndex2['default'],
+			path: '/login/',
+			name: 'login',
+			component: _adminLoginIndex2['default'],
+			props: true
+		}, {
+			path: '/vote/',
+			name: 'vote',
+			component: _adminVoteIndex2['default'],
+			props: true
+		}, {
+			path: '/collection/:id/',
+			name: 'collection',
+			component: _adminCollectionIndex2['default'],
 			props: true
 		}, {
 			path: '/user/',
 			name: 'user',
 			component: _adminUserIndex2['default'],
+			props: true
+		}, {
+			path: '/rater/',
+			name: 'rater',
+			component: _adminRaterIndex2['default'],
 			props: true
 		}]
 	});
@@ -146,12 +150,9 @@
 		template: '<div id="app1">\n      <Main :obserable=\'obserable\'></Main>\n    </div>',
 		methods: {},
 		components: {
-			Main: _adminMainIndex2['default'],
-			Login: _adminLoginIndex2['default'],
-			Register: _adminRegisterIndex2['default']
+			Main: _adminMainIndex2['default']
 		},
 		mounted: function mounted() {
-
 			this.$router.obserable = obserable;
 		}
 	}).$mount('#app1');
@@ -11865,9 +11866,8 @@
 	//                </div>
 	//             </Header>
 	//             <Layout class="wm-main-layout">
-	//                 <div class="wm-tab-C" :style='{height:(viewH - 64- 10)+"px"}'>
-	//
-	//                     <Menu width='300' :open-names="['1']"  theme='dark'>
+	//                 <div class="wm-tab-C" :style='{height:(viewH - 64)+"px"}'>
+	//                     <Menu width='300'   theme='dark'>
 	//                         <Submenu name="1">
 	//                             <template slot="title">
 	//                                 <Icon type="ios-paper" />
@@ -11875,22 +11875,43 @@
 	//                             </template>
 	//                                    <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
 	//                                     </MenuItem> -->
-	//                                     <MenuItem name='reporter' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
-	//                                         <a href='#/adminuser'>
-	//                                             上报人员管理
-	//                                         </a>
+	//                                     <MenuItem name='/reporter' to='adminuser' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
+	//                                         上报人员管理
 	//                                     </MenuItem>
 	//                                    <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
 	//                                     </MenuItem> -->
-	//                                     <MenuItem name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
-	//                                         <a href='#/rater'>
-	//                                             评委管理
-	//                                         </a>
+	//                                     <MenuItem to='/rater' name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
+	//                                         评委管理
 	//                                     </MenuItem>
 	//                         </Submenu>
-	//                          <MenuItem name='user' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
-	//                             <a href='#/user'>个人中心</a>
-	//                         </MenuItem>
+	//                         <Submenu name='2'>
+	//                             <template slot="title">
+	//                                 <Icon type="ios-paper" />
+	//                                 我的
+	//                             </template>
+	//                             <MenuItem name='user' to='/user' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
+	//                                     个人中心
+	//                             </MenuItem>
+	//                         </Submenu>
+	//                         <Submenu name='3'>
+	//                             <template slot="title">
+	//                                 <Icon type="ios-paper-plane" />
+	//                                 上报管理
+	//                             </template>
+	//
+	//                             <MenuItem name='vote' to='/vote' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "vote"}'>
+	//                                 投票管理
+	//                             </MenuItem>
+	//                         </Submenu>
+	//                         <Submenu name='4'>
+	//                             <template slot="title">
+	//                                 <Icon type="ios-paper-plane" />
+	//                                 征集管理
+	//                             </template>
+	//                              <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
+	//                                 {{resource.resourcecnname}}
+	//                             </MenuItem>
+	//                         </Submenu>
 	//
 	//                     </Menu>
 	//                 </div>
@@ -11939,8 +11960,7 @@
 	            tabIndex: 0,
 	            userinfo: {},
 
-	            topMenu: [],
-	            defaultMenu: [],
+	            resourceList: [],
 	            menus: []
 	        };
 	    },
@@ -11966,9 +11986,34 @@
 	        window.onresize = function () {
 	            _this.viewW = window.innerWidth;
 	        };
+
+	        this.getResourceList();
+
+	        setTimeout(function () {
+	            $('.ivu-menu-submenu-title').trigger('click');
+	        }, 100);
 	    },
 
 	    methods: {
+
+	        getResourceList: function getResourceList() {
+	            var s = this;
+	            _libUtil2['default'].ajax({
+	                url: window.config.baseUrl + '/wmadadmin/getsourcelist/',
+	                data: {
+	                    admintoken: s.userinfo.admintoken,
+	                    adminusername: s.userinfo.adminusername
+	                },
+	                success: function success(data) {
+	                    if (data.getret === 0) {
+	                        s.resourceList = data.list;
+	                        _vue2['default'].obserable.on('getResource', function () {
+	                            return data.list;
+	                        });
+	                    }
+	                }
+	            });
+	        },
 
 	        tab: function tab(index) {
 	            this.tabIndex = index;
@@ -12197,711 +12242,15 @@
 /* 16 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n    <div class=\"layout\">\r\n        <Layout v-if='$route.name !== \"login\" && $route.name !== \"register\"'>\r\n            <Header>\r\n               <div>\r\n                    <div class=\"wm-title\">\r\n                        <img :src=\"imgs.adminLoginTitle\" alt=\"\">\r\n                    </div>\r\n               </div>\r\n               <div>\r\n                   <div v-if='false'>\r\n                       <span><img :src=\"imgs.search\" alt=\"\"></span><input type=\"text\" placeholder=\"查询我的上报\" />\r\n                   </div>\r\n               </div>\r\n               <div class=\"wm-user-info\">\r\n                   <span><img :src='imgs.man' /></span>\r\n                   <span class=\"zmiti-text-overflow\">{{userinfo.adminusername}}</span>\r\n                   <div @click=\"logout\">\r\n                       <img :src=\"imgs.logout\" alt=\"\">\r\n                   </div>\r\n               </div>\r\n            </Header>\r\n            <Layout class=\"wm-main-layout\">\r\n                <div class=\"wm-tab-C\" :style='{height:(viewH - 64- 10)+\"px\"}'>\r\n\r\n                    <Menu width='300' :open-names=\"['1']\"  theme='dark'>\r\n                        <Submenu name=\"1\">\r\n                            <template slot=\"title\">\r\n                                <Icon type=\"ios-paper\" />\r\n                                人员管理\r\n                            </template>\r\n                                   <!--  <MenuItem :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"rate\"}' :key='i' v-for=\"(item,i) in sourceList\" :name=\"item.resourceid\">{{item.resourcecnname}}\r\n                                    </MenuItem> -->\r\n                                    <MenuItem name='reporter' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"adminuser\"}'>\r\n                                        <a href='#/adminuser'>\r\n                                            上报人员管理\r\n                                        </a>\r\n                                    </MenuItem>\r\n                                   <!--  <MenuItem :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"rate\"}' :key='i' v-for=\"(item,i) in sourceList\" :name=\"item.resourceid\">{{item.resourcecnname}}\r\n                                    </MenuItem> -->\r\n                                    <MenuItem name='rater' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"rater\"}'>\r\n                                        <a href='#/rater'>\r\n                                            评委管理\r\n                                        </a>\r\n                                    </MenuItem>\r\n                        </Submenu>\r\n                         <MenuItem name='user' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"user\"}'>\r\n                            <a href='#/user'>个人中心</a>\r\n                        </MenuItem>\r\n                        \r\n                    </Menu>\r\n                </div>\r\n                <Layout :style=\"{maxWidth:viewW-300+'px'}\">\r\n                   <router-view></router-view>\r\n                </Layout>\r\n            </Layout>\r\n        </Layout>\r\n        <div v-else>\r\n            <router-view></router-view>\r\n        </div>\r\n    </div>\r\n";
+	module.exports = "\r\n    <div class=\"layout\">\r\n        <Layout v-if='$route.name !== \"login\" && $route.name !== \"register\"'>\r\n            <Header>\r\n               <div>\r\n                    <div class=\"wm-title\">\r\n                        <img :src=\"imgs.adminLoginTitle\" alt=\"\">\r\n                    </div>\r\n               </div>\r\n               <div>\r\n                   <div v-if='false'>\r\n                       <span><img :src=\"imgs.search\" alt=\"\"></span><input type=\"text\" placeholder=\"查询我的上报\" />\r\n                   </div>\r\n               </div>\r\n               <div class=\"wm-user-info\">\r\n                   <span><img :src='imgs.man' /></span>\r\n                   <span class=\"zmiti-text-overflow\">{{userinfo.adminusername}}</span>\r\n                   <div @click=\"logout\">\r\n                       <img :src=\"imgs.logout\" alt=\"\">\r\n                   </div>\r\n               </div>\r\n            </Header>\r\n            <Layout class=\"wm-main-layout\">\r\n                <div class=\"wm-tab-C\" :style='{height:(viewH - 64)+\"px\"}'>\r\n                    <Menu width='300'   theme='dark'>\r\n                        <Submenu name=\"1\">\r\n                            <template slot=\"title\">\r\n                                <Icon type=\"ios-paper\" />\r\n                                人员管理\r\n                            </template>\r\n                                   <!--  <MenuItem :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"rate\"}' :key='i' v-for=\"(item,i) in sourceList\" :name=\"item.resourceid\">{{item.resourcecnname}}\r\n                                    </MenuItem> -->\r\n                                    <MenuItem name='/reporter' to='adminuser' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"adminuser\"}'>\r\n                                        上报人员管理\r\n                                    </MenuItem>\r\n                                   <!--  <MenuItem :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"rate\"}' :key='i' v-for=\"(item,i) in sourceList\" :name=\"item.resourceid\">{{item.resourcecnname}}\r\n                                    </MenuItem> -->\r\n                                    <MenuItem to='/rater' name='rater' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"rater\"}'>\r\n                                        评委管理\r\n                                    </MenuItem>\r\n                        </Submenu>\r\n                        <Submenu name='2'>\r\n                            <template slot=\"title\">\r\n                                <Icon type=\"ios-paper\" />\r\n                                我的\r\n                            </template>\r\n                            <MenuItem name='user' to='/user' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"user\"}'>\r\n                                    个人中心\r\n                            </MenuItem>\r\n                        </Submenu>\r\n                        <Submenu name='3'>\r\n                            <template slot=\"title\">\r\n                                <Icon type=\"ios-paper-plane\" />\r\n                                上报管理\r\n                            </template>\r\n                           \r\n                            <MenuItem name='vote' to='/vote' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"vote\"}'>\r\n                                投票管理\r\n                            </MenuItem>\r\n                        </Submenu>\r\n                        <Submenu name='4'>\r\n                            <template slot=\"title\">\r\n                                <Icon type=\"ios-paper-plane\" />\r\n                                征集管理\r\n                            </template>\r\n                             <MenuItem v-for='(resource,i) in resourceList' :key=\"i\" :name='\"collection\"+i' :to='\"/collection/\"+resource.resourceid' :class='{\"ivu-menu-item-active ivu-menu-item-selected\":$route.name === \"collection\"}'>\r\n                                {{resource.resourcecnname}}\r\n                            </MenuItem>\r\n                        </Submenu>\r\n                        \r\n                    </Menu>\r\n                </div>\r\n                <Layout :style=\"{maxWidth:viewW-300+'px'}\">\r\n                   <router-view></router-view>\r\n                </Layout>\r\n            </Layout>\r\n        </Layout>\r\n        <div v-else>\r\n            <router-view></router-view>\r\n        </div>\r\n    </div>\r\n";
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __vue_script__, __vue_template__
-	__webpack_require__(18)
-	__vue_script__ = __webpack_require__(20)
-	__vue_template__ = __webpack_require__(23)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), true)
-	  if (!hotAPI.compatible) return
-	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\login\\index.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(19);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4e7288cc&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4e7288cc&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// <template>
-	// 	<div  class="wm-login-ui lt-full">
-	// 		<header>
-	// 			<div>
-	// 				<div>
-	// 					<img :src="imgs.logo"  />
-	// 				</div>
-	// 				<div>
-	// 					<a href='#/register'>用户注册></a>
-	// 				</div>
-	// 			</div>
-	// 		</header>
-	// 		<section :style="{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}" >
-	// 			<div class="wm-login-C">
-	// 				<h2>公益广告上报系统</h2>
-	// 				<div class="wm-login-form">
-	// 					<div>
-	// 						<label>
-	// 							<img :src="imgs.loginPerson" alt="">
-	// 							<input type="text" v-model="username" placeholder="请输入账号">
-	// 						</label>
-	// 						<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>
-	// 					</div>
-	// 					<div>
-	// 						<label>
-	// 							<img :src="imgs.loginLock" alt="">
-	// 							<input @keydown.13='login' type="password" v-model="password" placeholder="请输入密码">
-	// 						</label>
-	// 					</div>
-	// 					<div>
-	// 						<div @click="login">登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
-	// 						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
-	// 					</div>
-	// 				</div>
-	// 			</div>
-	// 			<div class="wm-copyright">
-	// 				中国文明网 &copy;版权所有
-	// 			</div>
-	// 		</section>
-	// 	</div>
-	// </template>
-	//
-	// <script>
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-		value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	__webpack_require__(21);
-
-	var _libUtil = __webpack_require__(14);
-
-	var _libUtil2 = _interopRequireDefault(_libUtil);
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	exports['default'] = {
-		props: ['obserable'],
-		name: 'zmitiindex',
-		data: function data() {
-			return {
-				imgs: window.imgs,
-				username: '',
-				password: '',
-				loginError: '',
-				checked: false,
-				isLogined: false,
-				isMove: false,
-				showLoading: false,
-				showError: false,
-				errorMsg: '',
-				loginType: "员工登录",
-				viewH: document.documentElement.clientHeight
-			};
-		},
-		components: {},
-
-		methods: {
-			toastError: function toastError() {
-				var _this2 = this;
-
-				var msg = arguments.length <= 0 || arguments[0] === undefined ? '用户名不能为空' : arguments[0];
-
-				this.loginError = msg;
-				setTimeout(function () {
-					_this2.loginError = '';
-				}, 2000);
-			},
-			login: function login() {
-				var _this = this;
-
-				if (!this.username) {
-					this.toastError();
-					return;
-				}
-				if (!this.password) {
-					this.toastError('密码不能为空');
-					return;
-				}
-
-				this.showLoading = true;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/wmadadmin/login/',
-					data: {
-						adminusername: _this.username,
-						adminpwd: _this.password
-					},
-					success: function success(data) {
-						if (data.getret === 0) {
-							var param = data;
-							delete param.getret;
-							delete param.getmsg;
-
-							var p = param.list;
-
-							_libUtil2['default'].clearCookie('adminlogin');
-							//symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
-
-							window.localStorage.setItem('adminlogin', JSON.stringify(p));
-
-							if (_this.checked) {
-								window.localStorage.setItem('wm_adminusername', _this.username);
-								window.localStorage.setItem('wm_adminpassword', _this.password);
-							} else {
-								window.localStorage.setItem('wm_adminusername', '');
-								window.localStorage.setItem('wm_adminpassword', '');
-							}
-							window.location.hash = '#/adminuser/';
-
-							_this.$Message.success('登录成功~');
-
-							window.location.reload();
-							_this.isLogined = true;
-						} else {
-							_this.toastError(data.getmsg);
-						}
-					}
-				});
-			},
-			checkCache: function checkCache() {
-				var username = window.localStorage.getItem('wm_adminusername'),
-				    password = window.localStorage.getItem('wm_adminpassword');
-
-				if (username && password) {
-					this.username = username;
-					this.password = password;
-					this.checked = true;
-				}
-			}
-
-		},
-		mounted: function mounted() {
-			this.checkCache();
-		}
-	};
-
-	// </script>
-	//  <style>
-	// 	.demo-spin-icon-load{
-	//         animation: ani-demo-spin 1s linear infinite;
-	//     }
-	//     @keyframes ani-demo-spin {
-	//         from { transform: rotate(0deg);}
-	//         50%  { transform: rotate(180deg);}
-	//         to   { transform: rotate(360deg);}
-	//     }
-	//
-	//  </style>
-	//
-	module.exports = exports['default'];
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(22);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-login-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-login-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-login-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-login-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-login-ui > header a {\n  color: #cc0000;\n}\n\n.wm-login-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-login-ui > section {\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-login-ui > section .wm-login-C {\n  width: 600px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-title {\n  margin-bottom: 7vh;\n}\n\n.wm-login-ui > section .wm-login-C > h2 {\n  color: #fff;\n  font-size: 40px;\n  margin: 30px 0;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  background: #fff;\n  height: 50px;\n  line-height: 50px;\n  padding: 0 20px;\n  border-radius: 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\n  color: #f00;\n  margin-top: -12px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  margin: 0 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\n  width: 120px;\n  color: #fff;\n  text-align: center;\n  line-height: 50px;\n  cursor: pointer;\n  font-size: 16px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\n  background: #cc0000;\n  border-radius: 10px;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\n  position: absolute;\n  width: 100%;\n  left: 0;\n  color: #000;\n  margin-top: -3px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\n  border: none;\n  height: 30px;\n  background: transparent;\n  outline: none;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form img {\n  width: 20px;\n}\n\n.wm-login-ui > section .wm-copyright {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  text-align: center;\n  height: 50px;\n  line-height: 50px;\n  color: #fff;\n  background: rgba(204, 0, 0, 0.4);\n}\n", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports) {
-
-	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统</h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"load-c\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(25)
-	__vue_script__ = __webpack_require__(27)
-	__vue_template__ = __webpack_require__(30)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), true)
-	  if (!hotAPI.compatible) return
-	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\register\\index.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(26);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-1d4b353c&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-1d4b353c&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// <template>
-	// 	<div  class="wm-reg-ui lt-full">
-	// 		<header>
-	// 			<div>
-	// 				<div><img :src="imgs.logo"  /></div>
-	// 				<div>
-	// 					已有账号：<a href='#/login'>去登录></a>
-	// 				</div>
-	// 			</div>
-	// 		</header>
-	// 		<section>
-	// 			<div class="wm-reg-C">
-	// 				<div class="wm-reg-form">
-	// 					<h2>公益广告上报系统,欢迎注册～</h2>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">用户名：</label><input type="text" @blur="checkUserName" v-model='formUser.username'>
-	// 						<div class="wm-reg-error" v-if='userError'>{{userError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">密码：</label><input type="password" v-model="formUser.password">
-	// 						<div class="wm-reg-error" v-if='passError'>{{passError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">确认密码：</label><input type="password" v-model="formUser.repassword">
-	// 						<div class="wm-reg-error" v-if='repassError'>{{repassError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">姓名：</label><input type="text" v-model="formUser.nickname">
-	// 						<div class="wm-reg-error" v-if='usernameError'>{{usernameError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">手机：</label><input type="text" v-model="formUser.mobile">
-	// 						<div class="wm-reg-error" v-if='mobileError'>{{mobileError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">单位：</label><input type="text" v-model="formUser.company">
-	// 						<div class="wm-reg-error" v-if='companyError'>{{companyError}}</div>
-	// 					</div>
-	//
-	// 					<div class="wm-reg-form-item " >
-	// 						<label for="">地址：</label>
-	// 						<Cascader v-model="formUser.cityids"  :load-data="getCityById"  change-on-select :data='provinceList'></Cascader>
-	// 					</div>
-	//
-	// 					<div class="wm-reg-form-item ">
-	// 						<label for="">详细地址：</label><input type="text" v-model="formUser.detailaddress">
-	// 					</div>
-	// 					<div class="wm-reg-form-item ">
-	// 						<label for="">邮箱：</label><input type="text"  v-model="formUser.email">
-	// 					</div>
-	// 					<div class="wm-reg-form-item wx-reg-btn" @click="reg">
-	// 						注 册
-	// 					</div>
-	// 				</div>
-	// 				<div class="wm-copyright">
-	// 					中国文明网 &copy;版权所有
-	// 				</div>
-	// 			</div>
-	// 		</section>
-	// 	</div>
-	// </template>
-	//
-	// <script>
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-		value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	__webpack_require__(28);
-
-	var _libUtil = __webpack_require__(14);
-
-	var _libUtil2 = _interopRequireDefault(_libUtil);
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	exports['default'] = {
-		props: ['obserable'],
-		name: 'zmitiindex',
-		data: function data() {
-			return {
-				imgs: window.imgs,
-				username: '',
-				password: '',
-				checked: false,
-				isLogined: false,
-				isMove: false,
-				showLoading: false,
-				showError: false,
-				errorMsg: '',
-				provinceList: [],
-				userError: "",
-				companyError: "",
-				usernameError: "",
-				passError: "",
-				repassError: "",
-				mobileError: "",
-				formUser: {
-					cityids: []
-				},
-
-				viewH: document.documentElement.clientHeight
-			};
-		},
-		components: {},
-
-		methods: {
-			checkUserName: function checkUserName() {
-				if (!this.formUser.username) {
-					this.toastError('请输入用户名');
-					return;
-				}
-				var s = this;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + "/wmadvuser/isexist/",
-					data: {
-						username: s.formUser.username
-					},
-					success: function success(data) {
-
-						if (data.getret === 0) {} else {
-							s.toastError(data.getmsg);
-						}
-					}
-				});
-			},
-			toastError: function toastError() {
-				var _this2 = this;
-
-				var msg = arguments.length <= 0 || arguments[0] === undefined ? '用户名不能为空' : arguments[0];
-				var type = arguments.length <= 1 || arguments[1] === undefined ? 'userError' : arguments[1];
-
-				this[type] = msg;
-				setTimeout(function () {
-					_this2[type] = '';
-				}, 2000);
-			},
-			reg: function reg() {
-				var _this = this;
-
-				if (!this.formUser.username) {
-					this.toastError();
-					return;
-				}
-				if (!this.formUser.password) {
-					this.toastError('密码不能为空', 'passError');
-					return;
-				}
-				if (!this.formUser.repassword) {
-					this.toastError('确认密码不能为空', 'repassError');
-					return;
-				}
-				if (this.formUser.repassword !== this.formUser.password) {
-					this.toastError('两次密码输入不一致', 'repassError');
-					return;
-				}
-				if (!this.formUser.nickname) {
-					this.toastError('姓名不能为空', 'usernameError');
-					return;
-				}
-				if (!this.formUser.mobile) {
-					this.toastError('手机不能为空', 'mobileError');
-					return;
-				}
-				if (!this.formUser.company) {
-					this.toastError('单位不能为空', 'companyError');
-					return;
-				}
-
-				var params = this.formUser;
-				console.log(params);
-				params.userpwd = params.password;
-				params.companyname = params.company;
-				params.provinceid = params.cityids[0];
-				params.cityid = params.cityids[1];
-				params.areaid = params.cityids[2];
-				this.showLoading = true;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/wmadvuser/regist/',
-					data: params,
-					success: function success(data) {
-						if (data.getret === 0) {
-							_this.$Message.success('注册成功');
-							window.location.hash = '#/login';
-						} else {
-							_this.$Message.error(data.getmsg);
-						}
-					}
-				});
-			},
-			getCityById: function getCityById(e, callback) {
-
-				var provinceId = e.__value.split(',')[0];
-				var cityid = e.__value.split(',')[1];
-				var s = this;
-
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/share/getarealist',
-					data: {
-						cityid: cityid
-					},
-					success: function success(data) {
-						if (data.getret === 0) {
-							console.log(data);
-							s.provinceList.forEach(function (item, i) {
-								if (item.value === provinceId * 1) {
-									item.children.forEach(function (child, k) {
-										if (child.value === cityid * 1) {
-											child.children = child.children || [];
-											data.list.map(function (d, l) {
-												child.children.push({
-													value: d.cityid,
-													label: d.name
-												});
-											});
-										}
-									});
-									//loading: false
-									callback();
-								}
-							});
-						}
-					}
-
-				});
-			},
-			getCityData: function getCityData() {
-				var s = this;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/share/getcitylist/',
-					data: {},
-					success: function success(data) {
-						//console.log(data);
-						if (data.getret === 0) {
-							data.list.map(function (item, i) {
-								var children = [];
-								item.children && item.children.map(function (child, l) {
-									children.push({
-										value: child.cityid,
-										label: child.name,
-										loading: false,
-										children: []
-
-									});
-								});
-								s.provinceList.push({
-									value: item.cityid,
-									label: item.name,
-									children: children,
-									loading: false
-								});
-							});
-						}
-					}
-				});
-			},
-			checkCache: function checkCache() {
-				var username = window.localStorage.getItem('wm_username'),
-				    password = window.localStorage.getItem('wm_password');
-
-				if (username && password) {
-					this.username = username;
-					this.password = password;
-					this.checked = true;
-				}
-			}
-
-		},
-		mounted: function mounted() {
-			this.checkCache();
-			this.getCityData();
-		}
-	};
-
-	// </script>
-	//  <style>
-	// 	.demo-spin-icon-load{
-	//         animation: ani-demo-spin 1s linear infinite;
-	//     }
-	//     @keyframes ani-demo-spin {
-	//         from { transform: rotate(0deg);}
-	//         50%  { transform: rotate(180deg);}
-	//         to   { transform: rotate(360deg);}
-	//     }
-	//
-	//  </style>
-	//
-	module.exports = exports['default'];
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(29);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-reg-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-reg-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-reg-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-reg-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-reg-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-reg-ui > header a {\n  color: #cc0000;\n}\n\n.wm-reg-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-reg-ui > section {\n  flex-grow: 1;\n  -webkit-flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-reg-ui > section .wm-reg-form h2 {\n  color: #be0000;\n  text-align: center;\n  font-size: 20px;\n  margin: 0 0 20px 0;\n}\n\n.wm-reg-ui > section .wm-reg-form-item {\n  background: #eeeeee;\n  width: 400px;\n  border-radius: 4px;\n  padding: 0 20px;\n  height: 50px;\n  margin: 4px 0;\n  line-height: 50px;\n  position: relative;\n}\n\n.wm-reg-ui > section .wm-reg-form-item.wm-require label {\n  position: relative;\n}\n\n.wm-reg-ui > section .wm-reg-form-item.wm-require label:before {\n  content: '*';\n  position: absolute;\n  color: #be0000;\n  font-size: 20px;\n  left: -40px;\n}\n\n.wm-reg-ui > section .wm-reg-form-item .ivu-cascader {\n  position: absolute;\n  z-index: 10;\n  right: 20px;\n  top: 10px;\n}\n\n.wm-reg-ui > section .wm-reg-form-item .ivu-cascader input {\n  outline: none;\n}\n\n.wm-reg-ui > section .wm-reg-form-item .wm-reg-error {\n  position: absolute;\n  color: #ff0000;\n  left: 102%;\n  z-index: 1;\n  top: 0;\n  min-width: 150px;\n}\n\n.wm-reg-ui > section .wm-reg-form-item input {\n  outline: none;\n  background: transparent;\n  border: 1px solid #ccc;\n  padding: 0;\n  height: 30px;\n  width: 300px;\n  border: none;\n}\n\n.wm-reg-ui > section .wx-reg-btn {\n  margin-top: 20px;\n  background: #fab82e;\n  color: #fff;\n  text-align: center;\n  font-size: 16px;\n  cursor: pointer;\n}\n\n.wm-reg-ui .wm-copyright {\n  text-align: center;\n  margin-top: 30px;\n  position: absolute;\n  width: 100%;\n  bottom: 7vh;\n  left: 0;\n}\n\n@media all and (max-height: 850px) {\n  .wm-copyright {\n    bottom: 0 !important;\n  }\n}\n", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports) {
-
-	module.exports = "\r\n\t<div  class=\"wm-reg-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div><img :src=\"imgs.logo\"  /></div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t已有账号：<a href='#/login'>去登录></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section>\r\n\t\t\t<div class=\"wm-reg-C\">\r\n\t\t\t\t<div class=\"wm-reg-form\">\r\n\t\t\t\t\t<h2>公益广告上报系统,欢迎注册～</h2>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">用户名：</label><input type=\"text\" @blur=\"checkUserName\" v-model='formUser.username'>\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='userError'>{{userError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">密码：</label><input type=\"password\" v-model=\"formUser.password\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='passError'>{{passError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">确认密码：</label><input type=\"password\" v-model=\"formUser.repassword\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='repassError'>{{repassError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">姓名：</label><input type=\"text\" v-model=\"formUser.nickname\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='usernameError'>{{usernameError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">手机：</label><input type=\"text\" v-model=\"formUser.mobile\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='mobileError'>{{mobileError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">单位：</label><input type=\"text\" v-model=\"formUser.company\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='companyError'>{{companyError}}</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \" >\r\n\t\t\t\t\t\t<label for=\"\">地址：</label>\r\n\t\t\t\t\t\t<Cascader v-model=\"formUser.cityids\"  :load-data=\"getCityById\"  change-on-select :data='provinceList'></Cascader>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \">\r\n\t\t\t\t\t\t<label for=\"\">详细地址：</label><input type=\"text\" v-model=\"formUser.detailaddress\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \">\r\n\t\t\t\t\t\t<label for=\"\">邮箱：</label><input type=\"text\"  v-model=\"formUser.email\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wx-reg-btn\" @click=\"reg\">\r\n\t\t\t\t\t\t注 册\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__vue_script__ = __webpack_require__(32)
-	__vue_template__ = __webpack_require__(35)
+	__vue_script__ = __webpack_require__(18)
+	__vue_template__ = __webpack_require__(21)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
@@ -12918,7 +12267,7 @@
 	})()}
 
 /***/ }),
-/* 32 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// <template>
@@ -12962,7 +12311,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	__webpack_require__(33);
+	__webpack_require__(19);
 
 	var _libVerification = __webpack_require__(15);
 
@@ -13198,13 +12547,13 @@
 	module.exports = exports['default'];
 
 /***/ }),
-/* 33 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(34);
+	var content = __webpack_require__(20);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -13224,7 +12573,7 @@
 	}
 
 /***/ }),
-/* 34 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(9)();
@@ -13238,18 +12587,18 @@
 
 
 /***/ }),
-/* 35 */
+/* 21 */
 /***/ (function(module, exports) {
 
 	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>用户管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentUserId === -1? '新增评委':'编辑评委'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input  v-model=\"formAdmin.username\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"userpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.userpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
 
 /***/ }),
-/* 36 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __vue_script__, __vue_template__
-	__vue_script__ = __webpack_require__(37)
-	__vue_template__ = __webpack_require__(40)
+	__vue_script__ = __webpack_require__(23)
+	__vue_template__ = __webpack_require__(26)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
@@ -13266,7 +12615,7 @@
 	})()}
 
 /***/ }),
-/* 37 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// <template>
@@ -13332,7 +12681,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	__webpack_require__(38);
+	__webpack_require__(24);
 
 	var _libVerification = __webpack_require__(15);
 
@@ -13566,13 +12915,13 @@
 	module.exports = exports['default'];
 
 /***/ }),
-/* 38 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(39);
+	var content = __webpack_require__(25);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(10)(content, {});
@@ -13592,7 +12941,7 @@
 	}
 
 /***/ }),
-/* 39 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(9)();
@@ -13606,18 +12955,425 @@
 
 
 /***/ }),
-/* 40 */
+/* 26 */
 /***/ (function(module, exports) {
 
 	module.exports = "\r\n\t<div class=\"wm-user-ui\">\r\n\t\t<header>\r\n\t\t\t<div>个人中心</div>\r\n\t\t</header>\r\n\t\t<div class=\"wm-user-center\">\r\n\t\t\t<div>\r\n\t\t\t\t<div class=\"wm-user-form-item\">\r\n\t\t\t\t\t<label for=\"\">用户名：</label><input type=\"text\"  v-model='userinfo.adminusername'>\r\n\t\t\t\t\t<div class=\"wm-user-error\" v-if='userError'>{{userError}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item\">\r\n\t\t\t\t\t<label for=\"\">密码：</label><input type=\"password\" :disabled='!showPassWord' v-model=\"userinfo.password\">\r\n\t\t\t\t\t<Button type='primary'  @click='modifyPwd'>{{showPassWord?'确定':'修改密码'}}</Button>\r\n\t\t\t\t\t<div class=\"wm-user-error\" v-if='passError'>{{passError}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item\" v-if='showPassWord'>\r\n\t\t\t\t\t<label for=\"\">确认密码：</label><input type=\"password\" v-model=\"userinfo.repassword\">\r\n\t\t\t\t\t<div class=\"wm-user-error\" v-if='repassError'>{{repassError}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item\">\r\n\t\t\t\t\t<label for=\"\">姓名：</label><input type=\"text\" v-model=\"userinfo.nickname\">\r\n\t\t\t\t\t<div class=\"wm-user-error\" v-if='usernameError'>{{usernameError}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item\">\r\n\t\t\t\t\t<label for=\"\">手机：</label><input type=\"text\" v-model=\"userinfo.adminmobile\">\r\n\t\t\t\t\t<div class=\"wm-user-error\" v-if='mobileError'>{{mobileError}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item \">\r\n\t\t\t\t\t<label for=\"\">单位：</label><input type=\"text\" v-model=\"userinfo.company\">\r\n\t\t\t\t\t<div class=\"wm-user-error\" v-if='companyError'>{{companyError}}</div>\r\n\t\t\t\t</div>\r\n\r\n\t\t\t\t<div class=\"wm-user-form-item \"  v-if='false'>\r\n\t\t\t\t\t<label for=\"\">地址：</label>\r\n\t\t\t\t\t<Cascader v-model=\"userinfo.cityids\"  :load-data=\"getCityById\"  change-on-select :data='provinceList'></Cascader>\r\n\t\t\t\t</div>\r\n\r\n\t\t\t\t<div class=\"wm-user-form-item \">\r\n\t\t\t\t\t<label for=\"\">详细地址：</label><input type=\"text\" v-model=\"userinfo.detailaddress\">\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item \">\r\n\t\t\t\t\t<label for=\"\">邮箱：</label><input type=\"text\"  v-model=\"userinfo.email\">\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-user-form-item wx-reg-btn\" @click=\"modifyUser\">\r\n\t\t\t\t\t确 定\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t\r\n\t</div>\r\n";
 
 /***/ }),
-/* 41 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __vue_script__, __vue_template__
-	__vue_script__ = __webpack_require__(42)
-	__vue_template__ = __webpack_require__(45)
+	__webpack_require__(28)
+	__vue_script__ = __webpack_require__(30)
+	__vue_template__ = __webpack_require__(33)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), true)
+	  if (!hotAPI.compatible) return
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\vote\\index.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(29);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-1229eb7a&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-1229eb7a&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// <template>
+	// 	<div  class="wm-reg-ui lt-full">
+	// 		<header>
+	// 			<div>
+	// 				<div><img :src="imgs.logo"  /></div>
+	// 				<div>
+	// 					已有账号：<a href='#/login'>去登录></a>
+	// 				</div>
+	// 			</div>
+	// 		</header>
+	// 		<section>
+	// 			<div class="wm-reg-C">
+	// 				<div class="wm-reg-form">
+	// 					<h2>公益广告上报系统,欢迎注册～</h2>
+	// 					<div class="wm-reg-form-item wm-require">
+	// 						<label for="">用户名：</label><input type="text" @blur="checkUserName" v-model='formUser.username'>
+	// 						<div class="wm-reg-error" v-if='userError'>{{userError}}</div>
+	// 					</div>
+	// 					<div class="wm-reg-form-item wm-require">
+	// 						<label for="">密码：</label><input type="password" v-model="formUser.password">
+	// 						<div class="wm-reg-error" v-if='passError'>{{passError}}</div>
+	// 					</div>
+	// 					<div class="wm-reg-form-item wm-require">
+	// 						<label for="">确认密码：</label><input type="password" v-model="formUser.repassword">
+	// 						<div class="wm-reg-error" v-if='repassError'>{{repassError}}</div>
+	// 					</div>
+	// 					<div class="wm-reg-form-item wm-require">
+	// 						<label for="">姓名：</label><input type="text" v-model="formUser.nickname">
+	// 						<div class="wm-reg-error" v-if='usernameError'>{{usernameError}}</div>
+	// 					</div>
+	// 					<div class="wm-reg-form-item wm-require">
+	// 						<label for="">手机：</label><input type="text" v-model="formUser.mobile">
+	// 						<div class="wm-reg-error" v-if='mobileError'>{{mobileError}}</div>
+	// 					</div>
+	// 					<div class="wm-reg-form-item wm-require">
+	// 						<label for="">单位：</label><input type="text" v-model="formUser.company">
+	// 						<div class="wm-reg-error" v-if='companyError'>{{companyError}}</div>
+	// 					</div>
+	//
+	// 					<div class="wm-reg-form-item " >
+	// 						<label for="">地址：</label>
+	// 						<Cascader v-model="formUser.cityids"  :load-data="getCityById"  change-on-select :data='provinceList'></Cascader>
+	// 					</div>
+	//
+	// 					<div class="wm-reg-form-item ">
+	// 						<label for="">详细地址：</label><input type="text" v-model="formUser.detailaddress">
+	// 					</div>
+	// 					<div class="wm-reg-form-item ">
+	// 						<label for="">邮箱：</label><input type="text"  v-model="formUser.email">
+	// 					</div>
+	// 					<div class="wm-reg-form-item wx-reg-btn" @click="reg">
+	// 						注 册
+	// 					</div>
+	// 				</div>
+	// 				<div class="wm-copyright">
+	// 					中国文明网 &copy;版权所有
+	// 				</div>
+	// 			</div>
+	// 		</section>
+	// 	</div>
+	// </template>
+	//
+	// <script>
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	__webpack_require__(31);
+
+	var _libUtil = __webpack_require__(14);
+
+	var _libUtil2 = _interopRequireDefault(_libUtil);
+
+	var _vue = __webpack_require__(1);
+
+	var _vue2 = _interopRequireDefault(_vue);
+
+	exports['default'] = {
+		props: ['obserable'],
+		name: 'zmitiindex',
+		data: function data() {
+			return {
+				imgs: window.imgs,
+				username: '',
+				password: '',
+				checked: false,
+				isLogined: false,
+				isMove: false,
+				showLoading: false,
+				showError: false,
+				errorMsg: '',
+				provinceList: [],
+				userError: "",
+				companyError: "",
+				usernameError: "",
+				passError: "",
+				repassError: "",
+				mobileError: "",
+				formUser: {
+					cityids: []
+				},
+
+				viewH: document.documentElement.clientHeight
+			};
+		},
+		components: {},
+
+		methods: {
+			checkUserName: function checkUserName() {
+				if (!this.formUser.username) {
+					this.toastError('请输入用户名');
+					return;
+				}
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + "/wmadvuser/isexist/",
+					data: {
+						username: s.formUser.username
+					},
+					success: function success(data) {
+
+						if (data.getret === 0) {} else {
+							s.toastError(data.getmsg);
+						}
+					}
+				});
+			},
+			toastError: function toastError() {
+				var _this2 = this;
+
+				var msg = arguments.length <= 0 || arguments[0] === undefined ? '用户名不能为空' : arguments[0];
+				var type = arguments.length <= 1 || arguments[1] === undefined ? 'userError' : arguments[1];
+
+				this[type] = msg;
+				setTimeout(function () {
+					_this2[type] = '';
+				}, 2000);
+			},
+			reg: function reg() {
+				var _this = this;
+
+				if (!this.formUser.username) {
+					this.toastError();
+					return;
+				}
+				if (!this.formUser.password) {
+					this.toastError('密码不能为空', 'passError');
+					return;
+				}
+				if (!this.formUser.repassword) {
+					this.toastError('确认密码不能为空', 'repassError');
+					return;
+				}
+				if (this.formUser.repassword !== this.formUser.password) {
+					this.toastError('两次密码输入不一致', 'repassError');
+					return;
+				}
+				if (!this.formUser.nickname) {
+					this.toastError('姓名不能为空', 'usernameError');
+					return;
+				}
+				if (!this.formUser.mobile) {
+					this.toastError('手机不能为空', 'mobileError');
+					return;
+				}
+				if (!this.formUser.company) {
+					this.toastError('单位不能为空', 'companyError');
+					return;
+				}
+
+				var params = this.formUser;
+				console.log(params);
+				params.userpwd = params.password;
+				params.companyname = params.company;
+				params.provinceid = params.cityids[0];
+				params.cityid = params.cityids[1];
+				params.areaid = params.cityids[2];
+				this.showLoading = true;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadvuser/regist/',
+					data: params,
+					success: function success(data) {
+						if (data.getret === 0) {
+							_this.$Message.success('注册成功');
+							window.location.hash = '#/login';
+						} else {
+							_this.$Message.error(data.getmsg);
+						}
+					}
+				});
+			},
+			getCityById: function getCityById(e, callback) {
+
+				var provinceId = e.__value.split(',')[0];
+				var cityid = e.__value.split(',')[1];
+				var s = this;
+
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/share/getarealist',
+					data: {
+						cityid: cityid
+					},
+					success: function success(data) {
+						if (data.getret === 0) {
+							console.log(data);
+							s.provinceList.forEach(function (item, i) {
+								if (item.value === provinceId * 1) {
+									item.children.forEach(function (child, k) {
+										if (child.value === cityid * 1) {
+											child.children = child.children || [];
+											data.list.map(function (d, l) {
+												child.children.push({
+													value: d.cityid,
+													label: d.name
+												});
+											});
+										}
+									});
+									//loading: false
+									callback();
+								}
+							});
+						}
+					}
+
+				});
+			},
+			getCityData: function getCityData() {
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/share/getcitylist/',
+					data: {},
+					success: function success(data) {
+						//console.log(data);
+						if (data.getret === 0) {
+							data.list.map(function (item, i) {
+								var children = [];
+								item.children && item.children.map(function (child, l) {
+									children.push({
+										value: child.cityid,
+										label: child.name,
+										loading: false,
+										children: []
+
+									});
+								});
+								s.provinceList.push({
+									value: item.cityid,
+									label: item.name,
+									children: children,
+									loading: false
+								});
+							});
+						}
+					}
+				});
+			},
+			checkCache: function checkCache() {
+				var username = window.localStorage.getItem('wm_username'),
+				    password = window.localStorage.getItem('wm_password');
+
+				if (username && password) {
+					this.username = username;
+					this.password = password;
+					this.checked = true;
+				}
+			}
+
+		},
+		mounted: function mounted() {
+			this.checkCache();
+			this.getCityData();
+		}
+	};
+
+	// </script>
+	//  <style>
+	// 	.demo-spin-icon-load{
+	//         animation: ani-demo-spin 1s linear infinite;
+	//     }
+	//     @keyframes ani-demo-spin {
+	//         from { transform: rotate(0deg);}
+	//         50%  { transform: rotate(180deg);}
+	//         to   { transform: rotate(360deg);}
+	//     }
+	//
+	//  </style>
+	//
+	module.exports = exports['default'];
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(32);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-reg-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-reg-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-reg-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-reg-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-reg-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-reg-ui > header a {\n  color: #cc0000;\n}\n\n.wm-reg-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-reg-ui > section {\n  flex-grow: 1;\n  -webkit-flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-reg-ui > section .wm-reg-form h2 {\n  color: #be0000;\n  text-align: center;\n  font-size: 20px;\n  margin: 0 0 20px 0;\n}\n\n.wm-reg-ui > section .wm-reg-form-item {\n  background: #eeeeee;\n  width: 400px;\n  border-radius: 4px;\n  padding: 0 20px;\n  height: 50px;\n  margin: 4px 0;\n  line-height: 50px;\n  position: relative;\n}\n\n.wm-reg-ui > section .wm-reg-form-item.wm-require label {\n  position: relative;\n}\n\n.wm-reg-ui > section .wm-reg-form-item.wm-require label:before {\n  content: '*';\n  position: absolute;\n  color: #be0000;\n  font-size: 20px;\n  left: -40px;\n}\n\n.wm-reg-ui > section .wm-reg-form-item .ivu-cascader {\n  position: absolute;\n  z-index: 10;\n  right: 20px;\n  top: 10px;\n}\n\n.wm-reg-ui > section .wm-reg-form-item .ivu-cascader input {\n  outline: none;\n}\n\n.wm-reg-ui > section .wm-reg-form-item .wm-reg-error {\n  position: absolute;\n  color: #ff0000;\n  left: 102%;\n  z-index: 1;\n  top: 0;\n  min-width: 150px;\n}\n\n.wm-reg-ui > section .wm-reg-form-item input {\n  outline: none;\n  background: transparent;\n  border: 1px solid #ccc;\n  padding: 0;\n  height: 30px;\n  width: 300px;\n  border: none;\n}\n\n.wm-reg-ui > section .wx-reg-btn {\n  margin-top: 20px;\n  background: #fab82e;\n  color: #fff;\n  text-align: center;\n  font-size: 16px;\n  cursor: pointer;\n}\n\n.wm-reg-ui .wm-copyright {\n  text-align: center;\n  margin-top: 30px;\n  position: absolute;\n  width: 100%;\n  bottom: 7vh;\n  left: 0;\n}\n\n@media all and (max-height: 850px) {\n  .wm-copyright {\n    bottom: 0 !important;\n  }\n}\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+	module.exports = "\r\n\t<div  class=\"wm-reg-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div><img :src=\"imgs.logo\"  /></div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t已有账号：<a href='#/login'>去登录></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section>\r\n\t\t\t<div class=\"wm-reg-C\">\r\n\t\t\t\t<div class=\"wm-reg-form\">\r\n\t\t\t\t\t<h2>公益广告上报系统,欢迎注册～</h2>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">用户名：</label><input type=\"text\" @blur=\"checkUserName\" v-model='formUser.username'>\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='userError'>{{userError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">密码：</label><input type=\"password\" v-model=\"formUser.password\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='passError'>{{passError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">确认密码：</label><input type=\"password\" v-model=\"formUser.repassword\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='repassError'>{{repassError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">姓名：</label><input type=\"text\" v-model=\"formUser.nickname\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='usernameError'>{{usernameError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">手机：</label><input type=\"text\" v-model=\"formUser.mobile\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='mobileError'>{{mobileError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">单位：</label><input type=\"text\" v-model=\"formUser.company\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='companyError'>{{companyError}}</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \" >\r\n\t\t\t\t\t\t<label for=\"\">地址：</label>\r\n\t\t\t\t\t\t<Cascader v-model=\"formUser.cityids\"  :load-data=\"getCityById\"  change-on-select :data='provinceList'></Cascader>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \">\r\n\t\t\t\t\t\t<label for=\"\">详细地址：</label><input type=\"text\" v-model=\"formUser.detailaddress\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \">\r\n\t\t\t\t\t\t<label for=\"\">邮箱：</label><input type=\"text\"  v-model=\"formUser.email\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wx-reg-btn\" @click=\"reg\">\r\n\t\t\t\t\t\t注 册\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__vue_script__ = __webpack_require__(35)
+	__vue_template__ = __webpack_require__(38)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
@@ -13634,13 +13390,13 @@
 	})()}
 
 /***/ }),
-/* 42 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// <template>
 	// 	<div class="wm-rater-main-ui">
 	// 		<header>
-	// 			<div>评委管理</div>
+	// 			<div>评委管理1</div>
 	// 			<section>
 	// 				<Button type="primary" icon='md-add-circle' @click="addRater">新增评委</Button>
 	// 			</section>
@@ -13687,7 +13443,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	__webpack_require__(43);
+	__webpack_require__(36);
 
 	var _libVerification = __webpack_require__(15);
 
@@ -13711,7 +13467,6 @@
 				showPass: false,
 				viewH: window.innerHeight,
 				currentRateid: -1,
-
 				formAdmin: {
 					raterpwd: '111111'
 				},
@@ -13780,18 +13535,15 @@
 						}, '删除')])]);
 					}
 				}],
-
 				raterList: [],
 
 				userinfo: {}
 			};
 		},
 		components: {},
-
 		beforeCreate: function beforeCreate() {
 			//var validate = sysbinVerification.validate(this);
 			//symbinUtil.clearCookie('login');
-
 			///this.validate = validate;
 		},
 		mounted: function mounted() {
@@ -13800,7 +13552,6 @@
 		},
 
 		methods: {
-
 			modifyPass: function modifyPass() {
 				if (!this.showPass) {
 					this.showPass = true;
@@ -13825,15 +13576,12 @@
 					});
 				}
 			},
-
 			addRater: function addRater() {
 				this.currentRateid = -1;
 				this.visible = true;
 			},
-
 			getRaterlist: function getRaterlist() {
 				var s = this;
-
 				_libUtil2['default'].ajax({
 					url: window.config.baseUrl + '/wmadadmin/getreviewlist/',
 					//validate:s.validate,
@@ -13848,7 +13596,6 @@
 							s.$Message.error(data.getmsg);
 						}
 					}
-
 				});
 			},
 			delRater: function delRater(raterid) {
@@ -13870,16 +13617,13 @@
 							s.$Message.error(data.getmsg);
 						}
 					}
-
 				});
 			},
 
 			ok: function ok() {
 
 				var s = this;
-
 				if (s.currentRateid <= -1) {
-
 					_libUtil2['default'].ajax({
 						url: window.config.baseUrl + '/wmadadmin/addreview/',
 						validate: s.validate,
@@ -13927,6 +13671,682 @@
 	};
 
 	// </script>
+	module.exports = exports['default'];
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(37);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-rater-main-ui > header {\n  background: #fff;\n  height: 50px;\n  width: 100%;\n  line-height: 50px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-rater-main-ui > header > section {\n  margin-right: 30px;\n}\n\n.wm-rater-main-ui > header > div {\n  font-size: 20px;\n  margin-left: 40px;\n  position: relative;\n}\n\n.wm-rater-main-ui > header > div:before {\n  content: \"\";\n  position: absolute;\n  width: 2px;\n  height: 20px;\n  background: #cc0000;\n  top: 15px;\n  left: -10px;\n}\n\n.wm-rater-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {\n  left: 30px;\n}\n\n.ivu-table-body::-webkit-scrollbar,\n.wm-scroll::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.ivu-table-body::-webkit-scrollbar-thumb,\n.wm-scroll::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.ivu-table-body::-webkit-scrollbar-track,\n.wm-scroll::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+	module.exports = "\r\n\t<div class=\"wm-rater-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>评委管理1</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addRater\">新增评委</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='raterList' :columns='columns'   stripe></Table>\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentRateid === -1? '新增评委':'编辑评委'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input style=\"width:310px;\" v-model=\"formAdmin.ratername\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t<RadioGroup v-model=\"formAdmin.sex\">\r\n\t\t\t\t\t\t<Radio :label=\"1\">\r\n\t\t\t\t\t\t\t<span>男</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t\t<Radio :label=\"0\">\r\n\t\t\t\t\t\t\t<span>女</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t</RadioGroup>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"raterpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.raterpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"电话：\" prop=\"mobile\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.mobile\" placeholder=\"电话\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(40)
+	__vue_script__ = __webpack_require__(42)
+	__vue_template__ = __webpack_require__(45)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), true)
+	  if (!hotAPI.compatible) return
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\collection\\index.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(41);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-50759e92&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-50759e92&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// <template>
+	// 	<div class="wm-collection-ui lt-full" @click.stop='showCondition = false;showCheckAction = false'>
+	// 		<div  class="wm-collection-left-pannel" :style="{height:viewH -   64+'px'}">
+	// 			<h2 class="zmiti-text-overflow">{{resourcecnname}}</h2>
+	// 			<ul>
+	// 				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报管理</li>
+	// 				<li @click='mainType = 1' :class="{'active':mainType === 1}">评审管理</li>
+	// 			</ul>
+	// 		</div>
+	//
+	// 		<section v-if='mainType  === 1' class="wm-collection-rater-manager">
+	// 			<header class='wm-collection-left-header'>
+	// 				<div class="wm-collection-title">
+	// 					<div>征集管理 > {{resourcecnname}}</div>
+	// 				</div>
+	// 				<div class="wm-collection-search-content">
+	// 					<div class="wm-collection-search-input-C">
+	// 						<div>
+	// 							<img :src='imgs.search'/>
+	// 							<div @click.stop='showCondition = true' class="wm-collection-search-condition">
+	// 								{{kwType}}
+	// 								<ul v-if='showCondition'>
+	// 									<li @click.stop='changeKwType("关键字")'>关键字</li>
+	// 									<li @click.stop='changeKwType("用户名")'>用户名</li>
+	// 								</ul>
+	// 							</div>
+	// 							<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
+	// 						</div>
+	// 					</div>
+	// 					<div class="wm-collection-check-action">
+	// 						<Checkbox v-model="selectAll">全选</Checkbox>
+	// 						<Button type="primary" size='small' @click.stop='showCheckAction = true'>审核 <Icon type="ios-arrow-up" /></Button>
+	// 						<ul v-if='showCheckAction'>
+	// 							<li @click.stop="checkAction(1)">
+	// 								<Icon type="ios-checkmark-circle-outline" />
+	// 								通过
+	// 							</li>
+	// 							<li @click.stop="checkAction(2)">
+	// 								<Icon type="ios-close-circle-outline" />
+	// 								拒绝
+	// 							</li>
+	// 						</ul>
+	// 					</div>
+	// 				</div>
+	// 			</header>
+	// 			<header class="wm-collection-left-search-condition-header">
+	// 				<div>分类：<span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
+	// 				<div>状态：<span @click.stop='searchByStatus("全部")' :class="{'active':statusType == '全部'}">全部</span>
+	// 					<span @click.stop='searchByStatus("待审核")' :class="{'active':statusType == '待审核'}">待审核</span>
+	// 					<span :class="{'active':statusType == '已通过'}" @click.stop='searchByStatus("已通过")'>已通过</span>
+	// 					<span :class="{'active':statusType == '已拒绝'}" @click.stop='searchByStatus("已拒绝")'>已拒绝</span> </div>
+	// 			</header>
+	// 			<div class="wm-scroll wm-collection-rater-list" :style="{height:viewH -  230+'px'}">
+	// 				<ul>
+	// 					<li>
+	//
+	// 					</li>
+	// 				</ul>
+	// 			</div>
+	// 		</section>
+	//
+	// 		<Split v-model='scale' v-if='mainType === 0'>
+	// 			<div slot='left' class="wm-collection-left-main-ui">
+	// 					<header class='wm-collection-left-header'>
+	// 						<div class="wm-collection-title">
+	// 							<div>征集管理 > {{resourcecnname}}</div>
+	// 						</div>
+	// 						<div class="wm-collection-search-content">
+	// 							<div class="wm-collection-search-input-C">
+	// 								<div>
+	// 									<img :src='imgs.search'/>
+	// 									<div @click.stop='showCondition = true' class="wm-collection-search-condition">
+	// 										{{kwType}}
+	// 										<ul v-if='showCondition'>
+	// 											<li @click.stop='changeKwType("关键字")'>关键字</li>
+	// 											<li @click.stop='changeKwType("用户名")'>用户名</li>
+	// 										</ul>
+	// 									</div>
+	// 									<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
+	// 								</div>
+	// 							</div>
+	// 							<div class="wm-collection-check-action">
+	// 								<Checkbox v-model="selectAll">全选</Checkbox>
+	// 								<Button type="primary" size='small' @click.stop='showCheckAction = true'>审核 <Icon type="ios-arrow-up" /></Button>
+	// 								<ul v-if='showCheckAction'>
+	// 									<li @click.stop="checkAction(1)">
+	// 										<Icon type="ios-checkmark-circle-outline" />
+	// 										通过
+	// 									</li>
+	// 									<li @click.stop="checkAction(2)">
+	// 										<Icon type="ios-close-circle-outline" />
+	// 										拒绝
+	// 									</li>
+	// 								</ul>
+	// 							</div>
+	// 						</div>
+	// 					</header>
+	// 					<header class="wm-collection-left-search-condition-header">
+	// 						<div>分类：<span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
+	// 						<div>状态：<span @click.stop='searchByStatus("全部")' :class="{'active':statusType == '全部'}">全部</span>
+	// 							<span @click.stop='searchByStatus("待审核")' :class="{'active':statusType == '待审核'}">待审核</span>
+	// 							<span :class="{'active':statusType == '已通过'}" @click.stop='searchByStatus("已通过")'>已通过</span>
+	// 							<span :class="{'active':statusType == '已拒绝'}" @click.stop='searchByStatus("已拒绝")'>已拒绝</span> </div>
+	// 					</header>
+	// 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
+	// 						<ul>
+	// 							<li @dblclick="previewReport(report)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
+	// 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
+	// 								<div class="wm-collection-report-status">
+	// 									<img v-if='report.status===1' :src="imgs.pass" alt="">
+	// 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
+	// 								</div>
+	// 								<div class="wm-collection-check">
+	// 									<Checkbox v-model="report.checked"></Checkbox>
+	// 								</div>
+	// 								<div class="wm-report-action" v-if='report.isLoaded'>
+	// 									<div class="wm-report-action-icon"></div>
+	// 								</div>
+	// 								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+	// 							</li>	
+	// 						</ul>
+	// 						<div class="wm-collection-pagetion">
+	// 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
+	// 						</div>
+	// 					</div>
+	//
+	// 			</div>
+	// 			<div slot="right" class="wm-collection-right wm-scroll" v-if='reportList[currentReportIndex]'>
+	// 				<h1 style="height:30px"></h1>
+	// 				<div   class="wm-right-thumb">
+	// 					<div>
+	// 						<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
+	// 					</div>
+	// 				</div>
+	//
+	// 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+	// 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+	// 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
+	// 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+	// 					</div>
+	//
+	// 					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+	// 					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
+	// 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>
+	// 					</div>
+	//
+	// 					<div  v-if='item.type ===  "select" && item.canedit'>
+	// 						<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model="formAdmin[item.fieldname]" size='small'  style="width:100px">
+	// 							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
+	// 						</Select>
+	// 					</div>
+	//
+	// 					<div @dblclick="editItem(item)" v-if='item.type === "select" && !item.canedit'>
+	// 						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+	// 					</div>
+	//
+	// 					<div v-if='item.fieldname === "userlabel"'>标签：</div>
+	// 					<div class="wm-tag-list"  v-if='item.fieldname === "userlabel"'>
+	// 						<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 					</div>
+	//
+	// 					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+	// 						<!-- <div class="wm-userlabel-header">
+	// 							<div>标签</div>
+	// 							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
+	// 							<div>
+	// 								<div class="wm-add-label" @click='addTagByDetail(item)'>
+	//
+	// 								</div>
+	// 							</div>
+	//
+	// 						</div> -->
+	// 						<div class="wm-tag-list">
+	// 							<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+	// 						</div>
+	// 					</section>
+	// 				</div>
+	//
+	//
+	// 			</div>
+	// 		</Split>
+	//
+	//
+	// 		<div class="lt-full wm-collection-report-C" v-if='showPreview'>
+	// 			<span class="wm-report-close" @click="closePreview"></span>
+	// 			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
+	// 				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+	// 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
+	// 					<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+	// 					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
+	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
+	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						</div>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	// 			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
+	// 				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
+	// 				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
+	// 					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+	// 					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
+	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
+	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						</div>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	// 			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
+	// 				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
+	// 				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
+	// 					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
+	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
+	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
+	// 						</div>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	//
+	// 			<section class="wm-report-check-in-mask" :class="{'hide':nextReport}">
+	// 				<div>
+	// 					<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{"pass":reportList[currentReportIndex].score === 100}'  class="wm-report-adopt" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
+	// 						<span>通过</span>
+	// 					</div>
+	// 					<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{"reject":reportList[currentReportIndex].score === 0}'  class="wm-report-reject" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>
+	// 						<span>拒绝</span>
+	// 					</div>
+	// 				</div>
+	// 				<div>
+	// 					<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
+	// 					<span v-if='!reportList[currentReportIndex].remark' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>
+	// 				</div>
+	// 			</section>
+	// 		</div>
+	// 	</div>
+	// </template>
+	//
+	// <script>
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	__webpack_require__(43);
+
+	var _libUtil = __webpack_require__(14);
+
+	var _libUtil2 = _interopRequireDefault(_libUtil);
+
+	var _vue = __webpack_require__(1);
+
+	var _vue2 = _interopRequireDefault(_vue);
+
+	exports['default'] = {
+		props: ['obserable'],
+		name: 'zmitiindex',
+		data: function data() {
+			return {
+				colorList: ['default', 'success', 'primary', 'error', 'warning', 'red', 'orange', 'gold', 'yellow'],
+				isLoading: false,
+				selectAll: false,
+				scale: .8,
+				imgs: window.imgs,
+				viewH: document.documentElement.clientHeight,
+				resourcecnname: '',
+				kwType: '关键字',
+				showCondition: false,
+				keyword: '',
+				fieldname: -1,
+				nextReport: false,
+				reportList: [],
+				showPreview: false,
+				showMaskDetail: false,
+				mainType: 1,
+				showCheckAction: false,
+				configList: [],
+				currentReportIndex: 0,
+				menus: [],
+				classicType: '全部',
+				statusType: '全部',
+				publicadtype: -1,
+				totalnum: 0,
+				status: -1,
+				currentPage: 0,
+				classic: -1,
+				page: 1,
+				pagenum: 20,
+				raterReportList: []
+			};
+		},
+		components: {},
+		watch: {
+			selectAll: function selectAll(val) {
+				this.reportList.forEach(function (item) {
+					item.checked = val;
+				});
+			},
+			mainType: function mainType(val) {
+				if (val === 1) {
+					this.getRaterReportList();
+				}
+			}
+		},
+		methods: {
+
+			getRaterReportList: function getRaterReportList() {
+				//获取评审管理列表
+				var id = this.$route.params.id;
+				var s = this;
+
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadadmin/getscoredetaillist/',
+					data: {
+						resourceid: id,
+						admintoken: s.userinfo.admintoken,
+						adminusername: s.userinfo.adminusername
+					},
+					success: function success(data) {
+						if (data.getret === 0) {
+							s.raterReportList = data.list;
+						}
+					}
+				});
+			},
+
+			searchReport: function searchReport() {
+				var _this = this;
+
+				if (this.keyword) {
+					clearTimeout(this.timer);
+					this.timer = setTimeout(function () {
+						if (!_this.keyword) {
+							_this.fieldname = -1;
+							_this.getReportList();
+							return;
+						}
+						_this.fieldname = _this.kwType === '用户名' ? 'username' : _this.kwType === '关键字' ? 'searchkey' : -1;
+						_this.page = 1;
+						_this.getReportList();
+					}, 400);
+				}
+			},
+			checkReportById: function checkReportById(report, status, index) {
+
+				s.check(status, report.id, status === 2 ? report.remark : '');
+			},
+
+			loadMoreReport: function loadMoreReport(num) {
+				this.page = num;
+				this.getReportList();
+			},
+			pagesizeChange: function pagesizeChange(size) {
+				this.page = 1;
+				this.pagenum = size;
+				this.getReportList();
+			},
+			closePreview: function closePreview() {
+				this.showPreview = false;
+				this.showMaskDetail = false;
+			},
+
+			previewReport: function previewReport() {
+				//双击预览作品、
+				this.showPreview = true;
+			},
+
+			showDetail: function showDetail(report, index) {
+				this.currentReportIndex = index;
+				this.formAdmin = report;
+				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
+				//this.currentReport = report;
+			},
+
+			check: function check(status, ids) {
+				var remark = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+
+				var s = this;
+				var id = this.$route.params.id;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadadmin/checkresource/',
+					data: {
+						admintoken: s.userinfo.admintoken,
+						adminusername: s.userinfo.adminusername,
+						resourceid: id,
+						status: status,
+						ids: ids.join ? ids.join(',') : ids,
+						remark: remark
+					},
+					success: function success(data) {
+						s.$Message[data.getret === 0 ? 'success' : 'error'](data.getmsg);
+						if (data.getret === 0) {
+							s.selectAll = false;
+							s.getReportList();
+							if (s.showPreview) {
+								s.currentReportIndex++;
+								s.currentReportIndex %= s.reportList.length;
+								s.nextReport = true;
+								setTimeout(function () {
+									s.nextReport = false;
+								}, 400);
+							} else {
+								s.currentReportIndex = 0;
+							}
+						}
+					}
+				});
+			},
+
+			checkAction: function checkAction(status) {
+				this.showCheckAction = false;
+				var s = this;
+
+				var ids = [];
+				s.reportList.map(function (item) {
+					if (item.checked) {
+						ids.push(item.id);
+					}
+				});
+				if (!ids.length) {
+					s.$Message.error('请至少选择一个要审核的作品');
+					return;
+				}
+				this.check(status, ids);
+			},
+			changeKwType: function changeKwType(type) {
+				this.kwType = type;
+				this.showCondition = false;
+			},
+			searchByClassic: function searchByClassic(type) {
+				var _this2 = this;
+
+				this.classicType = type;
+				//this.statusType  = '全部';
+				//publicadtype
+				if (type !== '全部') {
+					this.menus.map(function (menu) {
+						if (type === menu) {
+							_this2.publicadtype = type;
+						}
+					});
+				} else {
+					this.publicadtype = -1;
+				}
+				this.page = 1;
+				this.getReportList();
+			},
+			searchByStatus: function searchByStatus(type) {
+				this.statusType = type;
+				if (type !== '全部') {
+					this.status = type === '待审核' ? 0 : type === '已通过' ? 1 : 2;
+				} else {
+					this.status = -1;
+				}
+				this.page = 1;
+				this.getReportList();
+				//this.classicType  = '全部';
+			},
+			getReportList: function getReportList() {
+				var id = this.$route.params.id;
+				var s = this;
+
+				var p = {
+					admintoken: s.userinfo.admintoken,
+					adminusername: s.userinfo.adminusername,
+					resourceid: id,
+					pagenum: s.pagenum,
+					page: s.page
+				};
+				if (this.status !== -1) {
+					p.status = this.status;
+				}
+				if (this.publicadtype !== -1) {
+					p.publicadtype = this.publicadtype;
+				}
+				if (this.fieldname !== -1) {
+					p[this.fieldname] = this.keyword;
+				}
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadadmin/getresouredetaillist/',
+					data: p,
+					success: function success(data) {
+						console.log(data);
+						var resourceList = _vue2['default'].obserable.trigger({
+							type: "getResource"
+						});
+						if (data.getret === 0) {
+							s.currentPage = 1;
+							s.reportList = data.list;
+							s.totalnum = data.totalnum;
+							s.reportList.forEach(function (item) {
+								item.checked = false;
+							});
+
+							if (s.reportList.length) {
+								s.currentReportIndex = 0;
+								s.formAdmin = s.reportList[s.currentReportIndex];
+								if (this.formAdmin && this.formAdmin.userlabel) {
+									this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
+								}
+							}
+							resourceList.map(function (item) {
+								if (item.resourceid === id) {
+									s.resourcecnname = item.resourcecnname;
+									s.configList = JSON.parse(item.tablefield).fieldlist;
+									s.configList.map(function (item) {
+										if (item.fieldname === 'publicadtype') {
+											s.menus = item.data;
+										}
+									});
+								}
+							});
+						}
+					}
+				});
+			}
+		},
+		mounted: function mounted() {
+			var _this3 = this;
+
+			this.userinfo = _libUtil2['default'].getUserInfo();
+			this.getReportList();
+			window.s = this;
+
+			window.onkeydown = function (e) {
+				if (e.keyCode === 27) {
+					_this3.closePreview();
+				}
+				if (_this3.showPreview) {
+					if (e.keyCode === 37) {
+						_this3.currentReportIndex--;
+						if (_this3.currentReportIndex <= -1) {
+							_this3.currentReportIndex = _this3.reportList.length - 1;
+						}
+						_this3.currentReportIndex %= _this3.reportList.length;
+					} else if (e.keyCode === 39) {
+						_this3.currentReportIndex++;
+						_this3.currentReportIndex %= _this3.reportList.length;
+					}
+				}
+			};
+		}
+	};
+
+	// </script>
+	//  <style>
+	// 	.demo-spin-icon-load{
+	//         animation: ani-demo-spin 1s linear infinite;
+	//     }
+	//     @keyframes ani-demo-spin {
+	//         from { transform: rotate(0deg);}
+	//         50%  { transform: rotate(180deg);}
+	//         to   { transform: rotate(360deg);}
+	//     }
+	//
+	//  </style>
 	//
 	module.exports = exports['default'];
 
@@ -13965,7 +14385,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-rater-main-ui > header {\n  background: #fff;\n  height: 50px;\n  width: 100%;\n  line-height: 50px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-rater-main-ui > header > section {\n  margin-right: 30px;\n}\n\n.wm-rater-main-ui > header > div {\n  font-size: 20px;\n  margin-left: 40px;\n  position: relative;\n}\n\n.wm-rater-main-ui > header > div:before {\n  content: \"\";\n  position: absolute;\n  width: 2px;\n  height: 20px;\n  background: #cc0000;\n  top: 15px;\n  left: -10px;\n}\n\n.wm-rater-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {\n  left: 30px;\n}\n\n.ivu-table-body::-webkit-scrollbar,\n.wm-scroll::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.ivu-table-body::-webkit-scrollbar-thumb,\n.wm-scroll::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.ivu-table-body::-webkit-scrollbar-track,\n.wm-scroll::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\nbody {\n  overflow: hidden;\n}\n\n.wm-collection-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-collection-ui .wm-collection-left-pannel {\n  width: 140px;\n  height: 300px;\n  background: #eee;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-pannel > h2 {\n  font-size: 14px;\n  padding: 60px 0;\n  text-align: center;\n}\n\n.wm-collection-ui .wm-collection-left-pannel > ul li {\n  width: 100%;\n  height: 30px;\n  line-height: 30px;\n  cursor: pointer;\n  text-indent: 2em;\n}\n\n.wm-collection-ui .wm-collection-left-pannel > ul li.active {\n  background: #fff;\n  color: #b20000;\n  font-weight: bold;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui,\n.wm-collection-ui .wm-collection-rater-manager {\n  padding: 20px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui:before,\n.wm-collection-ui .wm-collection-rater-manager:before {\n  content: '';\n  width: 100%;\n  height: 10px;\n  background: #eee;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header {\n  height: 60px;\n  line-height: 80px;\n  border-bottom: 1px solid #eee;\n  padding-bottom: 8px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-title,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-title {\n  font-size: 16px;\n  width: 50%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content {\n  width: 50%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: flex-end;\n  align-items: flex-end;\n  -webkit-justify-content: flex-end;\n  -webkit-align-items: flex-end;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C {\n  line-height: 100px;\n  background: #eee;\n  height: 36px;\n  line-height: 36px;\n  border-radius: 20px;\n  padding-left: 20px;\n  box-sizing: border-box;\n  width: 65%;\n  margin-right: 5%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition {\n  display: inline-block;\n  padding-right: 15px;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 10px;\n  border: 1px solid #444;\n  right: 0;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 8px;\n  border-left: none;\n  border-top: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul {\n  width: 80px;\n  margin-left: -20px;\n  position: absolute;\n  border: 1px solid #ccc;\n  background: #fff;\n  border-radius: 4px;\n  text-indent: 2em;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li {\n  cursor: pointer;\n  width: 100%;\n  line-height: 24px;\n  height: 24px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover {\n  background: #be0000;\n  color: white;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before {\n  background: #be0000 !important;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1) {\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before {\n  content: \"\";\n  width: 10px;\n  height: 10px;\n  background: #fff;\n  position: absolute;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: 1px solid #ccc;\n  border-top: 1px solid #ccc;\n  top: -6px;\n  left: 30px;\n  border-radius: 2px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img {\n  width: 20px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input {\n  height: 30px;\n  padding-left: 10px;\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  outline: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action {\n  width: 30%;\n  height: 36px;\n  line-height: 36px;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul {\n  width: 80px;\n  margin-left: 40px;\n  position: absolute;\n  border: 1px solid #ccc;\n  background: #fff;\n  margin-top: 2px;\n  border-radius: 4px;\n  text-indent: 10px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li {\n  cursor: pointer;\n  width: 100%;\n  line-height: 30px;\n  height: 30px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i {\n  font-size: 16px;\n  vertical-align: middle;\n  color: #be0000;\n  font-weight: bold;\n  margin-top: -3px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) {\n  color: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i {\n  color: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2) {\n  color: #be0000;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover {\n  background: #be0000;\n  color: white;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before {\n  background: #be0000 !important;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i {\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span {\n  position: absolute;\n  width: 25px;\n  height: 25px;\n  border-radius: 50%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) {\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before {\n  content: \"\";\n  width: 10px;\n  height: 10px;\n  background: #fff;\n  position: absolute;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: 1px solid #ccc;\n  border-top: 1px solid #ccc;\n  top: -6px;\n  left: 30px;\n  border-radius: 2px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header {\n  height: 80px;\n  line-height: 40px;\n  border-radius: 4px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div {\n  background: #eee;\n  padding-left: 20px;\n  box-sizing: border-box;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span {\n  display: inline-block;\n  margin: 0 10px;\n  padding: 0 10px;\n  height: 24px;\n  line-height: 24px;\n  cursor: pointer;\n  border: 1px solid transparent;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span:hover {\n  border: 1px solid #be0000;\n  box-sizing: border-box;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span.active,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span.active {\n  background: #be0000;\n  color: #fff;\n  text-align: center;\n  border-radius: 3px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list {\n  overflow: auto;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list .wm-collection-pagetion,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list .wm-collection-pagetion {\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  cursor: pointer;\n  float: left;\n  -webkit-user-select: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item {\n  display: inline-block;\n  width: 230px;\n  margin: 12px;\n  height: 130px;\n  background: #f4f4f4;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg {\n  width: 100%;\n  height: 100%;\n  border: 1px solid #eee;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active {\n  border-color: #f5a420;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name {\n  text-align: center;\n  margin: 4px 0;\n  font-size: 14px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-check,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-check {\n  position: absolute;\n  left: 10px;\n  top: 10px;\n  z-index: 10;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status {\n  position: absolute;\n  width: 70px;\n  bottom: -30px;\n  right: 0;\n}\n\n@-webkit-keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n@keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(255, 255, 255, 0.7);\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled {\n  color: #be0000;\n  font-size: 12px;\n  z-index: 10;\n  width: 85%;\n  padding-left: 20px;\n  left: 50%;\n  border: 1px solid #be0000;\n  border-radius: 3px;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(255, 255, 255, 0.8);\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span {\n  position: absolute;\n  left: 0;\n  top: 0px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before {\n  content: '';\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  border: 1px solid #be0000;\n  border-radius: 50%;\n  left: 2px;\n  top: 5px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after {\n  content: \"\";\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #be0000;\n  left: 2px;\n  top: 13px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action {\n  position: absolute;\n  top: 10px;\n  right: 0;\n  z-index: 1000;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon {\n  width: 20px;\n  height: 20px;\n  background: #fff;\n  border-radius: 2px;\n  position: absolute;\n  right: 10px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before {\n  content: \"\";\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  border: 1px solid #bbb;\n  left: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: none;\n  border-top: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul {\n  display: block;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i {\n  color: #ff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul {\n  display: none;\n  background: #fff;\n  width: 80px;\n  margin-top: 20px;\n  margin-right: 10px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico {\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  position: absolute;\n  left: 0;\n  top: 0;\n  text-indent: -.4rem;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i {\n  vertical-align: middle;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li {\n  display: block;\n  height: 30px;\n  cursor: pointer;\n  line-height: 30px;\n  width: 100%;\n  margin: 0;\n  text-indent: .5em;\n  vertical-align: middle;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover {\n  background: #be0000;\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div {\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message {\n  color: #000;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i {\n  font-size: 20px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager {\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-collection-ui .wm-collection-report-C > div {\n  max-width: 80vw;\n  max-height: 60vh;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .xlsx,\n.wm-collection-ui .wm-collection-report-C > div .pdf,\n.wm-collection-ui .wm-collection-report-C > div .doc,\n.wm-collection-ui .wm-collection-report-C > div .m4a,\n.wm-collection-ui .wm-collection-report-C > div .ppt,\n.wm-collection-ui .wm-collection-report-C > div .xlsx,\n.wm-collection-ui .wm-collection-report-C > div .doc,\n.wm-collection-ui .wm-collection-report-C > div .docx,\n.wm-collection-ui .wm-collection-report-C > div .pdf,\n.wm-collection-ui .wm-collection-report-C > div .txt,\n.wm-collection-ui .wm-collection-report-C > div .ppt,\n.wm-collection-ui .wm-collection-report-C > div .pptx,\n.wm-collection-ui .wm-collection-report-C > div .xls,\n.wm-collection-ui .wm-collection-report-C > div .rar,\n.wm-collection-ui .wm-collection-report-C > div .html,\n.wm-collection-ui .wm-collection-report-C > div .css,\n.wm-collection-ui .wm-collection-report-C > div .scss,\n.wm-collection-ui .wm-collection-report-C > div .js,\n.wm-collection-ui .wm-collection-report-C > div .vb,\n.wm-collection-ui .wm-collection-report-C > div .dmg,\n.wm-collection-ui .wm-collection-report-C > div .shtml,\n.wm-collection-ui .wm-collection-report-C > div .zip {\n  display: block;\n  margin: 0 auto;\n  position: relative !important;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail {\n  padding: 10px;\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n  min-width: 300px;\n  bottom: 0;\n  left: 50%;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(0, 0, 0, 0.7);\n  color: #fff;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide {\n  height: 40px;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:before, .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after {\n  -webkit-transform: rotate(225deg);\n  transform: rotate(225deg);\n  top: 4px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after {\n  top: 8px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.wm-audio {\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.wm-video-detail.hide {\n  bottom: -40px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span {\n  position: absolute;\n  right: 30px;\n  top: 10px;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:before, .wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:after {\n  content: '';\n  right: -12px;\n  top: 0px;\n  position: absolute;\n  width: 8px;\n  height: 8px;\n  border: 1px solid #fff;\n  border-left: none;\n  border-top: none;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:after {\n  top: 4px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item {\n  background: transparent;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div {\n  text-align: left;\n  line-height: 30px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\n  width: 60px;\n  text-align: right;\n  margin-right: 20px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\n  margin-left: 20px;\n  max-width: 200px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div img {\n  width: auto;\n  height: auto;\n  max-height: 60vh;\n  max-width: 80vh;\n}\n\n.wm-collection-ui .wm-collection-report-C > div video {\n  width: auto;\n  max-height: 60vh;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask {\n  width: 300px;\n  height: 200px;\n  position: absolute;\n  right: 40px;\n  bottom: 40px;\n  border-radius: 6px;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask.hide {\n  -webkit-transform: translate(0, 50px);\n  transform: translate(0, 50px);\n  opacity: 0;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) {\n  padding: 10px;\n  border-radius: 6px;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2):before {\n  content: '';\n  width: 30px;\n  height: 30px;\n  background: #fff;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  position: absolute;\n  z-index: 10;\n  border-radius: 4px;\n  left: 65%;\n  top: 1px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-collection-placeholder {\n  position: absolute;\n  top: 15px;\n  left: 20px;\n  color: #999;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) textarea {\n  background: #fff;\n  border: none;\n  resize: none;\n  height: 100px;\n  color: #0f0f0f;\n  padding: 2px 10px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) textarea::-webkit-input-placeholder {\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-evenly;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) > div {\n  width: 40px;\n  height: 40px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject {\n  width: 50px;\n  height: 50px;\n  cursor: pointer;\n  border-radius: 50%;\n  margin: 4px 0;\n  color: #fff;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt span,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject span {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  line-height: 70px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-leave-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-leave-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-enter-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-leave-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-enter-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-leave-active {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-leave-to, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-leave-to,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-enter,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-leave-to,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-enter,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-leave-to {\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass {\n  background: transparent;\n  color: #fff;\n  cursor: text;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass::before,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass::before {\n  border-color: #fff;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject {\n  cursor: text;\n  background: transparent;\n  color: #b20000;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject::before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject:after,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject::before,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject:after {\n  background: #b20000;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt {\n  background: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt:before {\n  content: \"\";\n  position: absolute;\n  width: 20px;\n  height: 12px;\n  -webkit-transform: rotate(-40deg) skew(10deg);\n  transform: rotate(-40deg) skew(10deg);\n  left: 14px;\n  border: 3px solid #fff;\n  border-right: none;\n  border-top: none;\n  top: 8px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject {\n  background: #b20000;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject:before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject:after {\n  content: \"\";\n  position: absolute;\n  width: 20px;\n  height: 3px;\n  left: 50%;\n  background: #fff;\n  border-right: none;\n  border-top: none;\n  top: 50%;\n  margin-top: -8px;\n  -webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);\n  transform: translate3d(-50%, -50%, 0) rotate(45deg);\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject:after {\n  width: 3px;\n  height: 20px;\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-report-close {\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  cursor: pointer;\n  border: 2px solid #fff;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 20px;\n  z-index: 10;\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-report-close:before, .wm-collection-ui .wm-collection-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 20px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-report-close:after {\n  width: 2px;\n  height: 20px;\n}\n\n.wm-collection-ui .wm-collection-right {\n  background: #fff;\n  overflow: auto;\n  height: 100%;\n}\n\n.wm-collection-ui .wm-collection-right .wm-tag-list-C {\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 95%;\n  margin: 40px auto 0;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(1) {\n  width: 40px;\n  text-align: right;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input {\n  width: 90%;\n  margin-left: 10%;\n  border: 1px solid #eee;\n  text-align: center;\n  position: relative;\n  outline: none;\n  border-radius: 4px;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) {\n  width: 50px;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div {\n  position: absolute;\n  cursor: pointer;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  top: 5px;\n  left: 10px;\n  border: 1px solid #f5a420;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 1px;\n  background: #f5a420;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  width: 1px;\n  height: 10px;\n}\n\n.wm-collection-ui .wm-collection-right .wm-tag-list {\n  width: 85%;\n  margin: 10px auto;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item {\n  background: transparent;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div {\n  float: left;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 30%;\n  text-align: right;\n  margin-left: 2%;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(2) {\n  width: 68%;\n  cursor: pointer;\n  min-height: 30px;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-collection-ui .wm-right-thumb {\n  margin: 0 auto;\n  height: 130px;\n  width: 230px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  overflow: hidden;\n}\n", ""]);
 
 	// exports
 
@@ -13974,7 +14394,7 @@
 /* 45 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-rater-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>评委管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addRater\">新增评委</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='raterList' :columns='columns'   stripe></Table>\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentRateid === -1? '新增评委':'编辑评委'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input style=\"width:310px;\" v-model=\"formAdmin.ratername\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t<RadioGroup v-model=\"formAdmin.sex\">\r\n\t\t\t\t\t\t<Radio :label=\"1\">\r\n\t\t\t\t\t\t\t<span>男</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t\t<Radio :label=\"0\">\r\n\t\t\t\t\t\t\t<span>女</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t</RadioGroup>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"raterpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.raterpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"电话：\" prop=\"mobile\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.mobile\" placeholder=\"电话\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-collection-ui lt-full\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t<div  class=\"wm-collection-left-pannel\" :style=\"{height:viewH -   64+'px'}\">\r\n\t\t\t<h2 class=\"zmiti-text-overflow\">{{resourcecnname}}</h2>\r\n\t\t\t<ul>\r\n\t\t\t\t<li @click='mainType = 0' :class=\"{'active':mainType === 0}\">上报管理</li>\r\n\t\t\t\t<li @click='mainType = 1' :class=\"{'active':mainType === 1}\">评审管理</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t\t\r\n\t\t<section v-if='mainType  === 1' class=\"wm-collection-rater-manager\">\r\n\t\t\t<header class='wm-collection-left-header'>\r\n\t\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t\t{{kwType}}\r\n\t\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-collection-check-action\">\r\n\t\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t\t<Button type=\"primary\" size='small' @click.stop='showCheckAction = true'>审核 <Icon type=\"ios-arrow-up\" /></Button>\r\n\t\t\t\t\t\t<ul v-if='showCheckAction'>\r\n\t\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</header>\r\n\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t\t\t<div>状态：<span @click.stop='searchByStatus(\"全部\")' :class=\"{'active':statusType == '全部'}\">全部</span>\r\n\t\t\t\t\t<span @click.stop='searchByStatus(\"待审核\")' :class=\"{'active':statusType == '待审核'}\">待审核</span>\r\n\t\t\t\t\t<span :class=\"{'active':statusType == '已通过'}\" @click.stop='searchByStatus(\"已通过\")'>已通过</span>\r\n\t\t\t\t\t<span :class=\"{'active':statusType == '已拒绝'}\" @click.stop='searchByStatus(\"已拒绝\")'>已拒绝</span> </div>\r\n\t\t\t</header>\r\n\t\t\t<div class=\"wm-scroll wm-collection-rater-list\" :style=\"{height:viewH -  230+'px'}\">\r\n\t\t\t\t<ul>\r\n\t\t\t\t\t<li>\r\n\r\n\t\t\t\t\t</li>\r\n\t\t\t\t</ul>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\r\n\t\t<Split v-model='scale' v-if='mainType === 0'> \r\n\t\t\t<div slot='left' class=\"wm-collection-left-main-ui\">\r\n\t\t\t\t\t<header class='wm-collection-left-header'>\r\n\t\t\t\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t\t\t\t{{kwType}}\r\n\t\t\t\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-check-action\">\r\n\t\t\t\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='small' @click.stop='showCheckAction = true'>审核 <Icon type=\"ios-arrow-up\" /></Button>\r\n\t\t\t\t\t\t\t\t<ul v-if='showCheckAction'>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t\t\t\t\t<div>状态：<span @click.stop='searchByStatus(\"全部\")' :class=\"{'active':statusType == '全部'}\">全部</span>\r\n\t\t\t\t\t\t\t<span @click.stop='searchByStatus(\"待审核\")' :class=\"{'active':statusType == '待审核'}\">待审核</span>\r\n\t\t\t\t\t\t\t<span :class=\"{'active':statusType == '已通过'}\" @click.stop='searchByStatus(\"已通过\")'>已通过</span>\r\n\t\t\t\t\t\t\t<span :class=\"{'active':statusType == '已拒绝'}\" @click.stop='searchByStatus(\"已拒绝\")'>已拒绝</span> </div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-scroll wm-collection-report-list\" :style=\"{height:viewH - 230+'px'}\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click='showDetail(report,i)'  class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg' :style=\"{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}\"></div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-report-status\">\r\n\t\t\t\t\t\t\t\t\t<img v-if='report.status===1' :src=\"imgs.pass\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t<img  v-if='report.status===2' :src=\"imgs.reject\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-check\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t \r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-collection-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<h1 style=\"height:30px\"></h1>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\" && item.canedit'>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div @dblclick=\"editItem(item)\" v-if='item.type === \"select\" && !item.canedit'>\r\n\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t<div class=\"wm-tag-list\"  v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<!-- <div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div> -->\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div  v-if='reportList[currentReportIndex].fileextname !== \"mp3\" &&reportList[currentReportIndex].fileextname!== \"webm\" &&reportList[currentReportIndex].fileextname !== \"mp4\" && reportList[currentReportIndex].fileextname!== \"aac\"&&reportList[currentReportIndex].fileextname!== \"wma\"&&reportList[currentReportIndex].fileextname!== \"ogg\"'>\r\n\t\t\t\t<img :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<section class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t\t<span v-if='!reportList[currentReportIndex].remark' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t\t</div>\r\n\t\t\t</section>\r\n\t\t</div>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 46 */
@@ -57199,6 +57619,359 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "a2c4a261a239aa84463dc70e4bac9b9a.svg";
+
+/***/ }),
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(127)
+	__vue_script__ = __webpack_require__(129)
+	__vue_template__ = __webpack_require__(132)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), true)
+	  if (!hotAPI.compatible) return
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\login\\index.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(128);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4e7288cc&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4e7288cc&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 128 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n ", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 129 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// <template>
+	// 	<div  class="wm-login-ui lt-full">
+	// 		<header>
+	// 			<div>
+	// 				<div>
+	// 					<img :src="imgs.logo"  />
+	// 				</div>
+	// 				<div>
+	// 					<a v-if='false' href='#/register'>用户注册></a>
+	// 				</div>
+	// 			</div>
+	// 		</header>
+	// 		<section :style="{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}" >
+	// 			<div class="wm-login-C">
+	// 				<h2>公益广告上报系统</h2>
+	// 				<div class="wm-login-form">
+	// 					<div>
+	// 						<label>
+	// 							<img :src="imgs.loginPerson" alt="">
+	// 							<input type="text" v-model="username" placeholder="请输入账号">
+	// 						</label>
+	// 						<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>
+	// 					</div>
+	// 					<div>
+	// 						<label>
+	// 							<img :src="imgs.loginLock" alt="">
+	// 							<input @keydown.13='login' type="password" v-model="password" placeholder="请输入密码">
+	// 						</label>
+	// 					</div>
+	// 					<div>
+	// 						<div @click="login">登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
+	// 						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
+	// 					</div>
+	// 				</div>
+	// 			</div>
+	// 			<div class="wm-copyright">
+	// 				中国文明网 &copy;版权所有
+	// 			</div>
+	// 		</section>
+	// 	</div>
+	// </template>
+	//
+	// <script>
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	__webpack_require__(130);
+
+	var _libUtil = __webpack_require__(14);
+
+	var _libUtil2 = _interopRequireDefault(_libUtil);
+
+	var _vue = __webpack_require__(1);
+
+	var _vue2 = _interopRequireDefault(_vue);
+
+	exports['default'] = {
+		props: ['obserable'],
+		name: 'zmitiindex',
+		data: function data() {
+			return {
+				imgs: window.imgs,
+				username: '',
+				password: '',
+				loginError: '',
+				checked: false,
+				isLogined: false,
+				isMove: false,
+				showLoading: false,
+				showError: false,
+				errorMsg: '',
+				loginType: "员工登录",
+				viewH: document.documentElement.clientHeight
+			};
+		},
+		components: {},
+
+		methods: {
+			toastError: function toastError() {
+				var _this2 = this;
+
+				var msg = arguments.length <= 0 || arguments[0] === undefined ? '用户名不能为空' : arguments[0];
+
+				this.loginError = msg;
+				setTimeout(function () {
+					_this2.loginError = '';
+				}, 2000);
+			},
+			login: function login() {
+				var _this = this;
+				if (!this.username) {
+					this.toastError();
+					return;
+				}
+				if (!this.password) {
+					this.toastError('密码不能为空');
+					return;
+				}
+				this.showLoading = true;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadadmin/login/',
+					data: {
+						adminusername: _this.username,
+						adminpwd: _this.password
+					},
+					success: function success(data) {
+						if (data.getret === 0) {
+							var param = data;
+							delete param.getret;
+							delete param.getmsg;
+							var p = param.list;
+
+							_libUtil2['default'].clearCookie('adminlogin');
+							//symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
+							window.localStorage.setItem('adminlogin', JSON.stringify(p));
+							if (_this.checked) {
+								window.localStorage.setItem('wm_adminusername', _this.username);
+								window.localStorage.setItem('wm_adminpassword', _this.password);
+							} else {
+								window.localStorage.setItem('wm_adminusername', '');
+								window.localStorage.setItem('wm_adminpassword', '');
+							}
+							window.location.hash = '#/adminuser/';
+
+							_this.$Message.success('登录成功~');
+
+							window.location.reload();
+							_this.isLogined = true;
+						} else {
+							_this.toastError(data.getmsg);
+						}
+					}
+				});
+			},
+			checkCache: function checkCache() {
+				var username = window.localStorage.getItem('wm_adminusername'),
+				    password = window.localStorage.getItem('wm_adminpassword');
+
+				if (username && password) {
+					this.username = username;
+					this.password = password;
+					this.checked = true;
+				}
+			}
+
+		},
+		mounted: function mounted() {
+			this.checkCache();
+		}
+	};
+
+	// </script>
+	//  <style>
+	// 	.demo-spin-icon-load{
+	//         animation: ani-demo-spin 1s linear infinite;
+	//     }
+	//     @keyframes ani-demo-spin {
+	//         from { transform: rotate(0deg);}
+	//         50%  { transform: rotate(180deg);}
+	//         to   { transform: rotate(360deg);}
+	//     }
+	//  </style>
+	module.exports = exports['default'];
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(131);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(10)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(9)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-login-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-login-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-login-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-login-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-login-ui > header a {\n  color: #cc0000;\n}\n\n.wm-login-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-login-ui > section {\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-login-ui > section .wm-login-C {\n  width: 600px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-title {\n  margin-bottom: 7vh;\n}\n\n.wm-login-ui > section .wm-login-C > h2 {\n  color: #fff;\n  font-size: 40px;\n  margin: 30px 0;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  background: #fff;\n  height: 50px;\n  line-height: 50px;\n  padding: 0 20px;\n  border-radius: 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\n  color: #f00;\n  margin-top: -12px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  margin: 0 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\n  width: 120px;\n  color: #fff;\n  text-align: center;\n  line-height: 50px;\n  cursor: pointer;\n  font-size: 16px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\n  background: #cc0000;\n  border-radius: 10px;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\n  position: absolute;\n  width: 100%;\n  left: 0;\n  color: #000;\n  margin-top: -3px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\n  border: none;\n  height: 30px;\n  background: transparent;\n  outline: none;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form img {\n  width: 20px;\n}\n\n.wm-login-ui > section .wm-copyright {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  text-align: center;\n  height: 50px;\n  line-height: 50px;\n  color: #fff;\n  background: rgba(204, 0, 0, 0.4);\n}\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 132 */
+/***/ (function(module, exports) {
+
+	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a v-if='false' href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统</h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"load-c\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
 
 /***/ })
 /******/ ]);

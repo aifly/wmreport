@@ -74,17 +74,20 @@
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加视频</span>
 							</div>
+							<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
 						</div>
 						<div v-show='currentType === 2 && reportList.length>0' class="wm-uplad-add-audio">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加音频</span>
+								<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
 							</div>
 						</div>
 						<div v-show='currentType === 3 && reportList.length>0' class="wm-uplad-add-dongman">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加动漫</span>
+								<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
 							</div>
 						</div>
 					</footer>
@@ -98,10 +101,15 @@
 				</div>
 				
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
-					<div v-if='item.fieldname!=="userlabel"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
+					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
 						<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+					</div>
+
+					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
+						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>
 					</div>
 
 					<div  v-if='item.type ===  "select" && item.canedit'>
@@ -163,7 +171,7 @@
 			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
 				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
-					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
 						<div v-if='item.fieldname !== "userlabel" && (item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 						<div v-if='item.fieldname !== "userlabel" &&(item.type === "text" ||item.type === "textarea")' >
@@ -305,6 +313,9 @@
 				if(this.showPreview){
 					if(e.keyCode === 37 ){
 						this.currentReportIndex--;
+						if(this.currentReportIndex<=-1){
+							this.currentReportIndex = this.reportList.length -1;
+						}
 						this.currentReportIndex %= this.reportList.length;
 						
 					}

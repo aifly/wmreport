@@ -1,7 +1,7 @@
 <template>
 	<div class="wm-rater-main-ui">
 		<header>
-			<div>评委管理</div>
+			<div>评委管理1</div>
 			<section>
 				<Button type="primary" icon='md-add-circle' @click="addRater">新增评委</Button>
 			</section>
@@ -43,7 +43,6 @@
 	import './index.css';
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
-
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -56,7 +55,6 @@
 				showPass:false,
 				viewH:window.innerHeight,
 				currentRateid:-1,
-
 				formAdmin:{
 					raterpwd:'111111'
 				},
@@ -134,20 +132,16 @@
 						}
 					}
 				],
-
 				raterList:[],
-
 				
 				userinfo:{}
 			}
 		},
 		components:{
 		},
-
 		beforeCreate(){
 			//var validate = sysbinVerification.validate(this);
 			//symbinUtil.clearCookie('login');
-
 			///this.validate = validate;
 		},
 		mounted(){
@@ -157,12 +151,10 @@
 		},
 		
 		methods:{
-
 			modifyPass(){
 				if(!this.showPass){
 					this.showPass = true;
 					this.$refs['pass'].focus();
-
 				}else{
 					if(!this.formAdmin.raterpwd){
 						this.$Message.error('密码不能为空');
@@ -183,15 +175,12 @@
 					})
 				}
 			},
-
 			addRater(){
 				this.currentRateid = -1;
 				this.visible = true;
 			},
-
 			getRaterlist(){
 				var s = this;
-
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadadmin/getreviewlist/',
 					//validate:s.validate,
@@ -207,7 +196,6 @@
 							s.$Message.error(data.getmsg);
 						}
 					}
-
 				})
 			},
 			delRater(raterid){
@@ -230,17 +218,13 @@
 							s.$Message.error(data.getmsg);
 						}
 					}
-
 				})
 			},
 			
 			ok(){
-
 				
 				var s = this;
-
 				if(s.currentRateid<=-1){
-
 					symbinUtil.ajax({
 						url:window.config.baseUrl+'/wmadadmin/addreview/',
 						validate:s.validate,
@@ -289,4 +273,3 @@
 		}
 	}
 </script>
- 

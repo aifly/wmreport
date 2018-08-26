@@ -6,7 +6,7 @@
 					<img :src="imgs.logo"  />
 				</div>
 				<div>
-					<a href='#/register'>用户注册></a>
+					<a v-if='false' href='#/register'>用户注册></a>
 				</div>
 			</div>
 		</header>
@@ -43,9 +43,7 @@
 <script>
 	import './index.css';
 	import symbinUtil from '../lib/util';
-
 	import Vue from "vue";
-
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -77,8 +75,6 @@
 			},
 			login(){
 				var _this = this;
-
-
 				if(!this.username){
 					this.toastError();
  					return;
@@ -87,7 +83,6 @@
 					this.toastError('密码不能为空');
  					return;
 				}
-
 				this.showLoading = true;
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadadmin/login/',
@@ -100,14 +95,11 @@
 							var param = data;
 							delete param.getret;
 							delete param.getmsg;
-
 							var p = param.list;
 							
 							symbinUtil.clearCookie('adminlogin');
 							//symbinUtil.setCookie('adminlogin',JSON.stringify(p),1);
-
 							window.localStorage.setItem('adminlogin',JSON.stringify(p));
-
 							if(_this.checked){
 								window.localStorage.setItem('wm_adminusername',_this.username);
 								window.localStorage.setItem('wm_adminpassword',_this.password);
@@ -141,7 +133,6 @@
 			}
 		
 			
-
 		},
 		mounted(){
 			this.checkCache();
@@ -157,6 +148,4 @@
         50%  { transform: rotate(180deg);}
         to   { transform: rotate(360deg);}
     }
-
  </style>
- 

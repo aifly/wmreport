@@ -71,7 +71,7 @@
             "fieldtype": "varchar",
             "fieldname": "filesizeunit",
             "length": 8,
-            "loading": 1,
+            "loading": 0,
             "edit": 0
         },
 
