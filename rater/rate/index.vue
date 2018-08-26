@@ -269,6 +269,7 @@
 				var configList = Vue.obserable.trigger({
 					type:'getFeildList'
 				});
+				console.log(1)
 				if(configList){
 					clearInterval(t);
 					this.configList = configList;

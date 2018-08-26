@@ -52,8 +52,45 @@
 			</header>
 			<div class="wm-scroll wm-collection-rater-list" :style="{height:viewH -  230+'px'}">
 				<ul>
-					<li>
-
+					<li v-for="(raterreport,i) in raterReportList" :key='i'>
+						<div class="wm-collection-raterreport-item-left">
+							<header>介绍</header>
+							<div class="wm-collection-raterreport-thumb-C">
+								<div>
+									<img :src="raterreport.pcbilethum" alt="">
+								</div>
+								<div>
+									<div  v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"||item.fieldname === "userlabel"' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+										<div v-if='item.fieldname !== "userlabel"'>{{item.name}}：</div>
+										<div  class="zmiti-text-overflow" v-if='item.fieldname !== "userlabel"' :class="item.fieldname">
+											<span :title="raterreport[item.fieldname]">{{raterreport[item.fieldname]}}</span>
+										</div>
+										<div v-if='item.fieldname === "userlabel"'>标签：</div>
+										<div class="wm-tag-list" v-if='item.fieldname === "userlabel"'>
+											<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterreport[item.fieldname]||'').split(',')">{{tag}}</Tag>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="wm-collection-raterreport-item-right">
+							<header>票数</header>
+							<div class="wm-collecion-vote-result">
+								<div class="wm-collection-vote-pass">
+									{{raterreport.scorenum_success}}
+								</div>
+								<div class="wm-collection-vote-canvas">
+									<canvas width="140" height="140" ref='wm-result-canvas'></canvas>
+									<div>
+										<div>总票数</div>
+										<div>{{raterreport.scorenum_success+raterreport.scorenum_faild}}票</div>
+									</div>
+								</div>
+								<div class="wm-collection-vote-reject">
+									{{raterreport.scorenum_faild}}
+								</div>
+							</div>
+						</div>
 					</li>
 				</ul>
 			</div>
@@ -278,7 +315,8 @@
 				classic:-1,
 				page:1,
 				pagenum:20,
-				raterReportList:[]
+				raterReportList:[],
+
 			}
 		},
 		components:{
@@ -311,6 +349,9 @@
 					success(data){
 						if(data.getret === 0){
 							s.raterReportList = data.list;
+							setTimeout(()=>{
+								s.initVoteCanvas();
+							},10)
 						}
 					}
 				}) 
@@ -472,10 +513,10 @@
 					url:window.config.baseUrl+'/wmadadmin/getresouredetaillist/',
 					data:p,
 					success(data){
-						console.log(data);
 						var  resourceList = Vue.obserable.trigger({
 							type:"getResource",
 						});
+						console.log(resourceList);
 						if(data.getret === 0){
 							s.currentPage = 1;
 							s.reportList = data.list;
@@ -505,11 +546,69 @@
 						}
 					}
 				});
+			},
+			initVoteCanvas(){
+				var canvass = this.$refs['wm-result-canvas'];
+				var r = canvass[0].width / 2 - 10,
+					x = canvass[0].width / 2,
+					y = canvass[0].width / 2;
+				var s = this;
+				canvass.map((canvas,i)=>{
+
+					var context = canvas.getContext('2d');
+
+					context.strokeStyle = 'yellowgreen';
+					context.lineWidth = 10;
+					context.beginPath();
+					context.arc(x,y,r,0,Math.PI*2,false);
+					context.stroke();
+
+					context.strokeStyle = 'yellowgreen';
+					context.lineWidth = 1;
+					context.beginPath();
+					context.arc(x,y,r-10,0,Math.PI*2,false);
+					context.stroke();
+
+					var totalVote = s.raterReportList[i].scorenum_faild +s.raterReportList[i].scorenum_success;
+					var rejectScale = .5,
+						passScale = .5;
+
+					if(totalVote > 0){
+						rejectScale = s.raterReportList[i].scorenum_faild / totalVote;
+						passScale =  s.raterReportList[i].scorenum_success / totalVote;
+					}
+
+					//console.log(rejectScale)
+					s.raterReportList[i].rejectScale = rejectScale;
+					s.raterReportList[i].passScale = passScale;
+					context.beginPath();
+					context.lineWidth = 10;
+					context.strokeStyle = '#b20000';
+					context.arc(x,y,r,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
+					context.stroke();
+
+					context.lineWidth = 1;
+					context.beginPath();
+					context.arc(x,y,r-10,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
+					context.stroke();
+
+					if(rejectScale>0){
+						context.lineWidth = 2;
+						context.strokeStyle = '#fff';
+						context.beginPath();
+						context.moveTo(x,y);
+						context.lineTo(x,0);
+						context.stroke();
+					}
+
+
+				});
 			}
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
 			this.getReportList();
+			this.getRaterReportList();
 			window.s = this;
 
 			window.onkeydown = (e)=>{

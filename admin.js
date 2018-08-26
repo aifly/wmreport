@@ -32,6 +32,11 @@ const router = new VueRouter({
 			name: 'login',
 			component: Login,
 			props: true
+		},{
+			path: '/',
+			name: 'login',
+			component: Login,
+			props: true
 		},
 		 {
 			path: '/vote/',
