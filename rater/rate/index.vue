@@ -420,9 +420,9 @@
 					p.searchkey = kw;
 					this.page = 1;
 				}
-				if(publictype){
+				if(this.publictype !== '全部'){
 					this.page = 1;
-					p.publictype = publictype;
+					p.publictype = this.publictype;
 				}
 
 				
