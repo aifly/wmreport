@@ -416,6 +416,13 @@ $color: #be0000;
                     }
                 }
 
+                .wm-report-status{
+                    @include pos(a);
+                    top: 0;
+                    left: 0;
+                    width: 50px;
+                }
+
                 cursor: pointer;
 
                 &:hover{
@@ -857,7 +864,6 @@ $color: #be0000;
 
                 &:nth-of-type(2) {
                     width: 68%;
-                    cursor: pointer;
                     min-height: 30px;
                 }
 
@@ -1050,7 +1056,7 @@ $color: #be0000;
 
             @include transform(rotate(45deg));
 
-            top: 20px;
+            top: 60px;
             z-index: 10;
 
             &:before,

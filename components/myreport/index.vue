@@ -33,7 +33,13 @@
 						</div>
 						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20- 80+'px'}">
 							<ul>
-								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" :class="{'uncheck':report.status === 0,'pass':report.status === 1}" v-for='(report,i) in reportList' :key="i">
+								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+									<div class="wm-report-status" v-if='report.status === 0'>
+										<img :src="imgs.uncheck1" alt="">
+									</div>
+									<div  class="wm-report-status" v-if='report.status === 1'>
+										<img :src="imgs.pass1" alt="">
+									</div>
 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'png jpg jpeg gif bmp'.indexOf(report.fileextname)>-1?'contain':'none'}"></div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 									
@@ -109,24 +115,24 @@
 				</div>
 				
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+					<div v-if='item.fieldname!=="userlabel" && (item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
-						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+						<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
+						<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type="text" v-model="reportList[currentReportIndex][item.fieldname]">
 					</div>
 
-					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+					<div v-if='item.fieldname ==="filesize && false" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>
 					</div>
 
-					<div  v-if='item.type ===  "select" && item.canedit'>
+					<div  v-if='item.type ===  "select"'>
 						<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model="formAdmin[item.fieldname]" size='small'  style="width:100px">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
 						</Select>
 					</div>
 					
-					<div @dblclick="editItem(item)" v-if='item.type === "select" && !item.canedit'>
+					<div @dblclick="editItem(item)" v-if='false && item.type === "select" && !item.canedit '>
 						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 					</div>
 
@@ -180,13 +186,10 @@
 				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname !== "userlabel" && (item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
-						<div v-if='item.fieldname !== "userlabel" &&(item.type === "text" ||item.type === "textarea")' >
+					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname !== "filetitle"||item.fieldname !== "filedesc" '>{{item.name}}：</div>
+						<div v-if='item.fieldname !== "filetitle" || item.fieldname !== "filedesc"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 						</div>
 
 						<div v-if='item.fieldname === "userlabel"'>标签：</div>
@@ -409,6 +412,7 @@
 							s.configList.forEach((it)=>{
 								it.canedit = false;
 							});
+							s.filterReportList();
 							s.configList = s.configList.concat([]);
 						}
 					}

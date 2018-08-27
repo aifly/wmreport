@@ -28,7 +28,7 @@
 				<section class='wm-scroll' :style="{height:viewH - 230+'px',overflow:'auto'}">
 					<div class="wm-report-list">
 						<transition-group name="reportitem" tag='ul'>
-							<li @dblclick="previewReport(report)" :class="{'active':currentReportIndex === i}" v-for="(report,i) in reportList "  @click.prevent='showDetail(report,i)' :key="i">
+							<li @dblclick="previewReport(report)" :class="{'active':currentReportIndex === i,'delete':report.isdelete}" v-for="(report,i) in reportList "  @click.prevent='showDetail(report,i)' :key="i">
 								<div class="wm-report-item">
 									<div class="wm-report-detail">
 										<div class="wm-report-pcbilethum">
@@ -264,7 +264,6 @@
 				var configList = Vue.obserable.trigger({
 					type:'getFeildList'
 				});
-				console.log(1)
 				if(configList){
 					clearInterval(t);
 					this.configList = configList;
@@ -364,8 +363,13 @@
 								s.reportList[i].score = score;
 								s.reportList[i].raterid = s.userinfo.raterid; 
 							}else{
-								s.reportList.splice(i,1);
+								s.reportList[i].isdelete = true;
+								s.reportList = s.reportList.concat([]);
+								setTimeout(()=>{
+									s.reportList.splice(i,1);
+								},500)
 							}
+
 							if(s.showPreview){
 								s.currentReportIndex++;
 								s.currentReportIndex %= s.reportList.length;

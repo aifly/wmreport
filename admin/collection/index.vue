@@ -265,7 +265,7 @@
 				}
 			},
 			checkReportById(report,status,index){
-				
+				var  s = this;
 				s.check(status,report.id, status === 2 ? report.remark : '');
 			},
 

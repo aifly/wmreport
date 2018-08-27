@@ -138,12 +138,12 @@ body{
              width: 100%;
              box-sizing: border-box;
              @include pos(r);
-            height: 170px;;
+             height: 170px;;
 
             &.reportitem-enter-active,
             &.reportitem-leave-active
            {
-                @include transition(.3s);
+                @include transition(.6s);
             }
 
             &.reportitem-enter,
@@ -151,6 +151,11 @@ body{
            {
                 height: 0;
                 overflow: hidden;
+            }
+            &.delete{
+               height: 0;
+               overflow: hidden;
+               @include transition(.45s);
             }
             &.active{
                  &:before {
