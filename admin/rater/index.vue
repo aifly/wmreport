@@ -176,6 +176,9 @@
 				}
 			},
 			addRater(){
+				this.formAdmin = {
+					raterpwd:'111111'
+				}
 				this.currentRateid = -1;
 				this.visible = true;
 			},
