@@ -232,9 +232,7 @@ body{
 		}
 		.wm-collection-left-search-condition-header{
 			height: 80px;
-			line-height: 38px;
-			border:1px solid #ddd;
-			box-sizing: border-box;
+			line-height: 40px;
 			@include br(4px);	
 			
 			&>div{
@@ -271,7 +269,7 @@ body{
 		.wm-collection-report-list{
 			overflow: auto;
 
-			@at-root.wm-collection-pagetion {
+			.wm-collection-pagetion {
 				width: 100%;
 				height: 40px;
 				line-height: 40px;
@@ -479,7 +477,6 @@ body{
 			overflow-x:hidden;
 			&>ul{
 				li{
-					background: #fff;
 					margin: 10px 0;
 					border:1px solid #ddd;
 					width: 100%;
@@ -534,9 +531,7 @@ body{
 								}
 								&:nth-of-type(2){
 									float: left; 
-									width: 58%;
-									margin-left: 2%;
-									
+									width: 60%;
 									.wm-myreport-item{
 										@include displayFlex(row);
 										line-height: 30px;
@@ -570,21 +565,15 @@ body{
 							width: 100%;
 							margin: 20px 0;
 							@include displayFlex(row);
+
+							
 							.wm-collection-vote-pass,
 							.wm-collection-vote-reject{
 								-webkit-flex: 1;
 								flex: 1;
 								@include pos(r);
 
-								.wm-collection-detail {
-									@include pos(a);
-									right: 10px;
-									top: -10px;
-									a{
-										color: #f5a420;
-
-									}
-								}
+								
 
 								.wm-collection-vote-pass-text,
 								.wm-collection-vote-reject-text{
@@ -959,7 +948,7 @@ body{
 			border: 2px solid $color;
 			right: 20px;
 			@include transform(rotate(45deg));
-			top: 60px;
+			top: 20px;
 			z-index: 10;
 			&:before,
 			&:after {

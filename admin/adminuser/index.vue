@@ -132,6 +132,20 @@
 			this.userinfo = symbinUtil.getUserInfo();
 			//this.addadUser();
 			this.getaduserlist();
+
+			var s= this;
+			/* symbinUtil.ajax({
+				url:window.config.baseUrl+'/wmadadmin/checkscorelist',
+				data:{
+					admintoken:s.userinfo.admintoken,
+					adminusername:s.userinfo.adminusername,
+					resourceid:1,
+					worksid:'1872686828'	
+				},
+				success(data){
+					console.log('data => ',data);
+				}
+			}) */
 			
 		},
 		

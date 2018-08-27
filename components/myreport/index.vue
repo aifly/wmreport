@@ -1,9 +1,16 @@
 <template>
 	<div class="wm-myreport-main-ui">
+
+
+		
+
 		 <Split v-model="split1">
 			<div slot="left" class="wm-myreport-left">
+				<div class="wm-myreport-upload-C lt-full">
+
+				</div>
 				<header > 
-					 <span>我的上报</span>
+					 <span>我的上报 </span><span style='font-size:12px;color:#f5a420;left:70px;'>(双击打开浏览)</span>
 					 <ul>
 						 <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key="i" :class="{'active':currentType === i}">
 							 <img v-if='i===0' :src="imgs.imgIco" alt="">
@@ -20,13 +27,14 @@
 							<div >
 								<img :src="imgs.shangbao" alt="">
 								<Button type="primary" size='large'>点我上报</Button>
+								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 								<div class="wm-upload" ></div>
 							</div>
 						</div>
 						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20- 80+'px'}">
 							<ul>
-								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
-									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
+								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" :class="{'uncheck':report.status === 0,'pass':report.status === 1}" v-for='(report,i) in reportList' :key="i">
+									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'png jpg jpeg gif bmp'.indexOf(report.fileextname)>-1?'contain':'none'}"></div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 									
 									<div v-if='!report.isLoaded' class="wm-uploading"></div>
@@ -67,27 +75,27 @@
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加图片</span>
 							</div>
-							<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
+							<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 						</div>
 						<div v-show='currentType === 1 && reportList.length>0' class="wm-uplad-add-video">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加视频</span>
 							</div>
-							<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
+							<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 						</div>
 						<div v-show='currentType === 2 && reportList.length>0' class="wm-uplad-add-audio">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加音频</span>
-								<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
+								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 							</div>
 						</div>
 						<div v-show='currentType === 3 && reportList.length>0' class="wm-uplad-add-dongman">
 							<div class="wm-upload"></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加动漫</span>
-								<div class="wm-upload-tip">按住ctrl键可以上传多个文件</div>
+								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 							</div>
 						</div>
 					</footer>
@@ -150,7 +158,7 @@
 			@on-ok="ok"
 			@on-cancel="cancel">
 			<Form ref="formAdmin" :model="formAdmin" :label-width="72" :rules="ruleValidate">
-				<FormItem :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
+				<FormItem v-if='item.edit' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
 					<Input v-if='item.type === "text"'  v-model="formAdmin[item.fieldname]" :placeholder="item.name" autocomplete="off" />
 					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formAdmin[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
 					<Select v-model="formAdmin[item.fieldname]" v-if='item.type === "select"'>
@@ -663,8 +671,15 @@
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
-					formData:p
+					formData:p,
+					dnd:'.wm-myreport-left',
+					disableGlobalDnd :true,//是否禁掉整个页面的拖拽功能，如果不禁用，图片拖进来的时候会默认被浏览器打开。
 				});
+
+				uploader.on('dndAccept',function(items){
+					console.log(items);
+				});
+ 
 
 				uploader.on("beforeFileQueued",function(file){
 					var data = s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0]?s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0].data:[]

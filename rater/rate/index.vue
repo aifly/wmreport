@@ -129,17 +129,14 @@
 
 		<div class="lt-full wm-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
-			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
-				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+			<div :class='{"original":showOriginalImg}'  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
+				<img @dblclick.stop="showOriginalImg = !showOriginalImg" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
-					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
+					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip dmg".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+					<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"'  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"'>{{item.name}} :</div>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 						</div>
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 							<div>标签：</div>
@@ -154,13 +151,10 @@
 				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
 				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
 					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
+					<div  v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" '>{{item.name}} :</div>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 						</div>
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 							<div>标签：</div>
@@ -224,7 +218,8 @@
 				imgs:window.imgs,
 				publictype:'全部',
 				isLoading:true,
-				showMaskDetail:false,
+				showOriginalImg:false,//是否显示原始图片。
+				showMaskDetail:true,
 				showPreview:false,
 				nextReport:false,
 				currentType:0,
@@ -329,10 +324,12 @@
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = false;
+				this.showOriginalImg = false;//显示原始图片
 			},
 
 			previewReport(){//双击预览作品、
-				this.showPreview = true;
+			   this.showMaskDetail = true;
+			   this.showPreview = true;
 			},
 
 			showDetail(report,index){

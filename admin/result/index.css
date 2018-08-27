@@ -334,9 +334,7 @@ body {
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header {
   height: 80px;
-  line-height: 38px;
-  border: 1px solid #ddd;
-  box-sizing: border-box;
+  line-height: 40px;
   border-radius: 4px;
 }
 
@@ -377,7 +375,8 @@ body {
   overflow: auto;
 }
 
-.wm-collection-pagetion {
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list .wm-collection-pagetion,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list .wm-collection-pagetion {
   width: 100%;
   height: 40px;
   line-height: 40px;
@@ -636,7 +635,6 @@ body {
 }
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li {
-  background: #fff;
   margin: 10px 0;
   border: 1px solid #ddd;
   width: 100%;
@@ -694,8 +692,7 @@ body {
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) {
   float: left;
-  width: 58%;
-  margin-left: 2%;
+  width: 60%;
 }
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item {
@@ -737,18 +734,6 @@ body {
   -webkit-flex: 1;
   flex: 1;
   position: relative;
-}
-
-.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail,
-.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail {
-  position: absolute;
-  right: 10px;
-  top: -10px;
-}
-
-.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail a,
-.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail a {
-  color: #f5a420;
 }
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text,
@@ -1182,7 +1167,7 @@ body {
   right: 20px;
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
-  top: 60px;
+  top: 20px;
   z-index: 10;
 }
 

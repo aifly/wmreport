@@ -5,6 +5,8 @@ import AdminUser from './admin/adminuser/index';
 import User from './admin/user/index';
 import Vote from './admin/vote/index';
 import Login from './admin/login/index';
+import Detail from './admin/detail/index';
+
 import Rater from './admin/rater/index';
 import Collection from './admin/collection/index';
 import iView from 'iview';
@@ -47,6 +49,11 @@ const router = new VueRouter({
 			path: '/collection/:id/',
 			name: 'collection',
 			component: Collection,
+			props: true
+		}, {
+			 path: '/ratedetail/:id/',
+			 name: 'ratedetail',
+			component: Detail,
 			props: true
 		}, {
 			path: '/user/',

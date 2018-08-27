@@ -10,9 +10,9 @@
 				</div>
 			</div>
 		</header>
-		<section :style="{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}" > 
+		<section :style="{background:'url('+imgs.raterLoginBg+') no-repeat center 55%'}" > 
 			<div class="wm-login-C">
-				<h2>公益广告上报系统</h2>
+				<h2>公益广告上报系统<span>(评委端)</span></h2>
 				<div class="wm-login-form">
 					<div>
 						<label>

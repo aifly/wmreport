@@ -62,6 +62,9 @@ $color: #be0000;
 				color:#fff;
 				font-size:40px;
 				margin: 30px 0;
+				span {
+					font-size: 20px;
+				}
 			}
 			
 			.wm-login-form{
@@ -96,7 +99,7 @@ $color: #be0000;
 						font-size:16px;
 						@include pos(r);
 						&>div{
-							background: #cc0000;
+							background: #f5a420;
 							@include br(10px);
 							width: 100%;
 							height: 100%;
@@ -105,7 +108,7 @@ $color: #be0000;
 							@include pos(a);
 							width: 100%;
 							left: 0;
-							color:#000;
+							color:#fff;
 							margin-top: -3px;;
 							
 							
@@ -123,11 +126,6 @@ $color: #be0000;
 					width: 20px;
 				}
 			}
-			
-
-			 
-			
-			
 		}
 
 		.wm-copyright {
@@ -138,7 +136,7 @@ $color: #be0000;
 			height: 50px;
 			line-height: 50px;
 			color:#fff;
-			background:rgba(204,0,0,.4);
+			background:rgba(204,0,0,1);
 		}
 
 	}

@@ -55,6 +55,10 @@
   position: relative;
 }
 
+.wm-myreport-main-ui.webuploader-dnd-over {
+  background: red;
+}
+
 .wm-myreport-main-ui .webuploader-container {
   position: relative;
 }
@@ -98,6 +102,20 @@
   display: flex;
   display: -webkit-flex;
   flex-flow: column;
+}
+
+.wm-myreport-main-ui .wm-myreport-left.webuploader-dnd-over .wm-myreport-upload-C {
+  display: block;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-myreport-upload-C {
+  display: none;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+  -webkit-transform: scale(0.99);
+  transform: scale(0.99);
+  border: 2px dashed  #fff;
+  border-radius: 10px;
 }
 
 .wm-myreport-main-ui .wm-myreport-left header {
@@ -242,7 +260,7 @@
 }
 
 .wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div {
-  width: 160px;
+  width: 260px;
   text-align: center;
   height: 30px;
   cursor: pointer;
@@ -315,7 +333,7 @@
 .wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {
   width: 100px;
   display: block;
-  margin: 10px 0;
+  margin: 10px auto;
 }
 
 .wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload {
@@ -368,6 +386,25 @@
   background: #f4f4f4;
   position: relative;
   cursor: pointer;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li.uncheck:after, .wm-myreport-main-ui .wm-myreport-left .wm-report-list li.pass:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 0;
+  top: 0;
+  border-top: 10px solid #f5a420;
+  border-right: 10px solid transparent;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li.pass:after {
+  border-top: 10px solid yellowgreen;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li:hover .wm-report-action {
+  opacity: 1;
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {
@@ -504,6 +541,7 @@
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action {
   position: absolute;
+  opacity: 0;
   top: 10px;
   right: 0;
   z-index: 1000;

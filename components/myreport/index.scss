@@ -5,6 +5,11 @@ $viewW: 750px;
 $color: #be0000;
 
 .wm-myreport-main-ui {
+
+    &.webuploader-dnd-over {
+        background:red;
+    }
+   
     height: 100%;
 
     @include pos(r);
@@ -46,7 +51,22 @@ $color: #be0000;
     }
 
     .wm-myreport-left {
-        background: #fff;
+        background: #fff; 
+
+        &.webuploader-dnd-over{
+            .wm-myreport-upload-C {
+                display: block;
+            }
+        }
+
+        .wm-myreport-upload-C {
+             display: none;
+             background: rgba(0, 0, 0, .7); //position: fixed !important;
+             z-index: 10000;
+             @include transform(scale(.99));
+             border:2px dashed  #fff;
+             @include br(10px);
+         }
 
         @include pos(a);
 
@@ -99,6 +119,10 @@ $color: #be0000;
                 -webkit-justify-content: space-around;
 
                 li {
+
+                   
+
+                    
                     cursor: pointer;
                     text-align: center;
                     width: 23%;
@@ -226,7 +250,7 @@ $color: #be0000;
                 }
 
                 & > div {
-                    width: 160px;
+                    width: 260px;
                     text-align: center;
                     height: 30px;
                     cursor: pointer;
@@ -313,7 +337,7 @@ $color: #be0000;
                     img {
                         width: 100px;
                         display: block;
-                        margin: 10px 0;
+                        margin: 10px auto;
                     }
                 }
 
@@ -373,7 +397,32 @@ $color: #be0000;
 
                 @include pos(r);
 
+                &.uncheck,
+                &.pass {
+                    &:after {
+                        content: '';
+                        @include pos(a);
+                        width: 0;
+                        height: 0;
+                        left:0;
+                        top: 0;
+                        border-top: 10px solid #f5a420;
+                        border-right: 10px solid transparent;
+                    }
+                }
+                &.pass{
+                    &:after {
+                        border-top: 10px solid yellowgreen;
+                    }
+                }
+
                 cursor: pointer;
+
+                &:hover{
+                    .wm-report-action{
+                        opacity:1;
+                    }
+                }
 
                 .wm-uploading {
                     @include pos(a);
@@ -524,12 +573,13 @@ $color: #be0000;
 
                 .wm-report-action {
                     @include pos(a);
-
+                    opacity:0;
                     top: 10px;
                     right: 0;
                     z-index: 1000;
 
                     .wm-report-action-icon {
+                        
                         width: 20px;
                         height: 20px;
                         background: #fff;

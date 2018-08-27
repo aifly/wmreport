@@ -3,98 +3,11 @@
 		<div  class="wm-collection-left-pannel" :style="{height:viewH -   64+'px'}">
 			<h2 class="zmiti-text-overflow">{{resourcecnname}}</h2>
 			<ul>
+				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
 				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报管理</li>
-				<li @click='mainType = 1' :class="{'active':mainType === 1}">评审管理</li>
 			</ul>
 		</div>
-		
-		<section v-if='mainType  === 1' class="wm-collection-rater-manager">
-			<header class='wm-collection-left-header'>
-				<div class="wm-collection-title">
-					<div>征集管理 > {{resourcecnname}}</div>
-				</div>
-				<div class="wm-collection-search-content">
-					<div class="wm-collection-search-input-C">
-						<div>
-							<img :src='imgs.search'/>
-							<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-								{{kwType}}
-								<ul v-if='showCondition'>
-									<li @click.stop='changeKwType("关键字")'>关键字</li>
-									<li @click.stop='changeKwType("用户名")'>用户名</li>
-								</ul>
-							</div>
-							<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
-						</div>
-					</div>
-					<div class="wm-collection-check-action">
-						<Checkbox v-model="selectAll">全选</Checkbox>
-						<Button type="primary" size='small' @click.stop='showCheckAction = true'>审核 <Icon type="ios-arrow-up" /></Button>
-						<ul v-if='showCheckAction'>
-							<li @click.stop="checkAction(1)">
-								<Icon type="ios-checkmark-circle-outline" />
-								通过
-							</li>
-							<li @click.stop="checkAction(2)">
-								<Icon type="ios-close-circle-outline" />
-								拒绝
-							</li>
-						</ul>
-					</div>
-				</div>
-			</header>
-			<header class="wm-collection-left-search-condition-header">
-				<div>分类：<span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
-				<div>状态：<span @click.stop='searchByStatus("全部")' :class="{'active':statusType == '全部'}">全部</span>
-					<span @click.stop='searchByStatus("待审核")' :class="{'active':statusType == '待审核'}">待审核</span>
-					<span :class="{'active':statusType == '已通过'}" @click.stop='searchByStatus("已通过")'>已通过</span>
-					<span :class="{'active':statusType == '已拒绝'}" @click.stop='searchByStatus("已拒绝")'>已拒绝</span> </div>
-			</header>
-			<div class="wm-scroll wm-collection-rater-list" :style="{height:viewH -  230+'px'}">
-				<ul>
-					<li v-for="(raterreport,i) in raterReportList" :key='i'>
-						<div class="wm-collection-raterreport-item-left">
-							<header>介绍</header>
-							<div class="wm-collection-raterreport-thumb-C">
-								<div>
-									<img :src="raterreport.pcbilethum" alt="">
-								</div>
-								<div>
-									<div  v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"||item.fieldname === "userlabel"' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-										<div v-if='item.fieldname !== "userlabel"'>{{item.name}}：</div>
-										<div  class="zmiti-text-overflow" v-if='item.fieldname !== "userlabel"' :class="item.fieldname">
-											<span :title="raterreport[item.fieldname]">{{raterreport[item.fieldname]}}</span>
-										</div>
-										<div v-if='item.fieldname === "userlabel"'>标签：</div>
-										<div class="wm-tag-list" v-if='item.fieldname === "userlabel"'>
-											<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterreport[item.fieldname]||'').split(',')">{{tag}}</Tag>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="wm-collection-raterreport-item-right">
-							<header>票数</header>
-							<div class="wm-collecion-vote-result">
-								<div class="wm-collection-vote-pass">
-									{{raterreport.scorenum_success}}
-								</div>
-								<div class="wm-collection-vote-canvas">
-									<canvas width="140" height="140" ref='wm-result-canvas'></canvas>
-									<div>
-										<div>总票数</div>
-										<div>{{raterreport.scorenum_success+raterreport.scorenum_faild}}票</div>
-									</div>
-								</div>
-								<div class="wm-collection-vote-reject">
-									{{raterreport.scorenum_faild}}
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</section>
+		<Result  v-if='mainType  === 1'></Result>
 
 		<Split v-model='scale' v-if='mainType === 0'> 
 			<div slot='left' class="wm-collection-left-main-ui">
@@ -278,6 +191,7 @@
 <script>
 	import './index.css';
 	import symbinUtil from '../lib/util';
+	import Result from '../result/index';
 
 	import Vue from "vue";
 
@@ -300,7 +214,7 @@
 				nextReport:false,
 				reportList:[],
 				showPreview:false,
-				showMaskDetail:false,
+				showMaskDetail:true,
 				mainType:1,
 				showCheckAction:false,
 				configList:[],
@@ -320,6 +234,7 @@
 			}
 		},
 		components:{
+			Result
 		},
 		watch:{
 			selectAll(val){
@@ -328,34 +243,10 @@
 				})
 			},
 			mainType(val){
-				if(val === 1){
-					this.getRaterReportList();
-				}
+				
 			}
 		},
 		methods:{
-
-			getRaterReportList(){//获取评审管理列表 
-				var id = this.$route.params.id;
-				var s = this;
-				
-				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadadmin/getscoredetaillist/',
-					data:{
-						resourceid : id,
-						admintoken:s.userinfo.admintoken,
-						adminusername:s.userinfo.adminusername
-					},
-					success(data){
-						if(data.getret === 0){
-							s.raterReportList = data.list;
-							setTimeout(()=>{
-								s.initVoteCanvas();
-							},10)
-						}
-					}
-				}) 
-			},
 
 			searchReport(){
 				if(this.keyword){
@@ -378,6 +269,10 @@
 				s.check(status,report.id, status === 2 ? report.remark : '');
 			},
 
+			loadMoreRaterReport(){
+
+			},
+
 			loadMoreReport(num){
 				this.page = num;
 				this.getReportList();
@@ -394,14 +289,20 @@
 			},
 
 			previewReport(){//双击预览作品、
+				clearTimeout(this.clickTimer);
 				this.showPreview = true;
 			},
 
 			showDetail(report,index){
-				this.currentReportIndex = index;
-				this.formAdmin = report;
-				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
-				//this.currentReport = report;
+				clearTimeout(this.clickTimer);
+				this.clickTimer = setTimeout(() => {
+					report.checked = !report.checked;
+					this.currentReportIndex = index;
+					this.formAdmin = report;
+					this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
+					//this.currentReport = report;
+					this.reportList = this.reportList.concat([]);
+				},200);
 			},
 
 			check(status,ids,remark=''){
@@ -513,102 +414,52 @@
 					url:window.config.baseUrl+'/wmadadmin/getresouredetaillist/',
 					data:p,
 					success(data){
-						var  resourceList = Vue.obserable.trigger({
-							type:"getResource",
-						});
-						console.log(resourceList);
-						if(data.getret === 0){
-							s.currentPage = 1;
-							s.reportList = data.list;
-							s.totalnum = data.totalnum;
-							s.reportList.forEach((item)=>{
-								item.checked = false;
+						
+						var t = setInterval(()=>{
+							var  resourceList = Vue.obserable.trigger({
+								type:"getResource",
 							});
-							
-							if(s.reportList.length){
-								s.currentReportIndex = 0;
-								s.formAdmin = s.reportList[s.currentReportIndex];
-								if(this.formAdmin && this.formAdmin.userlabel){
-									this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
-								}
-							}
-							resourceList.map((item)=>{
-								if(item.resourceid === id){
-									s.resourcecnname = item.resourcecnname;
-									s.configList = JSON.parse(item.tablefield).fieldlist;
-									s.configList.map((item)=>{
-										if(item.fieldname === 'publicadtype'){
-											s.menus = item.data;
+							if(resourceList){
+								clearInterval(t);
+								console.log(resourceList);
+								if(data.getret === 0){
+									s.currentPage = 1;
+									s.reportList = data.list;
+									s.totalnum = data.totalnum;
+									s.reportList.forEach((item)=>{
+										item.checked = false;
+									});
+									
+									if(s.reportList.length){
+										s.currentReportIndex = 0;
+										s.formAdmin = s.reportList[s.currentReportIndex];
+										if(this.formAdmin && this.formAdmin.userlabel){
+											this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
+										}
+									}
+									resourceList.map((item)=>{
+										if(item.resourceid === id){
+											s.resourcecnname = item.resourcecnname;
+											s.configList = JSON.parse(item.tablefield).fieldlist;
+											s.configList.map((item)=>{
+												if(item.fieldname === 'publicadtype'){
+													s.menus = item.data;
+												}
+											})
 										}
 									})
 								}
-							})
-						}
+							}
+						},30)
 					}
-				});
-			},
-			initVoteCanvas(){
-				var canvass = this.$refs['wm-result-canvas'];
-				var r = canvass[0].width / 2 - 10,
-					x = canvass[0].width / 2,
-					y = canvass[0].width / 2;
-				var s = this;
-				canvass.map((canvas,i)=>{
-
-					var context = canvas.getContext('2d');
-
-					context.strokeStyle = 'yellowgreen';
-					context.lineWidth = 10;
-					context.beginPath();
-					context.arc(x,y,r,0,Math.PI*2,false);
-					context.stroke();
-
-					context.strokeStyle = 'yellowgreen';
-					context.lineWidth = 1;
-					context.beginPath();
-					context.arc(x,y,r-10,0,Math.PI*2,false);
-					context.stroke();
-
-					var totalVote = s.raterReportList[i].scorenum_faild +s.raterReportList[i].scorenum_success;
-					var rejectScale = .5,
-						passScale = .5;
-
-					if(totalVote > 0){
-						rejectScale = s.raterReportList[i].scorenum_faild / totalVote;
-						passScale =  s.raterReportList[i].scorenum_success / totalVote;
-					}
-
-					//console.log(rejectScale)
-					s.raterReportList[i].rejectScale = rejectScale;
-					s.raterReportList[i].passScale = passScale;
-					context.beginPath();
-					context.lineWidth = 10;
-					context.strokeStyle = '#b20000';
-					context.arc(x,y,r,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
-					context.stroke();
-
-					context.lineWidth = 1;
-					context.beginPath();
-					context.arc(x,y,r-10,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
-					context.stroke();
-
-					if(rejectScale>0){
-						context.lineWidth = 2;
-						context.strokeStyle = '#fff';
-						context.beginPath();
-						context.moveTo(x,y);
-						context.lineTo(x,0);
-						context.stroke();
-					}
-
-
 				});
 			}
+			
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
 			this.getReportList();
-			this.getRaterReportList();
+			
 			window.s = this;
 
 			window.onkeydown = (e)=>{

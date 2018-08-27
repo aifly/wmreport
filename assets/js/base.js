@@ -9,6 +9,8 @@ var imgs = {
 	open :"./assets/images/open.png",
 	search :"./assets/images/search.png",
 	loginBg:"./assets/images/login-bg.jpg",
+	adminLoginBg:'./assets/images/adminlogin.png',
+	raterLoginBg:'./assets/images/raterlogin.png',
 
 	man:'./assets/images/man.png',
 	group:'./assets/images/group.png',

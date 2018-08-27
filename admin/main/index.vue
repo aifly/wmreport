@@ -23,42 +23,24 @@
             <Layout class="wm-main-layout">
                 <div class="wm-tab-C" :style='{height:(viewH - 64)+"px"}'>
                     <Menu width='300'   theme='dark'>
+                        
                         <Submenu name="1">
                             <template slot="title">
                                 <Icon type="ios-paper" />
                                 人员管理
                             </template>
-                                   <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
-                                    </MenuItem> -->
-                                    <MenuItem name='/reporter' to='adminuser' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
-                                        上报人员管理
-                                    </MenuItem>
-                                   <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
-                                    </MenuItem> -->
-                                    <MenuItem to='/rater' name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
-                                        评委管理
-                                    </MenuItem>
-                        </Submenu>
-                        <Submenu name='2'>
-                            <template slot="title">
-                                <Icon type="ios-paper" />
-                                我的
-                            </template>
-                            <MenuItem name='user' to='/user' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
-                                    个人中心
+                            <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                            </MenuItem> -->
+                            <MenuItem name='/reporter/' to='adminuser' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
+                                上报人员管理
+                            </MenuItem>
+                            <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                            </MenuItem> -->
+                            <MenuItem to='/rater/' name='rater' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rater"}'>
+                                评委管理
                             </MenuItem>
                         </Submenu>
-                        <Submenu name='3'>
-                            <template slot="title">
-                                <Icon type="ios-paper-plane" />
-                                上报管理
-                            </template>
-                           
-                            <MenuItem name='vote' to='/vote' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "vote"}'>
-                                投票管理
-                            </MenuItem>
-                        </Submenu>
-                        <Submenu name='4'>
+                         <Submenu name='4'>
                             <template slot="title">
                                 <Icon type="ios-paper-plane" />
                                 征集管理
@@ -67,7 +49,15 @@
                                 {{resource.resourcecnname}}
                             </MenuItem>
                         </Submenu>
-                        
+                        <Submenu name='2'>
+                            <template slot="title">
+                                <Icon type="ios-paper" />
+                                我的
+                            </template>
+                            <MenuItem name='user' to='/user/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
+                                    个人中心
+                            </MenuItem>
+                        </Submenu>
                     </Menu>
                 </div>
                 <Layout :style="{maxWidth:viewW-300+'px'}">
@@ -123,9 +113,10 @@
             window.onresize = ()=>{
                 this.viewW  = window.innerWidth;
             }
-
-            this.getResourceList();
-
+            
+            if(this.$route.name !== 'login'){
+                this.getResourceList();
+            }
             setTimeout(() => {
                 $('.ivu-menu-submenu-title').trigger('click')
                 
