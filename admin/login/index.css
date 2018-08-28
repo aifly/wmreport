@@ -100,7 +100,7 @@
 
 .wm-login-ui > section {
   flex-grow: 1;
-  width: 800px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   display: -webkit-flex;
@@ -112,7 +112,6 @@
 }
 
 .wm-login-ui > section .wm-login-C {
-  width: 600px;
   position: relative;
 }
 

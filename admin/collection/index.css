@@ -643,6 +643,20 @@ body {
   float: left;
 }
 
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active {
+  border-color: #f5a420;
+}
+
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right {
+  border-right: 1px solid #f5a420;
+}
+
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left > header,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right > header {
+  border-color: #f5a420;
+}
+
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header,
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header {
   width: 100%;
@@ -651,6 +665,14 @@ body {
   text-align: center;
   background: #eee;
   border-bottom: 1px solid #ddd;
+  position: relative;
+}
+
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header span,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header span {
+  position: absolute;
+  left: 4px;
+  top: 4px;
 }
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left {
@@ -663,6 +685,14 @@ body {
   width: 100%;
   margin: 20px;
   float: left;
+  position: relative;
+}
+
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C .status {
+  position: absolute;
+  left: -20px;
+  top: -20px;
+  width: 50px;
 }
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C img {
@@ -1000,6 +1030,7 @@ body {
 .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask {
   width: 300px;
   height: 200px;
+  background: #232323;
   position: absolute;
   right: 40px;
   bottom: 40px;
@@ -1014,60 +1045,46 @@ body {
   opacity: 0;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) {
   padding: 10px;
   border-radius: 6px;
   position: relative;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2):before {
-  content: '';
-  width: 30px;
-  height: 30px;
-  background: #fff;
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-  position: absolute;
-  z-index: 10;
-  border-radius: 4px;
-  left: 65%;
-  top: 1px;
-}
-
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-collection-placeholder {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-collection-placeholder {
   position: absolute;
   top: 15px;
   left: 20px;
   color: #999;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) textarea {
-  background: #fff;
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea {
   border: none;
   resize: none;
   height: 100px;
-  color: #0f0f0f;
+  color: #fff;
   padding: 2px 10px;
+  background: #0f0f0f;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) textarea::-webkit-input-placeholder {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea::-webkit-input-placeholder {
   color: #fff;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) {
   display: flex;
   display: -webkit-flex;
   flex-flow: row;
   justify-content: space-evenly;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) > div {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) > div {
   width: 40px;
   height: 40px;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject {
   width: 50px;
   height: 50px;
   cursor: pointer;
@@ -1077,8 +1094,8 @@ body {
   position: relative;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt span,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject span {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt span,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject span {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -1086,55 +1103,55 @@ body {
   line-height: 70px;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-leave-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-leave-active,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-enter-active,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-leave-active,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-enter-active,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-leave-active {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-active,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter-active,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-active,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter-active,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-active {
   -webkit-transition: 0.3s;
   transition: 0.3s;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject-leave-to, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass-leave-to,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-enter,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject-leave-to,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-enter,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass-leave-to {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-to, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-to,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-to,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-to {
   width: 0;
   height: 0;
   overflow: hidden;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass {
   background: transparent;
   color: #fff;
   cursor: text;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.pass::before,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.pass::before {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass::before,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass::before {
   border-color: #fff;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject {
   cursor: text;
   background: transparent;
   color: #b20000;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject::before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt.reject:after,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject::before,
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject.reject:after {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject::before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject:after,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject::before,
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject:after {
   background: #b20000;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt {
   background: yellowgreen;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-adopt:before {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt:before {
   content: "";
   position: absolute;
   width: 20px;
@@ -1148,11 +1165,11 @@ body {
   top: 8px;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject {
   background: #b20000;
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject:before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject:after {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after {
   content: "";
   position: absolute;
   width: 20px;
@@ -1167,7 +1184,7 @@ body {
   transform: translate3d(-50%, -50%, 0) rotate(45deg);
 }
 
-.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-report-reject:after {
+.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after {
   width: 3px;
   height: 20px;
 }
@@ -1324,4 +1341,216 @@ body {
   -webkit-align-items: center;
   align-items: center;
   overflow: hidden;
+}
+
+.wm-collection-ui .wm-report-C {
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  position: fixed !important;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.wm-collection-ui .wm-report-C > div {
+  max-width: 80vw;
+  max-height: 60vh;
+  position: relative;
+}
+
+.wm-collection-ui .wm-report-C > div .xlsx,
+.wm-collection-ui .wm-report-C > div .pdf,
+.wm-collection-ui .wm-report-C > div .doc,
+.wm-collection-ui .wm-report-C > div .ppt,
+.wm-collection-ui .wm-report-C > div .xlsx,
+.wm-collection-ui .wm-report-C > div .doc,
+.wm-collection-ui .wm-report-C > div .docx,
+.wm-collection-ui .wm-report-C > div .pdf,
+.wm-collection-ui .wm-report-C > div .txt,
+.wm-collection-ui .wm-report-C > div .ppt,
+.wm-collection-ui .wm-report-C > div .pptx,
+.wm-collection-ui .wm-report-C > div .xls,
+.wm-collection-ui .wm-report-C > div .rar,
+.wm-collection-ui .wm-report-C > div .html,
+.wm-collection-ui .wm-report-C > div .css,
+.wm-collection-ui .wm-report-C > div .scss,
+.wm-collection-ui .wm-report-C > div .js,
+.wm-collection-ui .wm-report-C > div .vb,
+.wm-collection-ui .wm-report-C > div .shtml,
+.wm-collection-ui .wm-report-C > div .zip {
+  display: block;
+  margin: 0 auto;
+  position: relative !important;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail {
+  padding: 10px;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  min-width: 300px;
+  bottom: 0;
+  left: 50%;
+  -webkit-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail.hide {
+  height: 40px;
+  overflow: hidden;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:after {
+  -webkit-transform: rotate(225deg);
+  transform: rotate(225deg);
+  top: 4px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:after {
+  top: 8px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail.wm-audio {
+  position: relative;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {
+  bottom: -40px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail > span {
+  position: absolute;
+  right: 30px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail > span:before, .wm-collection-ui .wm-report-C > div .wm-report-detail > span:after {
+  content: '';
+  right: -12px;
+  top: 0px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #fff;
+  border-left: none;
+  border-top: none;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail > span:after {
+  top: 4px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item {
+  background: transparent;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div {
+  text-align: left;
+  line-height: 30px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {
+  width: 60px;
+  text-align: right;
+  margin-right: 20px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {
+  width: 40px;
+}
+
+.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {
+  margin-left: 20px;
+  max-width: 200px;
+}
+
+.wm-collection-ui .wm-report-C > div img {
+  width: auto;
+  height: auto;
+  max-height: 60vh;
+  max-width: 80vh;
+}
+
+.wm-collection-ui .wm-report-C > div video {
+  width: auto;
+  max-height: 60vh;
+}
+
+.wm-collection-ui .wm-report-C .wm-report-close {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  right: 20px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  top: 60px;
+  z-index: 10;
+}
+
+.wm-collection-ui .wm-report-C .wm-report-close:before, .wm-collection-ui .wm-report-C .wm-report-close:after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.wm-collection-ui .wm-report-C .wm-report-close:after {
+  width: 2px;
+  height: 20px;
+}
+
+.wm-collection-ui .wm-collection-footer {
+  height: 34px;
+  line-height: 34px;
+  position: absolute;
+  left: 145px;
+  bottom: 4px;
+  border-top: 1px solid #fff;
+  z-index: 100;
+  width: 100%;
+}
+
+.wm-collection-ui .wm-collection-footer span {
+  display: inline-block;
+}
+
+.wm-collection-ui .wm-collection-footer span:nth-of-type(2) {
+  margin: 0 20px;
+  cursor: pointer;
+  color: yellowgreen;
+}
+
+.wm-collection-ui .wm-collection-footer span:nth-of-type(2).disabled {
+  color: #ccc;
+  cursor: not-allowed;
 }

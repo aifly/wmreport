@@ -39,12 +39,17 @@
 		</header>
 		<div class="wm-scroll wm-collection-rater-list" :style="{height:viewH -  226+'px'}">
 			<ul>
-				<li v-for="(raterreport,i) in raterReportList" :key='i'>
+				<li @dblclick="showPreview = true" @click='currentReportIndex = i' :class='{"active":currentReportIndex === i}' v-for="(raterreport,i) in raterReportList" :key='i'>
 					<div class="wm-collection-raterreport-item-left">
-						<header>介绍</header>
+						<header>
+							<span><Checkbox v-model="raterreport.checked"></Checkbox></span>
+							介绍
+						</header>
 						<div class="wm-collection-raterreport-thumb-C">
+
+							<img class="status" v-if='raterreport.status === 3' :src="imgs.guidang" alt="">
 							<div v-if='"png jpg jpeg gif".indexOf(raterreport.fileextname)>-1' >
-								<img :src="raterreport.pcbilethum" alt="">
+								<img  :src="raterreport.pcbilethum" alt="">
 							</div>
 							<div v-else :style="{background:'url('+raterreport.pcbilethum+') no-repeat center center'}">
 
@@ -94,6 +99,75 @@
 				<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 			</div>
 		</div>
+
+		<div class="wm-collection-footer">
+			<span ><Checkbox v-model="selectAll">全选</Checkbox></span>
+			<span :class="{'disabled':passCount <= 0}" @click='preview'>{{isFilter?'返回':'预览'}}</span>
+			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审({{passCount}})</Button>
+		</div>
+
+		<div class="lt-full wm-report-C" v-if='showPreview'>
+			<span class="wm-report-close" @click="closePreview"></span>
+			<div  v-if='"mp3 webm mp4 aac wma ogg".indexOf(raterReportList[currentReportIndex].fileextname)<=-1'>
+				<img :class="raterReportList[currentReportIndex].fileextname" :src="raterReportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[raterReportList[currentReportIndex].fileextname]:1}" >
+					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(raterReportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname !== "filetitle"||item.fieldname !== "filedesc" '>{{item.name}}：</div>
+						<div v-if='item.fieldname !== "filetitle" || item.fieldname !== "filedesc"' >
+							<span>{{raterReportList[currentReportIndex][item.fieldname]}}</span>
+						</div>
+
+						<div v-if='item.fieldname === "userlabel"'>标签：</div>
+						<div v-if='item.fieldname === "userlabel"' class="wm-tag-list">
+							<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterReportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+			<div v-if='raterReportList[currentReportIndex].fileextname=== "mp4" ||raterReportList[currentReportIndex].fileextname=== "webm" '>
+				<video autoPlay controls :src='raterReportList[currentReportIndex].filepath'></video>
+				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
+					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
+					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+						<div v-if='item.type === "text" ||item.type === "textarea"' >
+							<span>{{raterReportList[currentReportIndex][item.fieldname]}}</span>
+						</div>
+						<div v-if='item.type === "select"'>
+							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+						</div>
+						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+							<div>标签：</div>
+							<div class="wm-tag-list">
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterReportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+			<div v-if='raterReportList[currentReportIndex].fileextname=== "mp3" ||raterReportList[currentReportIndex].fileextname=== "ogg"||raterReportList[currentReportIndex].fileextname=== "aac"||raterReportList[currentReportIndex].fileextname=== "wma" '>
+				<audio autoplay controls :src='raterReportList[currentReportIndex].filepath'></audio>
+				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
+					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
+						<div v-if='item.type === "text" ||item.type === "textarea"' >
+							<span>{{raterReportList[currentReportIndex][item.fieldname]}}</span>
+						</div>
+						<div v-if='item.type === "select"'>
+							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
+						</div>
+						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
+							<div>标签：</div>
+							<div class="wm-tag-list">
+								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterReportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+		</div>
 	</section>
 </template>
 
@@ -115,11 +189,12 @@
 				kwType:'关键字',
 				showCondition:false,
 				keyword:'',
+				passCount:0,
 				fieldname:-1,
 				nextReport:false,
 				reportList:[],
 				showPreview:false,
-				showMaskDetail:false,
+				showMaskDetail:true,
 				mainType:1,
 				showCheckAction:false,
 				configList:[],
@@ -134,6 +209,7 @@
 				classic:-1,
 				page:1,
 				pagenum:20,
+				isFilter:false,
 				raterReportList:[],
 
 			}
@@ -141,18 +217,91 @@
 		components:{
 		},
 		watch:{
+
+			raterReportList:{
+				handler(newVal,oldVal){
+					var iNow = 0;
+					this.raterReportList.forEach((item,i)=>{
+						if(item.checked){
+							iNow++;
+						}
+					});
+					this.passCount = iNow;
+				},
+				deep:true
+			},
 			selectAll(val){
-				this.reportList.forEach((item)=>{
+				this.raterReportList.forEach((item,i)=>{
 					item.checked = val;
+					this.passCount = val?i+1:0;
+
 				})
 			},
 			mainType(val){
 				if(val === 1){
 					this.getRaterReportList();
 				}
+			},
+			currentReportIndex(){
+				var s = this;
+				s.formAdmin = s.raterReportList[s.currentReportIndex];
+				if(this.formAdmin && this.formAdmin.userlabel){
+					this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
+				}
 			}
 		},
 		methods:{
+
+			closePreview(){
+				this.showPreview = false;
+				this.showMaskDetail = false;
+			},
+			preview(){
+				if(this.passCount<= 0){
+					return;
+				}
+				if(this.isFilter){
+					this.raterReportList = this.defaultList.concat([]);
+					this.isFilter = false;
+				}else{
+					this.filterReport();
+				}
+				
+			},
+
+			lastCheck(){//终审
+				var s = this;
+				var id = this.$route.params.id;
+				var ids = [];
+				this.raterReportList.map(item=>{
+					if(item.checked){
+						ids.push(item.id);
+					}
+				})
+				var  p  ={
+					admintoken:s.userinfo.admintoken,
+					adminusername:s.userinfo.adminusername,
+					resourceid:id,
+					id:ids.join(','),
+					status:3,
+				};
+
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/updateworkstatus/',
+					data:p,
+					success(data){
+						s.$Message[data.getret === 0 ? 'success':'error'](data.getmsg);
+					}
+				});
+				
+			},
+
+			filterReport(){
+				this.raterReportList = this.defaultList.filter((item)=>{
+					return item.checked === true;
+				});
+				this.isFilter = true;
+			},
 
 			getRaterReportList(){//获取评审管理列表 
 				var id = this.$route.params.id;
@@ -162,6 +311,7 @@
 					admintoken:s.userinfo.admintoken,
 					adminusername:s.userinfo.adminusername,
 					resourceid:id,
+					status:'1,3',//审核通过，已过终审
 					pagenum:s.pagenum,
 					page:s.page
 				};
@@ -180,8 +330,6 @@
 					data:p,
 					success(data){
 						if(data.getret === 0){
-
-
 							var t = setInterval(()=>{
 							var  resourceList = Vue.obserable.trigger({
 								type:"getResource",
@@ -191,6 +339,7 @@
 								if(data.getret === 0){
 									s.currentPage = 1;
 									s.raterReportList = data.list;
+									s.defaultList = data.list.concat([]);
 									setTimeout(()=>{
 										s.initVoteCanvas();
 									},10)
@@ -370,25 +519,26 @@
 			this.getRaterReportList();
 			window.s = this;
 
-			window.onkeydown = (e)=>{
-				/* if(e.keyCode === 27 ){
-					//this.closePreview();
+			window.addEventListener('keydown',e=>{
+				if(e.keyCode === 27 ){
+					this.closePreview();
 				}
 				if(this.showPreview){
 					if(e.keyCode === 37 ){
 						this.currentReportIndex--;
 						if(this.currentReportIndex<=-1){
-							this.currentReportIndex = this.reportList.length -1;
+							this.currentReportIndex = this.raterReportList.length -1;
 						}
-						this.currentReportIndex %= this.reportList.length;
+						this.currentReportIndex %= this.raterReportList.length;
 						
 					}
 					else if(e.keyCode === 39){
 						this.currentReportIndex++;
-						this.currentReportIndex %= this.reportList.length;
+						this.currentReportIndex %= this.raterReportList.length;
 					}
-				} */
-			}
+				}
+			})
+ 
 		}
 	}
 </script>

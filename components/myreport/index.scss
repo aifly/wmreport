@@ -1080,6 +1080,22 @@ $color: #be0000;
             }
         }
     }
+
+
+
+    .wm-report-tips{
+        background:rgba(0,0,0,.8);
+        z-index: 10000;
+        text-align: center;
+        position: fixed;
+        img{
+            width: 34%;
+            margin-top: 50px;
+            cursor: pointer;
+            
+        }
+    }
+
 }
 
 .wm-tags {
@@ -1098,3 +1114,5 @@ $color: #be0000;
         }
     }
 }
+.wm-report-upload-item {}
+

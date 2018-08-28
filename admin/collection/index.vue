@@ -3,8 +3,9 @@
 		<div  class="wm-collection-left-pannel" :style="{height:viewH -   64+'px'}">
 			<h2 class="zmiti-text-overflow">{{resourcecnname}}</h2>
 			<ul>
+				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报审核</li>
 				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
-				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报管理</li>
+				<li @click='mainType = 2' :class="{'active':mainType === 2}">终审归档</li>
 			</ul>
 		</div>
 		<Result  v-if='mainType  === 1'></Result>
@@ -86,8 +87,8 @@
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
-						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						<input autofocus @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.canedit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+						<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
+						<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
 					</div>
 
 					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
@@ -95,14 +96,10 @@
 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>
 					</div>
 
-					<div  v-if='item.type ===  "select" && item.canedit'>
+					<div  v-if='item.type ===  "select" '>
 						<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model="formAdmin[item.fieldname]" size='small'  style="width:100px">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="k">{{ dt.split('-')[0] }}</Option>
 						</Select>
-					</div>
-					
-					<div @dblclick="editItem(item)" v-if='item.type === "select" && !item.canedit'>
-						{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 					</div>
 					
 					<div v-if='item.fieldname === "userlabel"'>标签：</div>
@@ -170,7 +167,13 @@
 				</div>
 			</div>
 
+
+
 			<section class="wm-report-check-in-mask" :class="{'hide':nextReport}">
+				<div>
+					<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
+					<span v-if='!reportList[currentReportIndex].remark' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>
+				</div>
 				<div>
 					<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{"pass":reportList[currentReportIndex].score === 100}'  class="wm-report-adopt" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
 						<span>通过</span>
@@ -179,10 +182,7 @@
 						<span>拒绝</span>
 					</div>
 				</div>
-				<div>
-					<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
-					<span v-if='!reportList[currentReportIndex].remark' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>
-				</div>
+				
 			</section>
 		</div>
 	</div>
@@ -215,7 +215,7 @@
 				reportList:[],
 				showPreview:false,
 				showMaskDetail:true,
-				mainType:1,
+				mainType:0,
 				showCheckAction:false,
 				configList:[],
 				currentReportIndex:0,
@@ -247,6 +247,48 @@
 			}
 		},
 		methods:{
+
+			modifyPublicadtype(key){
+				var s = this;
+				var id = this.$route.params.id;
+				var p = {
+					admintoken:s.userinfo.admintoken,
+					adminusername:s.userinfo.adminusername,
+					resourceid:id,
+					id:s.formAdmin.id,
+					[key]:s.formAdmin[key]
+				}
+				this.editReportByItem(p)
+			},
+
+			modifyReport(model,key){
+				
+				var s = this;
+				var id = this.$route.params.id;
+				
+				var p = {
+					admintoken:s.userinfo.admintoken,
+					adminusername:s.userinfo.adminusername,
+					resourceid:id,
+					id:s.formAdmin.id,
+					[key]:model
+				}
+				this.editReportByItem(p);
+			},
+			editReportByItem(p){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/updateworks',
+					data:p,
+					success(data){
+						s.$Message[data.getret === 0 ? 'success':'error'](data.getmsg);
+						if(data.getret === 0){
+							//s.filterReportList();
+							//s.configList = s.configList.concat([]);
+						}
+					}
+				})
+			},
 
 			searchReport(){
 				if(this.keyword){

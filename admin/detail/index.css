@@ -67,7 +67,7 @@
 .wm-detail-main-ui > header {
   margin-top: 10px;
   width: 100%;
-  background: #eee;
+  background: #f4f4f4;
   height: 80px;
   line-height: 100px;
   overflow: hidden;
@@ -112,4 +112,64 @@
   color: #be0000;
   top: 78px;
   position: absolute;
+}
+
+.wm-detail-main-ui .wm-vote-back {
+  position: absolute;
+  width: 100px;
+  margin-top: 30px;
+}
+
+.wm-detail-main-ui .wm-vote-list {
+  width: 800px;
+  margin: 20px auto;
+}
+
+.wm-detail-main-ui .wm-vote-list ul {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  flex-flow: wrap;
+  -webkit-flex-flow: wrap;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li {
+  margin: 10px 3%;
+  width: 44%;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li header {
+  padding: 10px 20px;
+  background: #eee;
+  position: relative;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li header > div {
+  position: absolute;
+  right: 20px;
+  top: -10px;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li section {
+  padding: 20px 20px;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments > div:nth-of-type(1) {
+  width: 40px;
+}
+
+.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments > div:nth-of-type(2) {
+  -webkit-flex: 1;
+  flex: 1;
+  max-height: 48px;
+  overflow: hidden;
+  line-height: 24px;
 }

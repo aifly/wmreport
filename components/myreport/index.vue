@@ -25,7 +25,7 @@
 					<div class="wm-myreport-list-C">
 						<div v-show='reportList.length<=0' class="wm-no-report">
 							<div >
-								<img :src="imgs.shangbao" alt="">
+								<img :src="imgs['upload'+(currentType+1)]" alt="">
 								<Button type="primary" size='large'>点我上报</Button>
 								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 								<div class="wm-upload" ></div>
@@ -180,6 +180,30 @@
 			</Form>
 		</Modal>
 
+
+		<Modal
+			v-model="showUploadDialog && !!menus[currentType]"
+			:title="'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')"
+			@on-ok="ok"
+			@on-cancel="cancel">
+			<Form ref="formUpload" :model="formUpload" :label-width="72" :rules="ruleValidate">
+				<FormItem class="wm-report-upload-item" v-if='item.edit' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
+					<Input v-if='item.type === "text"'  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off" />
+					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
+					<Select v-model="formUpload[item.fieldname]" v-if='item.type === "select"'>
+						<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
+					</Select>
+
+					<div class="wm-tags" v-if='item.type === "label"'>
+						<input placeholder="按回车添加标签" type="text" v-model="tag" @keydown.13='addTag' />
+						<Tag @on-close="deltag(tag)" closable :color="colorList[i]?colorList[i]:colorList[i-formUpload.tagList.length]" v-for="(tag,i) in formUpload.tagList" :key='i'>{{tag}}</Tag>
+					</div>
+				</FormItem>
+				 
+			</Form>
+		</Modal>
+		
+
 		<div class="lt-full wm-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
 			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
@@ -243,6 +267,12 @@
 			</div>
 		</div>
 
+		<div class="wm-report-tips lt-full" v-if='showReportTip'>
+			<img :src="imgs.tip" alt="" @click="showReportTip = false">
+		</div>
+
+
+
 	</div>
 </template>
 
@@ -256,6 +286,7 @@
 		name:'zmitiindex',
 		data(){
 			return{
+				showUploadDialog:true,
 				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
@@ -266,11 +297,15 @@
 				showPreview:false,
 				showMaskDetail:false,
 				detailtag:'',
+				showReportTip:false,
 				menus:[],
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
 				viewH:window.innerHeight,
 				configList:[],
+				formUpload:{
+					tagList:[]
+				},
 				formAdmin:{
 					tagList:[]
 				},
@@ -319,6 +354,7 @@
 			})
 			window.onkeydown = (e)=>{
 				if(e.keyCode === 27 || e.keyCode === 8){
+					this.showReportTip = false;
 					this.closePreview();
 				}
 				if(this.showPreview){
@@ -339,10 +375,14 @@
 			this.getConfigFile();
 			
 
-			this.$Notice.info({
+			/* this.$Notice.info({
 				title: '双击上报作品可以预览'
-			});
-			
+			}); */
+
+			if(!window.localStorage.getItem('wm-report-tip')){
+				this.showReportTip = true;
+				window.localStorage.setItem('wm-report-tip',1);
+			} 
 		},
 		
 		methods:{
@@ -379,8 +419,7 @@
 						id:s.formAdmin.id
 					},
 					success(data){
-						s.$Message[data.getret === 0?'success':'error'](data.getmsg);
-						console.log(data);
+						s.$Message[data.getret === 0?'success':'error'](data.getmsg); 
 						s.reportList.splice(i,1);
 
 						s.currentReportIndex  = s.reportList.length -1;
@@ -412,6 +451,7 @@
 							s.configList.forEach((it)=>{
 								it.canedit = false;
 							});
+							s.reportList[s.currentReportIndex].status = 0;
 							s.filterReportList();
 							s.configList = s.configList.concat([]);
 						}
@@ -671,7 +711,7 @@
 					server: window.config.baseUrl+'/wmadvuser/uploadfile/',
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
-					pick: '.wm-upload',
+					pick: '.wm-upload1',
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
@@ -819,3 +859,4 @@
 	}
 </script>
  
+

@@ -41,7 +41,7 @@ $color: #be0000;
 	}
 	&>section {
 		flex-grow: 1;
-		width: 800px;
+		width:100%;
 		margin: 0 auto;
 		@include displayFlex(row);
 		-webkit-justify-content: center;
@@ -49,7 +49,6 @@ $color: #be0000;
 		-webkit-align-items: center;
 		align-items: center;
 		.wm-login-C {
-			width: 600px;
 			@include pos(r);
 			.wm-login-title {
 				margin-bottom: 7vh;

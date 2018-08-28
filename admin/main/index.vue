@@ -31,7 +31,7 @@
                             </template>
                             <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
                             </MenuItem> -->
-                            <MenuItem name='/reporter/' to='adminuser' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
+                            <MenuItem name='adminuser' to='/adminuser/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "adminuser"}'>
                                 上报人员管理
                             </MenuItem>
                             <!--  <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "rate"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
@@ -55,7 +55,7 @@
                                 我的
                             </template>
                             <MenuItem name='user' to='/user/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
-                                    个人中心
+                                个人中心
                             </MenuItem>
                         </Submenu>
                     </Menu>
