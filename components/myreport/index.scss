@@ -1114,5 +1114,25 @@ $color: #be0000;
         }
     }
 }
-.wm-report-upload-item {}
+.wm-report-upload-item {
+    background:#ddd;
+    @include br(6px);
+    padding:12px 0;
+    input,textarea,.ivu-select-selection{
+        background:transparent;
+        outline: none;
+        &:focus,&:hover{
+            border-color: #ddd !important;
+            outline: 0;
+            -webkit-box-shadow: 0 0 0 2px rgba(45,140,240,0);
+            box-shadow: 0 0 0 2px rgba(45,140,240,0);
+        }
+
+    }
+    .ivu-input:focus{
+        border-color:#ddd !important;
+    }
+    @include pos(r);
+    
+}
 

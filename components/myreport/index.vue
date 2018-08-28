@@ -186,13 +186,17 @@
 			:title="'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')"
 			@on-ok="ok"
 			@on-cancel="cancel">
-			<Form ref="formUpload" :model="formUpload" :label-width="72" :rules="ruleValidate">
+			<Form ref="formUpload" :model="formUpload" :label-width="72" >
 				<FormItem class="wm-report-upload-item" v-if='item.edit' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
 					<Input v-if='item.type === "text"'  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off" />
-					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
-					<Select v-model="formUpload[item.fieldname]" v-if='item.type === "select"'>
-						<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
-					</Select>
+					
+					<Input v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
+					<div  v-if='item.type === "select"'>
+
+						<Select v-model="formUpload[item.fieldname]">
+							<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
+						</Select>
+					</div>
 
 					<div class="wm-tags" v-if='item.type === "label"'>
 						<input placeholder="按回车添加标签" type="text" v-model="tag" @keydown.13='addTag' />
@@ -211,8 +215,8 @@
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname !== "filetitle"||item.fieldname !== "filedesc" '>{{item.name}}：</div>
-						<div v-if='item.fieldname !== "filetitle" || item.fieldname !== "filedesc"' >
+						<div v-if='(item.fieldname !== "filetitle"||item.fieldname !== "filedesc") &&item.fieldname !== "userlabel" '>{{item.name}}：</div>
+						<div v-if='(item.fieldname !== "filetitle"||item.fieldname !== "filedesc") &&item.fieldname !== "userlabel"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
 						</div>
 
