@@ -14,7 +14,7 @@
         {
             "name": "说明",
             "type": "textarea",
-            "notnull": 1,
+            "notnull": 0,
             "default": "",
             "fieldtype": "text",
             "fieldname": "filedesc",
@@ -116,7 +116,7 @@
         {
             "name": "标签",
             "type": "text",
-            "notnull": 1,
+            "notnull": 0,
             "default": "",
             "fieldtype": "varchar",
             "fieldname": "userlabel",

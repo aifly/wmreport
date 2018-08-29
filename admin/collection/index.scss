@@ -8,7 +8,7 @@ body{
 	overflow: hidden;
 }
 
-.wm-collection-ui {
+.wm-collection-ui,.wm-lastcheck-ui {
 	@include displayFlex(row);
 	.wm-collection-left-pannel {
 		width: 140px;

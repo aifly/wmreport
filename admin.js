@@ -46,12 +46,12 @@ const router = new VueRouter({
 			component: Vote,
 			props: true
 		}, {
-			path: '/collection/:id/',
+			path: '/collection/:id/:type?',
 			name: 'collection',
 			component: Collection,
 			props: true
 		}, {
-			 path: '/ratedetail/:id/',
+			 path: '/ratedetail/:id',
 			 name: 'ratedetail',
 			component: Detail,
 			props: true

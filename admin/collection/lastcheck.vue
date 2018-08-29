@@ -1,17 +1,9 @@
 <template>
-	<div class="wm-collection-ui lt-full" @click.stop='showCondition = false;showCheckAction = false'>
-		<div  class="wm-collection-left-pannel" :style="{height:viewH -   64+'px'}">
-			<h2 class="zmiti-text-overflow">{{resourcecnname}}</h2>
-			<ul>
-				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报审核</li>
-				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
-				<li @click='mainType = 2' :class="{'active':mainType === 2}">终审归档</li>
-			</ul>
-		</div>
-		<Result  v-if='mainType  === 1'></Result>
-		<LastCheck  v-if='mainType  === 2'></LastCheck>
+	<div class="wm-lastcheck-ui lt-full" @click.stop='showCondition = false;showCheckAction = false'>
+		
+		
 
-		<Split v-model='scale' v-if='mainType === 0'> 
+		<Split v-model='scale' > 
 			<div slot='left' class="wm-collection-left-main-ui">
 					<header class='wm-collection-left-header'>
 						<div class="wm-collection-title">
@@ -31,10 +23,10 @@
 									<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
 								</div>
 							</div>
-							<div class="wm-collection-check-action">
+							<div class="wm-collection-check-action" >
 								<Checkbox v-model="selectAll">全选</Checkbox>
-								<Button type="primary" size='small' @click.stop='showCheckAction = true'>审核 <Icon type="ios-arrow-up" /></Button>
-								<ul v-if='showCheckAction'>
+								<Button type="primary" size='small'  @click.stop='checkAction(1)'>撤销终审</Button>
+								<ul v-if='showCheckAction && false' >
 									<li @click.stop="checkAction(1)">
 										<Icon type="ios-checkmark-circle-outline" />
 										通过
@@ -49,10 +41,6 @@
 					</header>
 					<header class="wm-collection-left-search-condition-header">
 						<div>分类：<span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
-						<div>状态：<span @click.stop='searchByStatus("全部")' :class="{'active':statusType == '全部'}">全部</span>
-							<span @click.stop='searchByStatus("待审核")' :class="{'active':statusType == '待审核'}">待审核</span>
-							<span :class="{'active':statusType == '已通过'}" @click.stop='searchByStatus("已通过")'>已通过</span>
-							<span :class="{'active':statusType == '已拒绝'}" @click.stop='searchByStatus("已拒绝")'>已拒绝</span> </div>
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
@@ -130,8 +118,7 @@
 		</Split>
 
 
-		<!-- 
-			<div class="lt-full wm-collection-report-C" v-if='showPreview &&　false'>
+		<!-- <div class="lt-full wm-collection-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
 			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
 				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
@@ -169,7 +156,9 @@
 				</div>
 			</div>
 
-			<section class="wm-report-check-in-mask" :class="{'hide':nextReport}">
+			
+
+			<section v-if='false' class="wm-report-check-in-mask" :class="{'hide':nextReport}">
 				<div>
 					<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
 					<span v-if='!reportList[currentReportIndex].remark && false' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>
@@ -184,21 +173,21 @@
 				</div>
 				
 			</section>
-		</div> 
-		-->
+			<section class="wm-reset" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
+				<img :src="imgs.reset" alt="">
+			</section>
+		</div> -->
 
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
-
 	</div>
 </template>
 
 <script>
 	import './index.css';
+	import './lastcheck.css';
 	import symbinUtil from '../lib/util';
-	import Result from './result.vue';
-	import LastCheck from './lastcheck.vue'
 	import Vue from "vue";
-	import Detail from './detail';
+	import Detail from './detail'
 
 	export default {
 		props:['obserable'],
@@ -220,7 +209,7 @@
 				reportList:[],
 				showPreview:false,
 				showMaskDetail:true,
-				mainType:2,
+				mainType:0,
 				showCheckAction:false,
 				configList:[],
 				currentReportIndex:0,
@@ -239,8 +228,6 @@
 			}
 		},
 		components:{
-			Result,
-			LastCheck,
 			Detail
 		},
 		watch:{
@@ -250,7 +237,7 @@
 				})
 			},
 			mainType(val){
-				window.location.hash = "/collection/"+this.$route.params.id+'/'+val;
+				
 			}
 		},
 		methods:{
@@ -298,20 +285,20 @@
 			},
 
 			searchReport(){
-				if(this.keyword){
-					clearTimeout(this.timer);
-					this.timer = setTimeout(() => {
-						if(!this.keyword){
-							this.fieldname = -1;
-							this.getReportList();
-							return;
-						}
-						this.fieldname = this.kwType ===  '用户名' ? 'username' : this.kwType ===  '关键字'? 'searchkey' : -1;
-						this.page = 1;
+				
+				clearTimeout(this.timer);
+				this.timer = setTimeout(() => {
+					if(!this.keyword){
+						this.fieldname = -1;
 						this.getReportList();
+						return;
+					}
+					this.fieldname = this.kwType ===  '用户名' ? 'username' : this.kwType ===  '关键字'? 'searchkey' : -1;
+					this.page = 1;
+					this.getReportList();
 
-					}, 400);
-				}
+				}, 400);
+
 			},
 			checkReportById(report,status,index){
 				var  s = this;
@@ -358,7 +345,6 @@
 			check(status,ids,remark=''){
 				var s = this;
 				var id = this.$route.params.id;
-				
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadadmin/checkresource/',
 					data:{
@@ -375,17 +361,16 @@
 							s.selectAll = false;
 							s.getReportList();
 							if(s.showPreview){
-								/* s.currentReportIndex++;
-								s.currentReportIndex %= s.reportList.length; */
-								console.log('s.currentReportIndex =>'+s.currentReportIndex);
+								s.currentReportIndex++;
+								s.currentReportIndex %= s.reportList.length;
 								s.nextReport = true;
 								setTimeout(() => {
 									s.nextReport = false;
 								}, 400);
 
 							}else{
-								s.currentReportIndex = 0;
-
+								s.currentReportIndex++;
+								s.currentReportIndex %= s.reportList.length;
 							}
 						}
 					}
@@ -406,6 +391,8 @@
 					s.$Message.error('请至少选择一个要审核的作品');
 					return;
 				}
+			
+				
 				this.check(status,ids);
 				
 			},
@@ -444,13 +431,13 @@
 			},
 			getReportList(){
 				var id = this.$route.params.id;
-				console.log(this.$route.params)
 				var s = this;
 
 				var  p  ={
 					admintoken:s.userinfo.admintoken,
 					adminusername:s.userinfo.adminusername,
 					resourceid:id,
+					status:3,
 					pagenum:s.pagenum,
 					page:s.page
 				};
@@ -474,7 +461,7 @@
 							});
 							if(resourceList){
 								clearInterval(t);
-								console.log(resourceList);
+								
 								if(data.getret === 0){
 									s.currentPage = 1;
 									s.reportList = data.list;
@@ -484,13 +471,8 @@
 									});
 									
 									if(s.reportList.length){
-										//s.currentReportIndex = 0;
-
+										s.currentReportIndex = 0;
 										s.formAdmin = s.reportList[s.currentReportIndex];
-										if(!s.formAdmin){
-											s.currentReportIndex =  0;
-											s.formAdmin = s.reportList[s.currentReportIndex];
-										}
 										if(this.formAdmin && this.formAdmin.userlabel){
 											this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 										}
@@ -515,15 +497,12 @@
 			
 		},
 		mounted(){
-			
 			this.userinfo = symbinUtil.getUserInfo();
-			
-			this.mainType = this.$route.params.type*1
 			this.getReportList();
 			
 			window.s = this;
 
-			window.onkeydown = (e)=>{
+			window.addEventListener("keydown",(e)=>{
 				if(e.keyCode === 27 ){
 					this.closePreview();
 				}
@@ -541,7 +520,7 @@
 						this.currentReportIndex %= this.reportList.length;
 					}
 				}
-			}
+			},false);
 		}
 	}
 </script>

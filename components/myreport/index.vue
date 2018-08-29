@@ -28,7 +28,7 @@
 								<img :src="imgs['upload'+(currentType+1)]" alt="">
 								<Button type="primary" size='large'>点我上报</Button>
 								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
-								<div class="wm-upload" ></div>
+								<div class="wm-upload"  @click='showUploadDialog = true' ></div>
 							</div>
 						</div>
 						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20- 80+'px'}">
@@ -77,28 +77,28 @@
 					</div>
 					<footer class="wm-report-footer">
 						<div v-show='currentType === 0 && reportList.length>0' >
-							<div class="wm-upload"></div>
+							<div class="wm-upload" @click='showUploadDialog = true'></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加图片</span>
 							</div>
 							<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 						</div>
 						<div v-show='currentType === 1 && reportList.length>0' class="wm-uplad-add-video">
-							<div class="wm-upload"></div>
+							<div class="wm-upload" @click='showUploadDialog = true'></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加视频</span>
 							</div>
 							<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 						</div>
 						<div v-show='currentType === 2 && reportList.length>0' class="wm-uplad-add-audio">
-							<div class="wm-upload"></div>
+							<div class="wm-upload" @click='showUploadDialog = true'></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加音频</span>
 								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 							</div>
 						</div>
 						<div v-show='currentType === 3 && reportList.length>0' class="wm-uplad-add-dongman">
-							<div class="wm-upload"></div>
+							<div class="wm-upload" @click='showUploadDialog = true'></div>
 							<div class="lt-full">
 								<Icon type="md-add" /> <span>点击添加动漫</span>
 								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
@@ -182,26 +182,34 @@
 
 
 		<Modal
-			v-model="showUploadDialog && !!menus[currentType]"
+			v-model="showUploadDialog "
 			:title="'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')"
 			@on-ok="ok"
 			@on-cancel="cancel">
-			<Form ref="formUpload" :model="formUpload" :label-width="72" >
-				<FormItem class="wm-report-upload-item" v-if='item.edit' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
-					<Input v-if='item.type === "text"'  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off" />
+			<Form  ref="formUpload" :model="formUpload" :label-width="72" >
+				<FormItem class="wm-report-upload-item" v-if='item.edit || item.fieldname === "userlabel"' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'  :class="{'wm-require':item.notnull}"> 
+					<Input @on-blur='checkUpload' v-if='item.type === "text"&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off" />
 					
-					<Input v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
+					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
 					<div  v-if='item.type === "select"'>
 
-						<Select v-model="formUpload[item.fieldname]">
+						<Select @on-change='checkUpload' v-model="formUpload[item.fieldname]">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
 						</Select>
 					</div>
 
-					<div class="wm-tags" v-if='item.type === "label"'>
-						<input placeholder="按回车添加标签" type="text" v-model="tag" @keydown.13='addTag' />
-						<Tag @on-close="deltag(tag)" closable :color="colorList[i]?colorList[i]:colorList[i-formUpload.tagList.length]" v-for="(tag,i) in formUpload.tagList" :key='i'>{{tag}}</Tag>
+					<div class="wm-tags" v-if='item.fieldname === "userlabel"'>
+						<input placeholder="按回车添加标签" type="text" v-model="beforeUploadTag" @keydown.13='addTagBeforeUpload' />
+						<Tag color='warning' @on-close="deltag(tag)" closable  v-for="(tag,i) in formUpload.tagList" :key='i'>{{tag}}</Tag>
 					</div>
+				</FormItem>
+
+				<FormItem class="wm-before-upload-C">
+					<section :class="{'disabled':!showUploadFile}">
+						<div class="wm-upload-before" v-show='showUploadFile'></div>
+						<Icon type="ios-add-circle" />
+						<div>上传附件</div>
+					</section>
 				</FormItem>
 				 
 			</Form>
@@ -290,11 +298,12 @@
 		name:'zmitiindex',
 		data(){
 			return{
-				showUploadDialog:true,
+				showUploadDialog:false,
 				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
 				tag:"",
+				beforeUploadTag:"",
 				currentType:0,
 				publicadtype:"",
 				currentReportIndex:0,
@@ -306,6 +315,7 @@
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
 				viewH:window.innerHeight,
+				showUploadFile:false,
 				configList:[],
 				formUpload:{
 					tagList:[]
@@ -334,6 +344,9 @@
 
 			///this.validate = validate;
 		},
+		watch:{
+			
+		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
 			this.getMyreportList();
@@ -344,7 +357,7 @@
 				var id  = obserable.trigger({
 					type:'getCurrentSourceId'
 				});
-				console.log(id)
+				
 				if(id){
 					clearInterval(t);
 					setTimeout(() => {
@@ -390,6 +403,24 @@
 		},
 		
 		methods:{
+
+			checkUpload(){
+				this.showUploadFile = true;
+				this.configList.map((item)=>{
+					if(item.notnull && item.edit){
+						if(!this.formUpload[item.fieldname]){
+							this.showUploadFile = false;
+							
+						}
+					}
+				});
+				if(this.showUploadFile){
+					var id  = Vue.obserable.trigger({
+						type:'getCurrentSourceId'
+					});
+					this.upload(id);
+				}
+			},
 
 			changeCurrentType(index){
 				var s = this;
@@ -588,7 +619,14 @@
 				var index = this.formAdmin.tagList.indexOf(name);
 				this.formAdmin.tagList.splice(index,1);
 			},
-
+			addTagBeforeUpload(){
+				if(!this.beforeUploadTag){
+					return;
+				}
+				this.formUpload.tagList = this.formUpload.tagList || [];
+				this.formUpload.tagList.push(this.beforeUploadTag);
+				this.beforeUploadTag =  '';
+			},
 			addTag(){
 				if(!this.tag){
 					return;
@@ -694,17 +732,38 @@
 						username:s.userinfo.username,
 						usertoken:s.userinfo.accesstoken,
 						resourceid:id,
-						filetitle:"",
-						filedesc:"",
-						publicadtype:data[s.currentType],
-						userlabel:"",
-						author:"",
-						telphone:''
+						filetitle:s.formUpload.filetitle,
+						filedesc:s.formUpload.filedesc,
+						publicadtype:s.formUpload.publicadtype||s.menus[s.currentType],
+						userlabel:s.formUpload.tagList.join(','),
+						author:s.formUpload.author,
+						telphone:s.formUpload.telphone
 				}
 				this.p = p;
 				if(s.uploader){
 					s.uploader.destroy();
 				}
+
+
+				var accepts  = [
+					{
+						title: 'Images',
+						extensions: 'gif,jpg,jpeg,bmp,png,tiff',
+						mimeTypes: 'image/*'
+					},{
+						title: 'Video',
+						extensions: 'mp4,webm',
+						mimeTypes: 'video/*'
+					},{
+						title: 'Audio',
+						extensions: 'aac,ogg,aac,wma,mp3,vnd.dlna.adts',
+						mimeTypes: 'auido/*'
+					},{
+						title: 'All',
+						extensions: 'gif,jpg,jpeg,bmp,png,tiff,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+						mimeTypes: '*/*'
+					}
+				]
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
 					auto: true,
@@ -715,23 +774,28 @@
 					server: window.config.baseUrl+'/wmadvuser/uploadfile/',
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
-					pick: '.wm-upload1',
+					pick: '.wm-upload-before',
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
+					prepareNextFile:true,//是否允许在文件传输时提前把下一个文件准备好。 对于一个文件的准备工作比较耗时，比如图片压缩，md5序列化。 如果能提前在当前文件传输期处理，可以节省总体耗时。
 					formData:p,
+					accept:accepts[s.currentType],
 					dnd:'.wm-myreport-left',
 					disableGlobalDnd :true,//是否禁掉整个页面的拖拽功能，如果不禁用，图片拖进来的时候会默认被浏览器打开。
 				});
 
-				uploader.on('dndAccept',function(items){
-					console.log(items);
-				});
- 
+				
+				uploader.on('dndAccept',(file,a)=>{
+					if(accepts[s.currentType].extensions.indexOf(file['0'].type.split('/')[1])<=-1){
+						s.$Message.error('目前不支持'+file['0'].type.split('/')[1]+'文件格式');
+					}
+				})
 
 				uploader.on("beforeFileQueued",function(file){
 					var data = s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0]?s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0].data:[]
 					s.publicadtype = {data:data[s.currentType]}||'';
+					s.showUploadDialog = false;
 				});
 
 				s.uploader = uploader;

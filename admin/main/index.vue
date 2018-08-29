@@ -45,7 +45,7 @@
                                 <Icon type="ios-paper-plane" />
                                 征集管理
                             </template>
-                             <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
+                             <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid+"/0"' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
                                 {{resource.resourcecnname}}
                             </MenuItem>
                         </Submenu>

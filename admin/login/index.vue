@@ -10,7 +10,7 @@
 				</div>
 			</div>
 		</header>
-		<section :style="{background:'url('+imgs.adminLoginBg+') no-repeat center 40%'}" > 
+		<section :style="{background:'url('+imgs.adminLoginBg+') no-repeat center 40%',backgroundSize:'100%'}" > 
 			<div class="wm-login-C">
 				<h2>公益广告上报系统 <span>(管理端)</span></h2>
 				<div class="wm-login-form">

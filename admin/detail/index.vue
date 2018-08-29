@@ -8,7 +8,7 @@
 				<li @click='currentType = 2' :class="{'active':currentType === 2}">拒绝({{rejectnum}})</li>
 			</ul>
 		</header>
-		<a :href='"#/collection/"+resourceid+"/"' class="wm-vote-back">
+		<a :href='"#/collection/"+resourceid+"/1"' class="wm-vote-back">
 			<img :src="imgs.back" alt="">
 		</a>
 		<div class="wm-vote-list wm-scroll" :style="{height:viewH - 64 - 130 +'px',overflow:'auto'}">
