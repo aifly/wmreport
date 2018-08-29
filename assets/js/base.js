@@ -65,5 +65,5 @@ Date.prototype.Format = function (fmt) { //author: meizz
 	return fmt;
 }
 window.config = {
-	baseUrl:'https://api.symbin.cn/v1'
+	baseUrl:'http://10.137.0.3/v1'
 }
