@@ -1,7 +1,7 @@
 <template>
 	<div class="wm-rater-main-ui">
 		<Split v-model='scale'>
-			<div slot='left'>
+			<div slot='left' style="background:#fff;width:98%;margin:0 auto">
 				<header class="wm-rater-header">
 					<div>{{resourceName}}</div>
 					<div class="wm-rate-tabs">
@@ -32,9 +32,7 @@
 								<div class="wm-report-item">
 									<div class="wm-report-detail">
 										<div class="wm-report-pcbilethum">
-											<div>
-												<img :src="report.pcbilethum" alt="">
-											</div>
+											<img :src="report.pcbilethum" alt="">
 										</div>
 										<div class="wm-report-detail-content">
 											<div  v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"||item.fieldname === "userlabel"' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
@@ -83,36 +81,25 @@
 					</div>
 				</section>
 			</div>
-			<div slot='right' v-if='reportList.length>0' class="wm-myreport-right wm-scroll">
+			<div slot='right' style="height:1200px" v-if='reportList.length>0' class="wm-myreport-right wm-scroll">
 				<div   class="wm-right-thumb">
 					<div>
 						<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
 					</div>
 				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>大小：</div>
-					<div>{{reportList[currentReportIndex].filesize}}{{reportList[currentReportIndex].filesizeunit}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>时间：</div>
-					<div>{{(reportList[currentReportIndex].createtime||'').substring(0,10)}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>格式：</div>
-					<div>{{reportList[currentReportIndex].fileextname}}</div>
-				</div>
-				<div class="wmmyreport-title wm-myreport-item">
-					<div>尺寸：</div>
-					<div>{{reportList[currentReportIndex].fileattr}}</div>
-				</div>
-				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-					<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-					<div v-if='item.type === "text" ||item.type === "textarea"' >
+				 
+				<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i' v-if='item.fieldname !== "filesizeunit"'>
+					<div v-if='item.fieldname !== "userlabel"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
+					<div v-if='item.fieldname !== "userlabel"&&  item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' >
 						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
 					</div>
 
 					<div  v-if='item.type === "select"'>
 						{{reportList[currentReportIndex][item.fieldname]&& reportList[currentReportIndex][item.fieldname].split('-')[0]}}
+					</div>
+
+					<div v-if='item.fieldname ==="filesize"  &&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
+						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>
 					</div>
 
 					<div class="wm-tag-list" v-if='item.fieldname === "userlabel"'>
@@ -130,7 +117,7 @@
 		<div class="lt-full wm-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
 			<div :class='{"original":showOriginalImg}'  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
-				<img @dblclick.stop="showOriginalImg = !showOriginalImg" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+				<img @dblclick.stop="showOriginalImg = !showOriginalImg" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].filepath||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip dmg".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 					<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"'  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
@@ -199,6 +186,8 @@
 					</div>
 				</div>
 			</section>
+
+			<div class="wm-rater-mask-tip">双击放大浏览</div>
 		</div>
 	</div>
 </template>

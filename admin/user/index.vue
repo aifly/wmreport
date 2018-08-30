@@ -140,7 +140,7 @@
 								}, 400);
 							}
 							else{
-								s.$Message.error('修改密码失败');
+								s.$Message.error(data.getmsg);
 							}
 						}
 					})
@@ -270,7 +270,7 @@
 							s.$Message.warning('请重新登录');
 							window.location.hash =  '/login';
 						}else{
-							s.$Message.error('修改密码失败');
+							s.$Message.error(data.getmsg);
 						}
 					}
 

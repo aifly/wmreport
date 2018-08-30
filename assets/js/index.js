@@ -64,9 +64,7 @@
 
 	var _componentsLoginIndex2 = _interopRequireDefault(_componentsLoginIndex);
 
-	var _componentsRegisterIndex = __webpack_require__(98);
-
-	var _componentsRegisterIndex2 = _interopRequireDefault(_componentsRegisterIndex);
+	///import Register from './components/register/index';
 
 	var _componentsMyreportIndex = __webpack_require__(105);
 
@@ -106,12 +104,16 @@
 			name: 'login',
 			component: _componentsLoginIndex2['default'],
 			props: true
-		}, {
-			path: '/register/',
-			name: 'register',
-			component: _componentsRegisterIndex2['default'],
-			props: true
-		}, {
+		},
+		/*
+	 {
+	 	path: '/register/',
+	 	name: 'register',
+	 	component: Register,
+	 	props: true
+	 }, */
+
+		{
 			path: '/myreport/',
 			name: 'myreport',
 			component: _componentsMyreportIndex2['default'],
@@ -136,8 +138,7 @@
 		methods: {},
 		components: {
 			Main: _componentsMainIndex2['default'],
-			Login: _componentsLoginIndex2['default'],
-			Register: _componentsRegisterIndex2['default']
+			Login: _componentsLoginIndex2['default']
 		},
 		mounted: function mounted() {
 
@@ -55140,7 +55141,9 @@
 	        var userinfo = _libUtil2['default'].getUserInfo();
 
 	        this.userinfo = userinfo;
-	        this.getSourceList();
+	        if (this.$route.name !== 'login') {
+	            this.getSourceList();
+	        }
 	    },
 	    watch: {
 	        kw: function kw(val) {
@@ -55278,7 +55281,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0; }\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis; }\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem; }\r\n  .zmiti-play.rotate {\r\n    -webkit-animation: rotate 5s linear infinite;\r\n    animation: rotate 5s linear infinite; }\r\n\r\n.symbin-left {\r\n  float: left !important; }\r\n\r\n.symbin-right {\r\n  float: right !important; }\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg); } }\r\n.layout .layout-logo {\r\n  color: #FFF; }\r\n  .layout .layout-logo img {\r\n    height: 35px;\r\n    width: auto; }\r\n.layout .ivu-layout-header {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  justify-content: space-between;\r\n  background: #fff;\r\n  /* Safari 5.1 - 6.0 */ }\r\n  .layout .ivu-layout-header > div:nth-of-type(1) {\r\n    width: 300px;\r\n    display: flex;\r\n    display: -webkit-flex;\r\n    flex-flow: row;\r\n    color: #fff;\r\n    text-align: center;\r\n    font-size: 30px;\r\n    font-weight: bold;\r\n    background: #b30501; }\r\n    .layout .ivu-layout-header > div:nth-of-type(1) .wm-title {\r\n      margin: 0 auto;\r\n      width: 300px; }\r\n  .layout .ivu-layout-header > div:nth-of-type(2) {\r\n    -webkit-flex-grow: 1;\r\n    flex-grow: 1; }\r\n    .layout .ivu-layout-header > div:nth-of-type(2) div {\r\n      margin-top: 14px;\r\n      width: 400px;\r\n      height: 36px;\r\n      line-height: 36px;\r\n      margin-left: 20px;\r\n      border-radius: 18px;\r\n      background: #eeeeee;\r\n      border: none;\r\n      padding: 0;\r\n      position: relative; }\r\n      .layout .ivu-layout-header > div:nth-of-type(2) div img {\r\n        width: 20px;\r\n        position: absolute;\r\n        top: 8px;\r\n        left: 20px; }\r\n    .layout .ivu-layout-header > div:nth-of-type(2) input {\r\n      width: 330px;\r\n      height: 36px;\r\n      line-height: 36px;\r\n      margin-left: 40px;\r\n      border-radius: 18px;\r\n      background: transparent;\r\n      border: none;\r\n      padding: 0;\r\n      font-size: 14px;\r\n      outline: none;\r\n      padding-left: 20px; }\r\n  .layout .ivu-layout-header > div.wm-user-info {\r\n    min-width: 250px;\r\n    position: relative; }\r\n    .layout .ivu-layout-header > div.wm-user-info img {\r\n      width: 30px; }\r\n    .layout .ivu-layout-header > div.wm-user-info div {\r\n      background: #b30501;\r\n      position: absolute;\r\n      right: 0;\r\n      width: 80px;\r\n      top: 0;\r\n      height: 100%;\r\n      cursor: pointer;\r\n      text-align: center; }\r\n      .layout .ivu-layout-header > div.wm-user-info div img {\r\n        width: 30px; }\r\n    .layout .ivu-layout-header > div.wm-user-info span {\r\n      vertical-align: middle;\r\n      margin: 0 10px;\r\n      display: inline-block;\r\n      font-size: 14px;\r\n      max-width: 100px;\r\n      position: relative;\r\n      top: 0;\r\n      z-index: 10; }\r\n.layout .wm-user img {\r\n  width: 50px; }\r\n.layout .wm-tab-C {\r\n  background: #eee;\r\n  width: 300px;\r\n  padding-top: 5px; }\r\n  .layout .wm-tab-C > div {\r\n    background: #fff;\r\n    border: 1px solid #fff; }\r\n  .layout .wm-tab-C .ivu-menu-vertical .ivu-menu-item:hover,\r\n  .layout .wm-tab-C .ivu-menu-vertical .ivu-menu-submenu-title:hover {\r\n    color: #b30501; }\r\n  .layout .wm-tab-C .ivu-menu-item-active:not(.ivu-menu-submenu),\r\n  .layout .wm-tab-C .ivu-menu-item-selected:not(.ivu-menu-submenu) {\r\n    color: #b30501 !important;\r\n    background: rgba(179, 5, 1, 0.1) !important; }\r\n    .layout .wm-tab-C .ivu-menu-item-active:not(.ivu-menu-submenu):after,\r\n    .layout .wm-tab-C .ivu-menu-item-selected:not(.ivu-menu-submenu):after {\r\n      background: #b30501 !important; }\r\n  .layout .wm-tab-C .ivu-menu-item-active a,\r\n  .layout .wm-tab-C .ivu-menu-item-selected a {\r\n    display: block;\r\n    width: 100%; }\r\n  .layout .wm-tab-C .wm-menu-item {\r\n    background: #fff;\r\n    height: 40px;\r\n    line-height: 40px;\r\n    color: #333;\r\n    text-indent: 3em;\r\n    position: relative; }\r\n    .layout .wm-tab-C .wm-menu-item a {\r\n      color: inherit; }\r\n    .layout .wm-tab-C .wm-menu-item:nth-of-type(1) {\r\n      margin-top: 10px; }\r\n    .layout .wm-tab-C .wm-menu-item.active {\r\n      color: #f00;\r\n      font-weight: bold;\r\n      background: rgba(204, 0, 0, 0.1); }\r\n      .layout .wm-tab-C .wm-menu-item.active:before {\r\n        content: '';\r\n        width: 2px;\r\n        height: 100%;\r\n        background: #f00;\r\n        position: absolute;\r\n        right: 0;\r\n        top: 0; }\r\n  .layout .wm-tab-C a {\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    color: inherit; }\r\n  .layout .wm-tab-C img {\r\n    width: 20px; }\r\n.layout .ivu-layout-sider-children {\r\n  overflow: hidden; }\r\n.layout .layout-nav li > a {\r\n  color: rgba(255, 255, 255, 0.7); }\r\n  .layout .layout-nav li > a:hover {\r\n    color: white; }\r\n  .layout .layout-nav li > a.router-link-active {\r\n    color: white; }\r\n.layout .wm-main-layout {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  margin-top: 10px; }\r\n.layout .symbin-main-menu {\r\n  background: #333744 !important; }\r\n  .layout .symbin-main-menu li {\r\n    position: relative; }\r\n  .layout .symbin-main-menu a {\r\n    position: absolute;\r\n    width: 100%;\r\n    height: 100%;\r\n    color: inherit;\r\n    left: 0;\r\n    top: 0;\r\n    text-align: center;\r\n    line-height: 50px; }\r\n  .layout .symbin-main-menu a:hover {\r\n    color: inherit; }\r\n.layout i.ivu-icon-ionic {\r\n  opacity: 0; }\r\n.layout .ivu-menu-item > a > i {\r\n  margin-right: 6px; }\r\n.layout .ivu-menu-submenu .ivu-menu-item {\r\n  padding-left: 24px !important; }\r\n\r\n/*# sourceMappingURL=index.css.map */\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.layout .layout-logo {\n  color: #FFF;\n}\n\n.layout .layout-logo img {\n  height: 35px;\n  width: auto;\n}\n\n.layout .ivu-layout-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  background: #fff;\n  /* Safari 5.1 - 6.0 */\n}\n\n.layout .ivu-layout-header > div:nth-of-type(1) {\n  width: 300px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  color: #fff;\n  text-align: center;\n  background: #b30501;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(1) .wm-title {\n  margin: 0 auto;\n  width: 300px;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) div {\n  margin-top: 14px;\n  width: 400px;\n  height: 36px;\n  line-height: 36px;\n  margin-left: 20px;\n  border-radius: 18px;\n  background: #eeeeee;\n  border: none;\n  padding: 0;\n  position: relative;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) div img {\n  width: 20px;\n  position: absolute;\n  top: 8px;\n  left: 20px;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) input {\n  width: 330px;\n  height: 36px;\n  line-height: 36px;\n  margin-left: 40px;\n  border-radius: 18px;\n  background: transparent;\n  border: none;\n  padding: 0;\n  font-size: 14px;\n  outline: none;\n  padding-left: 20px;\n}\n\n.layout .ivu-layout-header > div.wm-user-info {\n  min-width: 250px;\n  position: relative;\n}\n\n.layout .ivu-layout-header > div.wm-user-info img {\n  width: 30px;\n}\n\n.layout .ivu-layout-header > div.wm-user-info div {\n  background: #b30501;\n  position: absolute;\n  right: 0;\n  width: 80px;\n  top: 0;\n  height: 100%;\n  cursor: pointer;\n  text-align: center;\n}\n\n.layout .ivu-layout-header > div.wm-user-info div img {\n  width: 30px;\n}\n\n.layout .ivu-layout-header > div.wm-user-info span {\n  vertical-align: middle;\n  margin: 0 10px;\n  display: inline-block;\n  font-size: 14px;\n  max-width: 100px;\n  position: relative;\n  top: 0;\n  z-index: 10;\n}\n\n.layout .wm-user img {\n  width: 50px;\n}\n\n.layout .wm-tab-C {\n  background: #eee;\n  width: 300px;\n}\n\n.layout .wm-tab-C > div {\n  background: #fff;\n  border: 1px solid #fff;\n}\n\n.layout .wm-tab-C .ivu-menu-vertical .ivu-menu-item:hover,\n.layout .wm-tab-C .ivu-menu-vertical .ivu-menu-submenu-title:hover {\n  color: #b30501;\n}\n\n.layout .wm-tab-C .ivu-menu-item-active:not(.ivu-menu-submenu),\n.layout .wm-tab-C .ivu-menu-item-selected:not(.ivu-menu-submenu) {\n  color: #b30501 !important;\n  background: rgba(179, 5, 1, 0.1) !important;\n}\n\n.layout .wm-tab-C .ivu-menu-item-active:not(.ivu-menu-submenu):after,\n.layout .wm-tab-C .ivu-menu-item-selected:not(.ivu-menu-submenu):after {\n  background: #b30501 !important;\n}\n\n.layout .wm-tab-C .ivu-menu-item-active a,\n.layout .wm-tab-C .ivu-menu-item-selected a {\n  display: block;\n  width: 100%;\n}\n\n.layout .wm-tab-C .wm-menu-item {\n  background: #fff;\n  height: 40px;\n  line-height: 40px;\n  color: #333;\n  text-indent: 3em;\n  position: relative;\n}\n\n.layout .wm-tab-C .wm-menu-item a {\n  color: inherit;\n}\n\n.layout .wm-tab-C .wm-menu-item:nth-of-type(1) {\n  margin-top: 10px;\n}\n\n.layout .wm-tab-C .wm-menu-item.active {\n  color: #f00;\n  font-weight: bold;\n  background: rgba(204, 0, 0, 0.1);\n}\n\n.layout .wm-tab-C .wm-menu-item.active:before {\n  content: '';\n  width: 2px;\n  height: 100%;\n  background: #f00;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n\n.layout .wm-tab-C a {\n  display: block;\n  width: 100%;\n  height: 100%;\n  color: inherit;\n}\n\n.layout .wm-tab-C img {\n  width: 20px;\n}\n\n.layout .ivu-layout-sider-children {\n  overflow: hidden;\n}\n\n.layout .layout-nav li > a {\n  color: rgba(255, 255, 255, 0.7);\n}\n\n.layout .layout-nav li > a:hover {\n  color: white;\n}\n\n.layout .layout-nav li > a.router-link-active {\n  color: white;\n}\n\n.layout .wm-main-layout {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin-top: 10px;\n}\n\n.layout .symbin-main-menu {\n  background: #333744 !important;\n}\n\n.layout .symbin-main-menu li {\n  position: relative;\n}\n\n.layout .symbin-main-menu a {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  color: inherit;\n  left: 0;\n  top: 0;\n  text-align: center;\n  line-height: 50px;\n}\n\n.layout .symbin-main-menu a:hover {\n  color: inherit;\n}\n\n.layout i.ivu-icon-ionic {\n  opacity: 0;\n}\n\n.layout .ivu-menu-item > a > i {\n  margin-right: 6px;\n}\n\n.layout .ivu-menu-submenu .ivu-menu-item {\n  padding-left: 24px !important;\n}\n", ""]);
 
 	// exports
 
@@ -55522,11 +55525,11 @@
 	// 					<img :src="imgs.logo"  />
 	// 				</div>
 	// 				<div>
-	// 					<a href='#/register'>用户注册></a>
+	// 					<a v-if='false' href='#/register'>用户注册></a>
 	// 				</div>
 	// 			</div>
 	// 		</header>
-	// 		<section :style="{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}" >
+	// 		<section :style="{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}" >
 	// 			<div class="wm-login-C">
 	// 				<h2>公益广告上报系统</h2>
 	// 				<div class="wm-login-form">
@@ -55721,7 +55724,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-login-ui {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: column;\r\n}\r\n\r\n.wm-login-ui > header {\r\n  height: 64px;\r\n  line-height: 64px;\r\n  width: 100%;\r\n  position: relative;\r\n}\r\n\r\n.wm-login-ui > header > div {\r\n  width: 1000px;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  margin: 0 auto;\r\n  -webkit-justify-content: space-between;\r\n  justify-content: space-between;\r\n}\r\n\r\n.wm-login-ui > header:before {\r\n  content: '';\r\n  background: #cc0000;\r\n  width: 100%;\r\n  height: 3px;\r\n  left: 0;\r\n  position: absolute;\r\n  bottom: 0;\r\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\r\n}\r\n\r\n.wm-login-ui > header img {\r\n  width: 100px;\r\n  margin-left: 30px;\r\n  vertical-align: middle;\r\n  font-size: 0;\r\n}\r\n\r\n.wm-login-ui > header a {\r\n  color: #cc0000;\r\n}\r\n\r\n.wm-login-ui > header a:hover {\r\n  text-decoration: underline;\r\n}\r\n\r\n.wm-login-ui > section {\r\n  flex-grow: 1;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  -webkit-justify-content: center;\r\n  justify-content: center;\r\n  -webkit-align-items: center;\r\n  align-items: center;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C {\r\n  width: 600px;\r\n  position: relative;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-title {\r\n  margin-bottom: 7vh;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C > h2 {\r\n  color: #fff;\r\n  font-size: 40px;\r\n  margin: 30px 0;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  -webkit-justify-content: space-between;\r\n  justify-content: space-between;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\r\n  background: #fff;\r\n  height: 50px;\r\n  line-height: 50px;\r\n  padding: 0 20px;\r\n  border-radius: 10px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\r\n  color: #f00;\r\n  margin-top: -12px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\r\n  margin: 0 10px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\r\n  width: 120px;\r\n  color: #fff;\r\n  text-align: center;\r\n  line-height: 50px;\r\n  cursor: pointer;\r\n  font-size: 16px;\r\n  position: relative;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\r\n  background: #cc0000;\r\n  border-radius: 10px;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\r\n  position: absolute;\r\n  width: 100%;\r\n  left: 0;\r\n  color: #000;\r\n  margin-top: -3px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\r\n  border: none;\r\n  height: 30px;\r\n  background: transparent;\r\n  outline: none;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form img {\r\n  width: 20px;\r\n}\r\n\r\n.wm-login-ui > section .wm-copyright {\r\n  position: absolute;\r\n  bottom: 0;\r\n  width: 100%;\r\n  text-align: center;\r\n  height: 50px;\r\n  line-height: 50px;\r\n  color: #fff;\r\n  left: 0;\r\n  background: rgba(204, 0, 0, 0.4);\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-login-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-login-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-login-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-login-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-login-ui > header a {\n  color: #cc0000;\n}\n\n.wm-login-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-login-ui > section {\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-login-ui > section .wm-login-C {\n  width: 600px;\n  position: relative;\n  top: -4vh;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-title {\n  margin-bottom: 7vh;\n}\n\n.wm-login-ui > section .wm-login-C > h2 {\n  color: #be0000;\n  font-size: 44px;\n  margin: 30px 0;\n  text-align: center;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  background: #fff;\n  height: 50px;\n  line-height: 50px;\n  padding: 0 20px;\n  border-radius: 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\n  color: #f00;\n  margin-top: -12px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  margin: 0 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\n  width: 120px;\n  color: #fff;\n  text-align: center;\n  line-height: 50px;\n  cursor: pointer;\n  font-size: 16px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\n  background: #f90;\n  border-radius: 10px;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\n  position: absolute;\n  width: 100%;\n  left: 0;\n  color: #be0000;\n  margin-top: -3px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\n  border: none;\n  height: 30px;\n  background: transparent;\n  outline: none;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form img {\n  width: 20px;\n}\n\n.wm-login-ui > section .wm-copyright {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  text-align: center;\n  height: 50px;\n  line-height: 50px;\n  color: #fff;\n  left: 0;\n  background: #cc0000;\n}\n", ""]);
 
 	// exports
 
@@ -55730,416 +55733,16 @@
 /* 97 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统</h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"load-c\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a v-if='false' href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统</h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"load-c\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
 
 /***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(99)
-	__vue_script__ = __webpack_require__(101)
-	__vue_template__ = __webpack_require__(104)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) { (typeof module.exports === "function" ? module.exports.options : module.exports).template = __vue_template__ }
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), true)
-	  if (!hotAPI.compatible) return
-	  var id = "F:\\xuchang2018\\project\\wmreport\\components\\register\\index.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(100);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-fefaa2ce&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-fefaa2ce&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// <template>
-	// 	<div  class="wm-reg-ui lt-full">
-	// 		<header>
-	// 			<div>
-	// 				<div><img :src="imgs.logo"  /></div>
-	// 				<div>
-	// 					已有账号：<a href='#/login'>去登录></a>
-	// 				</div>
-	// 			</div>
-	// 		</header>
-	// 		<section>
-	// 			<div class="wm-reg-C">
-	// 				<div class="wm-reg-form">
-	// 					<h2>公益广告上报系统,欢迎注册～</h2>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">用户名：</label><input type="text" @blur="checkUserName" v-model='formUser.username'>
-	// 						<div class="wm-reg-error" v-if='userError'>{{userError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">密码：</label><input type="password" v-model="formUser.password">
-	// 						<div class="wm-reg-error" v-if='passError'>{{passError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">确认密码：</label><input type="password" v-model="formUser.repassword">
-	// 						<div class="wm-reg-error" v-if='repassError'>{{repassError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">姓名：</label><input type="text" v-model="formUser.nickname">
-	// 						<div class="wm-reg-error" v-if='usernameError'>{{usernameError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">手机：</label><input type="text" v-model="formUser.mobile">
-	// 						<div class="wm-reg-error" v-if='mobileError'>{{mobileError}}</div>
-	// 					</div>
-	// 					<div class="wm-reg-form-item wm-require">
-	// 						<label for="">单位：</label><input type="text" v-model="formUser.company">
-	// 						<div class="wm-reg-error" v-if='companyError'>{{companyError}}</div>
-	// 					</div>
-	//
-	// 					<div class="wm-reg-form-item " >
-	// 						<label for="">地址：</label>
-	// 						<Cascader v-model="formUser.cityids"  :load-data="getCityById"  change-on-select :data='provinceList'></Cascader>
-	// 					</div>
-	//
-	// 					<div class="wm-reg-form-item ">
-	// 						<label for="">详细地址：</label><input type="text" v-model="formUser.detailaddress">
-	// 					</div>
-	// 					<div class="wm-reg-form-item ">
-	// 						<label for="">邮箱：</label><input type="text"  v-model="formUser.email">
-	// 					</div>
-	// 					<div class="wm-reg-form-item wx-reg-btn" @click="reg">
-	// 						注 册
-	// 					</div>
-	// 				</div>
-	// 				<div class="wm-copyright">
-	// 					中国文明网 &copy;版权所有
-	// 				</div>
-	// 			</div>
-	// 		</section>
-	// 	</div>
-	// </template>
-	//
-	// <script>
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-		value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	__webpack_require__(102);
-
-	var _libUtil = __webpack_require__(88);
-
-	var _libUtil2 = _interopRequireDefault(_libUtil);
-
-	var _vue = __webpack_require__(1);
-
-	var _vue2 = _interopRequireDefault(_vue);
-
-	exports['default'] = {
-		props: ['obserable'],
-		name: 'zmitiindex',
-		data: function data() {
-			return {
-				imgs: window.imgs,
-				username: '',
-				password: '',
-				checked: false,
-				isLogined: false,
-				isMove: false,
-				showLoading: false,
-				showError: false,
-				errorMsg: '',
-				provinceList: [],
-				userError: "",
-				companyError: "",
-				usernameError: "",
-				passError: "",
-				repassError: "",
-				mobileError: "",
-				formUser: {
-					cityids: []
-				},
-
-				viewH: document.documentElement.clientHeight
-			};
-		},
-		components: {},
-
-		methods: {
-			checkUserName: function checkUserName() {
-				if (!this.formUser.username) {
-					this.toastError('请输入用户名');
-					return;
-				}
-				var s = this;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + "/wmadvuser/isexist/",
-					data: {
-						username: s.formUser.username
-					},
-					success: function success(data) {
-
-						if (data.getret === 0) {} else {
-							s.toastError(data.getmsg);
-						}
-					}
-				});
-			},
-			toastError: function toastError() {
-				var _this2 = this;
-
-				var msg = arguments.length <= 0 || arguments[0] === undefined ? '用户名不能为空' : arguments[0];
-				var type = arguments.length <= 1 || arguments[1] === undefined ? 'userError' : arguments[1];
-
-				this[type] = msg;
-				setTimeout(function () {
-					_this2[type] = '';
-				}, 2000);
-			},
-			reg: function reg() {
-				var _this = this;
-
-				if (!this.formUser.username) {
-					this.toastError();
-					return;
-				}
-				if (!this.formUser.password) {
-					this.toastError('密码不能为空', 'passError');
-					return;
-				}
-				if (!this.formUser.repassword) {
-					this.toastError('确认密码不能为空', 'repassError');
-					return;
-				}
-				if (this.formUser.repassword !== this.formUser.password) {
-					this.toastError('两次密码输入不一致', 'repassError');
-					return;
-				}
-				if (!this.formUser.nickname) {
-					this.toastError('姓名不能为空', 'usernameError');
-					return;
-				}
-				if (!this.formUser.mobile) {
-					this.toastError('手机不能为空', 'mobileError');
-					return;
-				}
-				if (!this.formUser.company) {
-					this.toastError('单位不能为空', 'companyError');
-					return;
-				}
-
-				var params = this.formUser;
-				console.log(params);
-				params.userpwd = params.password;
-				params.companyname = params.company;
-				params.provinceid = params.cityids[0];
-				params.cityid = params.cityids[1];
-				params.areaid = params.cityids[2];
-				this.showLoading = true;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/wmadvuser/regist/',
-					data: params,
-					success: function success(data) {
-						if (data.getret === 0) {
-							_this.$Message.success('注册成功');
-							window.location.hash = '#/login';
-						} else {
-							_this.$Message.error(data.getmsg);
-						}
-					}
-				});
-			},
-			getCityById: function getCityById(e, callback) {
-
-				var provinceId = e.__value.split(',')[0];
-				var cityid = e.__value.split(',')[1];
-				var s = this;
-
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/share/getarealist',
-					data: {
-						cityid: cityid
-					},
-					success: function success(data) {
-						if (data.getret === 0) {
-							console.log(data);
-							s.provinceList.forEach(function (item, i) {
-								if (item.value === provinceId * 1) {
-									item.children.forEach(function (child, k) {
-										if (child.value === cityid * 1) {
-											child.children = child.children || [];
-											data.list.map(function (d, l) {
-												child.children.push({
-													value: d.cityid,
-													label: d.name
-												});
-											});
-										}
-									});
-									//loading: false
-									callback();
-								}
-							});
-						}
-					}
-
-				});
-			},
-			getCityData: function getCityData() {
-				var s = this;
-				_libUtil2['default'].ajax({
-					url: window.config.baseUrl + '/share/getcitylist/',
-					data: {},
-					success: function success(data) {
-						//console.log(data);
-						if (data.getret === 0) {
-							data.list.map(function (item, i) {
-								var children = [];
-								item.children && item.children.map(function (child, l) {
-									children.push({
-										value: child.cityid,
-										label: child.name,
-										loading: false,
-										children: []
-
-									});
-								});
-								s.provinceList.push({
-									value: item.cityid,
-									label: item.name,
-									children: children,
-									loading: false
-								});
-							});
-						}
-					}
-				});
-			},
-			checkCache: function checkCache() {
-				var username = window.localStorage.getItem('wm_username'),
-				    password = window.localStorage.getItem('wm_password');
-
-				if (username && password) {
-					this.username = username;
-					this.password = password;
-					this.checked = true;
-				}
-			}
-
-		},
-		mounted: function mounted() {
-			this.checkCache();
-			this.getCityData();
-		}
-	};
-
-	// </script>
-	//  <style>
-	// 	.demo-spin-icon-load{
-	//         animation: ani-demo-spin 1s linear infinite;
-	//     }
-	//     @keyframes ani-demo-spin {
-	//         from { transform: rotate(0deg);}
-	//         50%  { transform: rotate(180deg);}
-	//         to   { transform: rotate(360deg);}
-	//     }
-	//
-	//  </style>
-	//
-	module.exports = exports['default'];
-
-/***/ }),
-/* 102 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(103);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!./index.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!./index.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 103 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-reg-ui {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: column;\r\n}\r\n\r\n.wm-reg-ui > header {\r\n  height: 64px;\r\n  line-height: 64px;\r\n  width: 100%;\r\n  position: relative;\r\n}\r\n\r\n.wm-reg-ui > header > div {\r\n  width: 1000px;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  margin: 0 auto;\r\n  -webkit-justify-content: space-between;\r\n  justify-content: space-between;\r\n}\r\n\r\n.wm-reg-ui > header:before {\r\n  content: '';\r\n  background: #cc0000;\r\n  width: 100%;\r\n  height: 3px;\r\n  left: 0;\r\n  position: absolute;\r\n  bottom: 0;\r\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\r\n}\r\n\r\n.wm-reg-ui > header img {\r\n  width: 100px;\r\n  margin-left: 30px;\r\n  vertical-align: middle;\r\n  font-size: 0;\r\n}\r\n\r\n.wm-reg-ui > header a {\r\n  color: #cc0000;\r\n}\r\n\r\n.wm-reg-ui > header a:hover {\r\n  text-decoration: underline;\r\n}\r\n\r\n.wm-reg-ui > section {\r\n  flex-grow: 1;\r\n  -webkit-flex-grow: 1;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  -webkit-justify-content: center;\r\n  justify-content: center;\r\n  -webkit-align-items: center;\r\n  align-items: center;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form h2 {\r\n  color: #be0000;\r\n  text-align: center;\r\n  font-size: 20px;\r\n  margin: 0 0 20px 0;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item {\r\n  background: #eeeeee;\r\n  width: 400px;\r\n  border-radius: 4px;\r\n  padding: 0 20px;\r\n  height: 50px;\r\n  margin: 4px 0;\r\n  line-height: 50px;\r\n  position: relative;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item.wm-require label {\r\n  position: relative;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item.wm-require label:before {\r\n  content: '*';\r\n  position: absolute;\r\n  color: #be0000;\r\n  font-size: 20px;\r\n  left: -40px;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item .ivu-cascader {\r\n  position: absolute;\r\n  z-index: 10;\r\n  right: 20px;\r\n  top: 10px;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item .ivu-cascader input {\r\n  outline: none;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item .wm-reg-error {\r\n  position: absolute;\r\n  color: #ff0000;\r\n  left: 102%;\r\n  z-index: 1;\r\n  top: 0;\r\n  min-width: 150px;\r\n}\r\n\r\n.wm-reg-ui > section .wm-reg-form-item input {\r\n  outline: none;\r\n  background: transparent;\r\n  border: 1px solid #ccc;\r\n  padding: 0;\r\n  height: 30px;\r\n  width: 300px;\r\n  border: none;\r\n}\r\n\r\n.wm-reg-ui > section .wx-reg-btn {\r\n  margin-top: 20px;\r\n  background: #fab82e;\r\n  color: #fff;\r\n  text-align: center;\r\n  font-size: 16px;\r\n  cursor: pointer;\r\n}\r\n\r\n.wm-reg-ui .wm-copyright {\r\n  text-align: center;\r\n  margin-top: 30px;\r\n  position: absolute;\r\n  width: 100%;\r\n  bottom: 7vh;\r\n  left: 0;\r\n}\r\n\r\n@media all and (max-height: 850px) {\r\n  .wm-copyright {\r\n    bottom: 0 !important;\r\n  }\r\n}\r\n", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 104 */
-/***/ (function(module, exports) {
-
-	module.exports = "\r\n\t<div  class=\"wm-reg-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div><img :src=\"imgs.logo\"  /></div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t已有账号：<a href='#/login'>去登录></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section>\r\n\t\t\t<div class=\"wm-reg-C\">\r\n\t\t\t\t<div class=\"wm-reg-form\">\r\n\t\t\t\t\t<h2>公益广告上报系统,欢迎注册～</h2>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">用户名：</label><input type=\"text\" @blur=\"checkUserName\" v-model='formUser.username'>\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='userError'>{{userError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">密码：</label><input type=\"password\" v-model=\"formUser.password\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='passError'>{{passError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">确认密码：</label><input type=\"password\" v-model=\"formUser.repassword\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='repassError'>{{repassError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">姓名：</label><input type=\"text\" v-model=\"formUser.nickname\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='usernameError'>{{usernameError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">手机：</label><input type=\"text\" v-model=\"formUser.mobile\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='mobileError'>{{mobileError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wm-require\">\r\n\t\t\t\t\t\t<label for=\"\">单位：</label><input type=\"text\" v-model=\"formUser.company\">\r\n\t\t\t\t\t\t<div class=\"wm-reg-error\" v-if='companyError'>{{companyError}}</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \" >\r\n\t\t\t\t\t\t<label for=\"\">地址：</label>\r\n\t\t\t\t\t\t<Cascader v-model=\"formUser.cityids\"  :load-data=\"getCityById\"  change-on-select :data='provinceList'></Cascader>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \">\r\n\t\t\t\t\t\t<label for=\"\">详细地址：</label><input type=\"text\" v-model=\"formUser.detailaddress\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item \">\r\n\t\t\t\t\t\t<label for=\"\">邮箱：</label><input type=\"text\"  v-model=\"formUser.email\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-reg-form-item wx-reg-btn\" @click=\"reg\">\r\n\t\t\t\t\t\t注 册\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
-
-/***/ }),
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
 /* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -56207,7 +55810,9 @@
 	// 									<div  class="wm-report-status" v-if='report.status === 1'>
 	// 										<img :src="imgs.pass1" alt="">
 	// 									</div>
-	// 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'png jpg jpeg gif bmp'.indexOf(report.fileextname)>-1?'contain':'none'}"></div>
+	// 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+	// 										<img :src="report.pcbilethum||imgs.poster" alt="">
+	// 									</div>
 	// 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 	//
 	// 									<div v-if='!report.isLoaded' class="wm-uploading"></div>
@@ -56359,8 +55964,7 @@
 	//
 	// 					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
 	// 					<div  v-if='item.type === "select"'>
-	//
-	// 						<Select @on-change='checkUpload' v-model="formUpload[item.fieldname]">
+	// 						<Select @on-change='checkUpload($event,"select")' v-model="formAdmin[item.fieldname]">
 	// 							<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
 	// 						</Select>
 	// 					</div>
@@ -56495,7 +56099,7 @@
 				publicadtype: "",
 				currentReportIndex: 0,
 				showPreview: false,
-				showMaskDetail: false,
+				showMaskDetail: true,
 				detailtag: '',
 				showReportTip: false,
 				menus: [],
@@ -56535,7 +56139,9 @@
 			var _this = this;
 
 			this.userinfo = _libUtil2['default'].getUserInfo();
-			this.getMyreportList();
+			this.getMyreportList(function () {
+				_this.changeCurrentType(0, 'first');
+			});
 
 			var obserable = _vue2['default'].obserable;
 
@@ -56588,17 +56194,26 @@
 
 		methods: {
 
-			checkUpload: function checkUpload() {
+			checkUpload: function checkUpload(val, type) {
 				var _this2 = this;
 
 				this.showUploadFile = true;
 				this.configList.map(function (item) {
 					if (item.notnull && item.edit) {
-						if (!_this2.formUpload[item.fieldname]) {
+						if (!_this2.formUpload[item.fieldname] && item.fieldname !== 'publicadtype') {
 							_this2.showUploadFile = false;
 						}
 					}
 				});
+
+				if (type === 'select') {
+					s.menus.map(function (item, i) {
+						if (item === val) {
+							_this2.changeCurrentType(i);
+						}
+					});
+				}
+				//console.log(this.showUploadFile);
 				if (this.showUploadFile) {
 					var id = _vue2['default'].obserable.trigger({
 						type: 'getCurrentSourceId'
@@ -56607,7 +56222,7 @@
 				}
 			},
 
-			changeCurrentType: function changeCurrentType(index) {
+			changeCurrentType: function changeCurrentType(index, type) {
 				var s = this;
 				this.currentType = index;
 				var id = _vue2['default'].obserable.trigger({
@@ -56616,12 +56231,21 @@
 				this.upload(id);
 				this.currentReportIndex = 0;
 				this.filterReportList();
-				if (s.reportList.length <= 0) {
-					return;
-				}
 
-				s.formAdmin = s.reportList[s.currentReportIndex];
-				s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+				if (!type && false) {
+					s.formUpload = s.reportList[s.currentReportIndex] || {
+						tagList: [],
+						publicadtype: s.menus[index]
+					};
+
+					s.formUpload.userlabel = s.formUpload.tagList ? s.formUpload.tagList.join(',') : '';
+					s.formAdmin = s.reportList[s.currentReportIndex] || {
+						tagList: [],
+						publicadtype: s.menus[index]
+					};
+
+					s.formAdmin.userlabel && (s.formAdmin.tagList = s.formAdmin.userlabel.split(','));
+				}
 			},
 
 			deleteReport: function deleteReport(i) {
@@ -56799,8 +56423,15 @@
 
 			deltag: function deltag(name) {
 
-				var index = this.formAdmin.tagList.indexOf(name);
-				this.formAdmin.tagList.splice(index, 1);
+				var index = this.formUpload.tagList.indexOf(name);
+				this.formUpload.tagList.splice(index, 1);
+
+				if (this.showUploadFile) {
+					var id = _vue2['default'].obserable.trigger({
+						type: 'getCurrentSourceId'
+					});
+					this.upload(id);
+				}
 			},
 			addTagBeforeUpload: function addTagBeforeUpload() {
 				if (!this.beforeUploadTag) {
@@ -56809,6 +56440,12 @@
 				this.formUpload.tagList = this.formUpload.tagList || [];
 				this.formUpload.tagList.push(this.beforeUploadTag);
 				this.beforeUploadTag = '';
+				if (this.showUploadFile) {
+					var id = _vue2['default'].obserable.trigger({
+						type: 'getCurrentSourceId'
+					});
+					this.upload(id);
+				}
 			},
 			addTag: function addTag() {
 				if (!this.tag) {
@@ -56841,7 +56478,7 @@
 					return item.publicadtype === _this5.menus[_this5.currentType];
 				});
 			},
-			getMyreportList: function getMyreportList() {
+			getMyreportList: function getMyreportList(fn) {
 				var _this6 = this;
 
 				var s = this;
@@ -56888,6 +56525,7 @@
 									});
 									s.reportList = data.list;
 									s.defaultReportList = data.list.concat([]);
+									fn && fn();
 									if (s.reportList.length > 0) {
 
 										s.filterReportList();
@@ -56910,22 +56548,40 @@
 				var data = s.configList.filter(function (item) {
 					return item.fieldname === 'publicadtype';
 				})[0].data;
-
+				s.formUpload.tagList = s.formUpload.tagList || [];
 				var p = {
 					username: s.userinfo.username,
 					usertoken: s.userinfo.accesstoken,
 					resourceid: id,
-					filetitle: s.formUpload.filetitle,
+					uploadfilename: s.formUpload.filetitle,
 					filedesc: s.formUpload.filedesc,
-					publicadtype: s.formUpload.publicadtype || s.menus[s.currentType],
-					userlabel: s.formUpload.tagList.join(','),
+					publicadtype: s.menus[s.currentType],
+					userlabel: s.formUpload.tagList.concat([]).join(','),
 					author: s.formUpload.author,
 					telphone: s.formUpload.telphone
 				};
+				console.log('params  => ', p);
 				this.p = p;
 				if (s.uploader) {
 					s.uploader.destroy();
 				}
+				var accepts = [{
+					title: 'Images',
+					extensions: 'gif,jpg,jpeg,bmp,png,tiff',
+					mimeTypes: 'image/*'
+				}, {
+					title: 'Video',
+					extensions: 'mp4,webm',
+					mimeTypes: 'video/*'
+				}, {
+					title: 'Audio',
+					extensions: 'aac,ogg,aac,wma,mp3,vnd.dlna.adts',
+					mimeTypes: 'auido/*'
+				}, {
+					title: 'All',
+					extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+					mimeTypes: '*/*'
+				}];
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
 					auto: true,
@@ -56940,29 +56596,25 @@
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
+					compress: false,
+					prepareNextFile: true, //是否允许在文件传输时提前把下一个文件准备好。 对于一个文件的准备工作比较耗时，比如图片压缩，md5序列化。 如果能提前在当前文件传输期处理，可以节省总体耗时。
 					formData: p,
-					accept: [{
-						title: 'Images',
-						extensions: 'gif,jpg,jpeg,bmp,png,tiff',
-						mimeTypes: 'image/*'
-					}, {
-						title: 'Video',
-						extensions: 'mp4,webm',
-						mimeTypes: 'video/*'
-					}, {
-						title: 'Audio',
-						extensions: 'aac,ogg,aac,wma,mp3',
-						mimeTypes: 'auido/*'
-					}, {
-						title: 'All',
-						extensions: 'gif,jpg,jpeg,bmp,png,tiff,mp4,webm,aac,ogg,aac,wma',
-						mimeTypes: '*/*'
-					}][s.currentType],
+					accept: accepts[s.currentType],
 					dnd: '.wm-myreport-left',
 					disableGlobalDnd: true });
 
 				//是否禁掉整个页面的拖拽功能，如果不禁用，图片拖进来的时候会默认被浏览器打开。
+				uploader.on('dndAccept', function (file, a) {
+					if (accepts[s.currentType].extensions.indexOf(file['0'].type.split('/')[1]) <= -1) {
+						s.$Message.error('目前不支持' + file['0'].type.split('/')[1] + '文件格式');
+					}
+				});
+
 				uploader.on("beforeFileQueued", function (file) {
+					if (accepts[s.currentType].extensions.indexOf(file['type'].split('/')[1]) <= -1) {
+						s.$Message.error('当前文件格式不支持');
+						return;
+					}
 					var data = s.configList.filter(function (item) {
 						return item.fieldname === 'publicadtype';
 					})[0] ? s.configList.filter(function (item) {
@@ -57017,19 +56669,6 @@
 							}
 						}
 					});
-
-					//s.reportList = s.reportList.concat([]);
-					/* var $li = $('#' + file.id),
-	    	$percent = $li.find('.progress .progress-bar');
-	    	// 避免重复创建
-	    if (!$percent.length) {
-	    	$percent = $('<div class="progress progress-striped active">' +
-	    		'<div class="progress-bar" role="progressbar" style="width: 0%">' +
-	    		'</div>' +
-	    		'</div>').appendTo($li).find('.progress-bar');
-	    }
-	    	$li.find('p.state').text('上传中');
-	    	$percent.css('width', percentage * 100 + '%'); */
 				});
 
 				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
@@ -57049,6 +56688,9 @@
 				uploader.on('uploadComplete', function (file) {
 					iNow++;
 					if (iNow === i) {
+						/* s.formUpload = {
+	     	tagList:[]
+	     }; */
 						s.getMyreportList();
 					}
 					//
@@ -57135,7 +56777,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-myreport-main-ui {\n  height: 100%;\n  position: relative;\n}\n\n.wm-myreport-main-ui.webuploader-dnd-over {\n  background: red;\n}\n\n.wm-myreport-main-ui .webuploader-container {\n  position: relative;\n}\n\n.wm-myreport-main-ui .webuploader-element-invisible {\n  position: absolute !important;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n\n.wm-myreport-main-ui .webuploader-pick {\n  position: relative;\n  display: inline-block;\n  height: 100%;\n  cursor: pointer;\n  background: #00b7ee;\n  opacity: 0;\n  width: 100%;\n  color: #fff;\n  text-align: center;\n  border-radius: 3px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .webuploader-pick-hover {\n  background: #00a2d4;\n}\n\n.wm-myreport-main-ui .webuploader-pick-disable {\n  opacity: 0.6;\n  pointer-events: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left {\n  background: #fff;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  height: 100%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-myreport-main-ui .wm-myreport-left.webuploader-dnd-over .wm-myreport-upload-C {\n  display: block;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-myreport-upload-C {\n  display: none;\n  background: rgba(0, 0, 0, 0.7);\n  z-index: 10000;\n  -webkit-transform: scale(0.99);\n  transform: scale(0.99);\n  border: 2px dashed  #fff;\n  border-radius: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header {\n  height: 60px;\n  line-height: 60px;\n  width: 100%;\n  position: relative;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload {\n  position: absolute;\n  top: 0;\n  overflow: hidden;\n  left: 0;\n  height: 60px;\n  width: 200px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload > div {\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header span {\n  font-size: 16px;\n  margin-left: 20px;\n  position: absolute;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: flex;\n  margin: 0 auto;\n  max-width: 600px;\n  width: 40vw;\n  justify-content: space-around;\n  -webkit-justify-content: space-around;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li {\n  cursor: pointer;\n  text-align: center;\n  width: 23%;\n  margin: 0 10px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li.active:before {\n  content: '';\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  position: absolute;\n  width: 100%;\n  height: 2px;\n  left: 0;\n  bottom: 0;\n  background: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(1).active:before {\n  background: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(2).active:before {\n  background: #86be24;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(3).active:before {\n  background: #63aee5;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(4).active:before {\n  background: #5c8ee3;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li img {\n  width: 20px;\n  vertical-align: middle;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header:before {\n  content: '';\n  position: absolute;\n  width: 98%;\n  left: 1%;\n  border-top: 1px solid #eeeeee;\n  bottom: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n  position: relative;\n  z-index: 1000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-myreport-list-C {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer {\n  background: #f4f4f4;\n  height: 80px;\n  line-height: 70px;\n  -webkit-justify-content: space-around;\n  justify-content: space-around;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer:before {\n  content: \"\";\n  width: 100%;\n  height: 1px;\n  left: 0;\n  top: 0;\n  position: absolute;\n  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) inset;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer .wm-upload {\n  z-index: 10000;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer .wm-upload div:nth-of-type(2) {\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div {\n  width: 260px;\n  text-align: center;\n  height: 30px;\n  cursor: pointer;\n  border-radius: 4px;\n  line-height: 30px;\n  background: #f5a420;\n  color: #fff;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div .wm-upload-tip {\n  top: 26px;\n  position: absolute;\n  color: #999;\n  width: 100%;\n  text-align: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div div:nth-of-type(2) {\n  position: absolute;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-video {\n  background: #86be24;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-audio {\n  background: #63aee5;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-dongman {\n  background: #5c8ee3;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div > span {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div i {\n  vertical-align: middle;\n  font-size: 16px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div {\n  text-align: center;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {\n  width: 100px;\n  display: block;\n  margin: 10px auto;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload {\n  position: absolute !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload > div:nth-of-type(2) {\n  z-index: 1000;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-upload {\n  position: absolute;\n  width: 100%;\n  z-index: 100;\n  height: 100%;\n  left: 0;\n  top: 0;\n}\n\n.wm-upload input[type='file'] {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 100;\n  opacity: 0;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list {\n  overflow: auto;\n  height: 500px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list ul {\n  margin-top: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li {\n  display: inline-block;\n  width: 230px;\n  margin: 12px;\n  height: 130px;\n  background: #f4f4f4;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li.uncheck:after, .wm-myreport-main-ui .wm-myreport-left .wm-report-list li.pass:after {\n  content: '';\n  position: absolute;\n  width: 0;\n  height: 0;\n  left: 0;\n  top: 0;\n  border-top: 10px solid #f5a420;\n  border-right: 10px solid transparent;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li.pass:after {\n  border-top: 10px solid yellowgreen;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-status {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 50px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li:hover .wm-report-action {\n  opacity: 1;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {\n  width: 100%;\n  height: 100%;\n  border: 1px solid #eee;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg.active {\n  border-color: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-item-name {\n  text-align: center;\n  margin: 4px 0;\n  font-size: 14px;\n  height: 24px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress,\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  position: absolute;\n  width: 100%;\n  height: 30px;\n  text-align: center;\n  top: 50%;\n  margin-top: -15px;\n  line-height: 30px;\n  color: #fff;\n  font-size: 14px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress {\n  z-index: 10;\n  background-color: #f5a420;\n  background-size: 3em 3em;\n  background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);\n  -webkit-animation: warning-animation 750ms infinite linear;\n  -moz-animation: warning-animation 750ms infinite linear;\n  animation: warning-animation 750ms infinite linear;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress:before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  height: 100%;\n  background-image: linear-gradient(to bottom, rgba(250, 184, 46, 0.7), rgba(250, 184, 46, 0.7) 15%, transparent 60%, rgba(250, 184, 46, 0.7));\n}\n\n@-webkit-keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n@keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-disabled-mask {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(255, 255, 255, 0.7);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  color: #be0000;\n  font-size: 12px;\n  z-index: 10;\n  width: 85%;\n  padding-left: 20px;\n  left: 50%;\n  border: 1px solid #be0000;\n  border-radius: 3px;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span {\n  position: absolute;\n  left: 0;\n  top: 0px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:before {\n  content: '';\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  border: 1px solid #be0000;\n  border-radius: 50%;\n  left: 2px;\n  top: 5px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:after {\n  content: \"\";\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #be0000;\n  left: 2px;\n  top: 13px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action {\n  position: absolute;\n  opacity: 0;\n  top: 10px;\n  right: 0;\n  z-index: 1000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon {\n  width: 20px;\n  height: 20px;\n  background: #fff;\n  border-radius: 2px;\n  position: absolute;\n  right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon:before {\n  content: \"\";\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  border: 1px solid #bbb;\n  left: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: none;\n  border-top: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul {\n  display: block;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul i {\n  color: #ff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul {\n  display: none;\n  background: #fff;\n  width: 80px;\n  margin-top: 20px;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul .wm-del-ico {\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  position: absolute;\n  left: 0;\n  top: 0;\n  text-indent: -.4rem;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul .wm-del-ico i {\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li {\n  display: block;\n  height: 30px;\n  cursor: pointer;\n  line-height: 30px;\n  width: 100%;\n  margin: 0;\n  text-indent: .5em;\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li .ivu-poptip-rel {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover {\n  background: #be0000;\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover div {\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover .ivu-poptip-body-message {\n  color: #000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li > div {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li i {\n  font-size: 20px;\n}\n\n.wm-report-list::-webkit-scrollbar,\n.wm-myreport-right::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.wm-report-list::-webkit-scrollbar-thumb,\n.wm-myreport-right::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-track,\n.wm-myreport-main-ui .wm-myreport-left .wm-myreport-right::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n\n.wm-myreport-main-ui .wm-myreport-item {\n  min-height: 24px;\n  line-height: 24px;\n  max-width: 90%;\n  margin: 4px auto;\n  float: left;\n  width: 100%;\n  background: #f4f4f4;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div {\n  float: left;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 20%;\n  margin-left: 2%;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(2) {\n  width: 78%;\n  cursor: pointer;\n  min-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-right {\n  background: #fff;\n  overflow: auto;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list-C {\n  width: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 95%;\n  margin: 40px auto 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(1) {\n  width: 40px;\n  text-align: right;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input {\n  width: 90%;\n  margin-left: 10%;\n  border: 1px solid #eee;\n  text-align: center;\n  position: relative;\n  outline: none;\n  border-radius: 4px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) {\n  width: 50px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div {\n  position: absolute;\n  cursor: pointer;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  top: 5px;\n  left: 10px;\n  border: 1px solid #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 1px;\n  background: #f5a420;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  width: 1px;\n  height: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list {\n  width: 85%;\n  margin: 10px auto;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item {\n  background: transparent;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div {\n  float: left;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 30%;\n  text-align: right;\n  margin-left: 2%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(2) {\n  width: 68%;\n  min-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-myreport-main-ui .wm-right-thumb {\n  margin: 0 auto;\n  height: 130px;\n  width: 230px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .wm-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-report-C > div {\n  max-width: 80vw;\n  max-height: 60vh;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .xlsx, .wm-myreport-main-ui .wm-report-C > div .pdf, .wm-myreport-main-ui .wm-report-C > div .doc, .wm-myreport-main-ui .wm-report-C > div .ppt, .wm-myreport-main-ui .wm-report-C > div .xlsx, .wm-myreport-main-ui .wm-report-C > div .doc, .wm-myreport-main-ui .wm-report-C > div .docx, .wm-myreport-main-ui .wm-report-C > div .pdf, .wm-myreport-main-ui .wm-report-C > div .txt, .wm-myreport-main-ui .wm-report-C > div .ppt, .wm-myreport-main-ui .wm-report-C > div .pptx, .wm-myreport-main-ui .wm-report-C > div .xls, .wm-myreport-main-ui .wm-report-C > div .rar, .wm-myreport-main-ui .wm-report-C > div .html, .wm-myreport-main-ui .wm-report-C > div .css, .wm-myreport-main-ui .wm-report-C > div .scss, .wm-myreport-main-ui .wm-report-C > div .js, .wm-myreport-main-ui .wm-report-C > div .vb, .wm-myreport-main-ui .wm-report-C > div .shtml, .wm-myreport-main-ui .wm-report-C > div .zip {\n  display: block;\n  margin: 0 auto;\n  position: relative !important;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail {\n  padding: 10px;\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n  min-width: 300px;\n  bottom: 0;\n  left: 50%;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(0, 0, 0, 0.7);\n  color: #fff;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide {\n  height: 40px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  -webkit-transform: rotate(225deg);\n  transform: rotate(225deg);\n  top: 4px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  top: 8px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-audio {\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {\n  bottom: -40px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span {\n  position: absolute;\n  right: 30px;\n  top: 10px;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {\n  content: '';\n  right: -12px;\n  top: 0px;\n  position: absolute;\n  width: 8px;\n  height: 8px;\n  border: 1px solid #fff;\n  border-left: none;\n  border-top: none;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {\n  top: 4px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item {\n  background: transparent;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div {\n  text-align: left;\n  line-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\n  width: 60px;\n  text-align: right;\n  margin-right: 20px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\n  margin-left: 20px;\n  max-width: 200px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div img {\n  width: auto;\n  height: auto;\n  max-height: 60vh;\n  max-width: 80vh;\n}\n\n.wm-myreport-main-ui .wm-report-C > div video {\n  width: auto;\n  max-height: 60vh;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close {\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  cursor: pointer;\n  border: 2px solid #fff;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 60px;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:before, .wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 20px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  width: 2px;\n  height: 20px;\n}\n\n.wm-myreport-main-ui .wm-report-tips {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 10000;\n  text-align: center;\n  position: fixed;\n}\n\n.wm-myreport-main-ui .wm-report-tips img {\n  width: 34%;\n  margin-top: 50px;\n  cursor: pointer;\n}\n\n.wm-tags input {\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  width: 110px;\n  text-align: center;\n  box-sizing: border-box;\n  outline: none;\n}\n\n.wm-tags input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-report-upload-item {\n  background: #eee;\n  margin-bottom: 10px !important;\n  border-radius: 6px;\n  color: #666666 !important;\n  padding: 12px 0;\n  position: relative;\n}\n\n.wm-report-upload-item.wm-require label {\n  position: relative;\n}\n\n.wm-report-upload-item.wm-require label::before {\n  content: \"*\";\n  color: #f00;\n}\n\n.wm-report-upload-item input, .wm-report-upload-item textarea, .wm-report-upload-item .ivu-select-selection {\n  background: transparent;\n  outline: none;\n  border-color: #eee !important;\n  resize: none;\n}\n\n.wm-report-upload-item input:focus, .wm-report-upload-item input:hover, .wm-report-upload-item textarea:focus, .wm-report-upload-item textarea:hover, .wm-report-upload-item .ivu-select-selection:focus, .wm-report-upload-item .ivu-select-selection:hover {\n  border-color: #eee !important;\n  outline: 0;\n  -webkit-box-shadow: 0 0 0 2px rgba(45, 140, 240, 0);\n  box-shadow: 0 0 0 2px rgba(45, 140, 240, 0);\n}\n\n.wm-report-upload-item .ivu-input:focus {\n  border-color: #eee !important;\n}\n\n.wm-before-upload-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  overflow: hidden;\n}\n\n.wm-before-upload-C section {\n  position: relative;\n  cursor: pointer;\n  background: #eee;\n  padding: 10px 14px;\n  left: -70px;\n  border-radius: 6px;\n  text-align: center;\n  position: relative;\n}\n\n.wm-before-upload-C section.disabled {\n  cursor: not-allowed;\n}\n\n.wm-before-upload-C section.disabled i {\n  color: #ccc;\n}\n\n.wm-before-upload-C section i {\n  color: #f5a420;\n  font-size: 36px;\n}\n\n.wm-before-upload-C section .wm-upload-before {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  z-index: 100;\n  top: 0;\n}\n\n.wm-before-upload-C section .wm-upload-before div {\n  width: 100% !important;\n  height: 100% !important;\n  opacity: 0;\n}\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\n/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-myreport-main-ui {\n  height: 100%;\n  position: relative;\n}\n\n.wm-myreport-main-ui.webuploader-dnd-over {\n  background: red;\n}\n\n.wm-myreport-main-ui .webuploader-container {\n  position: relative;\n}\n\n.wm-myreport-main-ui .webuploader-element-invisible {\n  position: absolute !important;\n  left: 0;\n  top: 0;\n  width: 100%;\n}\n\n.wm-myreport-main-ui .webuploader-pick {\n  position: relative;\n  display: inline-block;\n  height: 100%;\n  cursor: pointer;\n  background: #00b7ee;\n  opacity: 0;\n  width: 100%;\n  color: #fff;\n  text-align: center;\n  border-radius: 3px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .webuploader-pick-hover {\n  background: #00a2d4;\n}\n\n.wm-myreport-main-ui .webuploader-pick-disable {\n  opacity: 0.6;\n  pointer-events: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left {\n  background: #fff;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  height: 100%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-myreport-main-ui .wm-myreport-left.webuploader-dnd-over .wm-myreport-upload-C {\n  display: block;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-myreport-upload-C {\n  display: none;\n  background: rgba(0, 0, 0, 0.7);\n  z-index: 10000;\n  -webkit-transform: scale(0.99);\n  transform: scale(0.99);\n  border: 2px dashed  #fff;\n  border-radius: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header {\n  height: 60px;\n  line-height: 60px;\n  width: 100%;\n  position: relative;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload {\n  position: absolute;\n  top: 0;\n  overflow: hidden;\n  left: 0;\n  height: 60px;\n  width: 200px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header #wm-upload > div {\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header span {\n  font-size: 16px;\n  margin-left: 20px;\n  position: absolute;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: flex;\n  margin: 0 auto;\n  max-width: 600px;\n  width: 40vw;\n  justify-content: space-around;\n  -webkit-justify-content: space-around;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li {\n  cursor: pointer;\n  text-align: center;\n  width: 23%;\n  margin: 0 10px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li.active:before {\n  content: '';\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  position: absolute;\n  width: 100%;\n  height: 2px;\n  left: 0;\n  bottom: 0;\n  background: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(1).active:before {\n  background: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(2).active:before {\n  background: #86be24;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(3).active:before {\n  background: #63aee5;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li:nth-of-type(4).active:before {\n  background: #5c8ee3;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header ul li img {\n  width: 20px;\n  vertical-align: middle;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left header:before {\n  content: '';\n  position: absolute;\n  width: 98%;\n  left: 1%;\n  border-top: 1px solid #eeeeee;\n  bottom: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n  position: relative;\n  z-index: 1000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-myreport-list-C {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer {\n  background: #f4f4f4;\n  height: 80px;\n  line-height: 70px;\n  -webkit-justify-content: space-around;\n  justify-content: space-around;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer:before {\n  content: \"\";\n  width: 100%;\n  height: 1px;\n  left: 0;\n  top: 0;\n  position: absolute;\n  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) inset;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer .wm-upload {\n  z-index: 10000;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer .wm-upload div:nth-of-type(2) {\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div {\n  width: 260px;\n  text-align: center;\n  height: 30px;\n  cursor: pointer;\n  border-radius: 4px;\n  line-height: 30px;\n  background: #f5a420;\n  color: #fff;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div .wm-upload-tip {\n  top: 26px;\n  position: absolute;\n  color: #999;\n  width: 100%;\n  text-align: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div div:nth-of-type(2) {\n  position: absolute;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-video {\n  background: #86be24;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-audio {\n  background: #63aee5;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div.wm-uplad-add-dongman {\n  background: #5c8ee3;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div > span {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 100;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-report-footer > div i {\n  vertical-align: middle;\n  font-size: 16px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div {\n  text-align: center;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report > div img {\n  width: 100px;\n  display: block;\n  margin: 10px auto;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload {\n  position: absolute !important;\n}\n\n.wm-myreport-main-ui .wm-myreport-left section .wm-no-report .wm-upload > div:nth-of-type(2) {\n  z-index: 1000;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.wm-upload {\n  position: absolute;\n  width: 100%;\n  z-index: 100;\n  height: 100%;\n  left: 0;\n  top: 0;\n}\n\n.wm-upload input[type='file'] {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 100;\n  opacity: 0;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list {\n  overflow: auto;\n  height: 500px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list ul {\n  margin-top: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li {\n  display: inline-block;\n  width: 230px;\n  margin: 12px;\n  height: 130px;\n  background: #f4f4f4;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li.uncheck:after, .wm-myreport-main-ui .wm-myreport-left .wm-report-list li.pass:after {\n  content: '';\n  position: absolute;\n  width: 0;\n  height: 0;\n  left: 0;\n  top: 0;\n  border-top: 10px solid #f5a420;\n  border-right: 10px solid transparent;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li.pass:after {\n  border-top: 10px solid yellowgreen;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-status {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 50px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li:hover .wm-report-action {\n  opacity: 1;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-uploading {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg {\n  width: 100%;\n  height: 100%;\n  border: 1px solid #eee;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg img {\n  display: block;\n  width: auto;\n  height: auto;\n  max-width: 100%;\n  max-height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg.active {\n  border-color: #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-item-name {\n  text-align: center;\n  margin: 4px 0;\n  font-size: 14px;\n  height: 24px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress,\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  position: absolute;\n  width: 100%;\n  height: 30px;\n  text-align: center;\n  top: 50%;\n  margin-top: -15px;\n  line-height: 30px;\n  color: #fff;\n  font-size: 14px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress {\n  z-index: 10;\n  background-color: #f5a420;\n  background-size: 3em 3em;\n  background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, rgba(250, 184, 46, 0.7) 0.9em, rgba(250, 184, 46, 0.7) 2.1em, transparent 2.1em, transparent 2.9em, rgba(250, 184, 46, 0.7) 3.1em);\n  -webkit-animation: warning-animation 750ms infinite linear;\n  -moz-animation: warning-animation 750ms infinite linear;\n  animation: warning-animation 750ms infinite linear;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-progress:before {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  height: 100%;\n  background-image: linear-gradient(to bottom, rgba(250, 184, 46, 0.7), rgba(250, 184, 46, 0.7) 15%, transparent 60%, rgba(250, 184, 46, 0.7));\n}\n\n@-webkit-keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n@keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-disabled-mask {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(255, 255, 255, 0.7);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled {\n  color: #be0000;\n  font-size: 12px;\n  z-index: 10;\n  width: 85%;\n  padding-left: 20px;\n  left: 50%;\n  border: 1px solid #be0000;\n  border-radius: 3px;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span {\n  position: absolute;\n  left: 0;\n  top: 0px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:before {\n  content: '';\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  border: 1px solid #be0000;\n  border-radius: 50%;\n  left: 2px;\n  top: 5px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-file-disabled span:after {\n  content: \"\";\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #be0000;\n  left: 2px;\n  top: 13px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action {\n  position: absolute;\n  opacity: 0;\n  top: 10px;\n  right: 0;\n  z-index: 1000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon {\n  width: 20px;\n  height: 20px;\n  background: #fff;\n  border-radius: 2px;\n  position: absolute;\n  right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action .wm-report-action-icon:before {\n  content: \"\";\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  border: 1px solid #bbb;\n  left: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: none;\n  border-top: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul {\n  display: block;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action:hover ul i {\n  color: #ff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul {\n  display: none;\n  background: #fff;\n  width: 80px;\n  margin-top: 20px;\n  margin-right: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul .wm-del-ico {\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  position: absolute;\n  left: 0;\n  top: 0;\n  text-indent: -.4rem;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul .wm-del-ico i {\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li {\n  display: block;\n  height: 30px;\n  cursor: pointer;\n  line-height: 30px;\n  width: 100%;\n  margin: 0;\n  text-indent: .5em;\n  vertical-align: middle;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li .ivu-poptip-rel {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover {\n  background: #be0000;\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover div {\n  color: #fff;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li:hover .ivu-poptip-body-message {\n  color: #000;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li > div {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list li .wm-report-action ul li i {\n  font-size: 20px;\n}\n\n.wm-report-list::-webkit-scrollbar,\n.wm-myreport-right::-webkit-scrollbar {\n  /*滚动条整体样式*/\n  width: 8px;\n  /*高宽分别对应横竖滚动条的尺寸*/\n  height: 8px;\n}\n\n.wm-report-list::-webkit-scrollbar-thumb,\n.wm-myreport-right::-webkit-scrollbar-thumb {\n  /*滚动条里面小方块*/\n  border-radius: 5px;\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  background: rgba(0, 0, 0, 0.2);\n}\n\n.wm-myreport-main-ui .wm-myreport-left .wm-report-list::-webkit-scrollbar-track,\n.wm-myreport-main-ui .wm-myreport-left .wm-myreport-right::-webkit-scrollbar-track {\n  /*滚动条里面轨道*/\n  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  border-radius: 0;\n  background: rgba(0, 0, 0, 0.1);\n}\n\n.wm-myreport-main-ui .wm-myreport-item {\n  min-height: 24px;\n  line-height: 24px;\n  max-width: 90%;\n  margin: 4px auto;\n  float: left;\n  width: 100%;\n  background: #f4f4f4;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div {\n  float: left;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 20%;\n  margin-left: 2%;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div:nth-of-type(2) {\n  width: 78%;\n  cursor: pointer;\n  min-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-myreport-main-ui .wm-myreport-right {\n  background: #fff;\n  overflow: auto;\n  height: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list-C {\n  width: 100%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 95%;\n  margin: 40px auto 0;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(1) {\n  width: 40px;\n  text-align: right;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input {\n  width: 90%;\n  margin-left: 10%;\n  border: 1px solid #eee;\n  text-align: center;\n  position: relative;\n  outline: none;\n  border-radius: 4px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) {\n  width: 50px;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div {\n  position: absolute;\n  cursor: pointer;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  top: 5px;\n  left: 10px;\n  border: 1px solid #f5a420;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 1px;\n  background: #f5a420;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  width: 1px;\n  height: 10px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-tag-list {\n  width: 85%;\n  margin: 10px auto;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item {\n  background: transparent;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div {\n  float: left;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 30%;\n  text-align: right;\n  margin-left: 2%;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(2) {\n  width: 68%;\n  min-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-myreport-main-ui .wm-right-thumb {\n  margin: 0 auto;\n  height: 130px;\n  width: 230px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .wm-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-myreport-main-ui .wm-report-C > div {\n  max-width: 80vw;\n  max-height: 60vh;\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .xlsx, .wm-myreport-main-ui .wm-report-C > div .pdf, .wm-myreport-main-ui .wm-report-C > div .doc, .wm-myreport-main-ui .wm-report-C > div .ppt, .wm-myreport-main-ui .wm-report-C > div .xlsx, .wm-myreport-main-ui .wm-report-C > div .doc, .wm-myreport-main-ui .wm-report-C > div .docx, .wm-myreport-main-ui .wm-report-C > div .pdf, .wm-myreport-main-ui .wm-report-C > div .txt, .wm-myreport-main-ui .wm-report-C > div .ppt, .wm-myreport-main-ui .wm-report-C > div .pptx, .wm-myreport-main-ui .wm-report-C > div .xls, .wm-myreport-main-ui .wm-report-C > div .rar, .wm-myreport-main-ui .wm-report-C > div .html, .wm-myreport-main-ui .wm-report-C > div .css, .wm-myreport-main-ui .wm-report-C > div .scss, .wm-myreport-main-ui .wm-report-C > div .js, .wm-myreport-main-ui .wm-report-C > div .vb, .wm-myreport-main-ui .wm-report-C > div .shtml, .wm-myreport-main-ui .wm-report-C > div .zip {\n  display: block;\n  margin: 0 auto;\n  position: relative !important;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail {\n  padding: 10px;\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n  min-width: 300px;\n  bottom: 0;\n  left: 50%;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(0, 0, 0, 0.7);\n  color: #fff;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide {\n  height: 40px;\n  overflow: hidden;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  -webkit-transform: rotate(225deg);\n  transform: rotate(225deg);\n  top: 4px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  top: 8px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-audio {\n  position: relative;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {\n  bottom: -40px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span {\n  position: absolute;\n  right: 30px;\n  top: 10px;\n  cursor: pointer;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:before, .wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {\n  content: '';\n  right: -12px;\n  top: 0px;\n  position: absolute;\n  width: 8px;\n  height: 8px;\n  border: 1px solid #fff;\n  border-left: none;\n  border-top: none;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail > span:after {\n  top: 4px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item {\n  background: transparent;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div {\n  text-align: left;\n  line-height: 30px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\n  width: 60px;\n  text-align: right;\n  margin-right: 20px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\n  margin-left: 20px;\n  max-width: 200px;\n}\n\n.wm-myreport-main-ui .wm-report-C > div img {\n  width: auto;\n  height: auto;\n  max-height: 60vh;\n  max-width: 80vh;\n}\n\n.wm-myreport-main-ui .wm-report-C > div video {\n  width: auto;\n  max-height: 60vh;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close {\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  cursor: pointer;\n  border: 2px solid #fff;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 60px;\n  z-index: 10;\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:before, .wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 20px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-myreport-main-ui .wm-report-C .wm-report-close:after {\n  width: 2px;\n  height: 20px;\n}\n\n.wm-myreport-main-ui .wm-report-tips {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 10000;\n  text-align: center;\n  position: fixed;\n}\n\n.wm-myreport-main-ui .wm-report-tips img {\n  width: 34%;\n  margin-top: 50px;\n  cursor: pointer;\n}\n\n.wm-tags input {\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  width: 110px;\n  text-align: center;\n  box-sizing: border-box;\n  outline: none;\n}\n\n.wm-tags input::-webkit-input-placeholder {\n  color: #999;\n}\n\n.wm-report-upload-item {\n  background: #eee;\n  margin-bottom: 10px !important;\n  border-radius: 6px;\n  color: #666666 !important;\n  padding: 12px 0;\n  position: relative;\n}\n\n.wm-report-upload-item.wm-require label {\n  position: relative;\n}\n\n.wm-report-upload-item.wm-require label::before {\n  content: \"*\";\n  color: #f00;\n}\n\n.wm-report-upload-item input, .wm-report-upload-item textarea, .wm-report-upload-item .ivu-select-selection {\n  background: transparent;\n  outline: none;\n  border-color: #eee !important;\n  resize: none;\n}\n\n.wm-report-upload-item input:focus, .wm-report-upload-item input:hover, .wm-report-upload-item textarea:focus, .wm-report-upload-item textarea:hover, .wm-report-upload-item .ivu-select-selection:focus, .wm-report-upload-item .ivu-select-selection:hover {\n  border-color: #eee !important;\n  outline: 0;\n  -webkit-box-shadow: 0 0 0 2px rgba(45, 140, 240, 0);\n  box-shadow: 0 0 0 2px rgba(45, 140, 240, 0);\n}\n\n.wm-report-upload-item .ivu-input:focus {\n  border-color: #eee !important;\n}\n\n.wm-before-upload-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  overflow: hidden;\n}\n\n.wm-before-upload-C section {\n  position: relative;\n  cursor: pointer;\n  background: #eee;\n  padding: 10px 14px;\n  left: -70px;\n  border-radius: 6px;\n  text-align: center;\n  position: relative;\n}\n\n.wm-before-upload-C section.disabled {\n  cursor: not-allowed;\n}\n\n.wm-before-upload-C section.disabled i {\n  color: #ccc;\n}\n\n.wm-before-upload-C section i {\n  color: #f5a420;\n  font-size: 36px;\n}\n\n.wm-before-upload-C section .wm-upload-before {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  z-index: 100;\n  top: 0;\n}\n\n.wm-before-upload-C section .wm-upload-before div {\n  width: 100% !important;\n  height: 100% !important;\n  opacity: 0;\n}\n", ""]);
 
 	// exports
 
@@ -57144,7 +56786,7 @@
 /* 109 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-myreport-main-ui\">\r\n\r\n\r\n\t\t\r\n\r\n\t\t <Split v-model=\"split1\">\r\n\t\t\t<div slot=\"left\" class=\"wm-myreport-left\">\r\n\t\t\t\t<div class=\"wm-myreport-upload-C lt-full\">\r\n\r\n\t\t\t\t</div>\r\n\t\t\t\t<header > \r\n\t\t\t\t\t <span>我的上报 </span><span style='font-size:12px;color:#f5a420;left:70px;'>(双击打开浏览)</span>\r\n\t\t\t\t\t <ul>\r\n\t\t\t\t\t\t <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key=\"i\" :class=\"{'active':currentType === i}\">\r\n\t\t\t\t\t\t\t <img v-if='i===0' :src=\"imgs.imgIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===1' :src=\"imgs.videoIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===2' :src=\"imgs.audioIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===3' :src=\"imgs.dongmanIco\" alt=\"\">\r\n\t\t\t\t\t\t\t 上报{{menu.split('-')[0]}}\r\n\t\t\t\t\t\t </li>\r\n\t\t\t\t\t </ul>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section>\r\n\t\t\t\t\t<div class=\"wm-myreport-list-C\">\r\n\t\t\t\t\t\t<div v-show='reportList.length<=0' class=\"wm-no-report\">\r\n\t\t\t\t\t\t\t<div >\r\n\t\t\t\t\t\t\t\t<img :src=\"imgs['upload'+(currentType+1)]\" alt=\"\">\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='large'>点我上报</Button>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload\"  @click='showUploadDialog = true' ></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='reportList.length>0' class=\"wm-report-list\" :style=\"{height:viewH - 60-60-20- 80+'px'}\">\r\n\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click.prevent='showDetail(report,i)'  class=\"wm-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-status\" v-if='report.status === 0'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.uncheck1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div  class=\"wm-report-status\" v-if='report.status === 1'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.pass1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg' :style=\"{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'png jpg jpeg gif bmp'.indexOf(report.fileextname)>-1?'contain':'none'}\"></div>\r\n\t\t\t\t\t\t\t\t\t<span v-if='!report.isLoaded' class=\"wm-file-progress\">{{report.process}}</span>\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<div v-if='!report.isLoaded' class=\"wm-uploading\"></div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-disabled-mask\" v-if='report.status===2'></div>\r\n\t\t\t\t\t\t\t\t\t<span class=\"wm-file-disabled\" v-if='report.status === 2'>\r\n\t\t\t\t\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t\t被管理员发回，不可用\r\n\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click='showReportDetail(report)'>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-create\" /> 编辑\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li>\r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Poptip\t\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"color:#000\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tconfirm\r\n\t\t\t\t\t\t\t\t\t\t\t\t\ttitle=\"确定要删除此作品吗?\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t@on-ok=\"deleteReport(i)\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"wm-del-ico\"><Icon type=\"ios-trash-outline\" /> 删除</div>\r\n\t\t\t\t\t\t\t\t\t\t\t\t</Poptip>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<footer class=\"wm-report-footer\">\r\n\t\t\t\t\t\t<div v-show='currentType === 0 && reportList.length>0' >\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加图片</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 1 && reportList.length>0' class=\"wm-uplad-add-video\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加视频</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 2 && reportList.length>0' class=\"wm-uplad-add-audio\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加音频</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 3 && reportList.length>0' class=\"wm-uplad-add-dongman\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加动漫</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</footer>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-myreport-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && (item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize && false\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div @dblclick=\"editItem(item)\" v-if='false && item.type === \"select\" && !item.canedit '>\r\n\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i' closable v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\ttitle=\"编辑作品信息\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" :rules=\"ruleValidate\">\r\n\t\t\t\t<FormItem v-if='item.edit' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'> \r\n\t\t\t\t\t<Input v-if='item.type === \"text\"'  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Input v-if='item.type === \"textarea\" ' :type=\"item.type\"  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t</Select>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.type === \"label\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"tag\" @keydown.13='addTag' />\r\n\t\t\t\t\t\t<Tag @on-close=\"deltag(tag)\" closable :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" v-for=\"(tag,i) in formAdmin.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"showUploadDialog \"\r\n\t\t\t:title=\"'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form  ref=\"formUpload\" :model=\"formUpload\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem class=\"wm-report-upload-item\" v-if='item.edit || item.fieldname === \"userlabel\"' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'  :class=\"{'wm-require':item.notnull}\"> \r\n\t\t\t\t\t<Input @on-blur='checkUpload' v-if='item.type === \"text\"&& item.fieldname !== \"userlabel\"'  v-model=\"formUpload[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t\t<Input  @on-blur='checkUpload' v-if='item.fieldname === \"filedesc\"'  :type=\"item.type\"  v-model=\"formUpload[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<div  v-if='item.type === \"select\"'>\r\n\r\n\t\t\t\t\t\t<Select @on-change='checkUpload' v-model=\"formUpload[item.fieldname]\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"beforeUploadTag\" @keydown.13='addTagBeforeUpload' />\r\n\t\t\t\t\t\t<Tag color='warning' @on-close=\"deltag(tag)\" closable  v-for=\"(tag,i) in formUpload.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\r\n\t\t\t\t<FormItem class=\"wm-before-upload-C\">\r\n\t\t\t\t\t<section :class=\"{'disabled':!showUploadFile}\">\r\n\t\t\t\t\t\t<div class=\"wm-upload-before\" v-show='showUploadFile'></div>\r\n\t\t\t\t\t\t<Icon type=\"ios-add-circle\" />\r\n\t\t\t\t\t\t<div>上传附件</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t\t\r\n\r\n\t\t<div class=\"lt-full wm-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div  v-if='reportList[currentReportIndex].fileextname !== \"mp3\" &&reportList[currentReportIndex].fileextname!== \"webm\" &&reportList[currentReportIndex].fileextname !== \"mp4\" && reportList[currentReportIndex].fileextname!== \"aac\"&&reportList[currentReportIndex].fileextname!== \"wma\"&&reportList[currentReportIndex].fileextname!== \"ogg\"'>\r\n\t\t\t\t<img :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  v-if='item.fieldname === \"userlabel\"||item.fieldname === \"filetitle\" ' class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='(item.fieldname !== \"filetitle\"||item.fieldname !== \"filedesc\") &&item.fieldname !== \"userlabel\" '>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='(item.fieldname !== \"filetitle\"||item.fieldname !== \"filedesc\") &&item.fieldname !== \"userlabel\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"' class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<div class=\"wm-report-tips lt-full\" v-if='showReportTip'>\r\n\t\t\t<img :src=\"imgs.tip\" alt=\"\" @click=\"showReportTip = false\">\r\n\t\t</div>\r\n\r\n\r\n\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-myreport-main-ui\">\r\n\r\n\r\n\t\t\r\n\r\n\t\t <Split v-model=\"split1\">\r\n\t\t\t<div slot=\"left\" class=\"wm-myreport-left\">\r\n\t\t\t\t<div class=\"wm-myreport-upload-C lt-full\">\r\n\r\n\t\t\t\t</div>\r\n\t\t\t\t<header > \r\n\t\t\t\t\t <span>我的上报 </span><span style='font-size:12px;color:#f5a420;left:70px;'>(双击打开浏览)</span>\r\n\t\t\t\t\t <ul>\r\n\t\t\t\t\t\t <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key=\"i\" :class=\"{'active':currentType === i}\">\r\n\t\t\t\t\t\t\t <img v-if='i===0' :src=\"imgs.imgIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===1' :src=\"imgs.videoIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===2' :src=\"imgs.audioIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===3' :src=\"imgs.dongmanIco\" alt=\"\">\r\n\t\t\t\t\t\t\t 上报{{menu.split('-')[0]}}\r\n\t\t\t\t\t\t </li>\r\n\t\t\t\t\t </ul>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section>\r\n\t\t\t\t\t<div class=\"wm-myreport-list-C\">\r\n\t\t\t\t\t\t<div v-show='reportList.length<=0' class=\"wm-no-report\">\r\n\t\t\t\t\t\t\t<div >\r\n\t\t\t\t\t\t\t\t<img :src=\"imgs['upload'+(currentType+1)]\" alt=\"\">\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='large'>点我上报</Button>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload\"  @click='showUploadDialog = true' ></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='reportList.length>0' class=\"wm-report-list\" :style=\"{height:viewH - 60-60-20- 80+'px'}\">\r\n\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click.prevent='showDetail(report,i)'  class=\"wm-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-status\" v-if='report.status === 0'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.uncheck1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div  class=\"wm-report-status\" v-if='report.status === 1'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.pass1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<span v-if='!report.isLoaded' class=\"wm-file-progress\">{{report.process}}</span>\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<div v-if='!report.isLoaded' class=\"wm-uploading\"></div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-disabled-mask\" v-if='report.status===2'></div>\r\n\t\t\t\t\t\t\t\t\t<span class=\"wm-file-disabled\" v-if='report.status === 2'>\r\n\t\t\t\t\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t\t被管理员发回，不可用\r\n\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click='showReportDetail(report)'>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-create\" /> 编辑\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li>\r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Poptip\t\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"color:#000\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tconfirm\r\n\t\t\t\t\t\t\t\t\t\t\t\t\ttitle=\"确定要删除此作品吗?\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t@on-ok=\"deleteReport(i)\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"wm-del-ico\"><Icon type=\"ios-trash-outline\" /> 删除</div>\r\n\t\t\t\t\t\t\t\t\t\t\t\t</Poptip>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<footer class=\"wm-report-footer\">\r\n\t\t\t\t\t\t<div v-show='currentType === 0 && reportList.length>0' >\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加图片</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 1 && reportList.length>0' class=\"wm-uplad-add-video\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加视频</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 2 && reportList.length>0' class=\"wm-uplad-add-audio\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加音频</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 3 && reportList.length>0' class=\"wm-uplad-add-dongman\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加动漫</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</footer>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-myreport-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && (item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize && false\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div @dblclick=\"editItem(item)\" v-if='false && item.type === \"select\" && !item.canedit '>\r\n\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i' closable v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\ttitle=\"编辑作品信息\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" :rules=\"ruleValidate\">\r\n\t\t\t\t<FormItem v-if='item.edit' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'> \r\n\t\t\t\t\t<Input v-if='item.type === \"text\"'  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Input v-if='item.type === \"textarea\" ' :type=\"item.type\"  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t</Select>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.type === \"label\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"tag\" @keydown.13='addTag' />\r\n\t\t\t\t\t\t<Tag @on-close=\"deltag(tag)\" closable :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" v-for=\"(tag,i) in formAdmin.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"showUploadDialog \"\r\n\t\t\t:title=\"'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form  ref=\"formUpload\" :model=\"formUpload\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem class=\"wm-report-upload-item\" v-if='item.edit || item.fieldname === \"userlabel\"' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'  :class=\"{'wm-require':item.notnull}\"> \r\n\t\t\t\t\t<Input @on-blur='checkUpload' v-if='item.type === \"text\"&& item.fieldname !== \"userlabel\"'  v-model=\"formUpload[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t\t<Input  @on-blur='checkUpload' v-if='item.fieldname === \"filedesc\"'  :type=\"item.type\"  v-model=\"formUpload[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<div  v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='checkUpload($event,\"select\")' v-model=\"formAdmin[item.fieldname]\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"beforeUploadTag\" @keydown.13='addTagBeforeUpload' />\r\n\t\t\t\t\t\t<Tag color='warning' @on-close=\"deltag(tag)\" closable  v-for=\"(tag,i) in formUpload.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\r\n\t\t\t\t<FormItem class=\"wm-before-upload-C\">\r\n\t\t\t\t\t<section :class=\"{'disabled':!showUploadFile}\">\r\n\t\t\t\t\t\t<div class=\"wm-upload-before\" v-show='showUploadFile'></div>\r\n\t\t\t\t\t\t<Icon type=\"ios-add-circle\" />\r\n\t\t\t\t\t\t<div>上传附件</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t\t\r\n\r\n\t\t<div class=\"lt-full wm-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div  v-if='reportList[currentReportIndex].fileextname !== \"mp3\" &&reportList[currentReportIndex].fileextname!== \"webm\" &&reportList[currentReportIndex].fileextname !== \"mp4\" && reportList[currentReportIndex].fileextname!== \"aac\"&&reportList[currentReportIndex].fileextname!== \"wma\"&&reportList[currentReportIndex].fileextname!== \"ogg\"'>\r\n\t\t\t\t<img :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  v-if='item.fieldname === \"userlabel\"||item.fieldname === \"filetitle\" ' class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='(item.fieldname !== \"filetitle\"||item.fieldname !== \"filedesc\") &&item.fieldname !== \"userlabel\" '>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='(item.fieldname !== \"filetitle\"||item.fieldname !== \"filedesc\") &&item.fieldname !== \"userlabel\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"' class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\"'>{{item.name}} :</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"text\" ||item.type === \"textarea\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t<div>标签：</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<div class=\"wm-report-tips lt-full\" v-if='showReportTip'>\r\n\t\t\t<img :src=\"imgs.tip\" alt=\"\" @click=\"showReportTip = false\">\r\n\t\t</div>\r\n\r\n\r\n\r\n\t</div>\r\n";
 
 /***/ }),
 /* 110 */

@@ -40,7 +40,9 @@
 									<div  class="wm-report-status" v-if='report.status === 1'>
 										<img :src="imgs.pass1" alt="">
 									</div>
-									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center center',backgroundSize:'png jpg jpeg gif bmp'.indexOf(report.fileextname)>-1?'contain':'none'}"></div>
+									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+										<img :src="report.pcbilethum||imgs.poster" alt="">
+									</div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 									
 									<div v-if='!report.isLoaded' class="wm-uploading"></div>
@@ -192,8 +194,7 @@
 					
 					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
 					<div  v-if='item.type === "select"'>
-
-						<Select @on-change='checkUpload' v-model="formUpload[item.fieldname]">
+						<Select @on-change='checkUpload($event,"select")' v-model="formAdmin[item.fieldname]">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
 						</Select>
 					</div>
@@ -308,7 +309,7 @@
 				publicadtype:"",
 				currentReportIndex:0,
 				showPreview:false,
-				showMaskDetail:false,
+				showMaskDetail:true,
 				detailtag:'',
 				showReportTip:false,
 				menus:[],
@@ -349,7 +350,11 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
-			this.getMyreportList();
+			this.getMyreportList(()=>{
+				this.changeCurrentType(0,'first');
+			});
+
+			
 
 			var {obserable} = Vue;
 			var t = setInterval(()=>{
@@ -404,16 +409,24 @@
 		
 		methods:{
 
-			checkUpload(){
+			checkUpload(val,type){
 				this.showUploadFile = true;
 				this.configList.map((item)=>{
 					if(item.notnull && item.edit){
-						if(!this.formUpload[item.fieldname]){
-							this.showUploadFile = false;
-							
+						if(!this.formUpload[item.fieldname] && item.fieldname !== 'publicadtype'){
+							this.showUploadFile = false;		
 						}
 					}
 				});
+				
+				if(type === 'select'){
+					s.menus.map((item,i)=>{
+						if(item === val){
+							this.changeCurrentType(i);
+						}
+					})
+				}
+				//console.log(this.showUploadFile);
 				if(this.showUploadFile){
 					var id  = Vue.obserable.trigger({
 						type:'getCurrentSourceId'
@@ -422,7 +435,7 @@
 				}
 			},
 
-			changeCurrentType(index){
+			changeCurrentType(index,type){
 				var s = this;
 				this.currentType = index;
 				var id  = Vue.obserable.trigger({
@@ -431,12 +444,23 @@
 				this.upload(id);
 				this.currentReportIndex = 0;
 				this.filterReportList();
-				if(s.reportList.length<=0){
-					return;
+				
+				if(!type && false){
+					s.formUpload = s.reportList[s.currentReportIndex ] || {
+						tagList:[],
+						publicadtype:s.menus[index]
+					};
+	
+					s.formUpload.userlabel  = s.formUpload.tagList? s.formUpload.tagList.join(',') : '';
+					s.formAdmin = s.reportList[s.currentReportIndex ] || {
+						tagList:[],
+						publicadtype:s.menus[index]
+					};
+
+					s.formAdmin.userlabel && (s.formAdmin.tagList = s.formAdmin.userlabel.split(','));
 				}
 			
-				s.formAdmin = s.reportList[s.currentReportIndex ];
-				s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+
 
 			},
 
@@ -616,8 +640,15 @@
 
 			deltag(name){
 
-				var index = this.formAdmin.tagList.indexOf(name);
-				this.formAdmin.tagList.splice(index,1);
+				var index = this.formUpload.tagList.indexOf(name);
+				this.formUpload.tagList.splice(index,1);
+
+				if(this.showUploadFile){
+					var id  = Vue.obserable.trigger({
+						type:'getCurrentSourceId'
+					});
+					this.upload(id);
+				}
 			},
 			addTagBeforeUpload(){
 				if(!this.beforeUploadTag){
@@ -626,6 +657,12 @@
 				this.formUpload.tagList = this.formUpload.tagList || [];
 				this.formUpload.tagList.push(this.beforeUploadTag);
 				this.beforeUploadTag =  '';
+				if(this.showUploadFile){
+					var id  = Vue.obserable.trigger({
+						type:'getCurrentSourceId'
+					});
+					this.upload(id);
+				}
 			},
 			addTag(){
 				if(!this.tag){
@@ -657,7 +694,7 @@
 					return item.publicadtype === this.menus[this.currentType];
 				})
 			},
-			getMyreportList(){
+			getMyreportList(fn){
 				var s = this;
 				var {obserable} = Vue;
 				var t = setInterval(()=>{
@@ -672,7 +709,6 @@
 				
 					
 					if(id){
-
 						
 						this.configList = tableFields.concat([]);
 
@@ -704,6 +740,7 @@
 									});
 									s.reportList = data.list;
 									s.defaultReportList = data.list.concat([]);
+									fn && fn();
 									if(s.reportList.length>0){
 
 										s.filterReportList();
@@ -727,24 +764,23 @@
 				
 				var s = this;
 				var data = s.configList.filter((item)=>{return  item.fieldname === 'publicadtype'})[0].data
-				
+				s.formUpload.tagList = s.formUpload.tagList || [];
 				var p = {
 						username:s.userinfo.username,
 						usertoken:s.userinfo.accesstoken,
 						resourceid:id,
-						filetitle:s.formUpload.filetitle,
+						uploadfilename:s.formUpload.filetitle,
 						filedesc:s.formUpload.filedesc,
-						publicadtype:s.formUpload.publicadtype||s.menus[s.currentType],
-						userlabel:s.formUpload.tagList.join(','),
+						publicadtype:s.menus[s.currentType],
+						userlabel:s.formUpload.tagList.concat([]).join(','),
 						author:s.formUpload.author,
 						telphone:s.formUpload.telphone
 				}
+				console.log('params  => ', p);
 				this.p = p;
 				if(s.uploader){
 					s.uploader.destroy();
 				}
-
-
 				var accepts  = [
 					{
 						title: 'Images',
@@ -760,7 +796,7 @@
 						mimeTypes: 'auido/*'
 					},{
 						title: 'All',
-						extensions: 'gif,jpg,jpeg,bmp,png,tiff,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+						extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
 						mimeTypes: '*/*'
 					}
 				]
@@ -778,6 +814,7 @@
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
+					compress:false,
 					prepareNextFile:true,//是否允许在文件传输时提前把下一个文件准备好。 对于一个文件的准备工作比较耗时，比如图片压缩，md5序列化。 如果能提前在当前文件传输期处理，可以节省总体耗时。
 					formData:p,
 					accept:accepts[s.currentType],
@@ -793,6 +830,10 @@
 				})
 
 				uploader.on("beforeFileQueued",function(file){
+					if(accepts[s.currentType].extensions.indexOf(file['type'].split('/')[1])<=-1){
+						s.$Message.error('当前文件格式不支持');
+						return;
+					}
 					var data = s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0]?s.configList.filter((item)=>{return item.fieldname === 'publicadtype'})[0].data:[]
 					s.publicadtype = {data:data[s.currentType]}||'';
 					s.showUploadDialog = false;
@@ -844,22 +885,7 @@
 							}
 						}
 					});
-				
-					//s.reportList = s.reportList.concat([]);
-					/* var $li = $('#' + file.id),
-						$percent = $li.find('.progress .progress-bar');
-
-					// 避免重复创建
-					if (!$percent.length) {
-						$percent = $('<div class="progress progress-striped active">' +
-							'<div class="progress-bar" role="progressbar" style="width: 0%">' +
-							'</div>' +
-							'</div>').appendTo($li).find('.progress-bar');
-					}
-
-					$li.find('p.state').text('上传中');
-
-					$percent.css('width', percentage * 100 + '%'); */
+				 
 				});
 
 				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
@@ -879,6 +905,9 @@
 				uploader.on('uploadComplete', function (file) {
 					iNow++;
 					if(iNow === i){
+						/* s.formUpload = {
+							tagList:[]
+						}; */
 						s.getMyreportList();
 					}
 					//

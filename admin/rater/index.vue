@@ -1,7 +1,7 @@
 <template>
 	<div class="wm-rater-main-ui">
 		<header>
-			<div>评委管理1</div>
+			<div>评委管理</div>
 			<section>
 				<Button type="primary" icon='md-add-circle' @click="addRater">新增评委</Button>
 			</section>

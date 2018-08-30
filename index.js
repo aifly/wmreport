@@ -2,7 +2,7 @@ import Vue from "vue";
 import Obserable from './components/lib/obserable';
 import Main from './components/main/index';
 import Login from './components/login/index'
-import Register from './components/register/index';
+///import Register from './components/register/index';
 import MyReport from './components/myreport/index';
 import User from './components/user/index';
 import iView from 'iview';
@@ -30,12 +30,15 @@ const router = new VueRouter({
 			component: Login,
 			props: true
 		},
+		/*
 		{
 			path: '/register/',
 			name: 'register',
 			component: Register,
-			props:true
-		},{
+			props: true
+		}, */
+		
+		{
 			path:'/myreport/',
 			name:'myreport',
 			component: MyReport,
@@ -64,8 +67,7 @@ new Vue({
 	methods: {},
 	components: {
 		Main,
-		Login,
-		Register
+		Login
 	},
 	mounted() {
 

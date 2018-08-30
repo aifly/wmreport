@@ -67,3 +67,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 window.config = {
 	baseUrl:'http://10.137.0.3/v1'
 }
+
+if(window.location.href.indexOf('localhost')>-1||window.location.href.indexOf('zmiti.com')>-1){
+	window.config.baseUrl = "https://api.symbin.cn/v1";
+}

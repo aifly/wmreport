@@ -96,7 +96,9 @@
             var userinfo = symbinUtil.getUserInfo();
 
             this.userinfo = userinfo; 
-            this.getSourceList();
+            if(this.$route.name !== 'login'){
+                this.getSourceList();
+            }
             
         },
         watch:{
@@ -154,9 +156,6 @@
                                 obserable.on("getFeildList",()=>{
                                     return JSON.parse(data.list[0].tablefield).fieldlist;
                                 })
-
-
-                                
                             }
                     }
                 })

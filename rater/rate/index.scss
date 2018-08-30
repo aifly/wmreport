@@ -8,7 +8,7 @@ body{
     overflow: hidden;
 }
 .wm-rater-main-ui{
-    background: #fff;
+    background: #eee;
      .wm-rater-header {
          height: 50px;
          width: 100%;
@@ -60,7 +60,7 @@ body{
          margin: 2px 0;
          line-height: 50px;
 
-         border:1px solid #eee;
+         border:1px solid #FFF;
          @include pos(r);
          &>span{
             @include pos(a);
@@ -109,7 +109,7 @@ body{
          &>div{
             &:nth-of-type(1){
               width: 60%;
-              border-right:1px solid #ddd;
+              border-right:1px solid #eee;
               margin-left: -5px;
             }
             &:nth-of-type(2){
@@ -118,7 +118,7 @@ body{
          }
       }
      .wm-report-list {
-         $color:#ddd;
+         $color:#FFF;
          border-left: 1px solid  $color;
          box-sizing: border-box;
          border-top: 1px solid  $color;
@@ -140,6 +140,9 @@ body{
              @include pos(r);
              height: 170px;;
 
+             border:1px solid #eee;
+             margin: 5px 0;
+
             &.reportitem-enter-active,
             &.reportitem-leave-active
            {
@@ -158,16 +161,7 @@ body{
                @include transition(.45s);
             }
             &.active{
-                 &:before {
-                     content: "";
-                     width: 100%;
-                     height: 100%;
-                     left: 0;
-                     top: 0;
-                     @include pos(a);
-                     box-shadow: 0 0 10px rgba(0,0,0, .2),
-                     0 0 10px rgba(0, 0, 0, .2) inset;
-                 }
+                 background:#fbfbfb !important;
             }
              /* @include displayFlex(row);
              justify-content: space-between; */
@@ -209,15 +203,19 @@ body{
                         margin-right: 20px;
                         
                         img{
-                            width: 100%;
+                            display: block;
+                            width: auto;
                             height: auto;
+                            max-width: 100%;
+                            max-height: 100%;
                         }
                     }
+                 
 
                     @at-root.wm-myreport-item {
                         @include displayFlex(row);
                         min-height: 24px;
-                        line-height: 24px;
+                        line-height: 26px;
                         width: 100%;
                         &>div {
                             &:nth-of-type(1) {
@@ -225,13 +223,8 @@ body{
                                width: 20%;
                             }
                             &:nth-of-type(2) {
-
                                 overflow: hidden;
                                 width: 80%;
-                                
-                                
-                                
-                             
                             }
                             input {
                                 height: 24px;
@@ -256,6 +249,7 @@ body{
                 @include displayFlex(row);
                 .wm-report-rate-input{
                     width: 70%;
+                    border-left:1px solid #eee;
                     textarea{
                       margin: 10px;
                       width: 80%;
@@ -266,6 +260,7 @@ body{
                 }
                 .wm-report-rate-btns{
                   width: 30%;
+                  border-left: 1px solid #eee;
                   &>div{
                     @include displayFlex(column);
                     -webkit-justify-content: center;
@@ -475,8 +470,8 @@ body{
             &>div {
                 float: left;
                 &:nth-of-type(1) {
-                    text-align: center;
-                    width: 20%;
+                    text-align: left;
+                    width: 24%;
                     margin-left: 2%;
                 }
                 &:nth-of-type(2) {
@@ -499,8 +494,8 @@ body{
               width: 100%;
               min-width: 300px;
               bottom: 0;
-              left: 50%;
-              @include transform(translate3d(-50%, 0, 0));
+              left:0;
+             // @include transform(translate3d(-50%, 0, 0));
               background: rgba(0, 0, 0, 0.7);
               color: #fff;
               @include transition(0.4s);
@@ -585,6 +580,17 @@ body{
          -webkit-align-items: center;
          align-items: center;
 
+         .wm-rater-mask-tip{
+             @include pos(f);
+             width: 100vw;
+             left: 0;
+             max-width: 100vw;
+             bottom: 0;
+             line-height: 30px;
+             text-align: center;
+             color:#fff;
+         }
+
 
          &>div {
              max-width: 80vw;
@@ -615,8 +621,9 @@ body{
                  width: 100%;
                  min-width: 300px;
                  bottom: 0;
-                 left: 50%;
-                 @include transform(translate3d(-50%, 0, 0));
+                 left:50%;
+                 
+                 @include transform(translate3d(-49.94%, 0, 0));
                  background: rgba(0, 0, 0, 0.7);
                  color: #fff;
                  @include transition(0.4s);
@@ -669,6 +676,7 @@ body{
                      div {
                         // padding-right: 2px;
                          text-align: left;
+                         
                      }
                      .wm-tag-list-C {
                          @include displayFlex(row);
@@ -882,6 +890,7 @@ body{
      }
 
      .wm-right-thumb {
+         padding-top: 20px;
          margin: 0 auto;
          height: 130px;
          width: 230px;

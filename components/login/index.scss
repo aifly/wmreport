@@ -54,14 +54,16 @@ $color: #be0000;
 			width: 600px;
 			
 			@include pos(r);
+			top: -4vh;
 			.wm-login-title{
 				margin-bottom: 7vh;;
 			}
 
 			&>h2{
-				color:#fff;
-				font-size:40px;
+				color:#be0000;
+				font-size:44px;
 				margin: 30px 0;
+				text-align: center;
 			}
 			
 			.wm-login-form{
@@ -96,7 +98,7 @@ $color: #be0000;
 						font-size:16px;
 						@include pos(r);
 						&>div{
-							background: #cc0000;
+							background: #f90;
 							@include br(10px);
 							width: 100%;
 							height: 100%;
@@ -105,7 +107,7 @@ $color: #be0000;
 							@include pos(a);
 							width: 100%;
 							left: 0;
-							color:#000;
+							color:#be0000;
 							margin-top: -3px;;
 							
 							
@@ -123,11 +125,6 @@ $color: #be0000;
 					width: 20px;
 				}
 			}
-			
-
-			 
-			
-			
 		}
 
 		.wm-copyright {
@@ -139,7 +136,7 @@ $color: #be0000;
 			line-height: 50px;
 			color:#fff;
 			left: 0;
-			background:rgba(204,0,0,.4);
+			background:rgba(204,0,0,1);
 		}
 
 	}

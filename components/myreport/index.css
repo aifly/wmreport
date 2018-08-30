@@ -427,6 +427,22 @@
   width: 100%;
   height: 100%;
   border: 1px solid #eee;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .wm-myreport-main-ui .wm-myreport-left .wm-report-list li > div.wm-report-item-bg.active {
@@ -1016,7 +1032,7 @@
 }
 
 .wm-tags input::-webkit-input-placeholder {
-  color: #ddd;
+  color: #999;
 }
 
 .wm-report-upload-item {

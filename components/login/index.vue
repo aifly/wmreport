@@ -6,11 +6,11 @@
 					<img :src="imgs.logo"  />
 				</div>
 				<div>
-					<a href='#/register'>用户注册></a>
+					<a v-if='false' href='#/register'>用户注册></a>
 				</div>
 			</div>
 		</header>
-		<section :style="{background:'url('+imgs.loginBg+') no-repeat center',backgroundSize:'cover'}" > 
+		<section :style="{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}" > 
 			<div class="wm-login-C">
 				<h2>公益广告上报系统</h2>
 				<div class="wm-login-form">
