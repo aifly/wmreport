@@ -219,8 +219,8 @@
 
 		<div class="lt-full wm-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
-			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
-				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+			<div :class='{"original":showOriginalImg}'  v-if=' "mp3 mp4 webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
+				<img @dblclick.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].filepath||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
@@ -278,6 +278,7 @@
 					</div>
 				</div>
 			</div>
+			<section class="wm-report-mask-tip">双击放大浏览</section>
 		</div>
 
 		<div class="wm-report-tips lt-full" v-if='showReportTip'>
@@ -308,6 +309,7 @@
 				currentType:0,
 				publicadtype:"",
 				currentReportIndex:0,
+				showOriginalImg:false,
 				showPreview:false,
 				showMaskDetail:true,
 				detailtag:'',
@@ -612,7 +614,8 @@
 			},
 			closePreview(){
 				this.showPreview = false;
-				this.showMaskDetail = false;
+				this.showMaskDetail = true;
+				this.showOriginalImg = false;
 			},
 
 			previewReport(){//双击预览作品、

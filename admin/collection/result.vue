@@ -106,69 +106,6 @@
 			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审({{passCount}})</Button>
 		</div>
 
-		<!-- <div class="lt-full wm-report-C" v-if='showPreview'>
-			<span class="wm-report-close" @click="closePreview"></span>
-			<div  v-if='"mp3 webm mp4 aac wma ogg".indexOf(raterReportList[currentReportIndex].fileextname)<=-1'>
-				<img :class="raterReportList[currentReportIndex].fileextname" :src="raterReportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
-				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[raterReportList[currentReportIndex].fileextname]:1}" >
-					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(raterReportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname !== "filetitle"||item.fieldname !== "filedesc" '>{{item.name}}：</div>
-						<div v-if='item.fieldname !== "filetitle" || item.fieldname !== "filedesc"' >
-							<span>{{raterReportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-
-						<div v-if='item.fieldname === "userlabel"'>标签：</div>
-						<div v-if='item.fieldname === "userlabel"' class="wm-tag-list">
-							<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterReportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-						</div>
-						
-					</div>
-				</div>
-			</div>
-			<div v-if='raterReportList[currentReportIndex].fileextname=== "mp4" ||raterReportList[currentReportIndex].fileextname=== "webm" '>
-				<video autoPlay controls :src='raterReportList[currentReportIndex].filepath'></video>
-				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
-					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
-							<span>{{raterReportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
-						</div>
-						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-							<div>标签：</div>
-							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterReportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-							</div>
-						</section>
-					</div>
-				</div>
-			</div>
-			<div v-if='raterReportList[currentReportIndex].fileextname=== "mp3" ||raterReportList[currentReportIndex].fileextname=== "ogg"||raterReportList[currentReportIndex].fileextname=== "aac"||raterReportList[currentReportIndex].fileextname=== "wma" '>
-				<audio autoplay controls :src='raterReportList[currentReportIndex].filepath'></audio>
-				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
-							<span>{{raterReportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
-						</div>
-						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-							<div>标签：</div>
-							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (raterReportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-							</div>
-						</section>
-					</div>
-				</div>
-			</div>
-		</div> -->
-
 		<Detail :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='raterReportList'></Detail>
 	</section>
 </template>
@@ -259,6 +196,9 @@
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = true;
+				Vue.obserable.trigger({
+					type:'closeOriginalImg'
+				})
 			},
 			preview(){
 				if(this.passCount<= 0){

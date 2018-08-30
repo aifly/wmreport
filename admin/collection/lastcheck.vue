@@ -45,7 +45,9 @@
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
 							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
+								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' >
+									<img :src="report.pcbilethum||imgs.poster" alt="">
+								</div>
 								<div class="wm-collection-report-status">
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
@@ -118,65 +120,7 @@
 		</Split>
 
 
-		<!-- <div class="lt-full wm-collection-report-C" v-if='showPreview'>
-			<span class="wm-report-close" @click="closePreview"></span>
-			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
-				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
-				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
-					<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
-				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
-				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
-					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
-				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
-				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			
-
-			<section v-if='false' class="wm-report-check-in-mask" :class="{'hide':nextReport}">
-				<div>
-					<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
-					<span v-if='!reportList[currentReportIndex].remark && false' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>
-				</div>
-				<div>
-					<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{"pass":reportList[currentReportIndex].score === 100}'  class="wm-report-adopt" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
-						<span>通过</span>
-					</div>
-					<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{"reject":reportList[currentReportIndex].score === 0}'  class="wm-report-reject" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>
-						<span>拒绝</span>
-					</div>
-				</div>
-				
-			</section>
-			<section class="wm-reset" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
-				<img :src="imgs.reset" alt="">
-			</section>
-		</div> -->
+		 
 
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 	</div>
@@ -322,6 +266,10 @@
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = true;
+				Vue.obserable.trigger({
+					type:'closeOriginalImg'
+				})
+
 			},
 
 			previewReport(index){//双击预览作品、

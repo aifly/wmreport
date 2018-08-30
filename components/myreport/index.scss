@@ -891,6 +891,17 @@ $color: #be0000;
         }
     }
 
+    .wm-report-mask-tip{
+        @include pos(a);
+        width: 100%;
+        left: 0;
+        bottom:0;
+        line-height: 30px;
+        color:#fff;
+        text-align: center;
+        z-index: -1;
+    }
+
     .wm-right-thumb {
         margin: 0 auto;
         height: 130px;
@@ -1054,6 +1065,27 @@ $color: #be0000;
                 max-height: 60vh;
             }
         }
+
+        &>.original{
+            overflow: auto;
+            padding: 30px;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            text-align: center;
+            
+            .wm-myreport-item,
+            .wm-report-detail {
+                display: none;
+            }
+            img{
+                width:auto;
+                height: auto;
+                max-width: 1000vw;
+                max-height: 1000vh;
+            }
+         }
 
         .wm-report-close {
             $color: #fff;

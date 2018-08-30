@@ -57,7 +57,9 @@
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
 							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' :style="{background:'url('+(report.pcbilethum||imgs.poster)+') no-repeat center',backgroundSize:report.fileextname ==='jpg'||report.fileextname==='jpeg'||report.fileextname==='png'||report.fileextname==='gif'?'cover':'none'}"></div>
+								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+									<img :src="report.pcbilethum||imgs.poster" alt="">
+								</div>
 								<div class="wm-collection-report-status">
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
@@ -335,6 +337,9 @@
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = true;
+				Vue.obserable.trigger({
+					type:'closeOriginalImg'
+				})
 			},
 
 			previewReport(index){//双击预览作品、
