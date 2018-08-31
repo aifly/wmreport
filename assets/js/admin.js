@@ -176,8 +176,8 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
-	 * Vue.js v2.5.16
-	 * (c) 2014-2018 Evan You
+	 * Vue.js v2.5.13
+	 * (c) 2014-2017 Evan You
 	 * Released under the MIT License.
 	 */
 	(function (global, factory) {
@@ -362,15 +362,9 @@
 	});
 
 	/**
-	 * Simple bind polyfill for environments that do not support it... e.g.
-	 * PhantomJS 1.x. Technically we don't need this anymore since native bind is
-	 * now more performant in most browsers, but removing it would be breaking for
-	 * code that was able to run in PhantomJS 1.x, so this must be kept for
-	 * backwards compatibility.
+	 * Simple bind, faster than native
 	 */
-
-	/* istanbul ignore next */
-	function polyfillBind (fn, ctx) {
+	function bind (fn, ctx) {
 	  function boundFn (a) {
 	    var l = arguments.length;
 	    return l
@@ -379,18 +373,10 @@
 	        : fn.call(ctx, a)
 	      : fn.call(ctx)
 	  }
-
+	  // record original fn length
 	  boundFn._length = fn.length;
 	  return boundFn
 	}
-
-	function nativeBind (fn, ctx) {
-	  return fn.bind(ctx)
-	}
-
-	var bind = Function.prototype.bind
-	  ? nativeBind
-	  : polyfillBind;
 
 	/**
 	 * Convert an Array-like object to a real Array.
@@ -621,7 +607,7 @@
 	   * Exposed for legacy reasons
 	   */
 	  _lifecycleHooks: LIFECYCLE_HOOKS
-	})
+	});
 
 	/*  */
 
@@ -665,6 +651,7 @@
 
 	/*  */
 
+
 	// can we use __proto__?
 	var hasProto = '__proto__' in {};
 
@@ -703,7 +690,7 @@
 	var isServerRendering = function () {
 	  if (_isServer === undefined) {
 	    /* istanbul ignore if */
-	    if (!inBrowser && !inWeex && typeof global !== 'undefined') {
+	    if (!inBrowser && typeof global !== 'undefined') {
 	      // detect presence of vue-server-renderer and avoid
 	      // Webpack shimming the process
 	      _isServer = global['process'].env.VUE_ENV === 'server';
@@ -960,7 +947,8 @@
 	// used for static nodes and slot nodes because they may be reused across
 	// multiple renders, cloning them avoids errors when DOM manipulations rely
 	// on their elm reference.
-	function cloneVNode (vnode) {
+	function cloneVNode (vnode, deep) {
+	  var componentOptions = vnode.componentOptions;
 	  var cloned = new VNode(
 	    vnode.tag,
 	    vnode.data,
@@ -968,7 +956,7 @@
 	    vnode.text,
 	    vnode.elm,
 	    vnode.context,
-	    vnode.componentOptions,
+	    componentOptions,
 	    vnode.asyncFactory
 	  );
 	  cloned.ns = vnode.ns;
@@ -979,7 +967,24 @@
 	  cloned.fnOptions = vnode.fnOptions;
 	  cloned.fnScopeId = vnode.fnScopeId;
 	  cloned.isCloned = true;
+	  if (deep) {
+	    if (vnode.children) {
+	      cloned.children = cloneVNodes(vnode.children, true);
+	    }
+	    if (componentOptions && componentOptions.children) {
+	      componentOptions.children = cloneVNodes(componentOptions.children, true);
+	    }
+	  }
 	  return cloned
+	}
+
+	function cloneVNodes (vnodes, deep) {
+	  var len = vnodes.length;
+	  var res = new Array(len);
+	  for (var i = 0; i < len; i++) {
+	    res[i] = cloneVNode(vnodes[i], deep);
+	  }
+	  return res
 	}
 
 	/*
@@ -988,9 +993,7 @@
 	 */
 
 	var arrayProto = Array.prototype;
-	var arrayMethods = Object.create(arrayProto);
-
-	var methodsToPatch = [
+	var arrayMethods = Object.create(arrayProto);[
 	  'push',
 	  'pop',
 	  'shift',
@@ -998,12 +1001,7 @@
 	  'splice',
 	  'sort',
 	  'reverse'
-	];
-
-	/**
-	 * Intercept mutating methods and emit events
-	 */
-	methodsToPatch.forEach(function (method) {
+	].forEach(function (method) {
 	  // cache original method
 	  var original = arrayProto[method];
 	  def(arrayMethods, method, function mutator () {
@@ -1034,20 +1032,20 @@
 	var arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 	/**
-	 * In some cases we may want to disable observation inside a component's
-	 * update computation.
+	 * By default, when a reactive property is set, the new value is
+	 * also converted to become reactive. However when passing down props,
+	 * we don't want to force conversion because the value may be a nested value
+	 * under a frozen data structure. Converting it would defeat the optimization.
 	 */
-	var shouldObserve = true;
-
-	function toggleObserving (value) {
-	  shouldObserve = value;
-	}
+	var observerState = {
+	  shouldConvert: true
+	};
 
 	/**
-	 * Observer class that is attached to each observed
-	 * object. Once attached, the observer converts the target
+	 * Observer class that are attached to each observed
+	 * object. Once attached, the observer converts target
 	 * object's property keys into getter/setters that
-	 * collect dependencies and dispatch updates.
+	 * collect dependencies and dispatches updates.
 	 */
 	var Observer = function Observer (value) {
 	  this.value = value;
@@ -1073,7 +1071,7 @@
 	Observer.prototype.walk = function walk (obj) {
 	  var keys = Object.keys(obj);
 	  for (var i = 0; i < keys.length; i++) {
-	    defineReactive(obj, keys[i]);
+	    defineReactive(obj, keys[i], obj[keys[i]]);
 	  }
 	};
 
@@ -1123,7 +1121,7 @@
 	  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
 	    ob = value.__ob__;
 	  } else if (
-	    shouldObserve &&
+	    observerState.shouldConvert &&
 	    !isServerRendering() &&
 	    (Array.isArray(value) || isPlainObject(value)) &&
 	    Object.isExtensible(value) &&
@@ -1156,9 +1154,6 @@
 
 	  // cater for pre-defined getter/setters
 	  var getter = property && property.get;
-	  if (!getter && arguments.length === 2) {
-	    val = obj[key];
-	  }
 	  var setter = property && property.set;
 
 	  var childOb = !shallow && observe(val);
@@ -1205,11 +1200,6 @@
 	 * already exist.
 	 */
 	function set (target, key, val) {
-	  if ("development" !== 'production' &&
-	    (isUndef(target) || isPrimitive(target))
-	  ) {
-	    warn(("Cannot set reactive property on undefined, null, or primitive value: " + ((target))));
-	  }
 	  if (Array.isArray(target) && isValidArrayIndex(key)) {
 	    target.length = Math.max(target.length, key);
 	    target.splice(key, 1, val);
@@ -1240,11 +1230,6 @@
 	 * Delete a property and trigger change if necessary.
 	 */
 	function del (target, key) {
-	  if ("development" !== 'production' &&
-	    (isUndef(target) || isPrimitive(target))
-	  ) {
-	    warn(("Cannot delete reactive property on undefined, null, or primitive value: " + ((target))));
-	  }
 	  if (Array.isArray(target) && isValidArrayIndex(key)) {
 	    target.splice(key, 1);
 	    return
@@ -1711,18 +1696,12 @@
 	  var prop = propOptions[key];
 	  var absent = !hasOwn(propsData, key);
 	  var value = propsData[key];
-	  // boolean casting
-	  var booleanIndex = getTypeIndex(Boolean, prop.type);
-	  if (booleanIndex > -1) {
+	  // handle boolean props
+	  if (isType(Boolean, prop.type)) {
 	    if (absent && !hasOwn(prop, 'default')) {
 	      value = false;
-	    } else if (value === '' || value === hyphenate(key)) {
-	      // only cast empty string / same name to boolean if
-	      // boolean has higher priority
-	      var stringIndex = getTypeIndex(String, prop.type);
-	      if (stringIndex < 0 || booleanIndex < stringIndex) {
-	        value = true;
-	      }
+	    } else if (!isType(String, prop.type) && (value === '' || value === hyphenate(key))) {
+	      value = true;
 	    }
 	  }
 	  // check default value
@@ -1730,10 +1709,10 @@
 	    value = getPropDefaultValue(vm, prop, key);
 	    // since the default value is a fresh copy,
 	    // make sure to observe it.
-	    var prevShouldObserve = shouldObserve;
-	    toggleObserving(true);
+	    var prevShouldConvert = observerState.shouldConvert;
+	    observerState.shouldConvert = true;
 	    observe(value);
-	    toggleObserving(prevShouldObserve);
+	    observerState.shouldConvert = prevShouldConvert;
 	  }
 	  {
 	    assertProp(prop, key, value, vm, absent);
@@ -1862,20 +1841,17 @@
 	  return match ? match[1] : ''
 	}
 
-	function isSameType (a, b) {
-	  return getType(a) === getType(b)
-	}
-
-	function getTypeIndex (type, expectedTypes) {
-	  if (!Array.isArray(expectedTypes)) {
-	    return isSameType(expectedTypes, type) ? 0 : -1
+	function isType (type, fn) {
+	  if (!Array.isArray(fn)) {
+	    return getType(fn) === getType(type)
 	  }
-	  for (var i = 0, len = expectedTypes.length; i < len; i++) {
-	    if (isSameType(expectedTypes[i], type)) {
-	      return i
+	  for (var i = 0, len = fn.length; i < len; i++) {
+	    if (getType(fn[i]) === getType(type)) {
+	      return true
 	    }
 	  }
-	  return -1
+	  /* istanbul ignore next */
+	  return false
 	}
 
 	/*  */
@@ -1938,19 +1914,19 @@
 	  }
 	}
 
-	// Here we have async deferring wrappers using both microtasks and (macro) tasks.
-	// In < 2.4 we used microtasks everywhere, but there are some scenarios where
-	// microtasks have too high a priority and fire in between supposedly
+	// Here we have async deferring wrappers using both micro and macro tasks.
+	// In < 2.4 we used micro tasks everywhere, but there are some scenarios where
+	// micro tasks have too high a priority and fires in between supposedly
 	// sequential events (e.g. #4521, #6690) or even between bubbling of the same
-	// event (#6566). However, using (macro) tasks everywhere also has subtle problems
+	// event (#6566). However, using macro tasks everywhere also has subtle problems
 	// when state is changed right before repaint (e.g. #6813, out-in transitions).
-	// Here we use microtask by default, but expose a way to force (macro) task when
+	// Here we use micro task by default, but expose a way to force macro task when
 	// needed (e.g. in event handlers attached by v-on).
 	var microTimerFunc;
 	var macroTimerFunc;
 	var useMacroTask = false;
 
-	// Determine (macro) task defer implementation.
+	// Determine (macro) Task defer implementation.
 	// Technically setImmediate should be the ideal choice, but it's only available
 	// in IE. The only polyfill that consistently queues the callback after all DOM
 	// events triggered in the same loop is by using MessageChannel.
@@ -1977,7 +1953,7 @@
 	  };
 	}
 
-	// Determine microtask defer implementation.
+	// Determine MicroTask defer implementation.
 	/* istanbul ignore next, $flow-disable-line */
 	if (typeof Promise !== 'undefined' && isNative(Promise)) {
 	  var p = Promise.resolve();
@@ -1997,7 +1973,7 @@
 
 	/**
 	 * Wrap a function so that if any code inside triggers state change,
-	 * the changes are queued using a (macro) task instead of a microtask.
+	 * the changes are queued using a Task instead of a MicroTask.
 	 */
 	function withMacroTask (fn) {
 	  return fn._withTask || (fn._withTask = function () {
@@ -2086,7 +2062,8 @@
 	  };
 
 	  var hasProxy =
-	    typeof Proxy !== 'undefined' && isNative(Proxy);
+	    typeof Proxy !== 'undefined' &&
+	    Proxy.toString().match(/native code/);
 
 	  if (hasProxy) {
 	    var isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact');
@@ -2154,7 +2131,7 @@
 	function _traverse (val, seen) {
 	  var i, keys;
 	  var isA = Array.isArray(val);
-	  if ((!isA && !isObject(val)) || Object.isFrozen(val) || val instanceof VNode) {
+	  if ((!isA && !isObject(val)) || Object.isFrozen(val)) {
 	    return
 	  }
 	  if (val.__ob__) {
@@ -3012,30 +2989,29 @@
 	  // update $attrs and $listeners hash
 	  // these are also reactive so they may trigger child update if the child
 	  // used them during render
-	  vm.$attrs = parentVnode.data.attrs || emptyObject;
+	  vm.$attrs = (parentVnode.data && parentVnode.data.attrs) || emptyObject;
 	  vm.$listeners = listeners || emptyObject;
 
 	  // update props
 	  if (propsData && vm.$options.props) {
-	    toggleObserving(false);
+	    observerState.shouldConvert = false;
 	    var props = vm._props;
 	    var propKeys = vm.$options._propKeys || [];
 	    for (var i = 0; i < propKeys.length; i++) {
 	      var key = propKeys[i];
-	      var propOptions = vm.$options.props; // wtf flow?
-	      props[key] = validateProp(key, propOptions, propsData, vm);
+	      props[key] = validateProp(key, vm.$options.props, propsData, vm);
 	    }
-	    toggleObserving(true);
+	    observerState.shouldConvert = true;
 	    // keep a copy of raw propsData
 	    vm.$options.propsData = propsData;
 	  }
 
 	  // update listeners
-	  listeners = listeners || emptyObject;
-	  var oldListeners = vm.$options._parentListeners;
-	  vm.$options._parentListeners = listeners;
-	  updateComponentListeners(vm, listeners, oldListeners);
-
+	  if (listeners) {
+	    var oldListeners = vm.$options._parentListeners;
+	    vm.$options._parentListeners = listeners;
+	    updateComponentListeners(vm, listeners, oldListeners);
+	  }
 	  // resolve slots + force update if has children
 	  if (hasChildren) {
 	    vm.$slots = resolveSlots(renderChildren, parentVnode.context);
@@ -3089,8 +3065,6 @@
 	}
 
 	function callHook (vm, hook) {
-	  // #7573 disable dep collection when invoking lifecycle hooks
-	  pushTarget();
 	  var handlers = vm.$options[hook];
 	  if (handlers) {
 	    for (var i = 0, j = handlers.length; i < j; i++) {
@@ -3104,7 +3078,6 @@
 	  if (vm._hasHookEvent) {
 	    vm.$emit('hook:' + hook);
 	  }
-	  popTarget();
 	}
 
 	/*  */
@@ -3249,7 +3222,7 @@
 
 	/*  */
 
-	var uid$1 = 0;
+	var uid$2 = 0;
 
 	/**
 	 * A watcher parses an expression, collects dependencies,
@@ -3278,7 +3251,7 @@
 	    this.deep = this.user = this.lazy = this.sync = false;
 	  }
 	  this.cb = cb;
-	  this.id = ++uid$1; // uid for batching
+	  this.id = ++uid$2; // uid for batching
 	  this.active = true;
 	  this.dirty = this.lazy; // for lazy watchers
 	  this.deps = [];
@@ -3501,9 +3474,7 @@
 	  var keys = vm.$options._propKeys = [];
 	  var isRoot = !vm.$parent;
 	  // root instance props should be converted
-	  if (!isRoot) {
-	    toggleObserving(false);
-	  }
+	  observerState.shouldConvert = isRoot;
 	  var loop = function ( key ) {
 	    keys.push(key);
 	    var value = validateProp(key, propsOptions, propsData, vm);
@@ -3538,7 +3509,7 @@
 	  };
 
 	  for (var key in propsOptions) loop( key );
-	  toggleObserving(true);
+	  observerState.shouldConvert = true;
 	}
 
 	function initData (vm) {
@@ -3584,15 +3555,11 @@
 	}
 
 	function getData (data, vm) {
-	  // #7573 disable dep collection when invoking data getters
-	  pushTarget();
 	  try {
 	    return data.call(vm, vm)
 	  } catch (e) {
 	    handleError(e, vm, "data()");
 	    return {}
-	  } finally {
-	    popTarget();
 	  }
 	}
 
@@ -3730,7 +3697,7 @@
 
 	function createWatcher (
 	  vm,
-	  expOrFn,
+	  keyOrFn,
 	  handler,
 	  options
 	) {
@@ -3741,7 +3708,7 @@
 	  if (typeof handler === 'string') {
 	    handler = vm[handler];
 	  }
-	  return vm.$watch(expOrFn, handler, options)
+	  return vm.$watch(keyOrFn, handler, options)
 	}
 
 	function stateMixin (Vue) {
@@ -3805,7 +3772,7 @@
 	function initInjections (vm) {
 	  var result = resolveInject(vm.$options.inject, vm);
 	  if (result) {
-	    toggleObserving(false);
+	    observerState.shouldConvert = false;
 	    Object.keys(result).forEach(function (key) {
 	      /* istanbul ignore else */
 	      {
@@ -3819,7 +3786,7 @@
 	        });
 	      }
 	    });
-	    toggleObserving(true);
+	    observerState.shouldConvert = true;
 	  }
 	}
 
@@ -3839,7 +3806,7 @@
 	      var provideKey = inject[key].from;
 	      var source = vm;
 	      while (source) {
-	        if (source._provided && hasOwn(source._provided, provideKey)) {
+	        if (source._provided && provideKey in source._provided) {
 	          result[key] = source._provided[provideKey];
 	          break
 	        }
@@ -3954,14 +3921,6 @@
 
 	/*  */
 
-	function isKeyNotMatch (expect, actual) {
-	  if (Array.isArray(expect)) {
-	    return expect.indexOf(actual) === -1
-	  } else {
-	    return expect !== actual
-	  }
-	}
-
 	/**
 	 * Runtime helper for checking keyCodes from config.
 	 * exposed as Vue.prototype._k
@@ -3970,15 +3929,16 @@
 	function checkKeyCodes (
 	  eventKeyCode,
 	  key,
-	  builtInKeyCode,
-	  eventKeyName,
-	  builtInKeyName
+	  builtInAlias,
+	  eventKeyName
 	) {
-	  var mappedKeyCode = config.keyCodes[key] || builtInKeyCode;
-	  if (builtInKeyName && eventKeyName && !config.keyCodes[key]) {
-	    return isKeyNotMatch(builtInKeyName, eventKeyName)
-	  } else if (mappedKeyCode) {
-	    return isKeyNotMatch(mappedKeyCode, eventKeyCode)
+	  var keyCodes = config.keyCodes[key] || builtInAlias;
+	  if (keyCodes) {
+	    if (Array.isArray(keyCodes)) {
+	      return keyCodes.indexOf(eventKeyCode) === -1
+	    } else {
+	      return keyCodes !== eventKeyCode
+	    }
 	  } else if (eventKeyName) {
 	    return hyphenate(eventKeyName) !== key
 	  }
@@ -4050,9 +4010,11 @@
 	  var cached = this._staticTrees || (this._staticTrees = []);
 	  var tree = cached[index];
 	  // if has already-rendered static tree and not inside v-for,
-	  // we can reuse the same tree.
+	  // we can reuse the same tree by doing a shallow clone.
 	  if (tree && !isInFor) {
-	    return tree
+	    return Array.isArray(tree)
+	      ? cloneVNodes(tree)
+	      : cloneVNode(tree)
 	  }
 	  // otherwise, render a fresh tree.
 	  tree = cached[index] = this.$options.staticRenderFns[index].call(
@@ -4150,24 +4112,6 @@
 	  Ctor
 	) {
 	  var options = Ctor.options;
-	  // ensure the createElement function in functional components
-	  // gets a unique context - this is necessary for correct named slot check
-	  var contextVm;
-	  if (hasOwn(parent, '_uid')) {
-	    contextVm = Object.create(parent);
-	    // $flow-disable-line
-	    contextVm._original = parent;
-	  } else {
-	    // the context vm passed in is a functional context as well.
-	    // in this case we want to make sure we are able to get a hold to the
-	    // real context instance.
-	    contextVm = parent;
-	    // $flow-disable-line
-	    parent = parent._original;
-	  }
-	  var isCompiled = isTrue(options._compiled);
-	  var needNormalization = !isCompiled;
-
 	  this.data = data;
 	  this.props = props;
 	  this.children = children;
@@ -4175,6 +4119,12 @@
 	  this.listeners = data.on || emptyObject;
 	  this.injections = resolveInject(options.inject, parent);
 	  this.slots = function () { return resolveSlots(children, parent); };
+
+	  // ensure the createElement function in functional components
+	  // gets a unique context - this is necessary for correct named slot check
+	  var contextVm = Object.create(parent);
+	  var isCompiled = isTrue(options._compiled);
+	  var needNormalization = !isCompiled;
 
 	  // support for compiled functional template
 	  if (isCompiled) {
@@ -4188,7 +4138,7 @@
 	  if (options._scopeId) {
 	    this._c = function (a, b, c, d) {
 	      var vnode = createElement(contextVm, a, b, c, d, needNormalization);
-	      if (vnode && !Array.isArray(vnode)) {
+	      if (vnode) {
 	        vnode.fnScopeId = options._scopeId;
 	        vnode.fnContext = parent;
 	      }
@@ -4231,28 +4181,14 @@
 	  var vnode = options.render.call(null, renderContext._c, renderContext);
 
 	  if (vnode instanceof VNode) {
-	    return cloneAndMarkFunctionalResult(vnode, data, renderContext.parent, options)
-	  } else if (Array.isArray(vnode)) {
-	    var vnodes = normalizeChildren(vnode) || [];
-	    var res = new Array(vnodes.length);
-	    for (var i = 0; i < vnodes.length; i++) {
-	      res[i] = cloneAndMarkFunctionalResult(vnodes[i], data, renderContext.parent, options);
+	    vnode.fnContext = contextVm;
+	    vnode.fnOptions = options;
+	    if (data.slot) {
+	      (vnode.data || (vnode.data = {})).slot = data.slot;
 	    }
-	    return res
 	  }
-	}
 
-	function cloneAndMarkFunctionalResult (vnode, data, contextVm, options) {
-	  // #7817 clone node before setting fnContext, otherwise if the node is reused
-	  // (e.g. it was from a cached normal slot) the fnContext causes named slots
-	  // that should not be matched to match.
-	  var clone = cloneVNode(vnode);
-	  clone.fnContext = contextVm;
-	  clone.fnOptions = options;
-	  if (data.slot) {
-	    (clone.data || (clone.data = {})).slot = data.slot;
-	  }
-	  return clone
+	  return vnode
 	}
 
 	function mergeProps (to, from) {
@@ -4282,7 +4218,7 @@
 
 	/*  */
 
-	// inline hooks to be invoked on component VNodes during patch
+	// hooks to be invoked on component VNodes during patch
 	var componentVNodeHooks = {
 	  init: function init (
 	    vnode,
@@ -4290,15 +4226,7 @@
 	    parentElm,
 	    refElm
 	  ) {
-	    if (
-	      vnode.componentInstance &&
-	      !vnode.componentInstance._isDestroyed &&
-	      vnode.data.keepAlive
-	    ) {
-	      // kept-alive components, treat as a patch
-	      var mountedNode = vnode; // work around flow
-	      componentVNodeHooks.prepatch(mountedNode, mountedNode);
-	    } else {
+	    if (!vnode.componentInstance || vnode.componentInstance._isDestroyed) {
 	      var child = vnode.componentInstance = createComponentInstanceForVnode(
 	        vnode,
 	        activeInstance,
@@ -4306,6 +4234,10 @@
 	        refElm
 	      );
 	      child.$mount(hydrating ? vnode.elm : undefined, hydrating);
+	    } else if (vnode.data.keepAlive) {
+	      // kept-alive components, treat as a patch
+	      var mountedNode = vnode; // work around flow
+	      componentVNodeHooks.prepatch(mountedNode, mountedNode);
 	    }
 	  },
 
@@ -4440,8 +4372,8 @@
 	    }
 	  }
 
-	  // install component management hooks onto the placeholder node
-	  installComponentHooks(data);
+	  // merge component management hooks onto the placeholder node
+	  mergeHooks(data);
 
 	  // return a placeholder vnode
 	  var name = Ctor.options.name || tag;
@@ -4481,11 +4413,22 @@
 	  return new vnode.componentOptions.Ctor(options)
 	}
 
-	function installComponentHooks (data) {
-	  var hooks = data.hook || (data.hook = {});
+	function mergeHooks (data) {
+	  if (!data.hook) {
+	    data.hook = {};
+	  }
 	  for (var i = 0; i < hooksToMerge.length; i++) {
 	    var key = hooksToMerge[i];
-	    hooks[key] = componentVNodeHooks[key];
+	    var fromParent = data.hook[key];
+	    var ours = componentVNodeHooks[key];
+	    data.hook[key] = fromParent ? mergeHook$1(ours, fromParent) : ours;
+	  }
+	}
+
+	function mergeHook$1 (one, two) {
+	  return function (a, b, c, d) {
+	    one(a, b, c, d);
+	    two(a, b, c, d);
 	  }
 	}
 
@@ -4602,11 +4545,8 @@
 	    // direct component options / constructor
 	    vnode = createComponent(tag, data, context, children);
 	  }
-	  if (Array.isArray(vnode)) {
-	    return vnode
-	  } else if (isDef(vnode)) {
-	    if (isDef(ns)) { applyNS(vnode, ns); }
-	    if (isDef(data)) { registerDeepBindings(data); }
+	  if (isDef(vnode)) {
+	    if (ns) { applyNS(vnode, ns); }
 	    return vnode
 	  } else {
 	    return createEmptyVNode()
@@ -4623,23 +4563,10 @@
 	  if (isDef(vnode.children)) {
 	    for (var i = 0, l = vnode.children.length; i < l; i++) {
 	      var child = vnode.children[i];
-	      if (isDef(child.tag) && (
-	        isUndef(child.ns) || (isTrue(force) && child.tag !== 'svg'))) {
+	      if (isDef(child.tag) && (isUndef(child.ns) || isTrue(force))) {
 	        applyNS(child, ns, force);
 	      }
 	    }
-	  }
-	}
-
-	// ref #5318
-	// necessary to ensure parent re-render when deep bindings like :style and
-	// :class are used on slot nodes
-	function registerDeepBindings (data) {
-	  if (isObject(data.style)) {
-	    traverse(data.style);
-	  }
-	  if (isObject(data.class)) {
-	    traverse(data.class);
 	  }
 	}
 
@@ -4691,17 +4618,20 @@
 	    var render = ref.render;
 	    var _parentVnode = ref._parentVnode;
 
-	    // reset _rendered flag on slots for duplicate slot check
-	    {
+	    if (vm._isMounted) {
+	      // if the parent didn't update, the slot nodes will be the ones from
+	      // last render. They need to be cloned to ensure "freshness" for this render.
 	      for (var key in vm.$slots) {
-	        // $flow-disable-line
-	        vm.$slots[key]._rendered = false;
+	        var slot = vm.$slots[key];
+	        // _rendered is a flag added by renderSlot, but may not be present
+	        // if the slot is passed from manually written render functions
+	        if (slot._rendered || (slot[0] && slot[0].elm)) {
+	          vm.$slots[key] = cloneVNodes(slot, true /* deep */);
+	        }
 	      }
 	    }
 
-	    if (_parentVnode) {
-	      vm.$scopedSlots = _parentVnode.data.scopedSlots || emptyObject;
-	    }
+	    vm.$scopedSlots = (_parentVnode && _parentVnode.data.scopedSlots) || emptyObject;
 
 	    // set parent vnode. this allows render functions to have access
 	    // to the data on the placeholder node.
@@ -4747,13 +4677,13 @@
 
 	/*  */
 
-	var uid$3 = 0;
+	var uid$1 = 0;
 
 	function initMixin (Vue) {
 	  Vue.prototype._init = function (options) {
 	    var vm = this;
 	    // a uid
-	    vm._uid = uid$3++;
+	    vm._uid = uid$1++;
 
 	    var startTag, endTag;
 	    /* istanbul ignore if */
@@ -4884,20 +4814,20 @@
 	  }
 	}
 
-	function Vue (options) {
+	function Vue$3 (options) {
 	  if ("development" !== 'production' &&
-	    !(this instanceof Vue)
+	    !(this instanceof Vue$3)
 	  ) {
 	    warn('Vue is a constructor and should be called with the `new` keyword');
 	  }
 	  this._init(options);
 	}
 
-	initMixin(Vue);
-	stateMixin(Vue);
-	eventsMixin(Vue);
-	lifecycleMixin(Vue);
-	renderMixin(Vue);
+	initMixin(Vue$3);
+	stateMixin(Vue$3);
+	eventsMixin(Vue$3);
+	lifecycleMixin(Vue$3);
+	renderMixin(Vue$3);
 
 	/*  */
 
@@ -5126,15 +5056,13 @@
 	    }
 	  },
 
-	  mounted: function mounted () {
-	    var this$1 = this;
-
-	    this.$watch('include', function (val) {
-	      pruneCache(this$1, function (name) { return matches(val, name); });
-	    });
-	    this.$watch('exclude', function (val) {
-	      pruneCache(this$1, function (name) { return !matches(val, name); });
-	    });
+	  watch: {
+	    include: function include (val) {
+	      pruneCache(this, function (name) { return matches(val, name); });
+	    },
+	    exclude: function exclude (val) {
+	      pruneCache(this, function (name) { return !matches(val, name); });
+	    }
 	  },
 
 	  render: function render () {
@@ -5182,11 +5110,11 @@
 	    }
 	    return vnode || (slot && slot[0])
 	  }
-	}
+	};
 
 	var builtInComponents = {
 	  KeepAlive: KeepAlive
-	}
+	};
 
 	/*  */
 
@@ -5234,25 +5162,20 @@
 	  initAssetRegisters(Vue);
 	}
 
-	initGlobalAPI(Vue);
+	initGlobalAPI(Vue$3);
 
-	Object.defineProperty(Vue.prototype, '$isServer', {
+	Object.defineProperty(Vue$3.prototype, '$isServer', {
 	  get: isServerRendering
 	});
 
-	Object.defineProperty(Vue.prototype, '$ssrContext', {
+	Object.defineProperty(Vue$3.prototype, '$ssrContext', {
 	  get: function get () {
 	    /* istanbul ignore next */
 	    return this.$vnode && this.$vnode.ssrContext
 	  }
 	});
 
-	// expose FunctionalRenderContext for ssr runtime helper installation
-	Object.defineProperty(Vue, 'FunctionalRenderContext', {
-	  value: FunctionalRenderContext
-	});
-
-	Vue.version = '2.5.16';
+	Vue$3.version = '2.5.13';
 
 	/*  */
 
@@ -5526,8 +5449,8 @@
 	  node.textContent = text;
 	}
 
-	function setStyleScope (node, scopeId) {
-	  node.setAttribute(scopeId, '');
+	function setAttribute (node, key, val) {
+	  node.setAttribute(key, val);
 	}
 
 
@@ -5543,7 +5466,7 @@
 		nextSibling: nextSibling,
 		tagName: tagName,
 		setTextContent: setTextContent,
-		setStyleScope: setStyleScope
+		setAttribute: setAttribute
 	});
 
 	/*  */
@@ -5561,11 +5484,11 @@
 	  destroy: function destroy (vnode) {
 	    registerRef(vnode, true);
 	  }
-	}
+	};
 
 	function registerRef (vnode, isRemoval) {
 	  var key = vnode.data.ref;
-	  if (!isDef(key)) { return }
+	  if (!key) { return }
 
 	  var vm = vnode.context;
 	  var ref = vnode.componentInstance || vnode.elm;
@@ -5696,25 +5619,7 @@
 	  }
 
 	  var creatingElmInVPre = 0;
-
-	  function createElm (
-	    vnode,
-	    insertedVnodeQueue,
-	    parentElm,
-	    refElm,
-	    nested,
-	    ownerArray,
-	    index
-	  ) {
-	    if (isDef(vnode.elm) && isDef(ownerArray)) {
-	      // This vnode was used in a previous render!
-	      // now it's used as a new node, overwriting its elm would cause
-	      // potential patch errors down the road when it's used as an insertion
-	      // reference node. Instead, we clone the node on-demand before creating
-	      // associated DOM element for it.
-	      vnode = ownerArray[index] = cloneVNode(vnode);
-	    }
-
+	  function createElm (vnode, insertedVnodeQueue, parentElm, refElm, nested) {
 	    vnode.isRootInsert = !nested; // for transition enter check
 	    if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
 	      return
@@ -5737,7 +5642,6 @@
 	          );
 	        }
 	      }
-
 	      vnode.elm = vnode.ns
 	        ? nodeOps.createElementNS(vnode.ns, tag)
 	        : nodeOps.createElement(tag, vnode);
@@ -5843,7 +5747,7 @@
 	        checkDuplicateKeys(children);
 	      }
 	      for (var i = 0; i < children.length; ++i) {
-	        createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i);
+	        createElm(children[i], insertedVnodeQueue, vnode.elm, null, true);
 	      }
 	    } else if (isPrimitive(vnode.text)) {
 	      nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)));
@@ -5874,12 +5778,12 @@
 	  function setScope (vnode) {
 	    var i;
 	    if (isDef(i = vnode.fnScopeId)) {
-	      nodeOps.setStyleScope(vnode.elm, i);
+	      nodeOps.setAttribute(vnode.elm, i, '');
 	    } else {
 	      var ancestor = vnode;
 	      while (ancestor) {
 	        if (isDef(i = ancestor.context) && isDef(i = i.$options._scopeId)) {
-	          nodeOps.setStyleScope(vnode.elm, i);
+	          nodeOps.setAttribute(vnode.elm, i, '');
 	        }
 	        ancestor = ancestor.parent;
 	      }
@@ -5890,13 +5794,13 @@
 	      i !== vnode.fnContext &&
 	      isDef(i = i.$options._scopeId)
 	    ) {
-	      nodeOps.setStyleScope(vnode.elm, i);
+	      nodeOps.setAttribute(vnode.elm, i, '');
 	    }
 	  }
 
 	  function addVnodes (parentElm, refElm, vnodes, startIdx, endIdx, insertedVnodeQueue) {
 	    for (; startIdx <= endIdx; ++startIdx) {
-	      createElm(vnodes[startIdx], insertedVnodeQueue, parentElm, refElm, false, vnodes, startIdx);
+	      createElm(vnodes[startIdx], insertedVnodeQueue, parentElm, refElm);
 	    }
 	  }
 
@@ -6006,7 +5910,7 @@
 	          ? oldKeyToIdx[newStartVnode.key]
 	          : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx);
 	        if (isUndef(idxInOld)) { // New element
-	          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx);
+	          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
 	        } else {
 	          vnodeToMove = oldCh[idxInOld];
 	          if (sameVnode(vnodeToMove, newStartVnode)) {
@@ -6015,7 +5919,7 @@
 	            canMove && nodeOps.insertBefore(parentElm, vnodeToMove.elm, oldStartVnode.elm);
 	          } else {
 	            // same key but different element. treat as new element
-	            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm, false, newCh, newStartIdx);
+	            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
 	          }
 	        }
 	        newStartVnode = newCh[++newStartIdx];
@@ -6353,7 +6257,7 @@
 	  destroy: function unbindDirectives (vnode) {
 	    updateDirectives(vnode, emptyNode);
 	  }
-	}
+	};
 
 	function updateDirectives (oldVnode, vnode) {
 	  if (oldVnode.data.directives || vnode.data.directives) {
@@ -6464,7 +6368,7 @@
 	var baseModules = [
 	  ref,
 	  directives
-	]
+	];
 
 	/*  */
 
@@ -6510,9 +6414,7 @@
 	}
 
 	function setAttr (el, key, value) {
-	  if (el.tagName.indexOf('-') > -1) {
-	    baseSetAttr(el, key, value);
-	  } else if (isBooleanAttr(key)) {
+	  if (isBooleanAttr(key)) {
 	    // set attribute for blank value
 	    // e.g. <option disabled>Select one</option>
 	    if (isFalsyAttrValue(value)) {
@@ -6534,39 +6436,35 @@
 	      el.setAttributeNS(xlinkNS, key, value);
 	    }
 	  } else {
-	    baseSetAttr(el, key, value);
-	  }
-	}
-
-	function baseSetAttr (el, key, value) {
-	  if (isFalsyAttrValue(value)) {
-	    el.removeAttribute(key);
-	  } else {
-	    // #7138: IE10 & 11 fires input event when setting placeholder on
-	    // <textarea>... block the first input event and remove the blocker
-	    // immediately.
-	    /* istanbul ignore if */
-	    if (
-	      isIE && !isIE9 &&
-	      el.tagName === 'TEXTAREA' &&
-	      key === 'placeholder' && !el.__ieph
-	    ) {
-	      var blocker = function (e) {
-	        e.stopImmediatePropagation();
-	        el.removeEventListener('input', blocker);
-	      };
-	      el.addEventListener('input', blocker);
-	      // $flow-disable-line
-	      el.__ieph = true; /* IE placeholder patched */
+	    if (isFalsyAttrValue(value)) {
+	      el.removeAttribute(key);
+	    } else {
+	      // #7138: IE10 & 11 fires input event when setting placeholder on
+	      // <textarea>... block the first input event and remove the blocker
+	      // immediately.
+	      /* istanbul ignore if */
+	      if (
+	        isIE && !isIE9 &&
+	        el.tagName === 'TEXTAREA' &&
+	        key === 'placeholder' && !el.__ieph
+	      ) {
+	        var blocker = function (e) {
+	          e.stopImmediatePropagation();
+	          el.removeEventListener('input', blocker);
+	        };
+	        el.addEventListener('input', blocker);
+	        // $flow-disable-line
+	        el.__ieph = true; /* IE placeholder patched */
+	      }
+	      el.setAttribute(key, value);
 	    }
-	    el.setAttribute(key, value);
 	  }
 	}
 
 	var attrs = {
 	  create: updateAttrs,
 	  update: updateAttrs
-	}
+	};
 
 	/*  */
 
@@ -6604,7 +6502,7 @@
 	var klass = {
 	  create: updateClass,
 	  update: updateClass
-	}
+	};
 
 	/*  */
 
@@ -6700,7 +6598,7 @@
 	  } else {
 	    var name = filter.slice(0, i);
 	    var args = filter.slice(i + 1);
-	    return ("_f(\"" + name + "\")(" + exp + (args !== ')' ? ',' + args : args))
+	    return ("_f(\"" + name + "\")(" + exp + "," + args)
 	  }
 	}
 
@@ -6803,9 +6701,7 @@
 	    events = el.events || (el.events = {});
 	  }
 
-	  var newHandler = {
-	    value: value.trim()
-	  };
+	  var newHandler = { value: value };
 	  if (modifiers !== emptyObject) {
 	    newHandler.modifiers = modifiers;
 	  }
@@ -6885,8 +6781,8 @@
 	  if (trim) {
 	    valueExpression =
 	      "(typeof " + baseValueExpression + " === 'string'" +
-	      "? " + baseValueExpression + ".trim()" +
-	      ": " + baseValueExpression + ")";
+	        "? " + baseValueExpression + ".trim()" +
+	        ": " + baseValueExpression + ")";
 	  }
 	  if (number) {
 	    valueExpression = "_n(" + valueExpression + ")";
@@ -6940,9 +6836,6 @@
 
 
 	function parseModel (val) {
-	  // Fix https://github.com/vuejs/vue/pull/7730
-	  // allow v-model="obj.val " (trailing whitespace)
-	  val = val.trim();
 	  len = val.length;
 
 	  if (val.indexOf('[') < 0 || val.lastIndexOf(']') < len - 1) {
@@ -7103,8 +6996,8 @@
 	    'if(Array.isArray($$a)){' +
 	      "var $$v=" + (number ? '_n(' + valueBinding + ')' : valueBinding) + "," +
 	          '$$i=_i($$a,$$v);' +
-	      "if($$el.checked){$$i<0&&(" + (genAssignmentCode(value, '$$a.concat([$$v])')) + ")}" +
-	      "else{$$i>-1&&(" + (genAssignmentCode(value, '$$a.slice(0,$$i).concat($$a.slice($$i+1))')) + ")}" +
+	      "if($$el.checked){$$i<0&&(" + value + "=$$a.concat([$$v]))}" +
+	      "else{$$i>-1&&(" + value + "=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}" +
 	    "}else{" + (genAssignmentCode(value, '$$c')) + "}",
 	    null, true
 	  );
@@ -7147,11 +7040,9 @@
 	  var type = el.attrsMap.type;
 
 	  // warn if v-bind:value conflicts with v-model
-	  // except for inputs with v-bind:type
 	  {
 	    var value$1 = el.attrsMap['v-bind:value'] || el.attrsMap[':value'];
-	    var typeBinding = el.attrsMap['v-bind:type'] || el.attrsMap[':type'];
-	    if (value$1 && !typeBinding) {
+	    if (value$1) {
 	      var binding = el.attrsMap['v-bind:value'] ? 'v-bind:value' : ':value';
 	      warn$1(
 	        binding + "=\"" + value$1 + "\" conflicts with v-model on the same element " +
@@ -7272,7 +7163,7 @@
 	var events = {
 	  create: updateDOMListeners,
 	  update: updateDOMListeners
-	}
+	};
 
 	/*  */
 
@@ -7366,7 +7257,7 @@
 	var domProps = {
 	  create: updateDOMProps,
 	  update: updateDOMProps
-	}
+	};
 
 	/*  */
 
@@ -7527,7 +7418,7 @@
 	var style = {
 	  create: updateStyle,
 	  update: updateStyle
-	}
+	};
 
 	/*  */
 
@@ -7900,15 +7791,13 @@
 	    addTransitionClass(el, startClass);
 	    addTransitionClass(el, activeClass);
 	    nextFrame(function () {
+	      addTransitionClass(el, toClass);
 	      removeTransitionClass(el, startClass);
-	      if (!cb.cancelled) {
-	        addTransitionClass(el, toClass);
-	        if (!userWantsControl) {
-	          if (isValidDuration(explicitEnterDuration)) {
-	            setTimeout(cb, explicitEnterDuration);
-	          } else {
-	            whenTransitionEnds(el, type, cb);
-	          }
+	      if (!cb.cancelled && !userWantsControl) {
+	        if (isValidDuration(explicitEnterDuration)) {
+	          setTimeout(cb, explicitEnterDuration);
+	        } else {
+	          whenTransitionEnds(el, type, cb);
 	        }
 	      }
 	    });
@@ -8008,15 +7897,13 @@
 	      addTransitionClass(el, leaveClass);
 	      addTransitionClass(el, leaveActiveClass);
 	      nextFrame(function () {
+	        addTransitionClass(el, leaveToClass);
 	        removeTransitionClass(el, leaveClass);
-	        if (!cb.cancelled) {
-	          addTransitionClass(el, leaveToClass);
-	          if (!userWantsControl) {
-	            if (isValidDuration(explicitLeaveDuration)) {
-	              setTimeout(cb, explicitLeaveDuration);
-	            } else {
-	              whenTransitionEnds(el, type, cb);
-	            }
+	        if (!cb.cancelled && !userWantsControl) {
+	          if (isValidDuration(explicitLeaveDuration)) {
+	            setTimeout(cb, explicitLeaveDuration);
+	          } else {
+	            whenTransitionEnds(el, type, cb);
 	          }
 	        }
 	      });
@@ -8089,7 +7976,7 @@
 	      rm();
 	    }
 	  }
-	} : {}
+	} : {};
 
 	var platformModules = [
 	  attrs,
@@ -8098,7 +7985,7 @@
 	  domProps,
 	  style,
 	  transition
-	]
+	];
 
 	/*  */
 
@@ -8139,13 +8026,15 @@
 	    } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
 	      el._vModifiers = binding.modifiers;
 	      if (!binding.modifiers.lazy) {
-	        el.addEventListener('compositionstart', onCompositionStart);
-	        el.addEventListener('compositionend', onCompositionEnd);
 	        // Safari < 10.2 & UIWebView doesn't fire compositionend when
 	        // switching focus before confirming composition choice
 	        // this also fixes the issue where some browsers e.g. iOS Chrome
 	        // fires "change" instead of "input" on autocomplete.
 	        el.addEventListener('change', onCompositionEnd);
+	        if (!isAndroid) {
+	          el.addEventListener('compositionstart', onCompositionStart);
+	          el.addEventListener('compositionend', onCompositionEnd);
+	        }
 	        /* istanbul ignore if */
 	        if (isIE9) {
 	          el.vmodel = true;
@@ -8279,7 +8168,7 @@
 	    var oldValue = ref.oldValue;
 
 	    /* istanbul ignore if */
-	    if (!value === !oldValue) { return }
+	    if (value === oldValue) { return }
 	    vnode = locateNode(vnode);
 	    var transition$$1 = vnode.data && vnode.data.transition;
 	    if (transition$$1) {
@@ -8309,12 +8198,12 @@
 	      el.style.display = el.__vOriginalDisplay;
 	    }
 	  }
-	}
+	};
 
 	var platformDirectives = {
 	  model: directive,
 	  show: show
-	}
+	};
 
 	/*  */
 
@@ -8503,7 +8392,7 @@
 
 	    return rawChild
 	  }
-	}
+	};
 
 	/*  */
 
@@ -8577,7 +8466,7 @@
 	      this._vnode,
 	      this.kept,
 	      false, // hydrating
-	      true // removeOnly (!important, avoids unnecessary moves)
+	      true // removeOnly (!important avoids unnecessary moves)
 	    );
 	    this._vnode = this.kept;
 	  },
@@ -8644,7 +8533,7 @@
 	      return (this._hasMove = info.hasTransform)
 	    }
 	  }
-	}
+	};
 
 	function callPendingCbs (c) {
 	  /* istanbul ignore if */
@@ -8677,26 +8566,26 @@
 	var platformComponents = {
 	  Transition: Transition,
 	  TransitionGroup: TransitionGroup
-	}
+	};
 
 	/*  */
 
 	// install platform specific utils
-	Vue.config.mustUseProp = mustUseProp;
-	Vue.config.isReservedTag = isReservedTag;
-	Vue.config.isReservedAttr = isReservedAttr;
-	Vue.config.getTagNamespace = getTagNamespace;
-	Vue.config.isUnknownElement = isUnknownElement;
+	Vue$3.config.mustUseProp = mustUseProp;
+	Vue$3.config.isReservedTag = isReservedTag;
+	Vue$3.config.isReservedAttr = isReservedAttr;
+	Vue$3.config.getTagNamespace = getTagNamespace;
+	Vue$3.config.isUnknownElement = isUnknownElement;
 
 	// install platform runtime directives & components
-	extend(Vue.options.directives, platformDirectives);
-	extend(Vue.options.components, platformComponents);
+	extend(Vue$3.options.directives, platformDirectives);
+	extend(Vue$3.options.components, platformComponents);
 
 	// install platform patch function
-	Vue.prototype.__patch__ = inBrowser ? patch : noop;
+	Vue$3.prototype.__patch__ = inBrowser ? patch : noop;
 
 	// public mount method
-	Vue.prototype.$mount = function (
+	Vue$3.prototype.$mount = function (
 	  el,
 	  hydrating
 	) {
@@ -8706,35 +8595,28 @@
 
 	// devtools global hook
 	/* istanbul ignore next */
-	if (inBrowser) {
-	  setTimeout(function () {
-	    if (config.devtools) {
-	      if (devtools) {
-	        devtools.emit('init', Vue);
-	      } else if (
-	        "development" !== 'production' &&
-	        "development" !== 'test' &&
-	        isChrome
-	      ) {
-	        console[console.info ? 'info' : 'log'](
-	          'Download the Vue Devtools extension for a better development experience:\n' +
-	          'https://github.com/vuejs/vue-devtools'
-	        );
-	      }
-	    }
-	    if ("development" !== 'production' &&
-	      "development" !== 'test' &&
-	      config.productionTip !== false &&
-	      typeof console !== 'undefined'
-	    ) {
+	Vue$3.nextTick(function () {
+	  if (config.devtools) {
+	    if (devtools) {
+	      devtools.emit('init', Vue$3);
+	    } else if ("development" !== 'production' && isChrome) {
 	      console[console.info ? 'info' : 'log'](
-	        "You are running Vue in development mode.\n" +
-	        "Make sure to turn on production mode when deploying for production.\n" +
-	        "See more tips at https://vuejs.org/guide/deployment.html"
+	        'Download the Vue Devtools extension for a better development experience:\n' +
+	        'https://github.com/vuejs/vue-devtools'
 	      );
 	    }
-	  }, 0);
-	}
+	  }
+	  if ("development" !== 'production' &&
+	    config.productionTip !== false &&
+	    inBrowser && typeof console !== 'undefined'
+	  ) {
+	    console[console.info ? 'info' : 'log'](
+	      "You are running Vue in development mode.\n" +
+	      "Make sure to turn on production mode when deploying for production.\n" +
+	      "See more tips at https://vuejs.org/guide/deployment.html"
+	    );
+	  }
+	}, 0);
 
 	/*  */
 
@@ -8824,7 +8706,7 @@
 	  staticKeys: ['staticClass'],
 	  transformNode: transformNode,
 	  genData: genData
-	}
+	};
 
 	/*  */
 
@@ -8868,7 +8750,7 @@
 	  staticKeys: ['staticStyle'],
 	  transformNode: transformNode$1,
 	  genData: genData$1
-	}
+	};
 
 	/*  */
 
@@ -8880,7 +8762,7 @@
 	    decoder.innerHTML = html;
 	    return decoder.textContent
 	  }
-	}
+	};
 
 	/*  */
 
@@ -8926,8 +8808,7 @@
 	var startTagClose = /^\s*(\/?)>/;
 	var endTag = new RegExp(("^<\\/" + qnameCapture + "[^>]*>"));
 	var doctype = /^<!DOCTYPE [^>]+>/i;
-	// #7298: escape - to avoid being pased as HTML comment when inlined in page
-	var comment = /^<!\--/;
+	var comment = /^<!--/;
 	var conditionalComment = /^<!\[/;
 
 	var IS_REGEX_CAPTURING_BROKEN = false;
@@ -9057,7 +8938,7 @@
 	        endTagLength = endTag.length;
 	        if (!isPlainTextElement(stackedTag) && stackedTag !== 'noscript') {
 	          text = text
-	            .replace(/<!\--([\s\S]*?)-->/g, '$1') // #7298
+	            .replace(/<!--([\s\S]*?)-->/g, '$1')
 	            .replace(/<!\[CDATA\[([\s\S]*?)]]>/g, '$1');
 	        }
 	        if (shouldIgnoreFirstNewline(stackedTag, text)) {
@@ -9217,7 +9098,7 @@
 
 	var onRE = /^@|^v-on:/;
 	var dirRE = /^v-|^@|^:/;
-	var forAliasRE = /([^]*?)\s+(?:in|of)\s+([^]*)/;
+	var forAliasRE = /(.*?)\s+(?:in|of)\s+(.*)/;
 	var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
 	var stripParensRE = /^\(|\)$/g;
 
@@ -9555,8 +9436,6 @@
 	  }
 	}
 
-
-
 	function parseFor (exp) {
 	  var inMatch = exp.match(forAliasRE);
 	  if (!inMatch) { return }
@@ -9879,19 +9758,8 @@
 	function preTransformNode (el, options) {
 	  if (el.tag === 'input') {
 	    var map = el.attrsMap;
-	    if (!map['v-model']) {
-	      return
-	    }
-
-	    var typeBinding;
-	    if (map[':type'] || map['v-bind:type']) {
-	      typeBinding = getBindingAttr(el, 'type');
-	    }
-	    if (!map.type && !typeBinding && map['v-bind']) {
-	      typeBinding = "(" + (map['v-bind']) + ").type";
-	    }
-
-	    if (typeBinding) {
+	    if (map['v-model'] && (map['v-bind:type'] || map[':type'])) {
+	      var typeBinding = getBindingAttr(el, 'type');
 	      var ifCondition = getAndRemoveAttr(el, 'v-if', true);
 	      var ifConditionExtra = ifCondition ? ("&&(" + ifCondition + ")") : "";
 	      var hasElse = getAndRemoveAttr(el, 'v-else', true) != null;
@@ -9944,13 +9812,13 @@
 
 	var model$2 = {
 	  preTransformNode: preTransformNode
-	}
+	};
 
 	var modules$1 = [
 	  klass$1,
 	  style$1,
 	  model$2
-	]
+	];
 
 	/*  */
 
@@ -9972,7 +9840,7 @@
 	  model: model,
 	  text: text,
 	  html: html
-	}
+	};
 
 	/*  */
 
@@ -10118,10 +9986,10 @@
 
 	/*  */
 
-	var fnExpRE = /^([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
-	var simplePathRE = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['[^']*?']|\["[^"]*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*$/;
+	var fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
+	var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
 
-	// KeyboardEvent.keyCode aliases
+	// keyCode aliases
 	var keyCodes = {
 	  esc: 27,
 	  tab: 9,
@@ -10132,20 +10000,6 @@
 	  right: 39,
 	  down: 40,
 	  'delete': [8, 46]
-	};
-
-	// KeyboardEvent.key aliases
-	var keyNames = {
-	  esc: 'Escape',
-	  tab: 'Tab',
-	  enter: 'Enter',
-	  space: ' ',
-	  // #7806: IE11 uses key names without `Arrow` prefix for arrow keys.
-	  up: ['Up', 'ArrowUp'],
-	  left: ['Left', 'ArrowLeft'],
-	  right: ['Right', 'ArrowRight'],
-	  down: ['Down', 'ArrowDown'],
-	  'delete': ['Backspace', 'Delete']
 	};
 
 	// #4868: modifiers that prevent the execution of the listener
@@ -10230,9 +10084,9 @@
 	      code += genModifierCode;
 	    }
 	    var handlerCode = isMethodPath
-	      ? ("return " + (handler.value) + "($event)")
+	      ? handler.value + '($event)'
 	      : isFunctionExpression
-	        ? ("return (" + (handler.value) + ")($event)")
+	        ? ("(" + (handler.value) + ")($event)")
 	        : handler.value;
 	    /* istanbul ignore if */
 	    return ("function($event){" + code + handlerCode + "}")
@@ -10248,15 +10102,12 @@
 	  if (keyVal) {
 	    return ("$event.keyCode!==" + keyVal)
 	  }
-	  var keyCode = keyCodes[key];
-	  var keyName = keyNames[key];
+	  var code = keyCodes[key];
 	  return (
 	    "_k($event.keyCode," +
 	    (JSON.stringify(key)) + "," +
-	    (JSON.stringify(keyCode)) + "," +
-	    "$event.key," +
-	    "" + (JSON.stringify(keyName)) +
-	    ")"
+	    (JSON.stringify(code)) + "," +
+	    "$event.key)"
 	  )
 	}
 
@@ -10283,7 +10134,7 @@
 	  on: on,
 	  bind: bind$1,
 	  cloak: noop
-	}
+	};
 
 	/*  */
 
@@ -11034,8 +10885,8 @@
 	  return el && el.innerHTML
 	});
 
-	var mount = Vue.prototype.$mount;
-	Vue.prototype.$mount = function (
+	var mount = Vue$3.prototype.$mount;
+	Vue$3.prototype.$mount = function (
 	  el,
 	  hydrating
 	) {
@@ -11117,9 +10968,9 @@
 	  }
 	}
 
-	Vue.compile = compileToFunctions;
+	Vue$3.compile = compileToFunctions;
 
-	return Vue;
+	return Vue$3;
 
 	})));
 
@@ -11129,7 +10980,7 @@
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
+	var apply = Function.prototype.apply;
 
 	// DOM APIs, for completeness
 
@@ -11180,17 +11031,9 @@
 
 	// setimmediate attaches itself to the global object
 	__webpack_require__(3);
-	// On some exotic environments, it's not clear which object `setimmeidate` was
-	// able to install onto.  Search each possibility in the same order as the
-	// `setimmediate` library.
-	exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-	                       (typeof global !== "undefined" && global.setImmediate) ||
-	                       (this && this.setImmediate);
-	exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-	                         (typeof global !== "undefined" && global.clearImmediate) ||
-	                         (this && this.clearImmediate);
+	exports.setImmediate = setImmediate;
+	exports.clearImmediate = clearImmediate;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
 /* 3 */
@@ -11654,7 +11497,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\main\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\main\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -11678,8 +11521,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-01f0a7b2&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-01f0a7b2&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-3b46735c&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-3b46735c&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -12276,7 +12119,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.layout .layout-logo {\r\n  color: #FFF;\r\n  width: 300px;\r\n}\r\n\r\n.layout .ivu-layout-header {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  justify-content: space-between;\r\n  background: #373d41;\r\n  /* Safari 5.1 - 6.0 */\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(1) {\r\n  width: 300px;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  color: #fff;\r\n  text-align: center;\r\n  font-size: 30px;\r\n  font-weight: bold;\r\n  background: #b30501;\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(1) .wm-title {\r\n  margin: 0 auto;\r\n  width: 300px;\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(2) {\r\n  -webkit-flex-grow: 1;\r\n  flex-grow: 1;\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(2) div {\r\n  margin-top: 14px;\r\n  width: 400px;\r\n  height: 36px;\r\n  line-height: 36px;\r\n  margin-left: 20px;\r\n  border-radius: 18px;\r\n  background: #21262a;\r\n  border: none;\r\n  padding: 0;\r\n  position: relative;\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(2) div img {\r\n  width: 20px;\r\n  position: absolute;\r\n  top: 8px;\r\n  left: 20px;\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(2) input {\r\n  width: 330px;\r\n  height: 36px;\r\n  line-height: 36px;\r\n  margin-left: 40px;\r\n  border-radius: 18px;\r\n  background: transparent;\r\n  border: none;\r\n  padding: 0;\r\n  font-size: 14px;\r\n  outline: none;\r\n  padding-left: 20px;\r\n  color: #fff;\r\n}\r\n\r\n.layout .ivu-layout-header > div:nth-of-type(2) input::-webkit-input-placeholder {\r\n  color: #eee;\r\n}\r\n\r\n.layout .ivu-layout-header > div.wm-user-info {\r\n  min-width: 250px;\r\n  position: relative;\r\n}\r\n\r\n.layout .ivu-layout-header > div.wm-user-info img {\r\n  width: 30px;\r\n}\r\n\r\n.layout .ivu-layout-header > div.wm-user-info div {\r\n  background: #b30501;\r\n  position: absolute;\r\n  right: 0;\r\n  cursor: pointer;\r\n  width: 80px;\r\n  top: 0;\r\n  height: 100%;\r\n  text-align: center;\r\n}\r\n\r\n.layout .ivu-layout-header > div.wm-user-info div img {\r\n  width: 30px;\r\n}\r\n\r\n.layout .ivu-layout-header > div.wm-user-info span {\r\n  vertical-align: middle;\r\n  color: #fff;\r\n  margin: 0 10px;\r\n  display: inline-block;\r\n  font-size: 14px;\r\n  max-width: 100px;\r\n  position: relative;\r\n  top: 0;\r\n  z-index: 10;\r\n}\r\n\r\n.layout .wm-user img {\r\n  width: 50px;\r\n}\r\n\r\n.layout .wm-tab-C {\r\n  background: #333645;\r\n  width: 300px !important;\r\n}\r\n\r\n.layout .wm-tab-C > div {\r\n  background: #fff;\r\n  border: 1px solid #fff;\r\n}\r\n\r\n.layout .wm-tab-C .wm-menu-item {\r\n  background: #fff;\r\n  height: 40px;\r\n  line-height: 40px;\r\n  color: #333;\r\n  text-indent: 3em;\r\n  position: relative;\r\n}\r\n\r\n.layout .wm-tab-C .wm-menu-item a {\r\n  color: inherit;\r\n}\r\n\r\n.layout .wm-tab-C .wm-menu-item:nth-of-type(1) {\r\n  margin-top: 10px;\r\n}\r\n\r\n.layout .wm-tab-C .wm-menu-item.active {\r\n  color: #f00;\r\n  font-weight: bold;\r\n  background: rgba(204, 0, 0, 0.1);\r\n}\r\n\r\n.layout .wm-tab-C .wm-menu-item.active:before {\r\n  content: '';\r\n  width: 2px;\r\n  height: 100%;\r\n  background: #f00;\r\n  position: absolute;\r\n  right: 0;\r\n  top: 0;\r\n}\r\n\r\n.layout .wm-tab-C a {\r\n  display: block;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.layout .wm-tab-C img {\r\n  width: 20px;\r\n}\r\n\r\n.layout .ivu-layout-sider-children {\r\n  overflow: hidden;\r\n}\r\n\r\n.layout .layout-nav li > a {\r\n  color: rgba(255, 255, 255, 0.7);\r\n}\r\n\r\n.layout .layout-nav li > a:hover {\r\n  color: white;\r\n}\r\n\r\n.layout .layout-nav li > a.router-link-active {\r\n  color: white;\r\n}\r\n\r\n.layout .wm-main-layout {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n}\r\n\r\n.layout .symbin-main-menu {\r\n  background: #333744 !important;\r\n}\r\n\r\n.layout .symbin-main-menu li {\r\n  position: relative;\r\n}\r\n\r\n.layout .symbin-main-menu a {\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 100%;\r\n  color: inherit;\r\n  left: 0;\r\n  top: 0;\r\n  text-align: center;\r\n  line-height: 50px;\r\n}\r\n\r\n.layout .symbin-main-menu a:hover {\r\n  color: inherit;\r\n}\r\n\r\n.layout i.ivu-icon-ionic {\r\n  opacity: 0;\r\n}\r\n\r\n.layout .ivu-menu-item > a > i {\r\n  margin-right: 6px;\r\n}\r\n\r\n.layout .ivu-menu-item > a {\r\n  color: rgba(255, 255, 255, 0.7);\r\n}\r\n\r\n.layout .ivu-menu-submenu .ivu-menu-item {\r\n  padding-left: 24px !important;\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.layout .layout-logo {\n  color: #FFF;\n  width: 300px;\n}\n\n.layout .ivu-layout-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  background: #373d41;\n  /* Safari 5.1 - 6.0 */\n}\n\n.layout .ivu-layout-header > div:nth-of-type(1) {\n  width: 300px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  color: #fff;\n  text-align: center;\n  font-size: 30px;\n  font-weight: bold;\n  background: #b30501;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(1) .wm-title {\n  margin: 0 auto;\n  width: 300px;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) div {\n  margin-top: 14px;\n  width: 400px;\n  height: 36px;\n  line-height: 36px;\n  margin-left: 20px;\n  border-radius: 18px;\n  background: #21262a;\n  border: none;\n  padding: 0;\n  position: relative;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) div img {\n  width: 20px;\n  position: absolute;\n  top: 8px;\n  left: 20px;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) input {\n  width: 330px;\n  height: 36px;\n  line-height: 36px;\n  margin-left: 40px;\n  border-radius: 18px;\n  background: transparent;\n  border: none;\n  padding: 0;\n  font-size: 14px;\n  outline: none;\n  padding-left: 20px;\n  color: #fff;\n}\n\n.layout .ivu-layout-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #eee;\n}\n\n.layout .ivu-layout-header > div.wm-user-info {\n  min-width: 250px;\n  position: relative;\n}\n\n.layout .ivu-layout-header > div.wm-user-info img {\n  width: 30px;\n}\n\n.layout .ivu-layout-header > div.wm-user-info div {\n  background: #b30501;\n  position: absolute;\n  right: 0;\n  cursor: pointer;\n  width: 80px;\n  top: 0;\n  height: 100%;\n  text-align: center;\n}\n\n.layout .ivu-layout-header > div.wm-user-info div img {\n  width: 30px;\n}\n\n.layout .ivu-layout-header > div.wm-user-info span {\n  vertical-align: middle;\n  color: #fff;\n  margin: 0 10px;\n  display: inline-block;\n  font-size: 14px;\n  max-width: 100px;\n  position: relative;\n  top: 0;\n  z-index: 10;\n}\n\n.layout .wm-user img {\n  width: 50px;\n}\n\n.layout .wm-tab-C {\n  background: #333645;\n  width: 300px !important;\n}\n\n.layout .wm-tab-C > div {\n  background: #fff;\n  border: 1px solid #fff;\n}\n\n.layout .wm-tab-C .wm-menu-item {\n  background: #fff;\n  height: 40px;\n  line-height: 40px;\n  color: #333;\n  text-indent: 3em;\n  position: relative;\n}\n\n.layout .wm-tab-C .wm-menu-item a {\n  color: inherit;\n}\n\n.layout .wm-tab-C .wm-menu-item:nth-of-type(1) {\n  margin-top: 10px;\n}\n\n.layout .wm-tab-C .wm-menu-item.active {\n  color: #f00;\n  font-weight: bold;\n  background: rgba(204, 0, 0, 0.1);\n}\n\n.layout .wm-tab-C .wm-menu-item.active:before {\n  content: '';\n  width: 2px;\n  height: 100%;\n  background: #f00;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n\n.layout .wm-tab-C a {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n\n.layout .wm-tab-C img {\n  width: 20px;\n}\n\n.layout .ivu-layout-sider-children {\n  overflow: hidden;\n}\n\n.layout .layout-nav li > a {\n  color: rgba(255, 255, 255, 0.7);\n}\n\n.layout .layout-nav li > a:hover {\n  color: white;\n}\n\n.layout .layout-nav li > a.router-link-active {\n  color: white;\n}\n\n.layout .wm-main-layout {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.layout .symbin-main-menu {\n  background: #333744 !important;\n}\n\n.layout .symbin-main-menu li {\n  position: relative;\n}\n\n.layout .symbin-main-menu a {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  color: inherit;\n  left: 0;\n  top: 0;\n  text-align: center;\n  line-height: 50px;\n}\n\n.layout .symbin-main-menu a:hover {\n  color: inherit;\n}\n\n.layout i.ivu-icon-ionic {\n  opacity: 0;\n}\n\n.layout .ivu-menu-item {\n  text-indent: 4em;\n}\n\n.layout .ivu-menu-item > a > i {\n  margin-right: 6px;\n}\n\n.layout .ivu-menu-item > a {\n  color: rgba(255, 255, 255, 0.7);\n}\n\n.layout .ivu-menu-submenu .ivu-menu-item {\n  padding-left: 24px !important;\n}\n", ""]);
 
 	// exports
 
@@ -12420,7 +12263,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\adminuser\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\adminuser\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -12444,17 +12287,17 @@
 	//
 	// 		<Modal
 	// 			v-model="visible"
-	// 			:title="currentUserId === -1? '新增评委':'编辑评委'"
+	// 			:title="currentUserId === -1? '新增用户':'编辑用户'"
 	// 			@on-ok="ok"
 	// 			@on-cancel="cancel">
 	// 			<Form ref="formAdmin" :model="formAdmin" :label-width="72" >
 	// 				<FormItem label="账号：" prop="ratername">
-	// 					<Input  v-model="formAdmin.username" placeholder="账号" autocomplete="off" />
+	// 					<Input :disabled = 'currentUserId !== -1'  v-model="formAdmin.username" placeholder="账号" autocomplete="off" />
 	//
 	// 				</FormItem>
 	// 				<FormItem label="密码：" prop="userpwd">
 	// 					<Input ref='pass' :disabled='!showPass' v-model="formAdmin.userpwd" placeholder="密码" autocomplete="off" />
-	// 					<Button type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
+	// 					<Button :disabled='currentUserId ===-1' type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
 	// 				</FormItem>
 	// 				<FormItem label="昵称：" prop="nickname">
 	// 					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
@@ -12505,7 +12348,16 @@
 				columns: [{
 					title: "用户名",
 					key: 'username',
-					align: 'center'
+					align: 'center',
+					render: function render(h, params) {
+						return h('div', {
+							style: {
+								width: '53%',
+								float: 'right',
+								textAlign: 'left'
+							}
+						}, params.row.username);
+					}
 				}, {
 					title: "昵称",
 					key: 'nickname',
@@ -12521,7 +12373,14 @@
 								size: 'small'
 							},
 							style: {
-								marginRight: '5px'
+								margin: '2px 5px',
+								border: 'none',
+								background: '#fab82e',
+								color: '#fff',
+								padding: '3px 7px 2px',
+								fontSize: '12px',
+								borderRadius: '3px'
+
 							},
 							on: {
 								click: function click() {
@@ -12544,8 +12403,7 @@
 						}, [h('Button', {
 							props: {
 								type: 'error',
-								size: 'small',
-								icon: 'trash-a'
+								size: 'small'
 							},
 							on: {
 								click: function click() {
@@ -12752,7 +12610,7 @@
 /* 21 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>用户管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentUserId === -1? '新增评委':'编辑评委'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input  v-model=\"formAdmin.username\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"userpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.userpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>用户管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentUserId === -1? '新增用户':'编辑用户'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input :disabled = 'currentUserId !== -1'  v-model=\"formAdmin.username\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"userpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.userpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button :disabled='currentUserId ===-1' type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 22 */
@@ -12768,7 +12626,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\user\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\user\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -13111,7 +12969,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-user-ui {\r\n  height: 100%;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: column;\r\n}\r\n\r\n.wm-user-ui > div {\r\n  flex-grow: 1;\r\n  width: 97%;\r\n  margin: 10px auto;\r\n}\r\n\r\n.wm-user-ui > header {\r\n  background: #fff;\r\n  height: 50px;\r\n  width: 100%;\r\n  line-height: 50px;\r\n}\r\n\r\n.wm-user-ui > header > div {\r\n  font-size: 20px;\r\n  margin-left: 40px;\r\n  position: relative;\r\n}\r\n\r\n.wm-user-ui > header > div:before {\r\n  content: \"\";\r\n  position: absolute;\r\n  width: 2px;\r\n  height: 20px;\r\n  background: #cc0000;\r\n  top: 15px;\r\n  left: -10px;\r\n}\r\n\r\n.wm-user-ui .wm-user-center {\r\n  -webkit-flex-grow: 1;\r\n  flex-grow: 1;\r\n  height: 100%;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  -webkit-justify-content: center;\r\n  justify-content: center;\r\n  -webkit-align-items: center;\r\n  align-items: center;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item {\r\n  background: #eeeeee;\r\n  width: 400px;\r\n  border-radius: 4px;\r\n  padding: 0 20px;\r\n  height: 50px;\r\n  margin: 4px 0;\r\n  line-height: 50px;\r\n  position: relative;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item.wm-require label {\r\n  position: relative;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item.wm-require label:before {\r\n  content: '*';\r\n  position: absolute;\r\n  color: #be0000;\r\n  font-size: 20px;\r\n  left: -40px;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item button {\r\n  position: absolute;\r\n  right: 10px;\r\n  top: 8px;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item .ivu-cascader {\r\n  position: absolute;\r\n  z-index: 10;\r\n  right: 20px;\r\n  top: 10px;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item .ivu-cascader input {\r\n  outline: none;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item .wm-user-error {\r\n  position: absolute;\r\n  color: #ff0000;\r\n  left: 102%;\r\n  z-index: 1;\r\n  top: 0;\r\n  min-width: 150px;\r\n}\r\n\r\n.wm-user-ui .wm-user-form-item input {\r\n  outline: none;\r\n  background: transparent;\r\n  border: 1px solid #ccc;\r\n  padding: 0;\r\n  height: 30px;\r\n  width: 270px;\r\n  border: none;\r\n}\r\n\r\n.wm-user-ui .wx-reg-btn {\r\n  margin-top: 20px;\r\n  background: #fab82e;\r\n  color: #fff;\r\n  text-align: center;\r\n  font-size: 16px;\r\n  cursor: pointer;\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-user-ui {\n  height: 100%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-user-ui > div {\n  flex-grow: 1;\n  width: 97%;\n  margin: 10px auto;\n}\n\n.wm-user-ui > header {\n  background: #fff;\n  height: 50px;\n  width: 100%;\n  line-height: 50px;\n}\n\n.wm-user-ui > header > div {\n  font-size: 20px;\n  margin-left: 40px;\n  position: relative;\n}\n\n.wm-user-ui > header > div:before {\n  content: \"\";\n  position: absolute;\n  width: 2px;\n  height: 20px;\n  background: #cc0000;\n  top: 15px;\n  left: -10px;\n}\n\n.wm-user-ui .wm-user-center {\n  -webkit-flex-grow: 1;\n  flex-grow: 1;\n  height: 100%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  margin-top: -20vh;\n}\n\n.wm-user-ui .wm-user-form-item {\n  background: #eeeeee;\n  width: 400px;\n  border-radius: 4px;\n  padding: 0 20px;\n  height: 50px;\n  margin: 4px 0;\n  line-height: 50px;\n  position: relative;\n}\n\n.wm-user-ui .wm-user-form-item.wm-require label {\n  position: relative;\n}\n\n.wm-user-ui .wm-user-form-item.wm-require label:before {\n  content: '*';\n  position: absolute;\n  color: #be0000;\n  font-size: 20px;\n  left: -40px;\n}\n\n.wm-user-ui .wm-user-form-item button {\n  position: absolute;\n  right: 10px;\n  top: 8px;\n}\n\n.wm-user-ui .wm-user-form-item .ivu-cascader {\n  position: absolute;\n  z-index: 10;\n  right: 20px;\n  top: 10px;\n}\n\n.wm-user-ui .wm-user-form-item .ivu-cascader input {\n  outline: none;\n}\n\n.wm-user-ui .wm-user-form-item .wm-user-error {\n  position: absolute;\n  color: #ff0000;\n  left: 102%;\n  z-index: 1;\n  top: 0;\n  min-width: 150px;\n}\n\n.wm-user-ui .wm-user-form-item input {\n  outline: none;\n  background: transparent;\n  border: 1px solid #ccc;\n  padding: 0;\n  height: 30px;\n  width: 270px;\n  border: none;\n}\n\n.wm-user-ui .wx-reg-btn {\n  margin-top: 20px;\n  background: #fab82e;\n  color: #fff;\n  text-align: center;\n  font-size: 16px;\n  cursor: pointer;\n}\n", ""]);
 
 	// exports
 
@@ -13137,7 +12995,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\vote\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\vote\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -13161,8 +13019,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-167eeba3&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-167eeba3&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-1229eb7a&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-1229eb7a&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -13180,7 +13038,7 @@
 
 
 	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { transform: rotate(0deg);}\r\n        50%  { transform: rotate(180deg);}\r\n        to   { transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
 
 	// exports
 
@@ -13544,7 +13402,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\login\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\login\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -13568,8 +13426,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-215ad36c&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-215ad36c&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4e7288cc&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4e7288cc&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -13587,7 +13445,7 @@
 
 
 	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { transform: rotate(0deg);}\r\n        50%  { transform: rotate(180deg);}\r\n        to   { transform: rotate(360deg);}\r\n    }\r\n ", ""]);
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n ", ""]);
 
 	// exports
 
@@ -13630,6 +13488,9 @@
 	// 						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
 	// 					</div>
 	// 				</div>
+	// 				<div class='wm-browner-tip' v-if='isNotChrome'>
+	// 					<img draggable="false" :src="imgs.brower" alt="">
+	// 				</div>
 	// 			</div>
 	// 			<div class="wm-copyright">
 	// 				中国文明网 &copy;版权所有
@@ -13669,6 +13530,7 @@
 				checked: false,
 				isLogined: false,
 				isMove: false,
+				isNotChrome: true,
 				showLoading: false,
 				showError: false,
 				errorMsg: '',
@@ -13749,6 +13611,8 @@
 		},
 		mounted: function mounted() {
 			this.checkCache();
+			var ua = navigator.userAgent.toLowerCase();
+			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/);
 		}
 	};
 
@@ -13800,7 +13664,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-login-ui {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: column;\r\n}\r\n\r\n.wm-login-ui > header {\r\n  height: 64px;\r\n  line-height: 64px;\r\n  width: 100%;\r\n  position: relative;\r\n}\r\n\r\n.wm-login-ui > header > div {\r\n  width: 1000px;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  margin: 0 auto;\r\n  -webkit-justify-content: space-between;\r\n  justify-content: space-between;\r\n}\r\n\r\n.wm-login-ui > header:before {\r\n  content: '';\r\n  background: #cc0000;\r\n  width: 100%;\r\n  height: 3px;\r\n  left: 0;\r\n  position: absolute;\r\n  bottom: 0;\r\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\r\n}\r\n\r\n.wm-login-ui > header img {\r\n  width: 100px;\r\n  margin-left: 30px;\r\n  vertical-align: middle;\r\n  font-size: 0;\r\n}\r\n\r\n.wm-login-ui > header a {\r\n  color: #cc0000;\r\n}\r\n\r\n.wm-login-ui > header a:hover {\r\n  text-decoration: underline;\r\n}\r\n\r\n.wm-login-ui > section {\r\n  flex-grow: 1;\r\n  width: 100%;\r\n  margin: 0 auto;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  -webkit-justify-content: center;\r\n  justify-content: center;\r\n  -webkit-align-items: center;\r\n  align-items: center;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C {\r\n  position: relative;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-title {\r\n  margin-bottom: 7vh;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C > h2 {\r\n  color: #fff;\r\n  font-size: 40px;\r\n  margin: 30px 0;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C > h2 span {\r\n  font-size: 20px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  -webkit-justify-content: space-between;\r\n  justify-content: space-between;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\r\n  background: #fff;\r\n  height: 50px;\r\n  line-height: 50px;\r\n  padding: 0 20px;\r\n  border-radius: 10px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\r\n  color: #f00;\r\n  margin-top: -12px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\r\n  margin: 0 10px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\r\n  width: 120px;\r\n  color: #fff;\r\n  text-align: center;\r\n  line-height: 50px;\r\n  cursor: pointer;\r\n  font-size: 16px;\r\n  position: relative;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\r\n  background: #f5a420;\r\n  border-radius: 10px;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\r\n  position: absolute;\r\n  width: 100%;\r\n  left: 0;\r\n  color: #fff;\r\n  margin-top: -3px;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\r\n  border: none;\r\n  height: 30px;\r\n  background: transparent;\r\n  outline: none;\r\n}\r\n\r\n.wm-login-ui > section .wm-login-C .wm-login-form img {\r\n  width: 20px;\r\n}\r\n\r\n.wm-login-ui > section .wm-copyright {\r\n  position: absolute;\r\n  bottom: 0;\r\n  width: 100%;\r\n  text-align: center;\r\n  height: 50px;\r\n  line-height: 50px;\r\n  color: #fff;\r\n  background: #cc0000;\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-login-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-login-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-login-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-login-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-login-ui > header a {\n  color: #cc0000;\n}\n\n.wm-login-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-login-ui > section {\n  flex-grow: 1;\n  width: 100%;\n  margin: 0 auto;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-login-ui > section .wm-login-C {\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-title {\n  margin-bottom: 7vh;\n}\n\n.wm-login-ui > section .wm-login-C > h2 {\n  color: #fff;\n  font-size: 40px;\n  margin: 30px 0;\n}\n\n.wm-login-ui > section .wm-login-C > h2 span {\n  font-size: 20px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  background: #fff;\n  height: 50px;\n  line-height: 50px;\n  padding: 0 20px;\n  border-radius: 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\n  color: #f00;\n  margin-top: -12px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  margin: 0 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\n  width: 120px;\n  color: #fff;\n  text-align: center;\n  line-height: 50px;\n  cursor: pointer;\n  font-size: 16px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\n  background: #f5a420;\n  border-radius: 10px;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\n  position: absolute;\n  width: 100%;\n  left: 0;\n  color: #fff;\n  margin-top: -3px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\n  border: none;\n  height: 30px;\n  background: transparent;\n  outline: none;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form img {\n  width: 20px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-browner-tip {\n  text-align: center;\n  color: #fff;\n  margin-top: 30px;\n  font-size: 14px;\n  position: absolute;\n  top: -100px;\n  -webkit-animation: 1s flash infinite alternate;\n  animation: 1s flash infinite alternate;\n}\n\n@-webkit-keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n@keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n@-moz-keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n.wm-login-ui > section .wm-copyright {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  text-align: center;\n  height: 50px;\n  line-height: 50px;\n  color: #fff;\n  left: 0;\n  background: #cc0000;\n}\n", ""]);
 
 	// exports
 
@@ -13809,7 +13673,7 @@
 /* 40 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a v-if='false' href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.adminLoginBg+') no-repeat center 40%',backgroundSize:'100%'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统 <span>(管理端)</span></h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"load-c\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a v-if='false' href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.adminLoginBg+') no-repeat center 40%',backgroundSize:'100%'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统 <span>(管理端)</span></h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"load-c\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='wm-browner-tip' v-if='isNotChrome'>\r\n\t\t\t\t\t<img draggable=\"false\" :src=\"imgs.brower\" alt=\"\">\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 41 */
@@ -13825,7 +13689,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\detail\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\detail\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -14024,7 +13888,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-detail-main-ui {\r\n  position: relative;\r\n  padding: 20px;\r\n}\r\n\r\n.wm-detail-main-ui:before {\r\n  content: '';\r\n  position: absolute;\r\n  width: 100%;\r\n  height: 10px;\r\n  left: 0;\r\n  top: 0;\r\n  background: #eee;\r\n}\r\n\r\n.wm-detail-main-ui > header {\r\n  margin-top: 10px;\r\n  width: 100%;\r\n  background: #f4f4f4;\r\n  height: 80px;\r\n  line-height: 100px;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n\r\n.wm-detail-main-ui > header span {\r\n  position: absolute;\r\n  font-size: 20px;\r\n}\r\n\r\n.wm-detail-main-ui > header ul {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  width: 400px;\r\n  margin: 0 auto;\r\n  justify-content: space-around;\r\n  text-align: center;\r\n  font-size: 16px;\r\n}\r\n\r\n.wm-detail-main-ui > header ul li {\r\n  -webkit-flex: 1;\r\n  flex: 1;\r\n  margin: 0 10px;\r\n  line-height: 110px;\r\n  position: relative;\r\n  cursor: pointer;\r\n}\r\n\r\n.wm-detail-main-ui > header ul li.active {\r\n  color: #be0000;\r\n}\r\n\r\n.wm-detail-main-ui > header ul li.active:before {\r\n  content: '';\r\n  width: 100%;\r\n  left: 0;\r\n  height: 2px;\r\n  background: #be0000;\r\n  color: #be0000;\r\n  top: 78px;\r\n  position: absolute;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-back {\r\n  position: absolute;\r\n  width: 100px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list {\r\n  width: 800px;\r\n  margin: 20px auto;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  flex-flow: wrap;\r\n  -webkit-flex-flow: wrap;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li {\r\n  margin: 10px 3%;\r\n  width: 44%;\r\n  border: 1px solid #ddd;\r\n  box-sizing: border-box;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li header {\r\n  padding: 10px 20px;\r\n  background: #eee;\r\n  position: relative;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li header > div {\r\n  position: absolute;\r\n  right: 20px;\r\n  top: -10px;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li section {\r\n  padding: 20px 20px;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments > div:nth-of-type(1) {\r\n  width: 40px;\r\n}\r\n\r\n.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments > div:nth-of-type(2) {\r\n  -webkit-flex: 1;\r\n  flex: 1;\r\n  max-height: 48px;\r\n  overflow: hidden;\r\n  line-height: 24px;\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-detail-main-ui {\n  position: relative;\n  padding: 20px;\n}\n\n.wm-detail-main-ui:before {\n  content: '';\n  position: absolute;\n  width: 100%;\n  height: 10px;\n  left: 0;\n  top: 0;\n  background: #eee;\n}\n\n.wm-detail-main-ui > header {\n  margin-top: 10px;\n  width: 100%;\n  background: #f4f4f4;\n  height: 80px;\n  line-height: 100px;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-detail-main-ui > header span {\n  position: absolute;\n  font-size: 20px;\n}\n\n.wm-detail-main-ui > header ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 400px;\n  margin: 0 auto;\n  justify-content: space-around;\n  text-align: center;\n  font-size: 16px;\n}\n\n.wm-detail-main-ui > header ul li {\n  -webkit-flex: 1;\n  flex: 1;\n  margin: 0 10px;\n  line-height: 110px;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-detail-main-ui > header ul li.active {\n  color: #be0000;\n}\n\n.wm-detail-main-ui > header ul li.active:before {\n  content: '';\n  width: 100%;\n  left: 0;\n  height: 2px;\n  background: #be0000;\n  color: #be0000;\n  top: 78px;\n  position: absolute;\n}\n\n.wm-detail-main-ui .wm-vote-back {\n  position: absolute;\n  width: 100px;\n  margin-top: 30px;\n}\n\n.wm-detail-main-ui .wm-vote-list {\n  width: 800px;\n  margin: 20px auto;\n}\n\n.wm-detail-main-ui .wm-vote-list ul {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  flex-flow: wrap;\n  -webkit-flex-flow: wrap;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li {\n  margin: 10px 3%;\n  width: 44%;\n  border: 1px solid #ddd;\n  box-sizing: border-box;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li header {\n  padding: 10px 20px;\n  background: #eee;\n  position: relative;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li header > div {\n  position: absolute;\n  right: 20px;\n  top: -10px;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li section {\n  padding: 20px 20px;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-detail-main-ui .wm-vote-list ul li section .wm-vote-comments > div:nth-of-type(2) {\n  -webkit-flex: 1;\n  flex: 1;\n  max-height: 48px;\n  overflow: hidden;\n  line-height: 24px;\n}\n", ""]);
 
 	// exports
 
@@ -14049,7 +13913,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\rater\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\rater\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -14089,7 +13953,7 @@
 	// 				</FormItem>
 	// 				<FormItem label="密码：" prop="raterpwd">
 	// 					<Input ref='pass' :disabled='!showPass' v-model="formAdmin.raterpwd" placeholder="密码" autocomplete="off" />
-	// 					<Button type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
+	// 					<Button :disabled='currentRateid === -1' type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
 	// 				</FormItem>
 	// 				<FormItem label="昵称：" prop="nickname">
 	// 					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
@@ -14168,11 +14032,18 @@
 								size: 'small'
 							},
 							style: {
-								marginRight: '5px'
+								margin: '2px 5px',
+								border: 'none',
+								background: '#fab82e',
+								color: '#fff',
+								padding: '3px 7px 2px',
+								fontSize: '12px',
+								borderRadius: '3px'
+
 							},
 							on: {
 								click: function click() {
-									_this.currentRateid = params.row.raterid;
+									_this.currentRateid = params.row.userid;
 									_this.formAdmin = params.row;
 									_this.visible = true;
 								}
@@ -14191,8 +14062,7 @@
 						}, [h('Button', {
 							props: {
 								type: 'error',
-								size: 'small',
-								icon: 'trash-a'
+								size: 'small'
 							},
 							on: {
 								click: function click() {
@@ -14388,7 +14258,7 @@
 /* 50 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-rater-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>评委管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addRater\">新增评委</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='raterList' :columns='columns'   stripe></Table>\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentRateid === -1? '新增评委':'编辑评委'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input style=\"width:310px;\" v-model=\"formAdmin.ratername\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t<RadioGroup v-model=\"formAdmin.sex\">\r\n\t\t\t\t\t\t<Radio :label=\"1\">\r\n\t\t\t\t\t\t\t<span>男</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t\t<Radio :label=\"0\">\r\n\t\t\t\t\t\t\t<span>女</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t</RadioGroup>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"raterpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.raterpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"电话：\" prop=\"mobile\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.mobile\" placeholder=\"电话\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-rater-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>评委管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addRater\">新增评委</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='raterList' :columns='columns'   stripe></Table>\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentRateid === -1? '新增评委':'编辑评委'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input style=\"width:310px;\" v-model=\"formAdmin.ratername\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t<RadioGroup v-model=\"formAdmin.sex\">\r\n\t\t\t\t\t\t<Radio :label=\"1\">\r\n\t\t\t\t\t\t\t<span>男</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t\t<Radio :label=\"0\">\r\n\t\t\t\t\t\t\t<span>女</span>\r\n\t\t\t\t\t\t</Radio>\r\n\t\t\t\t\t</RadioGroup>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"raterpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.raterpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button :disabled='currentRateid === -1' type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"电话：\" prop=\"mobile\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.mobile\" placeholder=\"电话\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 51 */
@@ -14405,7 +14275,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\collection\\index.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\collection\\index.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -14429,8 +14299,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-24faebd2&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-24faebd2&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-50759e92&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-50759e92&file=index.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./index.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -14448,7 +14318,7 @@
 
 
 	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { transform: rotate(0deg);}\r\n        50%  { transform: rotate(180deg);}\r\n        to   { transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
 
 	// exports
 
@@ -14481,7 +14351,7 @@
 	// 								<div>
 	// 									<img :src='imgs.search'/>
 	// 									<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-	// 										{{kwType}}
+	// 										<div v-html='kwType'></div>
 	// 										<ul v-if='showCondition'>
 	// 											<li @click.stop='changeKwType("关键字")'>关键字</li>
 	// 											<li @click.stop='changeKwType("用户名")'>用户名</li>
@@ -14515,7 +14385,7 @@
 	// 					</header>
 	// 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 	// 						<ul>
-	// 							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
+	// 							<li @dblclick="previewReport(i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 	// 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 	// 									<img :src="report.pcbilethum||imgs.poster" alt="">
 	// 								</div>
@@ -14568,9 +14438,9 @@
 	// 					<div class="wm-tag-list"  v-if='item.fieldname === "userlabel"'>
 	// 						<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 	// 					</div>
-	//
+	// 					<!--
 	// 					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-	// 						<!-- <div class="wm-userlabel-header">
+	// 						<div class="wm-userlabel-header">
 	// 							<div>标签</div>
 	// 							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
 	// 							<div>
@@ -14579,11 +14449,11 @@
 	// 								</div>
 	// 							</div>
 	//
-	// 						</div> -->
+	// 						</div>
 	// 						<div class="wm-tag-list">
 	// 							<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 	// 						</div>
-	// 					</section>
+	// 					</section>-->
 	// 				</div>
 	//
 	//
@@ -14898,6 +14768,7 @@
 			},
 			changeKwType: function changeKwType(type) {
 				this.kwType = type;
+				console.log(this.kwType);
 				this.showCondition = false;
 			},
 			searchByClassic: function searchByClassic(type) {
@@ -14970,7 +14841,7 @@
 									s.reportList.forEach(function (item) {
 										item.checked = false;
 									});
-
+									s.selectAll = false;
 									if (s.reportList.length) {
 										//s.currentReportIndex = 0;
 
@@ -15082,7 +14953,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0; }\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis; }\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem; }\r\n  .zmiti-play.rotate {\r\n    -webkit-animation: rotate 5s linear infinite;\r\n    animation: rotate 5s linear infinite; }\r\n\r\n.symbin-left {\r\n  float: left !important; }\r\n\r\n.symbin-right {\r\n  float: right !important; }\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg); } }\r\nbody {\r\n  overflow: hidden; }\r\n\r\n.wm-collection-ui, .wm-lastcheck-ui {\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row; }\r\n  .wm-collection-ui .wm-collection-left-pannel, .wm-lastcheck-ui .wm-collection-left-pannel {\r\n    width: 140px;\r\n    height: 300px;\r\n    background: #eee;\r\n    position: relative; }\r\n    .wm-collection-ui .wm-collection-left-pannel > h2, .wm-lastcheck-ui .wm-collection-left-pannel > h2 {\r\n      font-size: 14px;\r\n      padding: 60px 0;\r\n      text-align: center; }\r\n    .wm-collection-ui .wm-collection-left-pannel > ul li, .wm-lastcheck-ui .wm-collection-left-pannel > ul li {\r\n      width: 100%;\r\n      height: 30px;\r\n      line-height: 30px;\r\n      cursor: pointer;\r\n      text-indent: 2em; }\r\n      .wm-collection-ui .wm-collection-left-pannel > ul li.active, .wm-lastcheck-ui .wm-collection-left-pannel > ul li.active {\r\n        background: #fff;\r\n        color: #b20000;\r\n        font-weight: bold; }\r\n  .wm-collection-ui .wm-collection-left-main-ui,\r\n  .wm-collection-ui .wm-collection-rater-manager, .wm-lastcheck-ui .wm-collection-left-main-ui,\r\n  .wm-lastcheck-ui .wm-collection-rater-manager {\r\n    padding: 20px; }\r\n    .wm-collection-ui .wm-collection-left-main-ui:before,\r\n    .wm-collection-ui .wm-collection-rater-manager:before, .wm-lastcheck-ui .wm-collection-left-main-ui:before,\r\n    .wm-lastcheck-ui .wm-collection-rater-manager:before {\r\n      content: '';\r\n      width: 100%;\r\n      height: 10px;\r\n      background: #eee;\r\n      position: absolute;\r\n      left: 0;\r\n      top: 0; }\r\n    .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header,\r\n    .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header,\r\n    .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header {\r\n      height: 60px;\r\n      line-height: 80px;\r\n      border-bottom: 1px solid #eee;\r\n      padding-bottom: 8px;\r\n      display: flex;\r\n      display: -webkit-flex;\r\n      flex-flow: row;\r\n      width: 100%; }\r\n      .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-title,\r\n      .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-title, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-title,\r\n      .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-title {\r\n        font-size: 16px;\r\n        width: 50%; }\r\n      .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content,\r\n      .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content,\r\n      .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content {\r\n        width: 50%;\r\n        display: flex;\r\n        display: -webkit-flex;\r\n        flex-flow: row;\r\n        justify-content: flex-end;\r\n        align-items: flex-end;\r\n        -webkit-justify-content: flex-end;\r\n        -webkit-align-items: flex-end; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C {\r\n          line-height: 100px;\r\n          background: #eee;\r\n          height: 36px;\r\n          line-height: 36px;\r\n          border-radius: 20px;\r\n          padding-left: 20px;\r\n          box-sizing: border-box;\r\n          width: 65%;\r\n          margin-right: 5%; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition {\r\n            display: inline-block;\r\n            padding-right: 15px;\r\n            position: relative;\r\n            cursor: pointer; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before {\r\n              content: '';\r\n              position: absolute;\r\n              width: 10px;\r\n              height: 10px;\r\n              border: 1px solid #444;\r\n              right: 0;\r\n              -webkit-transform: rotate(45deg);\r\n              transform: rotate(45deg);\r\n              top: 8px;\r\n              border-left: none;\r\n              border-top: none; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul {\r\n              width: 80px;\r\n              margin-left: -20px;\r\n              position: absolute;\r\n              border: 1px solid #ccc;\r\n              background: #fff;\r\n              border-radius: 4px;\r\n              text-indent: 2em; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li {\r\n                cursor: pointer;\r\n                width: 100%;\r\n                line-height: 24px;\r\n                height: 24px; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover {\r\n                  background: #be0000;\r\n                  color: white; }\r\n                  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before,\r\n                  .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before,\r\n                  .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before {\r\n                    background: #be0000 !important; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1),\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1),\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1) {\r\n                  position: relative; }\r\n                  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before,\r\n                  .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before,\r\n                  .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before {\r\n                    content: \"\";\r\n                    width: 10px;\r\n                    height: 10px;\r\n                    background: #fff;\r\n                    position: absolute;\r\n                    -webkit-transform: rotate(45deg);\r\n                    transform: rotate(45deg);\r\n                    border-left: 1px solid #ccc;\r\n                    border-top: 1px solid #ccc;\r\n                    top: -6px;\r\n                    left: 30px;\r\n                    border-radius: 2px; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img {\r\n            width: 20px; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input {\r\n            height: 30px;\r\n            padding-left: 10px;\r\n            box-sizing: border-box;\r\n            background: transparent;\r\n            border: none;\r\n            outline: none; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action {\r\n          width: 30%;\r\n          height: 36px;\r\n          line-height: 36px;\r\n          position: relative; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul {\r\n            width: 80px;\r\n            margin-left: 40px;\r\n            position: absolute;\r\n            border: 1px solid #ccc;\r\n            background: #fff;\r\n            margin-top: 2px;\r\n            border-radius: 4px;\r\n            text-indent: 10px; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li {\r\n              cursor: pointer;\r\n              width: 100%;\r\n              line-height: 30px;\r\n              height: 30px; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i {\r\n                font-size: 16px;\r\n                vertical-align: middle;\r\n                color: #be0000;\r\n                font-weight: bold;\r\n                margin-top: -3px; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) {\r\n                color: yellowgreen; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i {\r\n                  color: yellowgreen; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2),\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2),\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2) {\r\n                color: #be0000; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover {\r\n                background: #be0000;\r\n                color: white; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before {\r\n                  background: #be0000 !important; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i {\r\n                  color: #fff; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span {\r\n                position: absolute;\r\n                width: 25px;\r\n                height: 25px;\r\n                border-radius: 50%; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) {\r\n                position: relative; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before {\r\n                  content: \"\";\r\n                  width: 10px;\r\n                  height: 10px;\r\n                  background: #fff;\r\n                  position: absolute;\r\n                  -webkit-transform: rotate(45deg);\r\n                  transform: rotate(45deg);\r\n                  border-left: 1px solid #ccc;\r\n                  border-top: 1px solid #ccc;\r\n                  top: -6px;\r\n                  left: 30px;\r\n                  border-radius: 2px; }\r\n    .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,\r\n    .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,\r\n    .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header {\r\n      height: 80px;\r\n      line-height: 38px;\r\n      border: 1px solid #ddd;\r\n      box-sizing: border-box;\r\n      border-radius: 4px; }\r\n      .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div,\r\n      .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div,\r\n      .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div {\r\n        background: #eee;\r\n        padding-left: 20px;\r\n        box-sizing: border-box; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span {\r\n          display: inline-block;\r\n          margin: 0 10px;\r\n          padding: 0 10px;\r\n          height: 24px;\r\n          line-height: 24px;\r\n          cursor: pointer;\r\n          border: 1px solid transparent; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span:hover,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span:hover,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span:hover {\r\n            border: 1px solid #be0000;\r\n            box-sizing: border-box; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span.active,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span.active, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span.active,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span.active {\r\n            background: #be0000;\r\n            color: #fff;\r\n            text-align: center;\r\n            border-radius: 3px; }\r\n    .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list,\r\n    .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list,\r\n    .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list {\r\n      overflow: auto; }\r\n      .wm-collection-pagetion {\r\n        width: 100%;\r\n        height: 40px;\r\n        line-height: 40px;\r\n        text-align: center;\r\n        cursor: pointer;\r\n        float: left;\r\n        -webkit-user-select: none; }\r\n      .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,\r\n      .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,\r\n      .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item {\r\n        display: inline-block;\r\n        width: 230px;\r\n        margin: 12px;\r\n        height: 130px;\r\n        background: #f4f4f4;\r\n        position: relative;\r\n        cursor: pointer; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg {\r\n          width: 100%;\r\n          height: 100%;\r\n          border: 1px solid #eee;\r\n          display: flex;\r\n          display: -webkit-flex;\r\n          flex-flow: row;\r\n          -webkit-justify-content: center;\r\n          justify-content: center;\r\n          -webkit-align-items: center;\r\n          align-items: center;\r\n          overflow: hidden; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img {\r\n            display: block;\r\n            width: auto;\r\n            height: auto;\r\n            max-width: 100%;\r\n            max-height: 100%; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active {\r\n            border-color: #f5a420; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name {\r\n          text-align: center;\r\n          margin: 4px 0;\r\n          font-size: 14px; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-check,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-check, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-check,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-check {\r\n          position: absolute;\r\n          left: 10px;\r\n          top: 10px;\r\n          z-index: 10; }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status {\r\n          position: absolute;\r\n          width: 70px;\r\n          bottom: -30px;\r\n          right: 0; }\r\n@-webkit-keyframes warning-animation {\r\n  0% {\r\n    background-position: 0 0; }\r\n  100% {\r\n    background-position: 3em 0; } }\r\n@keyframes warning-animation {\r\n  0% {\r\n    background-position: 0 0; }\r\n  100% {\r\n    background-position: 3em 0; } }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask {\r\n          position: absolute;\r\n          width: 100%;\r\n          height: 100%;\r\n          left: 0;\r\n          top: 0;\r\n          background: rgba(255, 255, 255, 0.7); }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled {\r\n          color: #be0000;\r\n          font-size: 12px;\r\n          z-index: 10;\r\n          width: 85%;\r\n          padding-left: 20px;\r\n          left: 50%;\r\n          border: 1px solid #be0000;\r\n          border-radius: 3px;\r\n          -webkit-transform: translate3d(-50%, 0, 0);\r\n          transform: translate3d(-50%, 0, 0);\r\n          background: rgba(255, 255, 255, 0.8); }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span {\r\n            position: absolute;\r\n            left: 0;\r\n            top: 0px; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before {\r\n              content: '';\r\n              width: 18px;\r\n              height: 18px;\r\n              position: absolute;\r\n              border: 1px solid #be0000;\r\n              border-radius: 50%;\r\n              left: 2px;\r\n              top: 5px; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after {\r\n              content: \"\";\r\n              position: absolute;\r\n              width: 18px;\r\n              height: 2px;\r\n              background: #be0000;\r\n              left: 2px;\r\n              top: 13px;\r\n              -webkit-transform: rotate(45deg);\r\n              transform: rotate(45deg); }\r\n        .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action {\r\n          position: absolute;\r\n          top: 10px;\r\n          right: 0;\r\n          z-index: 1000; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon {\r\n            width: 20px;\r\n            height: 20px;\r\n            background: #fff;\r\n            border-radius: 2px;\r\n            position: absolute;\r\n            right: 10px; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before {\r\n              content: \"\";\r\n              position: absolute;\r\n              width: 12px;\r\n              height: 12px;\r\n              border: 1px solid #bbb;\r\n              left: 4px;\r\n              -webkit-transform: rotate(45deg);\r\n              transform: rotate(45deg);\r\n              border-left: none;\r\n              border-top: none; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul {\r\n            display: block; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i {\r\n              color: #ff; }\r\n          .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul {\r\n            display: none;\r\n            background: #fff;\r\n            width: 80px;\r\n            margin-top: 20px;\r\n            margin-right: 10px; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico {\r\n              width: 100%;\r\n              height: 100%;\r\n              text-align: center;\r\n              position: absolute;\r\n              left: 0;\r\n              top: 0;\r\n              text-indent: -.4rem; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i {\r\n                vertical-align: middle; }\r\n            .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li {\r\n              display: block;\r\n              height: 30px;\r\n              cursor: pointer;\r\n              line-height: 30px;\r\n              width: 100%;\r\n              margin: 0;\r\n              text-indent: .5em;\r\n              vertical-align: middle; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel {\r\n                width: 100%;\r\n                height: 100%;\r\n                left: 0;\r\n                top: 0;\r\n                position: absolute; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover {\r\n                background: #be0000;\r\n                color: #fff; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div {\r\n                  color: #fff; }\r\n                .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message {\r\n                  color: #000; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div {\r\n                position: absolute;\r\n                left: 0;\r\n                top: 0;\r\n                width: 100%;\r\n                height: 100%; }\r\n              .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i {\r\n                font-size: 20px; }\r\n  .wm-collection-ui .wm-collection-rater-manager, .wm-lastcheck-ui .wm-collection-rater-manager {\r\n    width: 100%; }\r\n    .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list {\r\n      overflow: auto;\r\n      overflow-x: hidden; }\r\n      .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li {\r\n        background: #fff;\r\n        margin: 10px 0;\r\n        border: 1px solid #ddd;\r\n        width: 100%;\r\n        float: left; }\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active {\r\n          border-color: #f5a420; }\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right {\r\n            border-right: 1px solid #f5a420; }\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left > header,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right > header, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left > header,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right > header {\r\n              border-color: #f5a420; }\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header,\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header,\r\n        .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header {\r\n          width: 100%;\r\n          height: 34px;\r\n          line-height: 34px;\r\n          text-align: center;\r\n          background: #eee;\r\n          border-bottom: 1px solid #ddd;\r\n          position: relative; }\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header span,\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header span, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header span,\r\n          .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header span {\r\n            position: absolute;\r\n            left: 4px;\r\n            top: 4px; }\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left {\r\n          float: left;\r\n          width: 60%;\r\n          border-right: 1px solid #ddd; }\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C {\r\n            width: 100%;\r\n            margin: 20px;\r\n            float: left;\r\n            position: relative; }\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C .status, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C .status {\r\n              position: absolute;\r\n              left: -20px;\r\n              top: -20px;\r\n              width: 50px; }\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C img, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C img {\r\n              display: block;\r\n              width: auto;\r\n              height: auto;\r\n              max-width: 100%;\r\n              max-height: 100%; }\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div {\r\n              float: left; }\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(1) {\r\n                width: 36%;\r\n                height: 100%;\r\n                overflow: hidden;\r\n                max-height: 130px;\r\n                height: 250px;\r\n                display: flex;\r\n                display: -webkit-flex;\r\n                flex-flow: row;\r\n                -webkit-justify-content: center;\r\n                justify-content: center;\r\n                align-items: center;\r\n                -webkit-align-items: center; }\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) {\r\n                float: left;\r\n                width: 58%;\r\n                margin-left: 2%; }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item {\r\n                  display: flex;\r\n                  display: -webkit-flex;\r\n                  flex-flow: row;\r\n                  line-height: 30px; }\r\n                  .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item:nth-of-type(2) {\r\n                    height: 80px;\r\n                    overflow: hidden; }\r\n                  .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item > div:nth-of-type(1) {\r\n                    width: 10%;\r\n                    min-width: 40px; }\r\n                  .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item .wm-tag-list, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item .wm-tag-list {\r\n                    width: 88%; }\r\n        .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right {\r\n          float: left;\r\n          width: 40%; }\r\n          .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result {\r\n            width: 100%;\r\n            margin: 20px 0;\r\n            display: flex;\r\n            display: -webkit-flex;\r\n            flex-flow: row; }\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass,\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass,\r\n            .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject {\r\n              -webkit-flex: 1;\r\n              flex: 1;\r\n              position: relative; }\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail {\r\n                position: absolute;\r\n                right: 10px;\r\n                top: -10px; }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail a,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail a, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail a,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail a {\r\n                  color: #f5a420; }\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text {\r\n                position: absolute;\r\n                bottom: 10px;\r\n                border-bottom: 1px solid yellowgreen;\r\n                width: 80%;\r\n                left: 10px; }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text:before,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text:before,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text:before,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text:before,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before {\r\n                  content: '';\r\n                  position: absolute;\r\n                  width: 10px;\r\n                  background: yellowgreen;\r\n                  height: 1px;\r\n                  left: 100%;\r\n                  bottom: -1px;\r\n                  -webkit-transform: rotate(-30deg);\r\n                  transform: rotate(-30deg);\r\n                  -webkit-transform-origin: left;\r\n                  transform-origin: left; }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text > div:nth-of-type(2),\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text > div:nth-of-type(2),\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text > div:nth-of-type(2),\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text > div:nth-of-type(2),\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2) {\r\n                  font-size: 20px;\r\n                  color: yellowgreen; }\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\r\n              .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text {\r\n                border-bottom-color: #be0000;\r\n                text-align: right;\r\n                margin-left: 10px; }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before {\r\n                  content: '';\r\n                  position: absolute;\r\n                  width: 10px;\r\n                  background: #be0000;\r\n                  height: 1px;\r\n                  right: 100%;\r\n                  left: auto;\r\n                  bottom: -1px;\r\n                  -webkit-transform: rotate(30deg);\r\n                  transform: rotate(30deg);\r\n                  -webkit-transform-origin: right;\r\n                  transform-origin: right; }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\r\n                .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2) {\r\n                  color: #be0000; }\r\n            .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas {\r\n              width: 140px;\r\n              height: 140px;\r\n              background: #fff;\r\n              overflow: hidden;\r\n              position: relative; }\r\n              .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div {\r\n                position: absolute;\r\n                left: 50%;\r\n                top: 50%;\r\n                -webkit-transform: translate(-50%, -50%);\r\n                transform: translate(-50%, -50%); }\r\n                .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div {\r\n                  text-align: center; }\r\n                  .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div:nth-of-type(2) {\r\n                    font-size: 20px;\r\n                    color: #f90; }\r\n  .wm-collection-ui .wm-collection-report-C, .wm-lastcheck-ui .wm-collection-report-C {\r\n    background: rgba(0, 0, 0, 0.8);\r\n    z-index: 1000;\r\n    position: fixed !important;\r\n    display: flex;\r\n    display: -webkit-flex;\r\n    flex-flow: row;\r\n    -webkit-justify-content: center;\r\n    justify-content: center;\r\n    -webkit-align-items: center;\r\n    align-items: center; }\r\n    .wm-collection-ui .wm-collection-report-C > .original, .wm-lastcheck-ui .wm-collection-report-C > .original {\r\n      overflow: auto;\r\n      padding: 30px;\r\n      width: 100vw;\r\n      height: 100vh;\r\n      max-width: 100vw;\r\n      max-height: 100vh;\r\n      text-align: center; }\r\n      .wm-collection-ui .wm-collection-report-C > .original .wm-myreport-item,\r\n      .wm-collection-ui .wm-collection-report-C > .original .wm-report-detail, .wm-lastcheck-ui .wm-collection-report-C > .original .wm-myreport-item,\r\n      .wm-lastcheck-ui .wm-collection-report-C > .original .wm-report-detail {\r\n        display: none; }\r\n      .wm-collection-ui .wm-collection-report-C > .original img, .wm-lastcheck-ui .wm-collection-report-C > .original img {\r\n        width: auto;\r\n        height: auto;\r\n        max-width: 1000vw;\r\n        max-height: 1000vh; }\r\n    .wm-collection-ui .wm-collection-report-C .wm-detail-mask-tip, .wm-lastcheck-ui .wm-collection-report-C .wm-detail-mask-tip {\r\n      position: absolute;\r\n      width: 100%;\r\n      line-height: 30px;\r\n      text-align: center;\r\n      color: #fff;\r\n      left: 0;\r\n      bottom: 0;\r\n      z-index: -1; }\r\n    .wm-collection-ui .wm-collection-report-C > div, .wm-lastcheck-ui .wm-collection-report-C > div {\r\n      max-width: 80vw;\r\n      max-height: 60vh;\r\n      position: relative; }\r\n      .wm-collection-ui .wm-collection-report-C > div .xlsx,\r\n      .wm-collection-ui .wm-collection-report-C > div .pdf,\r\n      .wm-collection-ui .wm-collection-report-C > div .doc,\r\n      .wm-collection-ui .wm-collection-report-C > div .m4a,\r\n      .wm-collection-ui .wm-collection-report-C > div .ppt,\r\n      .wm-collection-ui .wm-collection-report-C > div .xlsx,\r\n      .wm-collection-ui .wm-collection-report-C > div .doc,\r\n      .wm-collection-ui .wm-collection-report-C > div .docx,\r\n      .wm-collection-ui .wm-collection-report-C > div .pdf,\r\n      .wm-collection-ui .wm-collection-report-C > div .txt,\r\n      .wm-collection-ui .wm-collection-report-C > div .ppt,\r\n      .wm-collection-ui .wm-collection-report-C > div .pptx,\r\n      .wm-collection-ui .wm-collection-report-C > div .xls,\r\n      .wm-collection-ui .wm-collection-report-C > div .rar,\r\n      .wm-collection-ui .wm-collection-report-C > div .html,\r\n      .wm-collection-ui .wm-collection-report-C > div .css,\r\n      .wm-collection-ui .wm-collection-report-C > div .scss,\r\n      .wm-collection-ui .wm-collection-report-C > div .js,\r\n      .wm-collection-ui .wm-collection-report-C > div .vb,\r\n      .wm-collection-ui .wm-collection-report-C > div .dmg,\r\n      .wm-collection-ui .wm-collection-report-C > div .shtml,\r\n      .wm-collection-ui .wm-collection-report-C > div .zip, .wm-lastcheck-ui .wm-collection-report-C > div .xlsx,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .pdf,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .doc,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .m4a,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .ppt,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .xlsx,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .doc,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .docx,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .pdf,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .txt,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .ppt,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .pptx,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .xls,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .rar,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .html,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .css,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .scss,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .js,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .vb,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .dmg,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .shtml,\r\n      .wm-lastcheck-ui .wm-collection-report-C > div .zip {\r\n        display: block;\r\n        margin: 0 auto;\r\n        position: relative !important; }\r\n      .wm-collection-ui .wm-collection-report-C > div .wm-report-detail, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail {\r\n        padding: 10px;\r\n        box-sizing: border-box;\r\n        position: absolute;\r\n        width: 100%;\r\n        min-width: 300px;\r\n        bottom: 0;\r\n        left: 50%;\r\n        -webkit-transform: translate3d(-50%, 0, 0);\r\n        transform: translate3d(-50%, 0, 0);\r\n        background: rgba(0, 0, 0, 0.7);\r\n        color: #fff;\r\n        -webkit-transition: 0.4s;\r\n        transition: 0.4s; }\r\n        .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide {\r\n          height: 40px;\r\n          overflow: hidden; }\r\n          .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:before, .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide > span:before, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after {\r\n            -webkit-transform: rotate(225deg);\r\n            transform: rotate(225deg);\r\n            top: 4px; }\r\n          .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after {\r\n            top: 8px; }\r\n        .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.wm-audio, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.wm-audio {\r\n          position: relative; }\r\n        .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.wm-video-detail.hide, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.wm-video-detail.hide {\r\n          bottom: -40px; }\r\n        .wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span {\r\n          position: absolute;\r\n          right: 30px;\r\n          top: 10px;\r\n          cursor: pointer; }\r\n          .wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:before, .wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span:before, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span:after {\r\n            content: '';\r\n            right: -12px;\r\n            top: 0px;\r\n            position: absolute;\r\n            width: 8px;\r\n            height: 8px;\r\n            border: 1px solid #fff;\r\n            border-left: none;\r\n            border-top: none;\r\n            -webkit-transform: rotate(45deg);\r\n            transform: rotate(45deg); }\r\n          .wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span:after {\r\n            top: 4px; }\r\n        .wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item {\r\n          background: transparent;\r\n          display: flex;\r\n          display: -webkit-flex;\r\n          flex-flow: row; }\r\n          .wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div {\r\n            text-align: left;\r\n            line-height: 30px; }\r\n            .wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\r\n              width: 60px;\r\n              text-align: right;\r\n              margin-right: 20px; }\r\n          .wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\r\n            display: flex;\r\n            display: -webkit-flex;\r\n            flex-flow: row;\r\n            -webkit-flex: 1;\r\n            flex: 1; }\r\n            .wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\r\n              width: 40px; }\r\n            .wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\r\n              margin-left: 20px;\r\n              max-width: 200px; }\r\n      .wm-collection-ui .wm-collection-report-C > div img, .wm-lastcheck-ui .wm-collection-report-C > div img {\r\n        width: auto;\r\n        height: auto;\r\n        max-height: 60vh;\r\n        max-width: 80vh; }\r\n      .wm-collection-ui .wm-collection-report-C > div video, .wm-lastcheck-ui .wm-collection-report-C > div video {\r\n        width: auto;\r\n        max-height: 60vh; }\r\n    .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask {\r\n      width: 300px;\r\n      height: 200px;\r\n      background: #232323;\r\n      position: absolute;\r\n      right: 40px;\r\n      bottom: 40px;\r\n      border-radius: 6px;\r\n      -webkit-transition: 0.4s;\r\n      transition: 0.4s; }\r\n      .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask.hide, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask.hide {\r\n        -webkit-transform: translate(0, 50px);\r\n        transform: translate(0, 50px);\r\n        opacity: 0; }\r\n      .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) {\r\n        padding: 10px;\r\n        border-radius: 6px;\r\n        position: relative; }\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-collection-placeholder, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-collection-placeholder {\r\n          position: absolute;\r\n          top: 15px;\r\n          left: 20px;\r\n          color: #999; }\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea {\r\n          border: none;\r\n          resize: none;\r\n          height: 100px;\r\n          color: #fff;\r\n          padding: 2px 10px;\r\n          background: #0f0f0f; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea::-webkit-input-placeholder, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea::-webkit-input-placeholder {\r\n            color: #fff; }\r\n      .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) {\r\n        display: flex;\r\n        display: -webkit-flex;\r\n        flex-flow: row;\r\n        justify-content: space-evenly; }\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) > div, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) > div {\r\n          width: 40px;\r\n          height: 40px; }\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt,\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt,\r\n        .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject {\r\n          width: 50px;\r\n          height: 50px;\r\n          cursor: pointer;\r\n          border-radius: 50%;\r\n          margin: 4px 0;\r\n          color: #fff;\r\n          position: relative; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt span,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject span, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt span,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject span {\r\n            position: absolute;\r\n            width: 100%;\r\n            height: 100%;\r\n            text-align: center;\r\n            line-height: 70px; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-active,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter-active,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-active,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter-active,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-active,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter-active,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-active,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter-active,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-active {\r\n            -webkit-transition: 0.3s;\r\n            transition: 0.3s; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-to, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-to,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-to,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-to, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-to, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-to,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-to,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-to {\r\n            width: 0;\r\n            height: 0;\r\n            overflow: hidden; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass {\r\n            background: transparent;\r\n            color: #fff;\r\n            cursor: text; }\r\n            .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass::before,\r\n            .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass::before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass::before,\r\n            .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass::before {\r\n              border-color: #fff; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject,\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject,\r\n          .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject {\r\n            cursor: text;\r\n            background: transparent;\r\n            color: #b20000; }\r\n            .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject::before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject:after,\r\n            .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject::before,\r\n            .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject:after, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject::before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject:after,\r\n            .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject::before,\r\n            .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject:after {\r\n              background: #b20000; }\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt {\r\n          background: yellowgreen; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt:before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt:before {\r\n            content: \"\";\r\n            position: absolute;\r\n            width: 20px;\r\n            height: 12px;\r\n            -webkit-transform: rotate(-40deg) skew(10deg);\r\n            transform: rotate(-40deg) skew(10deg);\r\n            left: 14px;\r\n            border: 3px solid #fff;\r\n            border-right: none;\r\n            border-top: none;\r\n            top: 8px; }\r\n        .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject {\r\n          background: #b20000; }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after {\r\n            content: \"\";\r\n            position: absolute;\r\n            width: 20px;\r\n            height: 3px;\r\n            left: 50%;\r\n            background: #fff;\r\n            border-right: none;\r\n            border-top: none;\r\n            top: 50%;\r\n            margin-top: -8px;\r\n            -webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);\r\n            transform: translate3d(-50%, -50%, 0) rotate(45deg); }\r\n          .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after {\r\n            width: 3px;\r\n            height: 20px; }\r\n    .wm-collection-ui .wm-collection-report-C .wm-report-close, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close {\r\n      position: absolute;\r\n      width: 34px;\r\n      height: 34px;\r\n      border-radius: 50%;\r\n      cursor: pointer;\r\n      border: 2px solid #fff;\r\n      right: 20px;\r\n      -webkit-transform: rotate(45deg);\r\n      transform: rotate(45deg);\r\n      top: 60px;\r\n      z-index: 10; }\r\n      .wm-collection-ui .wm-collection-report-C .wm-report-close:before, .wm-collection-ui .wm-collection-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close:before, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close:after {\r\n        content: '';\r\n        position: absolute;\r\n        width: 20px;\r\n        height: 2px;\r\n        background: #fff;\r\n        left: 50%;\r\n        top: 50%;\r\n        -webkit-transform: translate3d(-50%, -50%, 0);\r\n        transform: translate3d(-50%, -50%, 0); }\r\n      .wm-collection-ui .wm-collection-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close:after {\r\n        width: 2px;\r\n        height: 20px; }\r\n  .wm-collection-ui .wm-collection-right, .wm-lastcheck-ui .wm-collection-right {\r\n    background: #fff;\r\n    overflow: auto;\r\n    height: 100%; }\r\n    .wm-collection-ui .wm-collection-right .wm-tag-list-C, .wm-lastcheck-ui .wm-collection-right .wm-tag-list-C {\r\n      width: 100%; }\r\n    .wm-collection-ui .wm-collection-right .wm-userlabel-header, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header {\r\n      display: flex;\r\n      display: -webkit-flex;\r\n      flex-flow: row;\r\n      width: 95%;\r\n      margin: 40px auto 0; }\r\n      .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(1) {\r\n        width: 40px;\r\n        text-align: right; }\r\n      .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) {\r\n        -webkit-flex: 1;\r\n        flex: 1;\r\n        overflow: hidden;\r\n        position: relative; }\r\n        .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input {\r\n          width: 90%;\r\n          margin-left: 10%;\r\n          border: 1px solid #eee;\r\n          text-align: center;\r\n          position: relative;\r\n          outline: none;\r\n          border-radius: 4px; }\r\n          .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\r\n            color: #ddd; }\r\n      .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3), .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) {\r\n        width: 50px;\r\n        position: relative; }\r\n        .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div {\r\n          position: absolute;\r\n          cursor: pointer;\r\n          width: 20px;\r\n          height: 20px;\r\n          border-radius: 50%;\r\n          top: 5px;\r\n          left: 10px;\r\n          border: 1px solid #f5a420; }\r\n          .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\r\n            content: '';\r\n            position: absolute;\r\n            width: 10px;\r\n            height: 1px;\r\n            background: #f5a420;\r\n            left: 50%;\r\n            top: 50%;\r\n            -webkit-transform: translate3d(-50%, -50%, 0);\r\n            transform: translate3d(-50%, -50%, 0); }\r\n          .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\r\n            width: 1px;\r\n            height: 10px; }\r\n    .wm-collection-ui .wm-collection-right .wm-tag-list, .wm-lastcheck-ui .wm-collection-right .wm-tag-list {\r\n      width: 85%;\r\n      margin: 10px auto; }\r\n    .wm-collection-ui .wm-collection-right .wm-myreport-item, .wm-lastcheck-ui .wm-collection-right .wm-myreport-item {\r\n      background: transparent; }\r\n      .wm-collection-ui .wm-collection-right .wm-myreport-item > div, .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div {\r\n        float: left; }\r\n        .wm-collection-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(1) {\r\n          text-align: center;\r\n          width: 30%;\r\n          text-align: right;\r\n          margin-left: 2%; }\r\n        .wm-collection-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(2) {\r\n          width: 68%;\r\n          cursor: pointer;\r\n          min-height: 30px; }\r\n        .wm-collection-ui .wm-collection-right .wm-myreport-item > div input, .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div input {\r\n          height: 24px;\r\n          border: 1px solid #eee;\r\n          outline: none; }\r\n  .wm-collection-ui .wm-right-thumb, .wm-lastcheck-ui .wm-right-thumb {\r\n    margin: 0 auto;\r\n    height: 130px;\r\n    width: 230px;\r\n    display: flex;\r\n    display: -webkit-flex;\r\n    flex-flow: row;\r\n    -webkit-justify-content: center;\r\n    justify-content: center;\r\n    -webkit-align-items: center;\r\n    align-items: center;\r\n    overflow: hidden; }\r\n  .wm-collection-ui .wm-report-C, .wm-lastcheck-ui .wm-report-C {\r\n    background: rgba(0, 0, 0, 0.8);\r\n    z-index: 1000;\r\n    position: fixed !important;\r\n    display: flex;\r\n    display: -webkit-flex;\r\n    flex-flow: row;\r\n    -webkit-justify-content: center;\r\n    justify-content: center;\r\n    -webkit-align-items: center;\r\n    align-items: center; }\r\n    .wm-collection-ui .wm-report-C > div, .wm-lastcheck-ui .wm-report-C > div {\r\n      max-width: 80vw;\r\n      max-height: 60vh;\r\n      position: relative; }\r\n      .wm-collection-ui .wm-report-C > div .xlsx,\r\n      .wm-collection-ui .wm-report-C > div .pdf,\r\n      .wm-collection-ui .wm-report-C > div .doc,\r\n      .wm-collection-ui .wm-report-C > div .ppt,\r\n      .wm-collection-ui .wm-report-C > div .xlsx,\r\n      .wm-collection-ui .wm-report-C > div .doc,\r\n      .wm-collection-ui .wm-report-C > div .docx,\r\n      .wm-collection-ui .wm-report-C > div .pdf,\r\n      .wm-collection-ui .wm-report-C > div .txt,\r\n      .wm-collection-ui .wm-report-C > div .ppt,\r\n      .wm-collection-ui .wm-report-C > div .pptx,\r\n      .wm-collection-ui .wm-report-C > div .xls,\r\n      .wm-collection-ui .wm-report-C > div .rar,\r\n      .wm-collection-ui .wm-report-C > div .html,\r\n      .wm-collection-ui .wm-report-C > div .css,\r\n      .wm-collection-ui .wm-report-C > div .scss,\r\n      .wm-collection-ui .wm-report-C > div .js,\r\n      .wm-collection-ui .wm-report-C > div .vb,\r\n      .wm-collection-ui .wm-report-C > div .shtml,\r\n      .wm-collection-ui .wm-report-C > div .zip, .wm-lastcheck-ui .wm-report-C > div .xlsx,\r\n      .wm-lastcheck-ui .wm-report-C > div .pdf,\r\n      .wm-lastcheck-ui .wm-report-C > div .doc,\r\n      .wm-lastcheck-ui .wm-report-C > div .ppt,\r\n      .wm-lastcheck-ui .wm-report-C > div .xlsx,\r\n      .wm-lastcheck-ui .wm-report-C > div .doc,\r\n      .wm-lastcheck-ui .wm-report-C > div .docx,\r\n      .wm-lastcheck-ui .wm-report-C > div .pdf,\r\n      .wm-lastcheck-ui .wm-report-C > div .txt,\r\n      .wm-lastcheck-ui .wm-report-C > div .ppt,\r\n      .wm-lastcheck-ui .wm-report-C > div .pptx,\r\n      .wm-lastcheck-ui .wm-report-C > div .xls,\r\n      .wm-lastcheck-ui .wm-report-C > div .rar,\r\n      .wm-lastcheck-ui .wm-report-C > div .html,\r\n      .wm-lastcheck-ui .wm-report-C > div .css,\r\n      .wm-lastcheck-ui .wm-report-C > div .scss,\r\n      .wm-lastcheck-ui .wm-report-C > div .js,\r\n      .wm-lastcheck-ui .wm-report-C > div .vb,\r\n      .wm-lastcheck-ui .wm-report-C > div .shtml,\r\n      .wm-lastcheck-ui .wm-report-C > div .zip {\r\n        display: block;\r\n        margin: 0 auto;\r\n        position: relative !important; }\r\n      .wm-collection-ui .wm-report-C > div .wm-report-detail, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail {\r\n        padding: 10px;\r\n        box-sizing: border-box;\r\n        position: absolute;\r\n        width: 100%;\r\n        min-width: 300px;\r\n        bottom: 0;\r\n        left: 50%;\r\n        -webkit-transform: translate3d(-50%, 0, 0);\r\n        transform: translate3d(-50%, 0, 0);\r\n        background: rgba(0, 0, 0, 0.7);\r\n        color: #fff;\r\n        -webkit-transition: 0.4s;\r\n        transition: 0.4s; }\r\n        .wm-collection-ui .wm-report-C > div .wm-report-detail.hide, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide {\r\n          height: 40px;\r\n          overflow: hidden; }\r\n          .wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide > span:after {\r\n            -webkit-transform: rotate(225deg);\r\n            transform: rotate(225deg);\r\n            top: 4px; }\r\n          .wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide > span:after {\r\n            top: 8px; }\r\n        .wm-collection-ui .wm-report-C > div .wm-report-detail.wm-audio, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.wm-audio {\r\n          position: relative; }\r\n        .wm-collection-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {\r\n          bottom: -40px; }\r\n        .wm-collection-ui .wm-report-C > div .wm-report-detail > span, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span {\r\n          position: absolute;\r\n          right: 30px;\r\n          top: 10px;\r\n          cursor: pointer; }\r\n          .wm-collection-ui .wm-report-C > div .wm-report-detail > span:before, .wm-collection-ui .wm-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span:before, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span:after {\r\n            content: '';\r\n            right: -12px;\r\n            top: 0px;\r\n            position: absolute;\r\n            width: 8px;\r\n            height: 8px;\r\n            border: 1px solid #fff;\r\n            border-left: none;\r\n            border-top: none;\r\n            -webkit-transform: rotate(45deg);\r\n            transform: rotate(45deg); }\r\n          .wm-collection-ui .wm-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span:after {\r\n            top: 4px; }\r\n        .wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item {\r\n          background: transparent;\r\n          display: flex;\r\n          display: -webkit-flex;\r\n          flex-flow: row; }\r\n          .wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div {\r\n            text-align: left;\r\n            line-height: 30px; }\r\n            .wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\r\n              width: 60px;\r\n              text-align: right;\r\n              margin-right: 20px; }\r\n          .wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\r\n            display: flex;\r\n            display: -webkit-flex;\r\n            flex-flow: row;\r\n            -webkit-flex-grow: 1;\r\n            flex-grow: 1; }\r\n            .wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1), .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\r\n              width: 40px; }\r\n            .wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2), .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\r\n              margin-left: 20px;\r\n              max-width: 200px; }\r\n      .wm-collection-ui .wm-report-C > div img, .wm-lastcheck-ui .wm-report-C > div img {\r\n        width: auto;\r\n        height: auto;\r\n        max-height: 60vh;\r\n        max-width: 80vh; }\r\n      .wm-collection-ui .wm-report-C > div video, .wm-lastcheck-ui .wm-report-C > div video {\r\n        width: auto;\r\n        max-height: 60vh; }\r\n    .wm-collection-ui .wm-report-C .wm-report-close, .wm-lastcheck-ui .wm-report-C .wm-report-close {\r\n      position: absolute;\r\n      width: 34px;\r\n      height: 34px;\r\n      border-radius: 50%;\r\n      cursor: pointer;\r\n      border: 2px solid #fff;\r\n      right: 20px;\r\n      -webkit-transform: rotate(45deg);\r\n      transform: rotate(45deg);\r\n      top: 60px;\r\n      z-index: 10; }\r\n      .wm-collection-ui .wm-report-C .wm-report-close:before, .wm-collection-ui .wm-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-report-C .wm-report-close:before, .wm-lastcheck-ui .wm-report-C .wm-report-close:after {\r\n        content: '';\r\n        position: absolute;\r\n        width: 20px;\r\n        height: 2px;\r\n        background: #fff;\r\n        left: 50%;\r\n        top: 50%;\r\n        -webkit-transform: translate3d(-50%, -50%, 0);\r\n        transform: translate3d(-50%, -50%, 0); }\r\n      .wm-collection-ui .wm-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-report-C .wm-report-close:after {\r\n        width: 2px;\r\n        height: 20px; }\r\n  .wm-collection-ui .wm-collection-footer, .wm-lastcheck-ui .wm-collection-footer {\r\n    height: 34px;\r\n    line-height: 34px;\r\n    position: absolute;\r\n    left: 145px;\r\n    bottom: 4px;\r\n    border-top: 1px solid #fff;\r\n    z-index: 100;\r\n    width: 100%; }\r\n    .wm-collection-ui .wm-collection-footer span, .wm-lastcheck-ui .wm-collection-footer span {\r\n      display: inline-block; }\r\n      .wm-collection-ui .wm-collection-footer span:nth-of-type(2), .wm-lastcheck-ui .wm-collection-footer span:nth-of-type(2) {\r\n        margin: 0 20px;\r\n        cursor: pointer;\r\n        color: yellowgreen; }\r\n        .wm-collection-ui .wm-collection-footer span:nth-of-type(2).disabled, .wm-lastcheck-ui .wm-collection-footer span:nth-of-type(2).disabled {\r\n          color: #ccc;\r\n          cursor: not-allowed; }\r\n\r\n/*# sourceMappingURL=index.css.map */\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\nbody {\n  overflow: hidden;\n}\n\n.wm-collection-ui, .wm-lastcheck-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  background: #fff;\n}\n\n.wm-collection-ui .ivu-split-wrapper, .wm-lastcheck-ui .ivu-split-wrapper {\n  background: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-pannel, .wm-lastcheck-ui .wm-collection-left-pannel {\n  width: 140px;\n  height: 300px;\n  background: #eee;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-pannel > h2, .wm-lastcheck-ui .wm-collection-left-pannel > h2 {\n  font-size: 14px;\n  padding: 60px 0;\n  text-align: center;\n}\n\n.wm-collection-ui .wm-collection-left-pannel > ul li, .wm-lastcheck-ui .wm-collection-left-pannel > ul li {\n  width: 100%;\n  height: 30px;\n  line-height: 30px;\n  cursor: pointer;\n  text-indent: 2em;\n}\n\n.wm-collection-ui .wm-collection-left-pannel > ul li.active, .wm-lastcheck-ui .wm-collection-left-pannel > ul li.active {\n  background: #fff;\n  color: #b20000;\n  font-weight: bold;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui,\n.wm-collection-ui .wm-collection-rater-manager, .wm-lastcheck-ui .wm-collection-left-main-ui,\n.wm-lastcheck-ui .wm-collection-rater-manager {\n  padding: 20px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui:before,\n.wm-collection-ui .wm-collection-rater-manager:before, .wm-lastcheck-ui .wm-collection-left-main-ui:before,\n.wm-lastcheck-ui .wm-collection-rater-manager:before {\n  content: '';\n  width: 100%;\n  height: 10px;\n  background: #fbfbfb;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header {\n  height: 60px;\n  line-height: 80px;\n  border-bottom: 1px solid #fbfbfb;\n  padding-bottom: 8px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-title,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-title, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-title,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-title {\n  font-size: 16px;\n  width: 50%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content {\n  width: 50%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: flex-end;\n  align-items: flex-end;\n  -webkit-justify-content: flex-end;\n  -webkit-align-items: flex-end;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C {\n  line-height: 100px;\n  background: #fbfbfb;\n  height: 36px;\n  line-height: 36px;\n  border-radius: 20px;\n  padding-left: 20px;\n  box-sizing: border-box;\n  width: 65%;\n  margin-right: 5%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition {\n  display: inline-block;\n  padding-right: 15px;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition:before {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 10px;\n  border: 1px solid #444;\n  right: 0;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  top: 8px;\n  border-left: none;\n  border-top: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul {\n  width: 80px;\n  margin-left: -20px;\n  position: absolute;\n  border: 1px solid #ccc;\n  background: #fff;\n  border-radius: 4px;\n  text-indent: 2em;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li {\n  cursor: pointer;\n  width: 100%;\n  line-height: 24px;\n  height: 24px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover {\n  background: #be0000;\n  color: white;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:hover:before {\n  background: #be0000 !important;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1) {\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C .wm-collection-search-condition ul li:nth-of-type(1):before {\n  content: \"\";\n  width: 10px;\n  height: 10px;\n  background: #fff;\n  position: absolute;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: 1px solid #ccc;\n  border-top: 1px solid #ccc;\n  top: -6px;\n  left: 30px;\n  border-radius: 2px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C img {\n  width: 20px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-search-input-C input {\n  height: 30px;\n  padding-left: 10px;\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  outline: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action {\n  width: 30%;\n  height: 36px;\n  line-height: 36px;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul {\n  width: 80px;\n  margin-left: 40px;\n  position: absolute;\n  border: 1px solid #ccc;\n  background: #fff;\n  margin-top: 2px;\n  border-radius: 4px;\n  text-indent: 10px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li {\n  cursor: pointer;\n  width: 100%;\n  line-height: 30px;\n  height: 30px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li i {\n  font-size: 16px;\n  vertical-align: middle;\n  color: #be0000;\n  font-weight: bold;\n  margin-top: -3px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) {\n  color: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) i {\n  color: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2) {\n  color: #be0000;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover {\n  background: #be0000;\n  color: white;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover:before {\n  background: #be0000 !important;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover i {\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li span {\n  position: absolute;\n  width: 25px;\n  height: 25px;\n  border-radius: 50%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1) {\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(1):before {\n  content: \"\";\n  width: 10px;\n  height: 10px;\n  background: #fff;\n  position: absolute;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: 1px solid #ccc;\n  border-top: 1px solid #ccc;\n  top: -6px;\n  left: 30px;\n  border-radius: 2px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header {\n  height: 80px;\n  line-height: 38px;\n  margin-top: 2px;\n  border: 1px solid #eee;\n  box-sizing: border-box;\n  border-radius: 4px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div {\n  background: #fbfbfb;\n  padding-left: 20px;\n  box-sizing: border-box;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span {\n  display: inline-block;\n  margin: 0 10px;\n  padding: 0 10px;\n  height: 24px;\n  line-height: 24px;\n  cursor: pointer;\n  border: 1px solid transparent;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span:hover,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span:hover {\n  border: 1px solid #be0000;\n  box-sizing: border-box;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span.active,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span.active, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div span.active,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-search-condition-header > div span.active {\n  background: #be0000;\n  color: #fff;\n  text-align: center;\n  border-radius: 3px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list {\n  overflow: auto;\n}\n\n.wm-collection-pagetion {\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  cursor: pointer;\n  float: left;\n  -webkit-user-select: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item {\n  display: inline-block;\n  width: 18%;\n  margin: 12px;\n  height: 130px;\n  background: #f4f4f4;\n  position: relative;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg {\n  width: 100%;\n  height: 100%;\n  border: 1px solid #eee;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img {\n  display: block;\n  width: auto;\n  height: auto;\n  max-width: 100%;\n  max-height: 100%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active {\n  border-color: #f5a420;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name {\n  text-align: center;\n  margin: 4px 0;\n  font-size: 14px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-check,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-check, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-check,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-check {\n  position: absolute;\n  left: 10px;\n  top: 10px;\n  z-index: 10;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status {\n  position: absolute;\n  width: 50px;\n  top: 0;\n  right: 0;\n}\n\n@-webkit-keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n@keyframes warning-animation {\n  0% {\n    background-position: 0 0;\n  }\n  100% {\n    background-position: 3em 0;\n  }\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(255, 255, 255, 0.7);\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled {\n  color: #be0000;\n  font-size: 12px;\n  z-index: 10;\n  width: 85%;\n  padding-left: 20px;\n  left: 50%;\n  border: 1px solid #be0000;\n  border-radius: 3px;\n  -webkit-transform: translate3d(-50%, 0, 0);\n  transform: translate3d(-50%, 0, 0);\n  background: rgba(255, 255, 255, 0.8);\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span {\n  position: absolute;\n  left: 0;\n  top: 0px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before {\n  content: '';\n  width: 18px;\n  height: 18px;\n  position: absolute;\n  border: 1px solid #be0000;\n  border-radius: 50%;\n  left: 2px;\n  top: 5px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after {\n  content: \"\";\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #be0000;\n  left: 2px;\n  top: 13px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action {\n  position: absolute;\n  top: 10px;\n  right: 0;\n  z-index: 1000;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon {\n  width: 20px;\n  height: 20px;\n  background: #fff;\n  border-radius: 2px;\n  position: absolute;\n  right: 10px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before {\n  content: \"\";\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  border: 1px solid #bbb;\n  left: 4px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  border-left: none;\n  border-top: none;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul {\n  display: block;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i {\n  color: #ff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul {\n  display: none;\n  background: #fff;\n  width: 80px;\n  margin-top: 20px;\n  margin-right: 10px;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico {\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  position: absolute;\n  left: 0;\n  top: 0;\n  text-indent: -.4rem;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i {\n  vertical-align: middle;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li {\n  display: block;\n  height: 30px;\n  cursor: pointer;\n  line-height: 30px;\n  width: 100%;\n  margin: 0;\n  text-indent: .5em;\n  vertical-align: middle;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover {\n  background: #be0000;\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div {\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message {\n  color: #000;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i {\n  font-size: 20px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager, .wm-lastcheck-ui .wm-collection-rater-manager {\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list {\n  overflow: auto;\n  overflow-x: hidden;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li {\n  background: #fff;\n  margin: 10px 0;\n  border: 1px solid #ddd;\n  width: 100%;\n  float: left;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active {\n  border-color: #f5a420;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right {\n  border-right: 1px solid #f5a420;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left > header,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right > header, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left > header,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right > header {\n  border-color: #f5a420;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header {\n  width: 100%;\n  height: 34px;\n  line-height: 34px;\n  text-align: center;\n  background: #fbfbfb;\n  border-bottom: 1px solid #ddd;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header span,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header span, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left > header span,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right > header span {\n  position: absolute;\n  left: 4px;\n  top: 4px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left {\n  float: left;\n  width: 60%;\n  border-right: 1px solid #ddd;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C {\n  width: 100%;\n  margin: 20px;\n  float: left;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C .status, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C .status {\n  position: absolute;\n  left: -20px;\n  top: -20px;\n  width: 50px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C img, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C img {\n  display: block;\n  width: auto;\n  height: auto;\n  max-width: 100%;\n  max-height: 100%;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div {\n  float: left;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(1) {\n  width: 36%;\n  height: 100%;\n  overflow: hidden;\n  max-height: 130px;\n  height: 250px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  align-items: center;\n  -webkit-align-items: center;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) {\n  float: left;\n  width: 58%;\n  margin-left: 2%;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  line-height: 30px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item:nth-of-type(2) {\n  height: 80px;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item > div:nth-of-type(1) {\n  width: 10%;\n  min-width: 40px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item .wm-tag-list, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-left .wm-collection-raterreport-thumb-C > div:nth-of-type(2) .wm-myreport-item .wm-tag-list {\n  width: 88%;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right {\n  float: left;\n  width: 40%;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result {\n  width: 100%;\n  margin: 20px 0;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject {\n  -webkit-flex: 1;\n  flex: 1;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail {\n  position: absolute;\n  right: 10px;\n  top: -10px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail a,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail a, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-detail a,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-detail a {\n  color: #f5a420;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text {\n  position: absolute;\n  bottom: 10px;\n  border-bottom: 1px solid yellowgreen;\n  width: 80%;\n  left: 10px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before {\n  content: '';\n  position: absolute;\n  width: 10px;\n  background: yellowgreen;\n  height: 1px;\n  left: 100%;\n  bottom: -1px;\n  -webkit-transform: rotate(-30deg);\n  transform: rotate(-30deg);\n  -webkit-transform-origin: left;\n  transform-origin: left;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text > div:nth-of-type(2),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text > div:nth-of-type(2),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-pass-text > div:nth-of-type(2),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-pass-text > div:nth-of-type(2),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2) {\n  font-size: 20px;\n  color: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text {\n  border-bottom-color: #be0000;\n  text-align: right;\n  margin-left: 10px;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text:before,\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text:before {\n  content: '';\n  position: absolute;\n  width: 10px;\n  background: #be0000;\n  height: 1px;\n  right: 100%;\n  left: auto;\n  bottom: -1px;\n  -webkit-transform: rotate(30deg);\n  transform: rotate(30deg);\n  -webkit-transform-origin: right;\n  transform-origin: right;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-pass .wm-collection-vote-reject-text > div:nth-of-type(2),\n.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-reject .wm-collection-vote-reject-text > div:nth-of-type(2) {\n  color: #be0000;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas {\n  width: 140px;\n  height: 140px;\n  background: #fff;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas canvas, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas canvas {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  -webkit-transform: scale(0.5);\n  transform: scale(0.5);\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n  transform: translate(-50%, -50%);\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div {\n  text-align: center;\n}\n\n.wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li .wm-collection-raterreport-item-right .wm-collecion-vote-result .wm-collection-vote-canvas > div > div:nth-of-type(2) {\n  font-size: 20px;\n  color: #f90;\n}\n\n.wm-collection-ui .wm-collection-report-C, .wm-lastcheck-ui .wm-collection-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-collection-ui .wm-collection-report-C > .original, .wm-lastcheck-ui .wm-collection-report-C > .original {\n  overflow: auto;\n  padding: 30px;\n  width: 100vw;\n  height: 100vh;\n  max-width: 100vw;\n  max-height: 100vh;\n  text-align: center;\n}\n\n.wm-collection-ui .wm-collection-report-C > .original .wm-myreport-item,\n.wm-collection-ui .wm-collection-report-C > .original .wm-report-detail, .wm-lastcheck-ui .wm-collection-report-C > .original .wm-myreport-item,\n.wm-lastcheck-ui .wm-collection-report-C > .original .wm-report-detail {\n  display: none;\n}\n\n.wm-collection-ui .wm-collection-report-C > .original img, .wm-lastcheck-ui .wm-collection-report-C > .original img {\n  width: auto;\n  height: auto;\n  max-width: 1000vw;\n  max-height: 1000vh;\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-detail-mask-tip, .wm-lastcheck-ui .wm-collection-report-C .wm-detail-mask-tip {\n  position: absolute;\n  width: 100%;\n  line-height: 30px;\n  text-align: center;\n  color: #fff;\n  left: 0;\n  bottom: 0;\n  z-index: -1;\n}\n\n.wm-collection-ui .wm-collection-report-C > div, .wm-lastcheck-ui .wm-collection-report-C > div {\n  max-width: 80vw;\n  max-height: 60vh;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .xlsx,\n.wm-collection-ui .wm-collection-report-C > div .pdf,\n.wm-collection-ui .wm-collection-report-C > div .doc,\n.wm-collection-ui .wm-collection-report-C > div .m4a,\n.wm-collection-ui .wm-collection-report-C > div .ppt,\n.wm-collection-ui .wm-collection-report-C > div .xlsx,\n.wm-collection-ui .wm-collection-report-C > div .doc,\n.wm-collection-ui .wm-collection-report-C > div .docx,\n.wm-collection-ui .wm-collection-report-C > div .pdf,\n.wm-collection-ui .wm-collection-report-C > div .txt,\n.wm-collection-ui .wm-collection-report-C > div .ppt,\n.wm-collection-ui .wm-collection-report-C > div .pptx,\n.wm-collection-ui .wm-collection-report-C > div .xls,\n.wm-collection-ui .wm-collection-report-C > div .rar,\n.wm-collection-ui .wm-collection-report-C > div .html,\n.wm-collection-ui .wm-collection-report-C > div .css,\n.wm-collection-ui .wm-collection-report-C > div .scss,\n.wm-collection-ui .wm-collection-report-C > div .js,\n.wm-collection-ui .wm-collection-report-C > div .vb,\n.wm-collection-ui .wm-collection-report-C > div .dmg,\n.wm-collection-ui .wm-collection-report-C > div .shtml,\n.wm-collection-ui .wm-collection-report-C > div .zip, .wm-lastcheck-ui .wm-collection-report-C > div .xlsx,\n.wm-lastcheck-ui .wm-collection-report-C > div .pdf,\n.wm-lastcheck-ui .wm-collection-report-C > div .doc,\n.wm-lastcheck-ui .wm-collection-report-C > div .m4a,\n.wm-lastcheck-ui .wm-collection-report-C > div .ppt,\n.wm-lastcheck-ui .wm-collection-report-C > div .xlsx,\n.wm-lastcheck-ui .wm-collection-report-C > div .doc,\n.wm-lastcheck-ui .wm-collection-report-C > div .docx,\n.wm-lastcheck-ui .wm-collection-report-C > div .pdf,\n.wm-lastcheck-ui .wm-collection-report-C > div .txt,\n.wm-lastcheck-ui .wm-collection-report-C > div .ppt,\n.wm-lastcheck-ui .wm-collection-report-C > div .pptx,\n.wm-lastcheck-ui .wm-collection-report-C > div .xls,\n.wm-lastcheck-ui .wm-collection-report-C > div .rar,\n.wm-lastcheck-ui .wm-collection-report-C > div .html,\n.wm-lastcheck-ui .wm-collection-report-C > div .css,\n.wm-lastcheck-ui .wm-collection-report-C > div .scss,\n.wm-lastcheck-ui .wm-collection-report-C > div .js,\n.wm-lastcheck-ui .wm-collection-report-C > div .vb,\n.wm-lastcheck-ui .wm-collection-report-C > div .dmg,\n.wm-lastcheck-ui .wm-collection-report-C > div .shtml,\n.wm-lastcheck-ui .wm-collection-report-C > div .zip {\n  display: block;\n  margin: 0 auto;\n  position: relative !important;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail {\n  padding: 10px;\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n  min-width: 300px;\n  bottom: 0;\n  left: 50%;\n  -webkit-transform: translate3d(-49.94%, 0, 0);\n  transform: translate3d(-49.94%, 0, 0);\n  background: rgba(0, 0, 0, 0.7);\n  color: #fff;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide {\n  height: 40px;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:before, .wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide > span:before, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after {\n  -webkit-transform: rotate(225deg);\n  transform: rotate(225deg);\n  top: 4px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.hide > span:after {\n  top: 8px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.wm-audio, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.wm-audio {\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail.wm-video-detail.hide, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail.wm-video-detail.hide {\n  bottom: -40px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span {\n  position: absolute;\n  right: 30px;\n  top: 10px;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:before, .wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span:before, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span:after {\n  content: '';\n  right: -12px;\n  top: 0px;\n  position: absolute;\n  width: 8px;\n  height: 8px;\n  border: 1px solid #fff;\n  border-left: none;\n  border-top: none;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail > span:after {\n  top: 4px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item {\n  background: transparent;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div {\n  text-align: left;\n  line-height: 30px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\n  width: 60px;\n  text-align: right;\n  margin-right: 20px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C, .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-flex: 1;\n  flex: 1;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\n  margin-left: 20px;\n  max-width: 200px;\n}\n\n.wm-collection-ui .wm-collection-report-C > div img, .wm-lastcheck-ui .wm-collection-report-C > div img {\n  width: auto;\n  height: auto;\n  max-height: 60vh;\n  max-width: 80vh;\n}\n\n.wm-collection-ui .wm-collection-report-C > div video, .wm-lastcheck-ui .wm-collection-report-C > div video {\n  width: auto;\n  max-height: 60vh;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask {\n  width: 300px;\n  height: 200px;\n  background: #232323;\n  position: absolute;\n  right: 40px;\n  bottom: 40px;\n  border-radius: 6px;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask.hide, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask.hide {\n  -webkit-transform: translate(0, 50px);\n  transform: translate(0, 50px);\n  opacity: 0;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) {\n  padding: 10px;\n  border-radius: 6px;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-collection-placeholder, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) .wm-collection-placeholder {\n  position: absolute;\n  top: 15px;\n  left: 20px;\n  color: #999;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea {\n  border: none;\n  resize: none;\n  height: 100px;\n  color: #fff;\n  padding: 2px 10px;\n  background: #0f0f0f;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea::-webkit-input-placeholder, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(1) textarea::-webkit-input-placeholder {\n  color: #fff;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-evenly;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) > div, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) > div {\n  width: 40px;\n  height: 40px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject {\n  width: 50px;\n  height: 50px;\n  cursor: pointer;\n  border-radius: 50%;\n  margin: 4px 0;\n  color: #fff;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt span,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject span, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt span,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject span {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  line-height: 70px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter-active, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter-active,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter-active, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-active,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter-active,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-active,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter-active,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-active {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-to, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-to,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-to,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-to, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-enter, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject-leave-to, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-enter, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass-leave-to,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-enter,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject-leave-to,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-enter,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass-leave-to {\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass {\n  background: transparent;\n  color: #fff;\n  cursor: text;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass::before,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass::before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.pass::before,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.pass::before {\n  border-color: #fff;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject {\n  cursor: text;\n  background: transparent;\n  color: #b20000;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject::before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject:after,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject::before,\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject:after, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject::before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt.reject:after,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject::before,\n.wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject.reject:after {\n  background: #b20000;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt {\n  background: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt:before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-adopt:before {\n  content: \"\";\n  position: absolute;\n  width: 20px;\n  height: 12px;\n  -webkit-transform: rotate(-40deg) skew(10deg);\n  transform: rotate(-40deg) skew(10deg);\n  left: 14px;\n  border: 3px solid #fff;\n  border-right: none;\n  border-top: none;\n  top: 8px;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject {\n  background: #b20000;\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:before, .wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:before, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after {\n  content: \"\";\n  position: absolute;\n  width: 20px;\n  height: 3px;\n  left: 50%;\n  background: #fff;\n  border-right: none;\n  border-top: none;\n  top: 50%;\n  margin-top: -8px;\n  -webkit-transform: translate3d(-50%, -50%, 0) rotate(45deg);\n  transform: translate3d(-50%, -50%, 0) rotate(45deg);\n}\n\n.wm-collection-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after, .wm-lastcheck-ui .wm-collection-report-C > .wm-report-check-in-mask > div:nth-of-type(2) .wm-report-reject:after {\n  width: 3px;\n  height: 20px;\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-report-close, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close {\n  position: absolute;\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  cursor: pointer;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  background: #000;\n  top: 60px;\n  z-index: 10;\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-report-close:before, .wm-collection-ui .wm-collection-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close:before, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-collection-ui .wm-collection-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-collection-report-C .wm-report-close:after {\n  width: 2px;\n  height: 18px;\n}\n\n.wm-collection-ui .wm-collection-right, .wm-lastcheck-ui .wm-collection-right {\n  background: #fff;\n  overflow: auto;\n  height: 100%;\n}\n\n.wm-collection-ui .wm-collection-right .wm-tag-list-C, .wm-lastcheck-ui .wm-collection-right .wm-tag-list-C {\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 95%;\n  margin: 40px auto 0;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(1) {\n  width: 40px;\n  text-align: right;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) {\n  -webkit-flex: 1;\n  flex: 1;\n  overflow: hidden;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input {\n  width: 90%;\n  margin-left: 10%;\n  border: 1px solid #eee;\n  text-align: center;\n  position: relative;\n  outline: none;\n  border-radius: 4px;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {\n  color: #ddd;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3), .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) {\n  width: 50px;\n  position: relative;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div {\n  position: absolute;\n  cursor: pointer;\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  top: 5px;\n  left: 10px;\n  border: 1px solid #f5a420;\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:before, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  content: '';\n  position: absolute;\n  width: 10px;\n  height: 1px;\n  background: #f5a420;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-collection-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after, .wm-lastcheck-ui .wm-collection-right .wm-userlabel-header > div:nth-of-type(3) > div:after {\n  width: 1px;\n  height: 10px;\n}\n\n.wm-collection-ui .wm-collection-right .wm-tag-list, .wm-lastcheck-ui .wm-collection-right .wm-tag-list {\n  width: 85%;\n  margin: 0px auto;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item, .wm-lastcheck-ui .wm-collection-right .wm-myreport-item {\n  background: transparent;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div, .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div {\n  float: left;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(1) {\n  text-align: center;\n  width: 30%;\n  text-align: left;\n  margin-left: 2%;\n  text-indent: 2em;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(2), .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div:nth-of-type(2) {\n  width: 68%;\n  cursor: pointer;\n  min-height: 30px;\n}\n\n.wm-collection-ui .wm-collection-right .wm-myreport-item > div input, .wm-lastcheck-ui .wm-collection-right .wm-myreport-item > div input {\n  height: 24px;\n  border: 1px solid #eee;\n  outline: none;\n}\n\n.wm-collection-ui .wm-right-thumb, .wm-lastcheck-ui .wm-right-thumb {\n  margin: 0 auto 20px;\n  height: 130px;\n  width: 230px;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-right-thumb div, .wm-lastcheck-ui .wm-right-thumb div {\n  height: 130px;\n  width: 230px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-collection-ui .wm-right-thumb img, .wm-lastcheck-ui .wm-right-thumb img {\n  display: block;\n  width: auto;\n  height: auto;\n  max-width: 100%;\n  max-height: 100%;\n}\n\n.wm-collection-ui .wm-report-C, .wm-lastcheck-ui .wm-report-C {\n  background: rgba(0, 0, 0, 0.8);\n  z-index: 1000;\n  position: fixed !important;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-collection-ui .wm-report-C > div, .wm-lastcheck-ui .wm-report-C > div {\n  max-width: 80vw;\n  max-height: 60vh;\n  position: relative;\n}\n\n.wm-collection-ui .wm-report-C > div .xlsx,\n.wm-collection-ui .wm-report-C > div .pdf,\n.wm-collection-ui .wm-report-C > div .doc,\n.wm-collection-ui .wm-report-C > div .ppt,\n.wm-collection-ui .wm-report-C > div .xlsx,\n.wm-collection-ui .wm-report-C > div .doc,\n.wm-collection-ui .wm-report-C > div .docx,\n.wm-collection-ui .wm-report-C > div .pdf,\n.wm-collection-ui .wm-report-C > div .txt,\n.wm-collection-ui .wm-report-C > div .ppt,\n.wm-collection-ui .wm-report-C > div .pptx,\n.wm-collection-ui .wm-report-C > div .xls,\n.wm-collection-ui .wm-report-C > div .rar,\n.wm-collection-ui .wm-report-C > div .html,\n.wm-collection-ui .wm-report-C > div .css,\n.wm-collection-ui .wm-report-C > div .scss,\n.wm-collection-ui .wm-report-C > div .js,\n.wm-collection-ui .wm-report-C > div .vb,\n.wm-collection-ui .wm-report-C > div .shtml,\n.wm-collection-ui .wm-report-C > div .zip, .wm-lastcheck-ui .wm-report-C > div .xlsx,\n.wm-lastcheck-ui .wm-report-C > div .pdf,\n.wm-lastcheck-ui .wm-report-C > div .doc,\n.wm-lastcheck-ui .wm-report-C > div .ppt,\n.wm-lastcheck-ui .wm-report-C > div .xlsx,\n.wm-lastcheck-ui .wm-report-C > div .doc,\n.wm-lastcheck-ui .wm-report-C > div .docx,\n.wm-lastcheck-ui .wm-report-C > div .pdf,\n.wm-lastcheck-ui .wm-report-C > div .txt,\n.wm-lastcheck-ui .wm-report-C > div .ppt,\n.wm-lastcheck-ui .wm-report-C > div .pptx,\n.wm-lastcheck-ui .wm-report-C > div .xls,\n.wm-lastcheck-ui .wm-report-C > div .rar,\n.wm-lastcheck-ui .wm-report-C > div .html,\n.wm-lastcheck-ui .wm-report-C > div .css,\n.wm-lastcheck-ui .wm-report-C > div .scss,\n.wm-lastcheck-ui .wm-report-C > div .js,\n.wm-lastcheck-ui .wm-report-C > div .vb,\n.wm-lastcheck-ui .wm-report-C > div .shtml,\n.wm-lastcheck-ui .wm-report-C > div .zip {\n  display: block;\n  margin: 0 auto;\n  position: relative !important;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail {\n  padding: 10px;\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n  min-width: 300px;\n  bottom: 0;\n  left: 50%;\n  -webkit-transform: translate3d(-49.95%, 0, 0);\n  transform: translate3d(-49.95%, 0, 0);\n  background: rgba(0, 0, 0, 0.7);\n  color: #fff;\n  -webkit-transition: 0.4s;\n  transition: 0.4s;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail.hide, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide {\n  height: 40px;\n  overflow: hidden;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide > span:before, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  -webkit-transform: rotate(225deg);\n  transform: rotate(225deg);\n  top: 4px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail.hide > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.hide > span:after {\n  top: 8px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail.wm-audio, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.wm-audio {\n  position: relative;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail.wm-video-detail.hide {\n  bottom: -40px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail > span, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span {\n  position: absolute;\n  right: 30px;\n  top: 10px;\n  cursor: pointer;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail > span:before, .wm-collection-ui .wm-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span:before, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span:after {\n  content: '';\n  right: -12px;\n  top: 0px;\n  position: absolute;\n  width: 8px;\n  height: 8px;\n  border: 1px solid #fff;\n  border-left: none;\n  border-top: none;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail > span:after, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail > span:after {\n  top: 4px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item {\n  background: transparent;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div {\n  text-align: left;\n  line-height: 30px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1), .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item > div:nth-of-type(1) {\n  width: 60px;\n  text-align: right;\n  margin-right: 20px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C, .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-flex: 1;\n  flex: 1;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1), .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(1) {\n  width: 40px;\n}\n\n.wm-collection-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2), .wm-lastcheck-ui .wm-report-C > div .wm-report-detail .wm-myreport-field-item .wm-tag-list-C > div:nth-of-type(2) {\n  margin-left: 20px;\n  max-width: 200px;\n}\n\n.wm-collection-ui .wm-report-C > div img, .wm-lastcheck-ui .wm-report-C > div img {\n  width: auto;\n  height: auto;\n  max-height: 60vh;\n  max-width: 80vh;\n}\n\n.wm-collection-ui .wm-report-C > div video, .wm-lastcheck-ui .wm-report-C > div video {\n  width: auto;\n  max-height: 60vh;\n}\n\n.wm-collection-ui .wm-report-C .wm-report-close, .wm-lastcheck-ui .wm-report-C .wm-report-close {\n  position: absolute;\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  cursor: pointer;\n  right: 20px;\n  -webkit-transform: rotate(45deg);\n  transform: rotate(45deg);\n  background: #000;\n  top: 60px;\n  z-index: 10;\n}\n\n.wm-collection-ui .wm-report-C .wm-report-close:before, .wm-collection-ui .wm-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-report-C .wm-report-close:before, .wm-lastcheck-ui .wm-report-C .wm-report-close:after {\n  content: '';\n  position: absolute;\n  width: 18px;\n  height: 2px;\n  background: #fff;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n  transform: translate3d(-50%, -50%, 0);\n}\n\n.wm-collection-ui .wm-report-C .wm-report-close:after, .wm-lastcheck-ui .wm-report-C .wm-report-close:after {\n  width: 2px;\n  height: 18px;\n}\n\n.wm-collection-ui .wm-collection-footer, .wm-lastcheck-ui .wm-collection-footer {\n  height: 34px;\n  line-height: 34px;\n  position: absolute;\n  left: 145px;\n  bottom: 4px;\n  border-top: 1px solid #fff;\n  z-index: 100;\n  width: 100%;\n}\n\n.wm-collection-ui .wm-collection-footer span, .wm-lastcheck-ui .wm-collection-footer span {\n  display: inline-block;\n}\n\n.wm-collection-ui .wm-collection-footer span:nth-of-type(2), .wm-lastcheck-ui .wm-collection-footer span:nth-of-type(2) {\n  margin: 0 20px;\n  cursor: pointer;\n  color: yellowgreen;\n}\n\n.wm-collection-ui .wm-collection-footer span:nth-of-type(2).disabled, .wm-lastcheck-ui .wm-collection-footer span:nth-of-type(2).disabled {\n  color: #ccc;\n  cursor: not-allowed;\n}\n", ""]);
 
 	// exports
 
@@ -15102,7 +14973,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\collection\\result.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\collection\\result.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -15126,8 +14997,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-76d0b228&file=result.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./result.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-76d0b228&file=result.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./result.vue");
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-563a40f0&file=result.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./result.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-563a40f0&file=result.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./result.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -15145,7 +15016,7 @@
 
 
 	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { transform: rotate(0deg);}\r\n        50%  { transform: rotate(180deg);}\r\n        to   { transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
 
 	// exports
 
@@ -15165,7 +15036,7 @@
 	// 					<div>
 	// 						<img :src='imgs.search'/>
 	// 						<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-	// 							{{kwType}}
+	// 							<div v-html='kwType'></div>
 	// 							<ul v-if='showCondition'>
 	// 								<li @click.stop='changeKwType("关键字")'>关键字</li>
 	// 								<li @click.stop='changeKwType("用户名")'>用户名</li>
@@ -15198,7 +15069,7 @@
 	// 				<li @dblclick="showPreview = true" @click='currentReportIndex = i' :class='{"active":currentReportIndex === i}' v-for="(raterreport,i) in raterReportList" :key='i'>
 	// 					<div class="wm-collection-raterreport-item-left">
 	// 						<header>
-	// 							<span><Checkbox v-model="raterreport.checked"></Checkbox></span>
+	// 							<span ><Checkbox @on-change='changeChecked(raterreport,i)' v-model="raterreport.checked"></Checkbox></span>
 	// 							介绍
 	// 						</header>
 	// 						<div class="wm-collection-raterreport-thumb-C">
@@ -15234,7 +15105,7 @@
 	// 								</section>
 	// 							</div>
 	// 							<div class="wm-collection-vote-canvas">
-	// 								<canvas :style="{transform:'rotate('+(raterreport.rotate||0)+'deg)'}" width="140" height="140" ref='wm-result-canvas'></canvas>
+	// 								<canvas :style="{transform:'rotate('+(raterreport.rotate||0)+'deg)'}" width="280" height="280" ref='wm-result-canvas'></canvas>
 	// 								<div>
 	// 									<div>总票数</div>
 	// 									<div>{{raterreport.scorenum_success+raterreport.scorenum_faild}}票</div>
@@ -15257,9 +15128,9 @@
 	// 		</div>
 	//
 	// 		<div class="wm-collection-footer">
-	// 			<span ><Checkbox v-model="selectAll">全选</Checkbox></span>
+	// 			<span ><Checkbox @on-change='selectAllReport' v-model="selectAll">全选</Checkbox></span>
 	// 			<span :class="{'disabled':passCount <= 0}" @click='preview'>{{isFilter?'返回':'预览'}}</span>
-	// 			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审({{passCount}})</Button>
+	// 			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审(<span v-html='passCount'></span>)</Button>
 	// 		</div>
 	//
 	// 		<Detail :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='raterReportList'></Detail>
@@ -15332,18 +15203,19 @@
 		},
 		watch: {
 
-			raterReportList: {
-				handler: function handler(newVal, oldVal) {
-					var iNow = 0;
-					this.raterReportList.forEach(function (item, i) {
-						if (item.checked) {
-							iNow++;
-						}
-					});
-					this.passCount = iNow;
-				},
-				deep: true
-			},
+			/* 	raterReportList:{
+	  		handler(newVal,oldVal){
+	  			var iNow = 0;
+	  			this.raterReportList.forEach((item,i)=>{
+	  				if(item.checked){
+	  					iNow++;
+	  				}
+	  			});
+	  			console.log(iNow);
+	  			this.passCount = iNow;
+	  		},
+	  		deep:true 
+	  	},*/
 			selectAll: function selectAll(val) {
 				var _this = this;
 
@@ -15366,6 +15238,24 @@
 			}
 		},
 		methods: {
+
+			selectAllReport: function selectAllReport() {
+				var _this2 = this;
+
+				this.raterReportList.forEach(function (item, i) {
+					item.checked = _this2.selectAll;
+					_this2.passCount = _this2.selectAll ? i + 1 : 0;
+				});
+			},
+
+			changeChecked: function changeChecked(report, i) {
+				if (report.checked) {
+					this.passCount += 1;
+				} else {
+					this.passCount -= 1;
+				}
+				//console.log(this.passCount);
+			},
 
 			closePreview: function closePreview() {
 				this.showPreview = false;
@@ -15447,7 +15337,7 @@
 					url: window.config.baseUrl + '/wmadadmin/getscoredetaillist/',
 					data: p,
 					success: function success(data) {
-						var _this2 = this;
+						var _this3 = this;
 
 						if (data.getret === 0) {
 							var t = setInterval(function () {
@@ -15468,11 +15358,14 @@
 											item.checked = false;
 										});
 
+										s.selectAll = false;
+										s.passCount = 0;
+
 										if (s.reportList.length) {
 											s.currentReportIndex = 0;
 											s.formAdmin = s.reportList[s.currentReportIndex];
-											if (_this2.formAdmin && _this2.formAdmin.userlabel) {
-												_this2.formAdmin.tagList = _this2.formAdmin.userlabel.split(',');
+											if (_this3.formAdmin && _this3.formAdmin.userlabel) {
+												_this3.formAdmin.tagList = _this3.formAdmin.userlabel.split(',');
 											}
 										}
 										resourceList.map(function (item) {
@@ -15495,19 +15388,19 @@
 			},
 
 			searchReport: function searchReport() {
-				var _this3 = this;
+				var _this4 = this;
 
 				if (this.keyword) {
 					clearTimeout(this.timer);
 					this.timer = setTimeout(function () {
-						if (!_this3.keyword) {
-							_this3.fieldname = -1;
-							_this3.getRaterReportList();
+						if (!_this4.keyword) {
+							_this4.fieldname = -1;
+							_this4.getRaterReportList();
 							return;
 						}
-						_this3.fieldname = _this3.kwType === '用户名' ? 'username' : _this3.kwType === '关键字' ? 'searchkey' : -1;
-						_this3.page = 1;
-						_this3.getRaterReportList();
+						_this4.fieldname = _this4.kwType === '用户名' ? 'username' : _this4.kwType === '关键字' ? 'searchkey' : -1;
+						_this4.page = 1;
+						_this4.getRaterReportList();
 					}, 400);
 				}
 			},
@@ -15526,7 +15419,7 @@
 				this.showCondition = false;
 			},
 			searchByClassic: function searchByClassic(type) {
-				var _this4 = this;
+				var _this5 = this;
 
 				this.classicType = type;
 				//this.statusType  = '全部';
@@ -15534,7 +15427,7 @@
 				if (type !== '全部') {
 					this.menus.map(function (menu) {
 						if (type === menu) {
-							_this4.publicadtype = type;
+							_this5.publicadtype = type;
 						}
 					});
 				} else {
@@ -15567,15 +15460,15 @@
 					var context = canvas.getContext('2d');
 
 					context.strokeStyle = 'yellowgreen';
-					context.lineWidth = 10;
+					context.lineWidth = 20;
 					context.beginPath();
 					context.arc(x, y, r, 0, Math.PI * 2, false);
 					context.stroke();
 
 					context.strokeStyle = 'yellowgreen';
-					context.lineWidth = 1;
+					context.lineWidth = 2;
 					context.beginPath();
-					context.arc(x, y, r - 10, 0, Math.PI * 2, false);
+					context.arc(x, y, r - 20, 0, Math.PI * 2, false);
 					context.stroke();
 
 					var totalVote = s.raterReportList[i].scorenum_faild + s.raterReportList[i].scorenum_success;
@@ -15596,18 +15489,18 @@
 					s.raterReportList = s.raterReportList.concat([]);
 					//console.log(s.raterReportList[i].rotate)
 					context.beginPath();
-					context.lineWidth = 10;
+					context.lineWidth = 20;
 					context.strokeStyle = '#b20000';
 					context.arc(x, y, r, -.5 * Math.PI, Math.PI * 2 * rejectScale - .5 * Math.PI, false);
 					context.stroke();
 
 					context.lineWidth = 1;
 					context.beginPath();
-					context.arc(x, y, r - 10, -.5 * Math.PI, Math.PI * 2 * rejectScale - .5 * Math.PI, false);
+					context.arc(x, y, r - 20, -.5 * Math.PI, Math.PI * 2 * rejectScale - .5 * Math.PI, false);
 					context.stroke();
 
 					if (rejectScale > 0 && passScale > 0) {
-						context.lineWidth = 2;
+						context.lineWidth = 4;
 						context.strokeStyle = '#fff';
 						context.beginPath();
 						context.moveTo(x, y);
@@ -15628,7 +15521,7 @@
 			}
 		},
 		mounted: function mounted() {
-			var _this5 = this;
+			var _this6 = this;
 
 			this.userinfo = _libUtil2['default'].getUserInfo();
 
@@ -15637,18 +15530,18 @@
 
 			window.addEventListener('keydown', function (e) {
 				if (e.keyCode === 27) {
-					_this5.closePreview();
+					_this6.closePreview();
 				}
-				if (_this5.showPreview) {
+				if (_this6.showPreview) {
 					if (e.keyCode === 37) {
-						_this5.currentReportIndex--;
-						if (_this5.currentReportIndex <= -1) {
-							_this5.currentReportIndex = _this5.raterReportList.length - 1;
+						_this6.currentReportIndex--;
+						if (_this6.currentReportIndex <= -1) {
+							_this6.currentReportIndex = _this6.raterReportList.length - 1;
 						}
-						_this5.currentReportIndex %= _this5.raterReportList.length;
+						_this6.currentReportIndex %= _this6.raterReportList.length;
 					} else if (e.keyCode === 39) {
-						_this5.currentReportIndex++;
-						_this5.currentReportIndex %= _this5.raterReportList.length;
+						_this6.currentReportIndex++;
+						_this6.currentReportIndex %= _this6.raterReportList.length;
 					}
 				}
 			});
@@ -15684,7 +15577,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\collection\\detail.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\collection\\detail.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -15703,7 +15596,7 @@
 	// 				<img @dblclick.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].filepath||imgs.poster" alt="" />
 	// 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 	// 					<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-	// 					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
+	// 					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>
 	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
 	// 						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
 	// 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
@@ -15755,7 +15648,7 @@
 	// 				<img :src="imgs.reset" alt="">
 	// 			</section>
 	//
-	// 			<section class="wm-detail-mask-tip">双击放大浏览</section>
+	// 			<section class="wm-detail-mask-tip" v-if='"jpg jpeg tiff png gif".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>
 	// 		</div>
 	// </template>
 	// <script>
@@ -15833,13 +15726,13 @@
 /* 63 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n    <div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div :class='{\"original\":showOriginalImg}' v-if='\"mp3 mp4 webm aac wma ogg\".indexOf(reportList[currentReportIndex].fileextname)<=-1'>\r\n\t\t\t\t<img @dblclick.stop=\"showOriginalImg = !showOriginalImg\"  :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].filepath||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<section v-if='type*1 === 0' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t</section>\r\n\r\n            <section v-if='type*1 === 2'  class=\"wm-reset\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t<img :src=\"imgs.reset\" alt=\"\">\r\n\t\t\t</section>\r\n\r\n\t\t\t<section class=\"wm-detail-mask-tip\">双击放大浏览</section>\r\n\t\t</div>\r\n";
+	module.exports = "\r\n    <div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div :class='{\"original\":showOriginalImg}' v-if='\"mp3 mp4 webm aac wma ogg\".indexOf(reportList[currentReportIndex].fileextname)<=-1'>\r\n\t\t\t\t<img @dblclick.stop=\"showOriginalImg = !showOriginalImg\"  :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].filepath||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<section v-if='type*1 === 0' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t</section>\r\n\r\n            <section v-if='type*1 === 2'  class=\"wm-reset\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t<img :src=\"imgs.reset\" alt=\"\">\r\n\t\t\t</section>\r\n\r\n\t\t\t<section class=\"wm-detail-mask-tip\" v-if='\"jpg jpeg tiff png gif\".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>\r\n\t\t</div>\r\n";
 
 /***/ }),
 /* 64 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<section  class=\"wm-collection-rater-manager\">\r\n\t\t<header class='wm-collection-left-header'>\r\n\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t{{kwType}}\r\n\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-check-action\" v-if='false'>\r\n\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t<Button type=\"primary\" size='small' @click.stop='showCheckAction = true'>审核 <Icon type=\"ios-arrow-up\" /></Button>\r\n\t\t\t\t\t<ul v-if='showCheckAction'>\r\n\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t</li>\r\n\t\t\t\t\t</ul>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<header class=\"wm-collection-left-search-condition-header\" style=\"height:40px;\">\r\n\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t</header>\r\n\t\t<div class=\"wm-scroll wm-collection-rater-list\" :style=\"{height:viewH -  226+'px'}\">\r\n\t\t\t<ul>\r\n\t\t\t\t<li @dblclick=\"showPreview = true\" @click='currentReportIndex = i' :class='{\"active\":currentReportIndex === i}' v-for=\"(raterreport,i) in raterReportList\" :key='i'>\r\n\t\t\t\t\t<div class=\"wm-collection-raterreport-item-left\">\r\n\t\t\t\t\t\t<header>\r\n\t\t\t\t\t\t\t<span><Checkbox v-model=\"raterreport.checked\"></Checkbox></span>\r\n\t\t\t\t\t\t\t介绍\r\n\t\t\t\t\t\t</header>\r\n\t\t\t\t\t\t<div class=\"wm-collection-raterreport-thumb-C\">\r\n\r\n\t\t\t\t\t\t\t<img class=\"status\" v-if='raterreport.status === 3' :src=\"imgs.guidang\" alt=\"\">\r\n\t\t\t\t\t\t\t<div v-if='\"png jpg jpeg gif\".indexOf(raterreport.fileextname)>-1' >\r\n\t\t\t\t\t\t\t\t<img  :src=\"raterreport.pcbilethum\" alt=\"\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div v-else :style=\"{background:'url('+raterreport.pcbilethum+') no-repeat center center'}\">\r\n\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-raterreport-content\">\r\n\t\t\t\t\t\t\t\t<div  v-if='item.fieldname === \"filetitle\"||item.fieldname === \"filedesc\"||item.fieldname === \"userlabel\"' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t\t\t\t<div v-if='item.fieldname !== \"userlabel\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t\t\t\t<div  class=\"zmiti-text-overflow\" v-if='item.fieldname !== \"userlabel\"' :class=\"item.fieldname\">\r\n\t\t\t\t\t\t\t\t\t\t<span :title=\"raterreport[item.fieldname]\">{{raterreport[item.fieldname]}}</span>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-tag-list text-overflow\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (raterreport[item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-collection-raterreport-item-right\">\r\n\t\t\t\t\t\t<header>票数</header>\r\n\t\t\t\t\t\t<div class=\"wm-collecion-vote-result\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-vote-pass\">\r\n\t\t\t\t\t\t\t\t<section class=\"wm-collection-vote-pass-text\">\r\n\t\t\t\t\t\t\t\t\t<div>通过</div>\r\n\t\t\t\t\t\t\t\t\t<div>{{raterreport.scorenum_success}}票</div>\r\n\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-vote-canvas\">\r\n\t\t\t\t\t\t\t\t<canvas :style=\"{transform:'rotate('+(raterreport.rotate||0)+'deg)'}\" width=\"140\" height=\"140\" ref='wm-result-canvas'></canvas>\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<div>总票数</div>\r\n\t\t\t\t\t\t\t\t\t<div>{{raterreport.scorenum_success+raterreport.scorenum_faild}}票</div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-vote-reject\">\r\n\t\t\t\t\t\t\t\t<section class=\"wm-collection-detail\"><a :href='\"#/ratedetail/\"+raterreport.id'>查看详情>></a></section>\r\n\t\t\t\t\t\t\t\t<section class=\"wm-collection-vote-reject-text\">\r\n\t\t\t\t\t\t\t\t\t<div>拒绝</div>\r\n\t\t\t\t\t\t\t\t\t<div>{{raterreport.scorenum_faild}}票</div>\r\n\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<div class=\"wm-collection-footer\">\r\n\t\t\t<span ><Checkbox v-model=\"selectAll\">全选</Checkbox></span>\r\n\t\t\t<span :class=\"{'disabled':passCount <= 0}\" @click='preview'>{{isFilter?'返回':'预览'}}</span>\r\n\t\t\t<Button type='primary' :disabled=\"passCount === 0\"  class=\"wm-collection-last-check\" @click='lastCheck'>通过终审({{passCount}})</Button>\r\n\t\t</div>\r\n\r\n\t\t<Detail :configList='configList' :type=\"$route.params.type\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='raterReportList'></Detail>\r\n\t</section>\r\n";
+	module.exports = "\r\n\t<section  class=\"wm-collection-rater-manager\">\r\n\t\t<header class='wm-collection-left-header'>\r\n\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t<div v-html='kwType'></div>\r\n\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-check-action\" v-if='false'>\r\n\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t<Button type=\"primary\" size='small' @click.stop='showCheckAction = true'>审核 <Icon type=\"ios-arrow-up\" /></Button>\r\n\t\t\t\t\t<ul v-if='showCheckAction'>\r\n\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t</li>\r\n\t\t\t\t\t</ul>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<header class=\"wm-collection-left-search-condition-header\" style=\"height:40px;\">\r\n\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t</header>\r\n\t\t<div class=\"wm-scroll wm-collection-rater-list\" :style=\"{height:viewH -  226+'px'}\">\r\n\t\t\t<ul>\r\n\t\t\t\t<li @dblclick=\"showPreview = true\" @click='currentReportIndex = i' :class='{\"active\":currentReportIndex === i}' v-for=\"(raterreport,i) in raterReportList\" :key='i'>\r\n\t\t\t\t\t<div class=\"wm-collection-raterreport-item-left\">\r\n\t\t\t\t\t\t<header>\r\n\t\t\t\t\t\t\t<span ><Checkbox @on-change='changeChecked(raterreport,i)' v-model=\"raterreport.checked\"></Checkbox></span>\r\n\t\t\t\t\t\t\t介绍\r\n\t\t\t\t\t\t</header>\r\n\t\t\t\t\t\t<div class=\"wm-collection-raterreport-thumb-C\">\r\n\r\n\t\t\t\t\t\t\t<img class=\"status\" v-if='raterreport.status === 3' :src=\"imgs.guidang\" alt=\"\">\r\n\t\t\t\t\t\t\t<div v-if='\"png jpg jpeg gif\".indexOf(raterreport.fileextname)>-1' >\r\n\t\t\t\t\t\t\t\t<img  :src=\"raterreport.pcbilethum\" alt=\"\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div v-else :style=\"{background:'url('+raterreport.pcbilethum+') no-repeat center center'}\">\r\n\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-raterreport-content\">\r\n\t\t\t\t\t\t\t\t<div  v-if='item.fieldname === \"filetitle\"||item.fieldname === \"filedesc\"||item.fieldname === \"userlabel\"' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t\t\t\t<div v-if='item.fieldname !== \"userlabel\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t\t\t\t<div  class=\"zmiti-text-overflow\" v-if='item.fieldname !== \"userlabel\"' :class=\"item.fieldname\">\r\n\t\t\t\t\t\t\t\t\t\t<span :title=\"raterreport[item.fieldname]\">{{raterreport[item.fieldname]}}</span>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-tag-list text-overflow\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (raterreport[item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-collection-raterreport-item-right\">\r\n\t\t\t\t\t\t<header>票数</header>\r\n\t\t\t\t\t\t<div class=\"wm-collecion-vote-result\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-vote-pass\">\r\n\t\t\t\t\t\t\t\t<section class=\"wm-collection-vote-pass-text\">\r\n\t\t\t\t\t\t\t\t\t<div>通过</div>\r\n\t\t\t\t\t\t\t\t\t<div>{{raterreport.scorenum_success}}票</div>\r\n\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-vote-canvas\">\r\n\t\t\t\t\t\t\t\t<canvas :style=\"{transform:'rotate('+(raterreport.rotate||0)+'deg)'}\" width=\"280\" height=\"280\" ref='wm-result-canvas'></canvas>\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<div>总票数</div>\r\n\t\t\t\t\t\t\t\t\t<div>{{raterreport.scorenum_success+raterreport.scorenum_faild}}票</div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-vote-reject\">\r\n\t\t\t\t\t\t\t\t<section class=\"wm-collection-detail\"><a :href='\"#/ratedetail/\"+raterreport.id'>查看详情>></a></section>\r\n\t\t\t\t\t\t\t\t<section class=\"wm-collection-vote-reject-text\">\r\n\t\t\t\t\t\t\t\t\t<div>拒绝</div>\r\n\t\t\t\t\t\t\t\t\t<div>{{raterreport.scorenum_faild}}票</div>\r\n\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<div class=\"wm-collection-footer\">\r\n\t\t\t<span ><Checkbox @on-change='selectAllReport' v-model=\"selectAll\">全选</Checkbox></span>\r\n\t\t\t<span :class=\"{'disabled':passCount <= 0}\" @click='preview'>{{isFilter?'返回':'预览'}}</span>\r\n\t\t\t<Button type='primary' :disabled=\"passCount === 0\"  class=\"wm-collection-last-check\" @click='lastCheck'>通过终审(<span v-html='passCount'></span>)</Button>\r\n\t\t</div>\r\n\r\n\t\t<Detail :configList='configList' :type=\"$route.params.type\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='raterReportList'></Detail>\r\n\t</section>\r\n";
 
 /***/ }),
 /* 65 */
@@ -15856,7 +15749,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "E:\\project\\wmreport\\admin\\collection\\lastcheck.vue"
+	  var id = "F:\\xuchang2018\\project\\wmreport\\admin\\collection\\lastcheck.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -15880,8 +15773,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-257a92f7&file=lastcheck.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./lastcheck.vue", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-257a92f7&file=lastcheck.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./lastcheck.vue");
+			module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4ac8e997&file=lastcheck.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./lastcheck.vue", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-rewriter.js?id=_v-4ac8e997&file=lastcheck.vue!../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./lastcheck.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -15899,7 +15792,7 @@
 
 
 	// module
-	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { transform: rotate(0deg);}\r\n        50%  { transform: rotate(180deg);}\r\n        to   { transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
+	exports.push([module.id, "\r\n\t.demo-spin-icon-load{\r\n        -webkit-animation: ani-demo-spin 1s linear infinite;\r\n                animation: ani-demo-spin 1s linear infinite;\r\n    }\r\n    @-webkit-keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n    @keyframes ani-demo-spin {\r\n        from { -webkit-transform: rotate(0deg); transform: rotate(0deg);}\r\n        50%  { -webkit-transform: rotate(180deg); transform: rotate(180deg);}\r\n        to   { -webkit-transform: rotate(360deg); transform: rotate(360deg);}\r\n    }\r\n\r\n ", ""]);
 
 	// exports
 
@@ -15924,7 +15817,7 @@
 	// 								<div>
 	// 									<img :src='imgs.search'/>
 	// 									<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-	// 										{{kwType}}
+	// 										<div v-html='kwType'></div>
 	// 										<ul v-if='showCondition'>
 	// 											<li @click.stop='changeKwType("关键字")'>关键字</li>
 	// 											<li @click.stop='changeKwType("用户名")'>用户名</li>
@@ -16341,7 +16234,7 @@
 									s.reportList.forEach(function (item) {
 										item.checked = false;
 									});
-
+									s.selectAll = false;
 									if (s.reportList.length) {
 										s.currentReportIndex = 0;
 										s.formAdmin = s.reportList[s.currentReportIndex];
@@ -16446,7 +16339,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-lastcheck-ui {\r\n  display: block !important;\r\n  position: relative !important;\r\n}\r\n\r\n.wm-lastcheck-ui .wm-collection-left-search-condition-header {\r\n  height: 40px !important;\r\n}\r\n\r\n.wm-lastcheck-ui .wm-reset {\r\n  position: fixed;\r\n  z-index: 100;\r\n  right: 0;\r\n  bottom: 100px;\r\n  width: 150px;\r\n  cursor: pointer;\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-lastcheck-ui {\n  display: block !important;\n  position: relative !important;\n}\n\n.wm-lastcheck-ui .wm-collection-left-search-condition-header {\n  height: 40px !important;\n}\n\n.wm-lastcheck-ui .wm-reset {\n  position: fixed;\n  z-index: 100;\n  right: 0;\n  bottom: 100px;\n  width: 150px;\n  cursor: pointer;\n}\n", ""]);
 
 	// exports
 
@@ -16455,13 +16348,13 @@
 /* 71 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-lastcheck-ui lt-full\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t\r\n\t\t\r\n\r\n\t\t<Split v-model='scale' > \r\n\t\t\t<div slot='left' class=\"wm-collection-left-main-ui\">\r\n\t\t\t\t\t<header class='wm-collection-left-header'>\r\n\t\t\t\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t\t\t\t{{kwType}}\r\n\t\t\t\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-check-action\" >\r\n\t\t\t\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='small'  @click.stop='checkAction(1)'>撤销终审</Button>\r\n\t\t\t\t\t\t\t\t<ul v-if='showCheckAction && false' >\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-scroll wm-collection-report-list\" :style=\"{height:viewH - 230+'px'}\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @dblclick=\"previewReport(i)\" @click='showDetail(report,i)'  class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg' >\r\n\t\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-report-status\">\r\n\t\t\t\t\t\t\t\t\t<img v-if='report.status===1' :src=\"imgs.pass\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t<img  v-if='report.status===2' :src=\"imgs.reject\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-check\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t \r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-collection-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<h1 style=\"height:30px\"></h1>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit' type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\" '>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t<div class=\"wm-tag-list\"  v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<!-- <div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div> -->\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t \r\n\r\n\t\t<Detail :checkReportById='checkReportById' :configList='configList' :type=\"$route.params.type\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-lastcheck-ui lt-full\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t\r\n\t\t\r\n\r\n\t\t<Split v-model='scale' > \r\n\t\t\t<div slot='left' class=\"wm-collection-left-main-ui\">\r\n\t\t\t\t\t<header class='wm-collection-left-header'>\r\n\t\t\t\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t\t\t\t<div v-html='kwType'></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-check-action\" >\r\n\t\t\t\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='small'  @click.stop='checkAction(1)'>撤销终审</Button>\r\n\t\t\t\t\t\t\t\t<ul v-if='showCheckAction && false' >\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-scroll wm-collection-report-list\" :style=\"{height:viewH - 230+'px'}\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @dblclick=\"previewReport(i)\" @click='showDetail(report,i)'  class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg' >\r\n\t\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-report-status\">\r\n\t\t\t\t\t\t\t\t\t<img v-if='report.status===1' :src=\"imgs.pass\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t<img  v-if='report.status===2' :src=\"imgs.reject\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-check\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t \r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-collection-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<h1 style=\"height:30px\"></h1>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit' type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\" '>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t<div class=\"wm-tag-list\"  v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<!-- <div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div> -->\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t \r\n\r\n\t\t<Detail :checkReportById='checkReportById' :configList='configList' :type=\"$route.params.type\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 72 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-collection-ui lt-full\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t<div  class=\"wm-collection-left-pannel\" :style=\"{height:viewH -   64+'px'}\">\r\n\t\t\t<h2 class=\"zmiti-text-overflow\">{{resourcecnname}}</h2>\r\n\t\t\t<ul>\r\n\t\t\t\t<li @click='mainType = 0' :class=\"{'active':mainType === 0}\">上报审核</li>\r\n\t\t\t\t<li @click='mainType = 1' :class=\"{'active':mainType === 1}\">评分管理</li>\r\n\t\t\t\t<li @click='mainType = 2' :class=\"{'active':mainType === 2}\">终审归档</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t\t<Result  v-if='mainType  === 1'></Result>\r\n\t\t<LastCheck  v-if='mainType  === 2'></LastCheck>\r\n\r\n\t\t<Split v-model='scale' v-if='mainType === 0'> \r\n\t\t\t<div slot='left' class=\"wm-collection-left-main-ui\">\r\n\t\t\t\t\t<header class='wm-collection-left-header'>\r\n\t\t\t\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t\t\t\t{{kwType}}\r\n\t\t\t\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-check-action\">\r\n\t\t\t\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='small' @click.stop='showCheckAction = true'>审核 <Icon type=\"ios-arrow-up\" /></Button>\r\n\t\t\t\t\t\t\t\t<ul v-if='showCheckAction'>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t\t\t\t\t<div>状态：<span @click.stop='searchByStatus(\"全部\")' :class=\"{'active':statusType == '全部'}\">全部</span>\r\n\t\t\t\t\t\t\t<span @click.stop='searchByStatus(\"待审核\")' :class=\"{'active':statusType == '待审核'}\">待审核</span>\r\n\t\t\t\t\t\t\t<span :class=\"{'active':statusType == '已通过'}\" @click.stop='searchByStatus(\"已通过\")'>已通过</span>\r\n\t\t\t\t\t\t\t<span :class=\"{'active':statusType == '已拒绝'}\" @click.stop='searchByStatus(\"已拒绝\")'>已拒绝</span> </div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-scroll wm-collection-report-list\" :style=\"{height:viewH - 230+'px'}\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @dblclick=\"previewReport(i)\" @click='showDetail(report,i)'  class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'>\r\n\t\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-report-status\">\r\n\t\t\t\t\t\t\t\t\t<img v-if='report.status===1' :src=\"imgs.pass\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t<img  v-if='report.status===2' :src=\"imgs.reject\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-check\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t \r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-collection-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<h1 style=\"height:30px\"></h1>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit' type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\" '>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t<div class=\"wm-tag-list\"  v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<!-- <div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div> -->\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<!-- \r\n\t\t\t<div class=\"lt-full wm-collection-report-C\" v-if='showPreview &&　false'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div  v-if='reportList[currentReportIndex].fileextname !== \"mp3\" &&reportList[currentReportIndex].fileextname!== \"webm\" &&reportList[currentReportIndex].fileextname !== \"mp4\" && reportList[currentReportIndex].fileextname!== \"aac\"&&reportList[currentReportIndex].fileextname!== \"wma\"&&reportList[currentReportIndex].fileextname!== \"ogg\"'>\r\n\t\t\t\t<img :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<section class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t</section>\r\n\t\t</div> \r\n\t\t-->\r\n\r\n\t\t<Detail :checkReportById='checkReportById' :configList='configList' :type=\"$route.params.type\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>\r\n\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-collection-ui lt-full\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t<div  class=\"wm-collection-left-pannel\" :style=\"{height:viewH -   64+'px'}\">\r\n\t\t\t<h2 class=\"zmiti-text-overflow\">{{resourcecnname}}</h2>\r\n\t\t\t<ul>\r\n\t\t\t\t<li @click='mainType = 0' :class=\"{'active':mainType === 0}\">上报审核</li>\r\n\t\t\t\t<li @click='mainType = 1' :class=\"{'active':mainType === 1}\">评分管理</li>\r\n\t\t\t\t<li @click='mainType = 2' :class=\"{'active':mainType === 2}\">终审归档</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t\t<Result  v-if='mainType  === 1'></Result>\r\n\t\t<LastCheck  v-if='mainType  === 2'></LastCheck>\r\n\r\n\t\t<Split v-model='scale' v-if='mainType === 0'> \r\n\t\t\t<div slot='left' class=\"wm-collection-left-main-ui\">\r\n\t\t\t\t\t<header class='wm-collection-left-header'>\r\n\t\t\t\t\t\t<div class=\"wm-collection-title\">\r\n\t\t\t\t\t\t\t<div>征集管理 > {{resourcecnname}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-search-input-C\">\r\n\t\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t\t<img :src='imgs.search'/>\r\n\t\t\t\t\t\t\t\t\t<div @click.stop='showCondition = true' class=\"wm-collection-search-condition\">\r\n\t\t\t\t\t\t\t\t\t\t<div v-html='kwType'></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul v-if='showCondition'>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"关键字\")'>关键字</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click.stop='changeKwType(\"用户名\")'>用户名</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<input v-model=\"keyword\" @keydown='searchReport' placeholder=\"查询关键字\"/>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-collection-check-action\">\r\n\t\t\t\t\t\t\t\t<Checkbox v-model=\"selectAll\">全选</Checkbox>\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='small' @click.stop='showCheckAction = true'>审核 <Icon type=\"ios-arrow-up\" /></Button>\r\n\t\t\t\t\t\t\t\t<ul v-if='showCheckAction'>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(1)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-checkmark-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t通过\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t<li @click.stop=\"checkAction(2)\">\r\n\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-close-circle-outline\" />\r\n\t\t\t\t\t\t\t\t\t\t拒绝\r\n\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t\t\t<div>分类：<span @click.stop='searchByClassic(\"全部\")'  :class=\"{'active':classicType == '全部'}\">全部</span> <span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> </div>\r\n\t\t\t\t\t\t<div>状态：<span @click.stop='searchByStatus(\"全部\")' :class=\"{'active':statusType == '全部'}\">全部</span>\r\n\t\t\t\t\t\t\t<span @click.stop='searchByStatus(\"待审核\")' :class=\"{'active':statusType == '待审核'}\">待审核</span>\r\n\t\t\t\t\t\t\t<span :class=\"{'active':statusType == '已通过'}\" @click.stop='searchByStatus(\"已通过\")'>已通过</span>\r\n\t\t\t\t\t\t\t<span :class=\"{'active':statusType == '已拒绝'}\" @click.stop='searchByStatus(\"已拒绝\")'>已拒绝</span> </div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-scroll wm-collection-report-list\" :style=\"{height:viewH - 230+'px'}\">\r\n\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t<li @dblclick=\"previewReport(i)\" @click.prevent='showDetail(report,i)'  class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'>\r\n\t\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-report-status\">\r\n\t\t\t\t\t\t\t\t\t<img v-if='report.status===1' :src=\"imgs.pass\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t<img  v-if='report.status===2' :src=\"imgs.reject\" alt=\"\">\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-collection-check\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t<div class=\"wm-collection-pagetion\">\r\n\t\t\t\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t \r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-collection-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<h1 style=\"height:30px\"></h1>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit' type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\" '>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div v-if='item.fieldname === \"userlabel\"'>标签：</div>\r\n\t\t\t\t\t<div class=\"wm-tag-list\"  v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<!-- \r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div> \r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag  :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i'  v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>-->\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<!-- \r\n\t\t\t<div class=\"lt-full wm-collection-report-C\" v-if='showPreview &&　false'>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t\t<div  v-if='reportList[currentReportIndex].fileextname !== \"mp3\" &&reportList[currentReportIndex].fileextname!== \"webm\" &&reportList[currentReportIndex].fileextname !== \"mp4\" && reportList[currentReportIndex].fileextname!== \"aac\"&&reportList[currentReportIndex].fileextname!== \"wma\"&&reportList[currentReportIndex].fileextname!== \"ogg\"'>\r\n\t\t\t\t<img :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<section class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t</section>\r\n\t\t</div> \r\n\t\t-->\r\n\r\n\t\t<Detail :checkReportById='checkReportById' :configList='configList' :type=\"$route.params.type\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>\r\n\r\n\t</div>\r\n";
 
 /***/ }),
 /* 73 */

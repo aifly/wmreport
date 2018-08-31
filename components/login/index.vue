@@ -32,6 +32,9 @@
 						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
 					</div>
 				</div>
+				<div class='wm-browner-tip' v-if='isNotChrome'>
+					<img draggable="false" :src="imgs.brower" alt="">
+				</div>
 			</div>
 			<div class="wm-copyright">
 				中国文明网 &copy;版权所有
@@ -59,6 +62,7 @@
 				isLogined:false,
 				isMove:false,
 				showLoading:false,
+				isNotChrome:false,
 				showError:false,
 				errorMsg:'',
 				loginType:"员工登录",
@@ -141,6 +145,10 @@
 		},
 		mounted(){
 			this.checkCache();
+			
+			var ua = navigator.userAgent.toLowerCase();
+			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/)
+
 		}
 	}
 </script>

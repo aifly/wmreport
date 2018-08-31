@@ -81,7 +81,7 @@ $color: #be0000;
 						padding:0 20px;
 						@include br(10px);
 						.wm-login-error{
-							color:#f00;
+							color:#fff;
 							margin-top:-12px;
 						}
 					}
@@ -126,7 +126,36 @@ $color: #be0000;
 					width: 20px;
 				}
 			}
+			.wm-browner-tip {
+				text-align: center;
+				color: #fff;
+				margin-top: 30px;
+				font-size: 14px;
+				@include pos(a);
+				top: -100px;
+				@include animation(1s flash infinite alternate);
+			}
 		}
+
+		@-webkit-keyframes flash{
+			to{
+				opacity:.2;
+			}
+		}
+		@keyframes flash {
+			to {
+				opacity: .2;
+			}
+		}
+		@-moz-keyframes flash {
+			to {
+				opacity: .2;
+			}
+		}
+
+	
+
+	}
 
 		.wm-copyright {
 			@include pos(a);
@@ -135,11 +164,10 @@ $color: #be0000;
 			text-align: center;
 			height: 50px;
 			line-height: 50px;
-			color:#fff;
-			background:rgba(204,0,0,1);
+			color: #fff;
+			left:0;
+			background: rgba(204, 0, 0, 1);
 		}
-
-	}
 	
 
 }

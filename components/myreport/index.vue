@@ -278,7 +278,7 @@
 					</div>
 				</div>
 			</div>
-			<section class="wm-report-mask-tip">双击放大浏览</section>
+			<section class="wm-report-mask-tip"  v-if='"jpg jpeg tiff png gif".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>
 		</div>
 
 		<div class="wm-report-tips lt-full" v-if='showReportTip'>
@@ -779,7 +779,6 @@
 						author:s.formUpload.author,
 						telphone:s.formUpload.telphone
 				}
-				console.log('params  => ', p);
 				this.p = p;
 				if(s.uploader){
 					s.uploader.destroy();

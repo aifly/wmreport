@@ -116,7 +116,35 @@ $color: #be0000;
 					width: 20px;
 				}
 			}
+
+			.wm-browner-tip {
+				text-align: center;
+				color: #fff;
+				margin-top: 30px;
+				font-size: 14px;
+				@include pos(a);
+				top: -100px;
+				@include animation(1s flash infinite alternate);
+			}
 		}
+
+			@-webkit-keyframes flash {
+				to {
+					opacity: .2;
+				}
+			}
+
+			@keyframes flash {
+				to {
+					opacity: .2;
+				}
+			}
+
+			@-moz-keyframes flash {
+				to {
+					opacity: .2;
+				}
+			}
 		.wm-copyright {
 			@include pos(a);
 			bottom: 0;
@@ -125,6 +153,7 @@ $color: #be0000;
 			height: 50px;
 			line-height: 50px;
 			color: #fff;
+			left:0;
 			background: rgba(204, 0, 0,1);
 		}
 	}

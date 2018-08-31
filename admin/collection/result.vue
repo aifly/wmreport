@@ -9,7 +9,7 @@
 					<div>
 						<img :src='imgs.search'/>
 						<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-							{{kwType}}
+							<div v-html='kwType'></div>
 							<ul v-if='showCondition'>
 								<li @click.stop='changeKwType("关键字")'>关键字</li>
 								<li @click.stop='changeKwType("用户名")'>用户名</li>
@@ -42,7 +42,7 @@
 				<li @dblclick="showPreview = true" @click='currentReportIndex = i' :class='{"active":currentReportIndex === i}' v-for="(raterreport,i) in raterReportList" :key='i'>
 					<div class="wm-collection-raterreport-item-left">
 						<header>
-							<span><Checkbox v-model="raterreport.checked"></Checkbox></span>
+							<span ><Checkbox @on-change='changeChecked(raterreport,i)' v-model="raterreport.checked"></Checkbox></span>
 							介绍
 						</header>
 						<div class="wm-collection-raterreport-thumb-C">
@@ -78,7 +78,7 @@
 								</section>
 							</div>
 							<div class="wm-collection-vote-canvas">
-								<canvas :style="{transform:'rotate('+(raterreport.rotate||0)+'deg)'}" width="140" height="140" ref='wm-result-canvas'></canvas>
+								<canvas :style="{transform:'rotate('+(raterreport.rotate||0)+'deg)'}" width="280" height="280" ref='wm-result-canvas'></canvas>
 								<div>
 									<div>总票数</div>
 									<div>{{raterreport.scorenum_success+raterreport.scorenum_faild}}票</div>
@@ -101,9 +101,9 @@
 		</div>
 
 		<div class="wm-collection-footer">
-			<span ><Checkbox v-model="selectAll">全选</Checkbox></span>
+			<span ><Checkbox @on-change='selectAllReport' v-model="selectAll">全选</Checkbox></span>
 			<span :class="{'disabled':passCount <= 0}" @click='preview'>{{isFilter?'返回':'预览'}}</span>
-			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审({{passCount}})</Button>
+			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审(<span v-html='passCount'></span>)</Button>
 		</div>
 
 		<Detail :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='raterReportList'></Detail>
@@ -159,7 +159,7 @@
 		},
 		watch:{
 
-			raterReportList:{
+		/* 	raterReportList:{
 				handler(newVal,oldVal){
 					var iNow = 0;
 					this.raterReportList.forEach((item,i)=>{
@@ -167,10 +167,11 @@
 							iNow++;
 						}
 					});
+					console.log(iNow);
 					this.passCount = iNow;
 				},
-				deep:true
-			},
+				deep:true 
+			},*/
 			selectAll(val){
 				this.raterReportList.forEach((item,i)=>{
 					item.checked = val;
@@ -192,6 +193,24 @@
 			}
 		},
 		methods:{
+
+
+			selectAllReport(){
+				this.raterReportList.forEach((item,i)=>{
+					item.checked = this.selectAll;
+					this.passCount = this.selectAll?i+1:0;
+				})
+			},
+
+			changeChecked(report,i){
+				if(report.checked){
+					this.passCount += 1;
+				}
+				else{
+					this.passCount -= 1;
+				}
+				//console.log(this.passCount);
+			},
 
 			closePreview(){
 				this.showPreview = false;
@@ -291,6 +310,9 @@
 									s.reportList.forEach((item)=>{
 										item.checked = false;
 									});
+
+									s.selectAll = false;
+									s.passCount = 0;
 									
 									if(s.reportList.length){
 										s.currentReportIndex = 0;
@@ -394,15 +416,15 @@
 					var context = canvas.getContext('2d');
 
 					context.strokeStyle = 'yellowgreen';
-					context.lineWidth = 10;
+					context.lineWidth = 20;
 					context.beginPath();
 					context.arc(x,y,r,0,Math.PI*2,false);
 					context.stroke();
 
 					context.strokeStyle = 'yellowgreen';
-					context.lineWidth = 1;
+					context.lineWidth = 2;
 					context.beginPath();
-					context.arc(x,y,r-10,0,Math.PI*2,false);
+					context.arc(x,y,r-20,0,Math.PI*2,false);
 					context.stroke();
 
 					var totalVote = s.raterReportList[i].scorenum_faild +s.raterReportList[i].scorenum_success;
@@ -423,18 +445,18 @@
 					s.raterReportList = s.raterReportList.concat([]);
 					//console.log(s.raterReportList[i].rotate)
 					context.beginPath();
-					context.lineWidth = 10;
+					context.lineWidth = 20;
 					context.strokeStyle = '#b20000';
 					context.arc(x,y,r,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
 					context.stroke();
 
 					context.lineWidth = 1;
 					context.beginPath();
-					context.arc(x,y,r-10,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
+					context.arc(x,y,r-20,-.5*Math.PI,Math.PI*2*rejectScale - .5*Math.PI,false);
 					context.stroke();
 
 					if(rejectScale>0 && passScale>0){
-						context.lineWidth = 2;
+						context.lineWidth = 4;
 						context.strokeStyle = '#fff';
 						context.beginPath();
 						context.moveTo(x,y);

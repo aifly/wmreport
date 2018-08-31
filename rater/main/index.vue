@@ -34,10 +34,13 @@
                                     </MenuItem>
                                 </a>
                             </Submenu>
-                            <a href='#/user/'> 
-                                <MenuItem name="13">个人中心 </MenuItem>
-                            </a>
-                           
+                            <Submenu name="3">
+                                <template slot="title">
+                                    <Icon type="ios-paper" />
+                                    我的
+                                </template>
+                                     <MenuItem to='/user/' name="13">个人中心 </MenuItem>
+                            </Submenu>
                         </Menu>
                    </div>
                 </div>

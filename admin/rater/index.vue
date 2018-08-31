@@ -26,7 +26,7 @@
 				</FormItem>
 				<FormItem label="密码：" prop="raterpwd">
 					<Input ref='pass' :disabled='!showPass' v-model="formAdmin.raterpwd" placeholder="密码" autocomplete="off" />
-					<Button type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
+					<Button :disabled='currentRateid === -1' type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
 				</FormItem>
 				<FormItem label="昵称：" prop="nickname">
 					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
@@ -62,7 +62,7 @@
 					{
 						title:"用户名",
 						key:'ratername',
-						align:'center'
+						align:'center',
 					},
 					{
 						title:'姓别',
@@ -92,11 +92,18 @@
                                         size: 'small'
                                     },
                                     style: {
-                                        marginRight: '5px'
+										margin: '2px 5px',
+										border:'none',
+										background:'#fab82e',
+										color:'#fff',
+										padding: '3px 7px 2px',
+										fontSize: '12px',
+										borderRadius: '3px'
+
                                     },
                                     on: {
                                         click: () => {
-											this.currentRateid = params.row.raterid;
+											this.currentRateid = params.row.userid;
 											this.formAdmin = params.row;
 											this.visible = true;
                                         }
@@ -118,7 +125,6 @@
 										props: {
 											type: 'error',
 											size: 'small',
-											icon:'trash-a'
 										},
 										on: {
 											click: () => {

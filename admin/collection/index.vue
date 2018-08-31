@@ -22,7 +22,7 @@
 								<div>
 									<img :src='imgs.search'/>
 									<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-										{{kwType}}
+										<div v-html='kwType'></div>
 										<ul v-if='showCondition'>
 											<li @click.stop='changeKwType("关键字")'>关键字</li>
 											<li @click.stop='changeKwType("用户名")'>用户名</li>
@@ -56,7 +56,7 @@
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
-							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
+							<li @dblclick="previewReport(i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.pcbilethum||imgs.poster" alt="">
 								</div>
@@ -109,9 +109,9 @@
 					<div class="wm-tag-list"  v-if='item.fieldname === "userlabel"'>
 						<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 					</div>
-
+					<!-- 
 					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-						<!-- <div class="wm-userlabel-header">
+						<div class="wm-userlabel-header">
 							<div>标签</div>
 							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
 							<div>
@@ -120,11 +120,11 @@
 								</div>
 							</div>
 							
-						</div> -->
+						</div> 
 						<div class="wm-tag-list">
 							<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 						</div>
-					</section>
+					</section>-->
 				</div>
 
 
@@ -416,6 +416,7 @@
 			},
 			changeKwType(type){
 				this.kwType = type;
+				console.log(this.kwType)
 				this.showCondition = false;
 			},
 			searchByClassic(type){
@@ -487,7 +488,7 @@
 									s.reportList.forEach((item)=>{
 										item.checked = false;
 									});
-									
+									s.selectAll = false;
 									if(s.reportList.length){
 										//s.currentReportIndex = 0;
 

@@ -266,6 +266,10 @@
   opacity: 0;
 }
 
+.layout .ivu-menu-item {
+  text-indent: 4em;
+}
+
 .layout .ivu-menu-item > a > i {
   margin-right: 6px;
 }

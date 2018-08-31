@@ -29,16 +29,16 @@
                                     <Icon type="ios-paper" />
                                     我的上报
                                 </template>
-                              
-                                    <a href='#/myreport'>
-                                      <MenuItem :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "myreport"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
-                                      </MenuItem>
-                                    </a>
-                                
+                                    <MenuItem to='/myreport/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "myreport"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                                    </MenuItem>
                             </Submenu>
-                            <a href='#/user/'> 
-                                <MenuItem name="13">个人中心 </MenuItem>
-                            </a>
+                             <Submenu name="2">
+                                <template slot="title">
+                                    <Icon type="ios-paper" />
+                                    我的
+                                </template>
+                                     <MenuItem to='/user/' name="13">个人中心 </MenuItem>
+                            </Submenu>
                            
                         </Menu>
                    </div>
@@ -83,11 +83,6 @@
 		},
         beforeCreate(){
             this.validateData = sysbinVerification.validate(this);
-        },
-        watch:{
-           $route(e){
-               console.log(e)
-           }
         },
 		mounted(){
            ///this.menus = this.defaultMenu.concat([]);

@@ -138,9 +138,9 @@
 				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
 				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
 					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" '>{{item.name}} :</div>
-						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ' >
+					<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"'  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"'>{{item.name}} :</div>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
 						</div>
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
@@ -151,17 +151,15 @@
 						</section>
 					</div>
 				</div>
+				 
 			</div>
 			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
 				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
 				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
-					<div class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
+					<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"'  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"'>{{item.name}} :</div>
+						<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc"' >
 							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
 						</div>
 						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
 							<div>标签：</div>
@@ -187,7 +185,7 @@
 				</div>
 			</section>
 
-			<div class="wm-rater-mask-tip">双击放大浏览</div>
+			<div class="wm-rater-mask-tip"  v-if='"jpg jpeg tiff png gif".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</div>
 		</div>
 	</div>
 </template>

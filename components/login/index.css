@@ -187,6 +187,35 @@
   width: 20px;
 }
 
+.wm-login-ui > section .wm-login-C .wm-browner-tip {
+  text-align: center;
+  color: #fff;
+  margin-top: 30px;
+  font-size: 14px;
+  position: absolute;
+  top: -100px;
+  -webkit-animation: 1s flash infinite alternate;
+  animation: 1s flash infinite alternate;
+}
+
+@-webkit-keyframes flash {
+  to {
+    opacity: .2;
+  }
+}
+
+@keyframes flash {
+  to {
+    opacity: .2;
+  }
+}
+
+@-moz-keyframes flash {
+  to {
+    opacity: .2;
+  }
+}
+
 .wm-login-ui > section .wm-copyright {
   position: absolute;
   bottom: 0;

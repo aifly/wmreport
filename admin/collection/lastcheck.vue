@@ -14,7 +14,7 @@
 								<div>
 									<img :src='imgs.search'/>
 									<div @click.stop='showCondition = true' class="wm-collection-search-condition">
-										{{kwType}}
+										<div v-html='kwType'></div>
 										<ul v-if='showCondition'>
 											<li @click.stop='changeKwType("关键字")'>关键字</li>
 											<li @click.stop='changeKwType("用户名")'>用户名</li>
@@ -417,7 +417,7 @@
 									s.reportList.forEach((item)=>{
 										item.checked = false;
 									});
-									
+									s.selectAll = false;
 									if(s.reportList.length){
 										s.currentReportIndex = 0;
 										s.formAdmin = s.reportList[s.currentReportIndex];

@@ -96,6 +96,7 @@
   justify-content: center;
   -webkit-align-items: center;
   align-items: center;
+  margin-top: -20vh;
 }
 
 .wm-user-ui .wm-user-form-item {

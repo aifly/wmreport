@@ -10,17 +10,17 @@
 
 		<Modal
 			v-model="visible"
-			:title="currentUserId === -1? '新增评委':'编辑评委'"
+			:title="currentUserId === -1? '新增用户':'编辑用户'"
 			@on-ok="ok"
 			@on-cancel="cancel">
 			<Form ref="formAdmin" :model="formAdmin" :label-width="72" >
 				<FormItem label="账号：" prop="ratername">
-					<Input  v-model="formAdmin.username" placeholder="账号" autocomplete="off" />
+					<Input :disabled = 'currentUserId !== -1'  v-model="formAdmin.username" placeholder="账号" autocomplete="off" />
 					
 				</FormItem>
 				<FormItem label="密码：" prop="userpwd">
 					<Input ref='pass' :disabled='!showPass' v-model="formAdmin.userpwd" placeholder="密码" autocomplete="off" />
-					<Button type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
+					<Button :disabled='currentUserId ===-1' type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
 				</FormItem>
 				<FormItem label="昵称：" prop="nickname">
 					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
@@ -56,7 +56,16 @@
 					{
 						title:"用户名",
 						key:'username',
-						align:'center'
+						align:'center',
+						render:(h,params)=>{
+							return h('div',{
+								style:{
+									width:'53%',
+									float:'right',
+									textAlign:'left'
+								}
+							},params.row.username);
+						}
 					},
 					{
 						title:"昵称",
@@ -74,7 +83,14 @@
                                         size: 'small'
                                     },
                                     style: {
-                                        marginRight: '5px'
+										margin: '2px 5px',
+										border:'none',
+										background:'#fab82e',
+										color:'#fff',
+										padding: '3px 7px 2px',
+										fontSize: '12px',
+										borderRadius: '3px'
+
                                     },
                                     on: {
                                         click: () => {
@@ -99,8 +115,7 @@
 									h('Button', {
 										props: {
 											type: 'error',
-											size: 'small',
-											icon:'trash-a'
+											size: 'small'
 										},
 										on: {
 											click: () => {
