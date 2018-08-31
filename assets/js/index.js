@@ -56564,7 +56564,7 @@
 				}
 				var accepts = [{
 					title: 'Images',
-					extensions: 'gif,jpg,jpeg,bmp,png,tiff',
+					extensions: 'gif,jpg,jpeg,bmp,png,tiff,tif',
 					mimeTypes: 'image/*'
 				}, {
 					title: 'Video',
@@ -56576,7 +56576,7 @@
 					mimeTypes: 'auido/*'
 				}, {
 					title: 'All',
-					extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+					extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
 					mimeTypes: '*/*'
 				}];
 				var uploader = WebUploader.create({
