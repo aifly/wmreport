@@ -30,8 +30,8 @@
 			 }
 
 			 &:nth-of-type(2) {
-				 -webkit-flex-grow:1;
-				 flex-grow:1;
+				 -webkit-flex:1;
+				 flex:1;
 				 div{
 					 margin-top: 14px;
 					  width: 400px;
@@ -70,7 +70,7 @@
 
 			 &.wm-user-info{
 				 //@include displayBox(row);
-				 min-width: 250px;
+				 min-width: 300px;
 				 @include pos(r);
 				 img{
 					width: 30px;
@@ -96,7 +96,7 @@
 					 margin:0 10px;
 					 display:inline-block;
 					 font-size:14px;
-					 max-width: 100px;
+					 max-width: 200px;
 					 @include pos(r);
 					 top: 0;
 					 z-index: 10;;

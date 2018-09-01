@@ -17,7 +17,7 @@
 										<div v-html='kwType'></div>
 										<ul v-if='showCondition'>
 											<li @click.stop='changeKwType("关键字")'>关键字</li>
-											<li @click.stop='changeKwType("用户名")'>用户名</li>
+											<li @click.stop='changeKwType("上传者")'>上传者</li>
 										</ul>
 									</div>
 									<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
@@ -237,7 +237,7 @@
 						this.getReportList();
 						return;
 					}
-					this.fieldname = this.kwType ===  '用户名' ? 'username' : this.kwType ===  '关键字'? 'searchkey' : -1;
+					this.fieldname = this.kwType ===  '上传者' ? 'username' : this.kwType ===  '关键字'? 'searchkey' : -1;
 					this.page = 1;
 					this.getReportList();
 

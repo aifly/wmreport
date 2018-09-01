@@ -56,16 +56,8 @@
 					{
 						title:"用户名",
 						key:'username',
-						align:'center',
-						render:(h,params)=>{
-							return h('div',{
-								style:{
-									width:'53%',
-									float:'right',
-									textAlign:'left'
-								}
-							},params.row.username);
-						}
+						align:'center'
+						
 					},
 					{
 						title:"昵称",
@@ -186,7 +178,6 @@
 					validate:s.validate,
 					data:{
 						userid,
-						deltype:0,
 						admintoken:s.userinfo.admintoken,
 						adminusername:s.userinfo.adminusername
 					},success(data){

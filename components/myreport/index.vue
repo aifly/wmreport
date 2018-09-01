@@ -111,9 +111,7 @@
 			</div>
 			<div slot="right" class="wm-myreport-right wm-scroll" v-if='reportList[currentReportIndex]'>
 				<div   class="wm-right-thumb">
-					<div>
-						<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
-					</div>
+					<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
 				</div>
 				
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
@@ -348,7 +346,7 @@
 			///this.validate = validate;
 		},
 		watch:{
-			
+
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
@@ -356,6 +354,8 @@
 				this.changeCurrentType(0,'first');
 			});
 
+
+			
 			
 
 			var {obserable} = Vue;
@@ -447,6 +447,7 @@
 				this.currentReportIndex = 0;
 				this.filterReportList();
 				
+				this.formAdmin['publicadtype'] = this.menus[index];
 				if(!type && false){
 					s.formUpload = s.reportList[s.currentReportIndex ] || {
 						tagList:[],

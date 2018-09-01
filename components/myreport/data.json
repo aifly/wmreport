@@ -40,6 +40,16 @@
             "length": 255,
             "loading": 1,
             "edit": 0
+        }, {
+            "name": "上传者",
+            "type": "text",
+            "notnull": 1,
+            "default": "",
+            "fieldtype": "varchar",
+            "fieldname": "username",
+            "length": 255,
+            "loading": 1,
+            "edit": 0
         },
         {
             "name": "扩展名",

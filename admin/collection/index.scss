@@ -583,6 +583,7 @@ body{
 									
 									.wm-myreport-item{
 										@include displayFlex(row);
+										width: 100%;
 										line-height: 30px;
 										&:nth-of-type(2){
 											height: 80px;
@@ -1127,6 +1128,8 @@ body{
 		}
 		.wm-myreport-item {
 			background: transparent;
+			width: 100%;
+			float: left;
 			&>div {
 				float: left;
 				&:nth-of-type(1) {
@@ -1134,7 +1137,7 @@ body{
 					width: 30%;
 					text-align: left;
 					margin-left: 2%;
-					text-indent: 2em;
+					text-indent: 1.1em;
 				}
 				&:nth-of-type(2) {
 					width: 68%;
