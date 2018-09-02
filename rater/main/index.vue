@@ -123,6 +123,7 @@
                 var s = this;
                 
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+'/wmreview/exitlogin',
                     data:{
                         ratername:s.userinfo.ratername,
@@ -149,6 +150,7 @@
 
                 var {obserable} = Vue;
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+'/wmreview/checkresources/',
                     data:{
                         ratername:s.userinfo.ratername,
@@ -174,6 +176,7 @@
                 var s = this;
                 return;
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+"/admin/getmenulist",
                     validate:s.validateData,
                     data:{

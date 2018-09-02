@@ -13,6 +13,8 @@ Vue.use(VueRouter)
 Vue.use(iView)
 var obserable = new Obserable();
 
+
+
 Vue.obserable = obserable;
 const router = new VueRouter({
 	routes: [
@@ -62,6 +64,14 @@ new Vue({
 	mounted() {
 
 		this.$router.obserable = obserable;
+
+		window.addEventListener("online", function(e) {
+			this.$Message.success('网络已链接')
+		})
+
+		window.addEventListener("offline", function(e) {
+			this.$Message.success('网络已断开');
+		})
 
 
 	}

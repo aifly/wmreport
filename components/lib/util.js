@@ -77,6 +77,9 @@ var symbinUtil = {
 			data:opt,
 			error(){
 				option.fnError && option.fnError();
+				option.error && option.error();
+
+				option._this && option._this.$Message.error('服务器开小差了，请稍后重试');
 			}
 		}).done((dt)=>{
 			if (dt.getret === 1000) {

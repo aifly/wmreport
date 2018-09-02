@@ -557,7 +557,7 @@
           outline: none;
           border-radius: 4px; }
           .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(2) input::-webkit-input-placeholder {
-            color: #ddd; }
+            color: #ccc; }
       .wm-myreport-main-ui .wm-myreport-right .wm-userlabel-header > div:nth-of-type(3) {
         width: 50px;
         position: relative; }
@@ -602,6 +602,8 @@
           height: 24px;
           border: 1px solid #eee;
           outline: none; }
+          .wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div input::-webkit-input-placeholder {
+            color: #ccc; }
   .wm-myreport-main-ui .wm-report-mask-tip {
     position: absolute;
     width: 100%;
@@ -784,7 +786,7 @@
   box-sizing: border-box;
   outline: none; }
   .wm-tags input::-webkit-input-placeholder {
-    color: #999; }
+    color: #ccc; }
 
 .wm-report-upload-item {
   background: #eee;

@@ -87,6 +87,7 @@
 				var s = this;
 				var id = this.$route.params.id;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getcountvotenum',
 					data:{
 						admintoken:s.userinfo.admintoken,
@@ -109,6 +110,7 @@
 				var s = this;
 				var id = this.$route.params.id;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getvotedetail',
 					data:{
 						admintoken:s.userinfo.admintoken,

@@ -107,6 +107,7 @@
 				}
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+"/wmadvuser/isexist/",
 					data:{
 						username:s.formUser.username
@@ -168,12 +169,18 @@
 				params.areaid = params.cityids[2];
 				this.showLoading = true;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/regist/',
 					data:params,
 					success(data){
 						if(data.getret === 0){
-							_this.$Message.success('注册成功');
-							window.location.hash = '#/login'
+							_this.$Message.success({
+								content: '注册成功,等待管理员审核……',
+                    			duration: 4,
+							});
+							setTimeout(()=>{
+								window.location.hash = '#/login'
+							},4000)
 						}else{
 							_this.$Message.error(data.getmsg);
 						}
@@ -188,6 +195,7 @@
 
 				
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/share/getarealist',
 					data:{
 						cityid
@@ -225,6 +233,7 @@
 			getCityData(){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/share/getcitylist/',
 					data:{},
 					success(data){
@@ -253,21 +262,21 @@
 				})
 			},
 			checkCache(){
-				var username = window.localStorage.getItem('wm_username'),
+				/*var username = window.localStorage.getItem('wm_username'),
 					password = window.localStorage.getItem('wm_password');
 				
 				if(username && password){
 					this.username = username;
 					this.password = password;
 					this.checked = true;
-				}
+				}*/
 			}
 		
 			
 
 		},
 		mounted(){
-			this.checkCache();
+			//this.checkCache();
 			this.getCityData();
 		}
 	}

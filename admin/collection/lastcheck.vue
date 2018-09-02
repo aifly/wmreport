@@ -216,6 +216,7 @@
 			editReportByItem(p){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/updateworks',
 					data:p,
 					success(data){
@@ -294,6 +295,7 @@
 				var s = this;
 				var id = this.$route.params.id;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/checkresource/',
 					data:{
 						admintoken:s.userinfo.admintoken,
@@ -399,6 +401,7 @@
 					p[this.fieldname] = this.keyword;
 				}
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getresouredetaillist/',
 					data:p,
 					success(data){

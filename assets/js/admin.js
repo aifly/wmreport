@@ -168,6 +168,13 @@
 		},
 		mounted: function mounted() {
 			this.$router.obserable = obserable;
+			window.addEventListener("online", function (e) {
+				this.$Message.success('网络已链接');
+			});
+
+			window.addEventListener("offline", function (e) {
+				this.$Message.success('网络已断开');
+			});
 		}
 	}).$mount('#app1');
 
@@ -12161,6 +12168,7 @@
 	        getResourceList: function getResourceList() {
 	            var s = this;
 	            _libUtil2['default'].ajax({
+	                _this: s,
 	                url: window.config.baseUrl + '/wmadadmin/getsourcelist/',
 	                data: {
 	                    admintoken: s.userinfo.admintoken,
@@ -12185,6 +12193,7 @@
 	            var s = this;
 	            return;
 	            _libUtil2['default'].ajax({
+	                _this: s,
 	                url: window.config.baseUrl + "/admin/getmenulist",
 	                validate: s.validateData,
 	                data: {
@@ -12209,6 +12218,7 @@
 	        logout: function logout() {
 	            var s = this;
 	            _libUtil2['default'].ajax({
+	                _this: s,
 	                url: window.config.baseUrl + '/wmadadmin/exitlogin/',
 	                data: {
 	                    adminusername: s.userinfo.adminusername,
@@ -12330,6 +12340,9 @@
 				data: opt,
 				error: function error() {
 					option.fnError && option.fnError();
+					option.error && option.error();
+
+					option._this && option._this.$Message.error('服务器开小差了，请稍后重试');
 				}
 			}).done(function (dt) {
 				if (dt.getret === 1000) {
@@ -12560,7 +12573,31 @@
 									//this.remove(params.index,params.row.employeeid)
 								}
 							}
-						}, '删除')])]);
+						}, '删除')]), h('Button', {
+							props: {
+								type: 'primary',
+								size: 'small'
+							},
+							style: {
+								margin: '2px 5px',
+								border: 'none',
+								background: params.row.status * 1 === 0 ? 'rgb(2, 29, 236)' : '#b20000',
+								color: '#fff',
+								padding: '3px 7px 2px',
+								fontSize: '12px',
+								borderRadius: '3px'
+
+							},
+							on: {
+								click: function click() {
+									/*this.currentUserId = params.row.userid;
+	        this.formAdmin = params.row;
+	        this.visible = true;*/
+
+									_this.checkUser(params);
+								}
+							}
+						}, params.row.status * 1 === 1 ? '撤销' : "审核")]);
 					}
 				}],
 
@@ -12583,6 +12620,26 @@
 
 		methods: {
 
+			checkUser: function checkUser(params) {
+				var s = this;
+				_libUtil2['default'].ajax({
+					_this: s,
+					url: window.config.baseUrl + '/wmadadmin/checkregistuser?t=1',
+					data: {
+						admintoken: s.userinfo.admintoken,
+						adminusername: s.userinfo.adminusername,
+						userids: params.row.userid,
+						status: params.row.status === 1 ? 0 : 1
+					},
+					success: function success(data) {
+						console.log(data);
+						s.$Message[data.getret === 0 ? "success" : "error"](data.getmsg);
+						s.getaduserlist();
+					}
+
+				});
+			},
+
 			modifyPass: function modifyPass() {
 				if (!this.showPass) {
 					this.showPass = true;
@@ -12594,6 +12651,7 @@
 					}
 					var s = this;
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/updateuserpwd',
 						data: {
 							admintoken: s.userinfo.admintoken,
@@ -12610,6 +12668,7 @@
 			delAdUser: function delAdUser(userid) {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/deladuser/',
 					validate: s.validate,
 					data: {
@@ -12638,12 +12697,15 @@
 			getaduserlist: function getaduserlist() {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getaduserlist/',
 					//validate:s.validate,
 					data: {
 						admintoken: s.userinfo.admintoken,
-						adminusername: s.userinfo.adminusername
-					},
+						adminusername: s.userinfo.adminusername,
+						pagenum: 1000,
+						status: -1 },
+					//查询全部
 					success: function success(data) {
 						console.log(data);
 						if (data.getret === 0) {
@@ -12664,6 +12726,7 @@
 				if (s.currentUserId <= -1) {
 
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/addaduser/',
 						validate: s.validate,
 						data: {
@@ -12685,6 +12748,7 @@
 					});
 				} else {
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/editaduser/',
 						validate: s.validate,
 						data: {
@@ -12928,6 +12992,7 @@
 					};
 
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/updateadminpwd/',
 						data: {
 							adminusername: s.userinfo.adminusername,
@@ -12956,6 +13021,7 @@
 				var s = this;
 
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/share/getarealist',
 					data: {
 						cityid: cityid
@@ -12988,6 +13054,7 @@
 			getCityData: function getCityData() {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/share/getcitylist/',
 					data: {},
 					success: function success(data) {
@@ -13018,6 +13085,7 @@
 			modifyUser: function modifyUser() {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/updateadmininfo',
 					validate: s.validate,
 					data: {
@@ -13054,6 +13122,7 @@
 				var s = this;
 
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmuser/modify_password',
 					validate: s.validate,
 					data: {
@@ -13710,7 +13779,9 @@
 					return;
 				}
 				this.showLoading = true;
+				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/login/',
 					data: {
 						adminusername: _this.username,
@@ -13953,6 +14024,7 @@
 				var s = this;
 				var id = this.$route.params.id;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getcountvotenum',
 					data: {
 						admintoken: s.userinfo.admintoken,
@@ -13975,6 +14047,7 @@
 				var s = this;
 				var id = this.$route.params.id;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getvotedetail',
 					data: {
 						admintoken: s.userinfo.admintoken,
@@ -14249,6 +14322,7 @@
 					}
 					var s = this;
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/updatereviewpwd',
 						data: {
 							admintoken: s.userinfo.admintoken,
@@ -14272,6 +14346,7 @@
 			getRaterlist: function getRaterlist() {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getreviewlist/',
 					//validate:s.validate,
 					data: {
@@ -14291,6 +14366,7 @@
 
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/delreview/',
 					validate: s.validate,
 					data: {
@@ -14314,6 +14390,7 @@
 				var s = this;
 				if (s.currentRateid <= -1) {
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/addreview/',
 						validate: s.validate,
 						data: {
@@ -14333,6 +14410,7 @@
 					});
 				} else {
 					_libUtil2['default'].ajax({
+						_this: s,
 						url: window.config.baseUrl + '/wmadadmin/editreview/',
 						validate: s.validate,
 						data: {
@@ -14787,6 +14865,7 @@
 			editReportByItem: function editReportByItem(p) {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/updateworks',
 					data: p,
 					success: function success(data) {
@@ -14868,6 +14947,7 @@
 				var id = this.$route.params.id;
 
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/checkresource/',
 					data: {
 						admintoken: s.userinfo.admintoken,
@@ -14970,6 +15050,7 @@
 					p[this.fieldname] = this.keyword;
 				}
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getresouredetaillist/',
 					data: p,
 					success: function success(data) {
@@ -15443,6 +15524,7 @@
 				};
 
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/updateworkstatus/',
 					data: p,
 					success: function success(data) {
@@ -15482,6 +15564,7 @@
 				}
 
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getscoredetaillist/',
 					data: p,
 					success: function success(data) {
@@ -16183,6 +16266,7 @@
 			editReportByItem: function editReportByItem(p) {
 				var s = this;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/updateworks',
 					data: p,
 					success: function success(data) {
@@ -16261,6 +16345,7 @@
 				var s = this;
 				var id = this.$route.params.id;
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/checkresource/',
 					data: {
 						admintoken: s.userinfo.admintoken,
@@ -16363,6 +16448,7 @@
 					p[this.fieldname] = this.keyword;
 				}
 				_libUtil2['default'].ajax({
+					_this: s,
 					url: window.config.baseUrl + '/wmadadmin/getresouredetaillist/',
 					data: p,
 					success: function success(data) {

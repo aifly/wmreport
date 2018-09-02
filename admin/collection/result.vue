@@ -250,6 +250,7 @@
 				};
 
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/updateworkstatus/',
 					data:p,
 					success(data){
@@ -289,6 +290,7 @@
 				}
 				
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getscoredetaillist/',
 					data:p,
 					success(data){

@@ -69,6 +69,7 @@
 						align:'center',
 						render:(h,params)=>{
 							return h('div', [
+                               
                                 h('Button', {
                                     props: {
                                         type: 'primary',
@@ -116,7 +117,33 @@
 											}
 										}
 									}, '删除')
-								]),
+								]), h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    style: {
+										margin: '2px 5px',
+										border:'none',
+										background:params.row.status*1 === 0 ? 'rgb(2, 29, 236)':'#b20000',
+										color:'#fff',
+										padding: '3px 7px 2px',
+										fontSize: '12px',
+										borderRadius: '3px'
+
+                                    },
+                                    on: {
+                                        click: () => {
+											/*this.currentUserId = params.row.userid;
+											this.formAdmin = params.row;
+											this.visible = true;*/
+
+											this.checkUser(params);
+
+											
+                                        }
+                                    }
+                                }, params.row.status*1 === 1 ? '撤销':"审核"),
                             ]);
 						}
 					}
@@ -146,6 +173,26 @@
 		
 		methods:{
 
+			checkUser(params){
+				var s = this;
+				symbinUtil.ajax({
+					_this:s,
+					url:window.config.baseUrl+'/wmadadmin/checkregistuser?t=1',
+					data:{
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername,
+						userids:params.row.userid,
+						status:params.row.status === 1 ? 0 : 1,
+					},
+					success(data){
+						console.log(data);
+						s.$Message[data.getret === 0 ? "success":"error"](data.getmsg);
+						s.getaduserlist();
+					}
+
+				})
+			},
+
 			modifyPass(){
 				if(!this.showPass){
 					this.showPass = true;
@@ -158,6 +205,7 @@
 					}
 					var s = this;
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/updateuserpwd',
 						data:{
 							admintoken:s.userinfo.admintoken,
@@ -174,6 +222,7 @@
 			delAdUser(userid){
 					var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/deladuser/',
 					validate:s.validate,
 					data:{
@@ -203,11 +252,14 @@
 			getaduserlist(){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getaduserlist/',
 					//validate:s.validate,
 					data:{
 						admintoken:s.userinfo.admintoken,
-						adminusername:s.userinfo.adminusername
+						adminusername:s.userinfo.adminusername,
+						pagenum:1000,
+						status:-1,//查询全部
 					},
 					success(data){
 						console.log(data);
@@ -235,6 +287,7 @@
 				if(s.currentUserId<=-1){
 
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/addaduser/',
 						validate:s.validate,
 						data:{
@@ -257,6 +310,7 @@
 					})
 				}else{
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/editaduser/',
 						validate:s.validate,
 						data:{

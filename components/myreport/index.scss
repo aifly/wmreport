@@ -813,7 +813,7 @@ $color: #be0000;
                         @include br(4px);
 
                         &::-webkit-input-placeholder {
-                            color: #ddd;
+                            color: #ccc;
                         }
                     }
                 }
@@ -886,6 +886,9 @@ $color: #be0000;
                     height: 24px;
                     border: 1px solid #eee;
                     outline: none;
+                    &::-webkit-input-placeholder{
+                         color: #ccc;
+                    }
                 }
             }
         }
@@ -1161,7 +1164,7 @@ $color: #be0000;
         outline: none;
 
         &::-webkit-input-placeholder {
-            color: #999;
+            color: #ccc;
         }
     }
 }

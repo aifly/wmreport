@@ -87,6 +87,13 @@ new Vue({
 	},
 	mounted() {
 		this.$router.obserable = obserable;
+		window.addEventListener("online", function(e) {
+			this.$Message.success('网络已链接')
+		})
+
+		window.addEventListener("offline", function(e) {
+			this.$Message.success('网络已断开');
+		})
 
 	}
 }).$mount('#app1')

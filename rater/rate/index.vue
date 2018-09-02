@@ -333,6 +333,8 @@
 
 				symbinUtil.ajax({
 
+					_this:s,
+
 					url:window.config.baseUrl+"/wmreview/gradingwork",
 					data:{
 						ratername:s.userinfo.ratername,
@@ -415,6 +417,8 @@
 
 				
 				symbinUtil.ajax({
+
+					_this:s,
 					url:window.config.baseUrl+'/wmrateruser/getresourcelist',
 					//validate:s.validate,
 					data:p,

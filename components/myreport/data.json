@@ -120,6 +120,7 @@
             "fieldtype": "varchar",
             "fieldname": "telphone",
             "length": 16,
+            "placeholder":"作者联系电话",
             "loading": 1,
             "edit": 1
         },

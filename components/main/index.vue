@@ -82,7 +82,10 @@
 		components:{
 		},
         beforeCreate(){
-            this.validateData = sysbinVerification.validate(this);
+                this.validateData = sysbinVerification.validate(this);
+            if(this.$route.name !== 'login' && this.$route.name !== 'register'){
+            }
+
         },
 		mounted(){
            ///this.menus = this.defaultMenu.concat([]);
@@ -91,7 +94,7 @@
             var userinfo = symbinUtil.getUserInfo();
 
             this.userinfo = userinfo; 
-            if(this.$route.name !== 'login'){
+            if(this.$route.name !== 'login' && this.$route.name !== 'register'){
                 this.getSourceList();
             }
             
@@ -110,6 +113,7 @@
                 var s = this;
                 
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+'/wmadvuser/exitlogin',
                     data:{
                         username:s.userinfo.username,
@@ -137,6 +141,7 @@
                 var {obserable} = Vue;
       				
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+'/wmadvuser/getsourcelist/',
                     data:{
                         username:s.userinfo.username,
@@ -160,6 +165,7 @@
                 var s = this;
                 return;
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+"/admin/getmenulist",
                     validate:s.validateData,
                     data:{

@@ -70,6 +70,12 @@ var symbinUtil = {
 			opt.username = option.validate.username;
 			opt.usertoken = option.validate.usertoken;
 		}
+
+		//alert(window.navigator.onLine)
+		if(!window.navigator.onLine){
+			option._this && option._this.$Message.error('请先确认网络是否正常连接');
+			return;
+		}
 		
 		$.ajax({
 			url:option.url,
@@ -77,6 +83,8 @@ var symbinUtil = {
 			data:opt,
 			error(){
 				option.fnError && option.fnError();
+				option.error && option.error();
+				option._this && option._this.$Message.error('服务器开小差了，请稍后重试');
 			}
 		}).done((dt)=>{
 			if(dt.getret === 1000){

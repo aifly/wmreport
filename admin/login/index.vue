@@ -88,7 +88,9 @@
  					return;
 				}
 				this.showLoading = true;
+				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/login/',
 					data:{
 						adminusername:_this.username,

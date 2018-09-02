@@ -6,7 +6,7 @@
 					<img :src="imgs.logo"  />
 				</div>
 				<div>
-					<a v-if='false' href='#/register'>用户注册></a>
+					<a href='#/register'>用户注册></a>
 				</div>
 			</div>
 		</header>
@@ -93,7 +93,9 @@
 				}
 
 				this.showLoading = true;
+				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/login/',
 					data:{
 						username:_this.username,

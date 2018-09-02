@@ -28,6 +28,7 @@
 								<img :src="imgs['upload'+(currentType+1)]" alt="">
 								<Button type="primary" size='large'>点我上报</Button>
 								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
+								<div class="wm-upload-tip" style="color:#f5a420;font-size:16px;font-weight:bold;" v-html='"支持上传格式："+accepts[currentType].extensions'></div>
 								<div class="wm-upload"  @click='showUploadDialog = true' ></div>
 							</div>
 						</div>
@@ -116,9 +117,10 @@
 				
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
 					<div v-if='item.fieldname!=="userlabel" && (item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
-					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
+					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' >
 						<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+
+						<input :placeholder="item.placeholder" @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type="text" v-model="reportList[currentReportIndex][item.fieldname]">
 					</div>
 
 					<div v-if='item.fieldname ==="filesize && false" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
@@ -182,6 +184,7 @@
 
 
 		<Modal
+			:footer-hide='true'
 			v-model="showUploadDialog "
 			:title="'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')"
 			@on-ok="ok"
@@ -209,7 +212,11 @@
 						<Icon type="ios-add-circle" />
 						<div>上传附件</div>
 					</section>
+					<div class="wm-upload-tip" style="position: absolute;bottom: 0;width: 300px;margin-left: 30px;color:#f5a420;font-size:16px;font-weight:bold;    word-wrap: break-word;" v-html='"支持上传格式："+accepts[currentType].extensions'></div>
 				</FormItem>
+
+
+
 				 
 			</Form>
 		</Modal>
@@ -305,6 +312,25 @@
 				tag:"",
 				beforeUploadTag:"",
 				currentType:0,
+				accepts:[
+					{
+						title: 'Images',
+						extensions: 'gif,jpg,jpeg,bmp,png,tiff,tif',
+						mimeTypes: 'image/*'
+					},{
+						title: 'Video',
+						extensions: 'mp4,webm',
+						mimeTypes: 'video/*'
+					},{
+						title: 'Audio',
+						extensions: 'aac,ogg,aac,wma,mp3,vnd.dlna.adts',
+						mimeTypes: 'auido/*'
+					},{
+						title: 'All',
+						extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+						mimeTypes: '*/*'
+					}
+				],
 				publicadtype:"",
 				currentReportIndex:0,
 				showOriginalImg:false,
@@ -473,6 +499,7 @@
 					type:'getCurrentSourceId'
 				})
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/delresource/',
 					data:{
 						username:s.userinfo.username,
@@ -505,6 +532,7 @@
 			editReportByItem(p){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/editresource',
 					data:p,
 					success(data){
@@ -731,6 +759,7 @@
 						
 						clearInterval(t);
 						symbinUtil.ajax({
+							_this:s,
 							url:window.config.baseUrl+"/wmadvuser/getmyreportdata",
 							data:{
 								username:s.userinfo.username,
@@ -784,25 +813,7 @@
 				if(s.uploader){
 					s.uploader.destroy();
 				}
-				var accepts  = [
-					{
-						title: 'Images',
-						extensions: 'gif,jpg,jpeg,bmp,png,tiff,tif',
-						mimeTypes: 'image/*'
-					},{
-						title: 'Video',
-						extensions: 'mp4,webm',
-						mimeTypes: 'video/*'
-					},{
-						title: 'Audio',
-						extensions: 'aac,ogg,aac,wma,mp3,vnd.dlna.adts',
-						mimeTypes: 'auido/*'
-					},{
-						title: 'All',
-						extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
-						mimeTypes: '*/*'
-					}
-				]
+				var accepts  =  s.accepts;
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
 					auto: true,
@@ -942,6 +953,7 @@
 					}
 				}
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/editresource',
 					data:p,
 					success(data){

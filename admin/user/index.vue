@@ -125,6 +125,7 @@
 					};
 
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/updateadminpwd/',
 						data:{
 							adminusername:s.userinfo.adminusername,
@@ -155,6 +156,7 @@
 
 				
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/share/getarealist',
 					data:{
 						cityid
@@ -192,6 +194,7 @@
 			getCityData(){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/share/getcitylist/',
 					data:{},
 					success(data){
@@ -222,6 +225,7 @@
 			modifyUser(){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/updateadmininfo',
 					validate:s.validate,
 					data:{
@@ -258,6 +262,7 @@
 				var s = this;
 
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmuser/modify_password',
 					validate:s.validate,
 					data:{

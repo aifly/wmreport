@@ -128,6 +128,7 @@
             getResourceList(){
                 var s = this;
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+'/wmadadmin/getsourcelist/',
                     data:{
                         admintoken:s.userinfo.admintoken,
@@ -154,6 +155,7 @@
                 var s = this;
                 return;
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+"/admin/getmenulist",
                     validate:s.validateData,
                     data:{
@@ -181,6 +183,7 @@
             logout(){
                 var s = this;
                 symbinUtil.ajax({
+                    _this:s,
                     url:window.config.baseUrl+'/wmadadmin/exitlogin/',
                     data:{
                         adminusername:s.userinfo.adminusername,

@@ -6,7 +6,7 @@
 					<img :src="imgs.logo"  />
 				</div>
 				<div>
-					<a href='#/register'>用户注册></a>
+					<a v-if='false' href='#/register'>用户注册></a>
 				</div>
 			</div>
 		</header>
@@ -92,6 +92,7 @@
 				
 				this.showLoading = true;
 				symbinUtil.ajax({
+					_this,
 					url:window.config.baseUrl+'/wmreview/login/',
 					data:{
 						ratername:_this.username,

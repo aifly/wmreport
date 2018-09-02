@@ -168,6 +168,7 @@
 					}
 					var s = this;
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/updatereviewpwd',
 						data:{
 							admintoken:s.userinfo.admintoken,
@@ -191,6 +192,7 @@
 			getRaterlist(){
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getreviewlist/',
 					//validate:s.validate,
 					data:{
@@ -211,6 +213,7 @@
 				
 				var s = this;
 				symbinUtil.ajax({
+					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/delreview/',
 					validate:s.validate,
 					data:{
@@ -235,6 +238,7 @@
 				var s = this;
 				if(s.currentRateid<=-1){
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/addreview/',
 						validate:s.validate,
 						data:{
@@ -255,6 +259,7 @@
 					})
 				}else{
 					symbinUtil.ajax({
+						_this:s,
 						url:window.config.baseUrl+'/wmadadmin/editreview/',
 						validate:s.validate,
 						data:{
