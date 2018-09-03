@@ -17,6 +17,7 @@
 							 <img v-if='i===1' :src="imgs.videoIco" alt="">
 							 <img v-if='i===2' :src="imgs.audioIco" alt="">
 							 <img v-if='i===3' :src="imgs.dongmanIco" alt="">
+							 <img v-if='i===4' :src="imgs.h5Ico" alt="">
 							 上报{{menu.split('-')[0]}}
 						 </li>
 					 </ul>
@@ -189,7 +190,7 @@
 			:title="'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')"
 			@on-ok="ok"
 			@on-cancel="cancel">
-			<Form  ref="formUpload" :model="formUpload" :label-width="72" >
+			<Form  ref="formUpload" :model="formUpload" :label-width="90" >
 				<FormItem class="wm-report-upload-item" v-if='item.edit || item.fieldname === "userlabel"' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'  :class="{'wm-require':item.notnull}"> 
 					<Input @on-blur='checkUpload' v-if='item.type === "text"&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off" />
 					
@@ -225,7 +226,7 @@
 		<div class="lt-full wm-report-C" v-if='showPreview'>
 			<span class="wm-report-close" @click="closePreview"></span>
 			<div :class='{"original":showOriginalImg}'  v-if=' "mp3 mp4 webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
-				<img @dblclick.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].filepath||imgs.poster" alt="" />
+				<img @dblclick.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
@@ -329,6 +330,10 @@
 						title: 'All',
 						extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
 						mimeTypes: '*/*'
+					},{
+						title: 'Images',
+						extensions: 'gif,jpg,jpeg,bmp,png,tiff,tif',
+						mimeTypes: 'image/*'
 					}
 				],
 				publicadtype:"",
@@ -338,6 +343,7 @@
 				showMaskDetail:true,
 				detailtag:'',
 				showReportTip:false,
+				defaultReportList:[],
 				menus:[],
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
@@ -379,11 +385,6 @@
 			this.getMyreportList(()=>{
 				this.changeCurrentType(0,'first');
 			});
-
-
-			
-			
-
 			var {obserable} = Vue;
 			var t = setInterval(()=>{
 				
@@ -722,9 +723,11 @@
 
 			filterReportList(){
 				
-				this.reportList = this.defaultReportList.filter((item)=>{
+				this.reportList = JSON.parse(this.defaultReportList).filter((item)=>{
+					console.log(item.publicadtype , this.menus[this.currentType])
 					return item.publicadtype === this.menus[this.currentType];
-				})
+				});
+				//this.reportList = this.reportList.concat([]);
 			},
 			getMyreportList(fn){
 				var s = this;
@@ -741,6 +744,9 @@
 				
 					
 					if(id){
+
+
+					
 						
 						this.configList = tableFields.concat([]);
 
@@ -750,11 +756,11 @@
 							if(col.fieldname === 'publicadtype'){
 								s.menus = col.data.concat([]);
 							}
-							if(col.notnull){
+							/* if(col.notnull){
 								setTimeout(() => {
 									s.ruleValidate[col.fieldname] = { required: true, message: col.name + '不能为空', trigger: 'blur' }
 								}, 1000);
-							}
+							} */
 						})
 						
 						clearInterval(t);
@@ -771,8 +777,11 @@
 									data.list.forEach((item)=>{
 										item.isLoaded = true;
 									});
-									s.reportList = data.list;
-									s.defaultReportList = data.list.concat([]);
+									s.reportList = data.list.concat([]);
+									s.defaultReportList =  JSON.stringify(data.list);
+
+									window.list=  JSON.stringify(data.list);
+									
 									fn && fn();
 									if(s.reportList.length>0){
 

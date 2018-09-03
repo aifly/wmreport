@@ -107,7 +107,7 @@
 					
 					<div v-if='item.fieldname === "userlabel"'>标签：</div>
 					<div class="wm-tag-list"  v-if='item.fieldname === "userlabel"'>
-						<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+						<Tag v-if='formAdmin && formAdmin.tagList&&formAdmin.tagList.length' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 					</div>
 					<!-- 
 					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
@@ -452,7 +452,7 @@
 			},
 			getReportList(){
 				var id = this.$route.params.id;
-				console.log(this.$route.params)
+				
 				var s = this;
 
 				var  p  ={
@@ -471,6 +471,8 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
+
+				console.log(p);
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getresouredetaillist/',

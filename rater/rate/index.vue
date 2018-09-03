@@ -41,7 +41,7 @@
 													<span :title="report[item.fieldname]">{{report[item.fieldname]}}</span>
 												</div>
 												<div v-if='item.fieldname === "userlabel"'>标签：</div>
-												<div class="wm-tag-list" v-if='item.fieldname === "userlabel"'>
+												<div class="wm-tag-list" v-if='item.fieldname === "userlabel" && formAdmin && formAdmin.tagList.length'>
 													<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (report[item.fieldname]||'').split(',')">{{tag}}</Tag>
 												</div>
 											</div>
@@ -115,9 +115,58 @@
 		
 
 		<div class="lt-full wm-report-C" v-if='showPreview'>
-			<span class="wm-report-close" @click="closePreview"></span>
+			<div class="wm-preview-action">
+				<span title='下载'>
+					<a target="_blank" :href='reportList[currentReportIndex].filepath' :download="reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname">
+						<Icon type="ios-download-outline" />
+					</a>
+				</span>
+				<span title='打印' @click='printPage'><Icon type="md-print" /></span>
+				<span class="wm-report-close" @click="closePreview"></span>
+			</div>
+			
+			<div class="wm-report-print" ref='page' >
+				<section style="display:flex;
+							-webkit-display:flex;
+							flex-flow: column;
+							-webkit-flex-flow: column;
+							width:100%;
+							height:100%;
+							-webkit-justify-content: space-between;
+							justify-content: space-between;
+							">
+					<div style="height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;">{{reportList[currentReportIndex].filetitle}}</div>
+					<div style="
+							flex:1;
+							-webkit-flex:1;
+							box-sizing:border-box;
+							overflow:hidden;
+							margin-top:20px;
+							text-align:center;
+							
+							">
+						<img style="position:relative;top:50%;
+							transform:translate(0,-50%);
+							-webkit-transform:translate(0,-50%);
+							;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+					</div>
+					<div style="height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000">{{reportList[currentReportIndex].filedesc}}</div>
+
+					<div  style="display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;">
+						<div>上传者：{{reportList[currentReportIndex].username}}</div>
+						<div v-if='reportList[currentReportIndex].fileattr'>
+							尺寸：{{reportList[currentReportIndex].fileattr}}
+						</div>
+					</div>
+					<div style="width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;">
+						<div style="padding:0 10px;line-height:40px;;font-size:13px;border:1px solid #ddd;color:#ddd;border-radius:5px;text-align:center;margin:6px 20px 0 0;display:inline-block;" v-for='(tag,i) in reportList[currentReportIndex].userlabel.split(",")' :key='i'>{{tag}}</div>
+					</div>
+				</section>
+
+			</div>
+
 			<div :class='{"original":showOriginalImg}'  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
-				<img @dblclick.stop="showOriginalImg = !showOriginalImg" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].filepath||imgs.poster" alt="" />
+				<img @dblclick.stop="showOriginalImg = !showOriginalImg" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 					<span v-if='"xlsx doc pdf ppt xls docx html css scss js vb shtml zip dmg".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 					<div v-if='item.fieldname === "filetitle"||item.fieldname === "filedesc" ||item.fieldname === "userlabel"'  class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
@@ -195,6 +244,42 @@
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
 	import Vue from 'vue';
+
+		import $ from 'jquery';
+	window.$ = window.jQuery  = $;
+var printAreaCount = 0;
+		$.fn.printArea = function () {
+			var ele = this;
+			var idPrefix = "printArea_";
+			removePrintArea(idPrefix + printAreaCount);
+			printAreaCount++;
+			var iframeId = idPrefix + printAreaCount;
+			var iframeStyle = 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;';
+			var iframe = document.createElement('IFRAME');
+			$(iframe).attr({
+				style: iframeStyle,
+				id: iframeId
+			});
+			document.body.appendChild(iframe);
+			var doc = iframe.contentWindow.document;
+			$(document).find("link").filter(function () {
+				return $(this).attr("rel").toLowerCase() == "stylesheet";
+			}).each(function () {
+				doc.write('<link type="text/css" rel="stylesheet" href="'
+						+ $(this).attr("href") + '" >');
+				});
+			doc.write('<div class="' + $(ele).attr("class") + '">' + $(ele).html()
+					+ '</div>');
+			doc.close();
+			var frameWindow = iframe.contentWindow;
+			frameWindow.close();
+			frameWindow.focus();
+			frameWindow.print();
+		}
+		 function removePrintArea(id) {
+			$("iframe#" + id).remove();
+		};
+
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -306,7 +391,9 @@
 			}
 		},
 		methods:{
-
+			printPage(){
+				$(this.$refs['page']).printArea();
+			},
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = false;
@@ -394,9 +481,7 @@
 			},
 			getRaterlist(kw='',publictype=''){
 				var s = this;
-
 				this.isLoading = true;
-
 				var p = {
 						username:s.userinfo.ratername,
 						usertoken:s.userinfo.accesstoken,
@@ -405,7 +490,6 @@
 						page:s.page,
 						pagenum:s.pagenum
 					}
-
 				if(kw){
 					p.searchkey = kw;
 					this.page = 1;
@@ -414,17 +498,19 @@
 					this.page = 1;
 					p.publictype = this.publictype;
 				}
-
-				
 				symbinUtil.ajax({
-
 					_this:s,
 					url:window.config.baseUrl+'/wmrateruser/getresourcelist',
 					//validate:s.validate,
 					data:p,
 					success(data){
 						s.isLoading = false;
+						
 						if(data.getret === 0){
+
+							s.formAdmin = data.list[0] ||{userlabel:""};
+							s.formAdmin.tagList = s.formAdmin.userlabel.split(',');
+						
 							s.reportList = s.reportList.concat( data.list);
 							s.totalnum = data.totalnum;
 							s.unratenum = data.nohavescorenum||0;

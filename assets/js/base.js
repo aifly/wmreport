@@ -38,11 +38,13 @@ var imgs = {
 	upload2: './assets/images/videoupload.png',
 	upload3:'./assets/images/audioupload.png',
 	upload4:'./assets/images/dongmanupload.png',
+	upload5: './assets/images/h5upload.png',
 
 	//smile:'./assets/images/smile.png',
 	titleBg:'./assets/images/title-bg.png',
 	ruleIco:'./assets/images/rule-ico.png',
 	imgIco:'./assets/images/img-ico.png',
+	h5Ico:'./assets/images/h5.png',
 	videoIco:'./assets/images/video-ico.png',
 	audioIco:'./assets/images/audio-ico.png',
 	dongmanIco:'./assets/images/dongman-ico.png',

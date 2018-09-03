@@ -167,6 +167,22 @@
 			//this.addadUser();
 			this.getaduserlist();
 
+			var s = this;
+
+			symbinUtil.ajax({
+				url:'http://api.symbin.cn/v1/wmadexcel/adexcel',
+				data:{
+					name:'id,username,filetitle',
+					id:'2947143700',
+					resourceid:1,
+					admintoken:s.userinfo.admintoken,
+					adminusername:s.userinfo.adminusername,
+				},
+				success(data){
+					console.log(data,' =======');
+				}
+			})
+
 			
 			
 		},
