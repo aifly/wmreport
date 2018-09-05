@@ -1,5 +1,6 @@
 {
-    "fieldlist": [{
+    "fieldlist": [
+        {
             "name": "名称",
             "type": "text",
             "notnull": 1,
@@ -29,7 +30,8 @@
             "fieldname": "createtime",
             "loading": 1,
             "edit": 0
-        }, {
+        },
+        {
             "name": "属性",
             "type": "text",
             "notnull": 1,
@@ -39,7 +41,8 @@
             "length": 255,
             "loading": 1,
             "edit": 0
-        }, {
+        },
+        {
             "name": "上传者",
             "type": "text",
             "notnull": 1,
@@ -83,7 +86,6 @@
             "loading": 0,
             "edit": 0
         },
-
         {
             "name": "类型",
             "type": "select",
@@ -96,12 +98,15 @@
                 "图片-zmiti",
                 "视频-zmiti",
                 "音频-zmiti",
-                "动漫-zmiti"
+                "动漫-zmiti",
+                "h5-zmiti"
+
             ],
             "length": 64,
             "loading": 1,
             "edit": 1
-        }, {
+        },
+        {
             "name": "作者",
             "type": "text",
             "notnull": 0,
@@ -111,7 +116,8 @@
             "length": 64,
             "loading": 1,
             "edit": 1
-        }, {
+        },
+        {
             "name": "电话",
             "type": "text",
             "notnull": 0,
@@ -120,6 +126,17 @@
             "fieldname": "telphone",
             "length": 16,
             "placeholder": "作者联系电话",
+            "loading": 1,
+            "edit": 1
+        }, {
+            "name": "预览地址",
+            "type": "text",
+            "notnull": 0,
+            "default": "",
+            "fieldtype": "varchar",
+            "fieldname": "previewurl",
+            "length": 500,
+            "placeholder": "h5作品浏览地址",
             "loading": 1,
             "edit": 1
         },

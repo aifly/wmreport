@@ -200,7 +200,7 @@
 	import Result from './result.vue';
 	import LastCheck from './lastcheck.vue'
 	import Vue from "vue";
-	import Detail from './detail';
+	import Detail from '../../common/mask/detail';
 
 	export default {
 		props:['obserable'],
@@ -301,6 +301,7 @@
 			},
 
 			searchReport(){
+				
 				if(this.keyword){
 					clearTimeout(this.timer);
 					this.timer = setTimeout(() => {

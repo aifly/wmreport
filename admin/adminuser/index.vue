@@ -169,7 +169,7 @@
 
 			var s = this;
 
-			symbinUtil.ajax({
+			/* symbinUtil.ajax({
 				url:'http://api.symbin.cn/v1/wmadexcel/adexcel',
 				data:{
 					name:'id,username,filetitle',
@@ -181,7 +181,7 @@
 				success(data){
 					console.log(data,' =======');
 				}
-			})
+			}) */
 
 			
 			

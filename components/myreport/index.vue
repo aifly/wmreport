@@ -108,6 +108,13 @@
 								<div class="wm-upload-tip">按住ctrl键可以上传多个文件，支持拖拽上传</div>
 							</div>
 						</div>
+						<div v-show='currentType === 4 && reportList.length>0' class="wm-uplad-add-h5">
+							<div class="wm-upload" @click='showUploadDialog = true'></div>
+							<div class="lt-full">
+								<Icon type="md-add" /> <span>点击添加h5</span>
+								
+							</div>
+						</div>
 					</footer>
 				</section>
 			</div>
@@ -169,7 +176,7 @@
 			<Form ref="formAdmin" :model="formAdmin" :label-width="72" :rules="ruleValidate">
 				<FormItem v-if='item.edit' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'> 
 					<Input v-if='item.type === "text"'  v-model="formAdmin[item.fieldname]" :placeholder="item.name" autocomplete="off" />
-					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formAdmin[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
+					<Input v-if='item.type === "textarea" ' :type="item.type"  v-model="formAdmin[item.fieldname]" :placeholder="item.placeholder||item.name" autocomplete="off"/>
 					<Select v-model="formAdmin[item.fieldname]" v-if='item.type === "select"'>
 						<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
 					</Select>
@@ -192,9 +199,9 @@
 			@on-cancel="cancel">
 			<Form  ref="formUpload" :model="formUpload" :label-width="90" >
 				<FormItem class="wm-report-upload-item" v-if='item.edit || item.fieldname === "userlabel"' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'  :class="{'wm-require':item.notnull}"> 
-					<Input @on-blur='checkUpload' v-if='item.type === "text"&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off" />
+					<Input @on-blur='checkUpload' v-if='item.type === "text"&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.placeholder||item.name" autocomplete="off" />
 					
-					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]" :placeholder="item.name" autocomplete="off"/>
+					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]"  :placeholder="item.placeholder||item.name" autocomplete="off"/>
 					<div  v-if='item.type === "select"'>
 						<Select @on-change='checkUpload($event,"select")' v-model="formAdmin[item.fieldname]">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>
@@ -216,76 +223,13 @@
 					<div class="wm-upload-tip" style="position: absolute;bottom: 0;width: 300px;margin-left: 30px;color:#f5a420;font-size:16px;font-weight:bold;    word-wrap: break-word;" v-html='"支持上传格式："+accepts[currentType].extensions'></div>
 				</FormItem>
 
-
-
+				<FormItem class="wm-before-upload-C" label="">
+					<div style="margin-left:-80px;color:#b20000">提示：选择文件后自动上传</div>
+				</FormItem>
 				 
 			</Form>
 		</Modal>
-		
-
-		<div class="lt-full wm-report-C" v-if='showPreview'>
-			<span class="wm-report-close" @click="closePreview"></span>
-			<div :class='{"original":showOriginalImg}'  v-if=' "mp3 mp4 webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
-				<img @dblclick.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
-				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
-					<span v-if='"xlsx doc docx pdf txt ppt pptx xls rar html css scss js vb shtml zip".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  v-if='item.fieldname === "userlabel"||item.fieldname === "filetitle" ' class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='(item.fieldname !== "filetitle"||item.fieldname !== "filedesc") &&item.fieldname !== "userlabel" '>{{item.name}}：</div>
-						<div v-if='(item.fieldname !== "filetitle"||item.fieldname !== "filedesc") &&item.fieldname !== "userlabel"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-
-						<div v-if='item.fieldname === "userlabel"'>标签：</div>
-						<div v-if='item.fieldname === "userlabel"' class="wm-tag-list">
-							<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-						</div>
-						
-					</div>
-				</div>
-			</div>
-			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
-				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
-				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
-					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
-						</div>
-						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-							<div>标签：</div>
-							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-							</div>
-						</section>
-					</div>
-				</div>
-			</div>
-			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
-				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
-				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.type === "text" ||item.type === "textarea"  ||item.type === "select"'>{{item.name}} :</div>
-						<div v-if='item.type === "text" ||item.type === "textarea"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-						<div v-if='item.type === "select"'>
-							{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}
-						</div>
-						<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-							<div>标签：</div>
-							<div class="wm-tag-list">
-								<Tag @on-close='removeTag(item.fieldname,i)' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-							</div>
-						</section>
-					</div>
-				</div>
-			</div>
-			<section class="wm-report-mask-tip"  v-if='"jpg jpeg tiff png gif".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>
-		</div>
+		<Detail  :configList='configList' type="myreport" :showPreview='showPreview'  :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 
 		<div class="wm-report-tips lt-full" v-if='showReportTip'>
 			<img :src="imgs.tip" alt="" @click="showReportTip = false">
@@ -301,6 +245,9 @@
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
 	import Vue from 'vue';
+	import QRCode from '../lib/qrcode';
+	import Detail from '../../common/mask/detail';
+
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -368,6 +315,7 @@
 			}
 		},
 		components:{
+			Detail
 		},
 
 		beforeCreate(){
@@ -378,7 +326,13 @@
 			///this.validate = validate;
 		},
 		watch:{
-
+			showUploadDialog(val){
+				this.configList.forEach((item)=>{
+					if(item.fieldname === 'previewurl' && this.menus[this.currentType] === 'h5-zmiti'){
+						item.notnull = val|0;
+					}
+				});
+			}
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
@@ -440,6 +394,7 @@
 
 			checkUpload(val,type){
 				this.showUploadFile = true;
+				
 				this.configList.map((item)=>{
 					if(item.notnull && item.edit){
 						if(!this.formUpload[item.fieldname] && item.fieldname !== 'publicadtype'){
@@ -447,8 +402,28 @@
 						}
 					}
 				});
+
+				if(s.menus[this.currentType] === 'h5-zmiti'){
+					if(!this.formUpload['previewurl']){
+						this.showUploadFile = false;	
+					}
+				}
 				
 				if(type === 'select'){
+					this.configList.forEach((item)=>{
+						if(item.fieldname === 'previewurl'){
+							item.notnull = val === 'h5-zmiti' ? 1 : 0;
+						}
+					});
+					
+					this.configList.forEach((item)=>{
+						if(val === 'h5-zmiti' && !this.formUpload.previewurl){
+							this.showUploadFile = false;		
+							//item.notnull = val === 'h5-zmiti' ? 1 : 0;
+							
+						}
+					});
+				
 					s.menus.map((item,i)=>{
 						if(item === val){
 							this.changeCurrentType(i);
@@ -530,7 +505,8 @@
 				}
 			},
 
-			editReportByItem(p){
+			editReportByItem(p,arg){
+				//alert(arg);
 				var s = this;
 				symbinUtil.ajax({
 					_this:s,
@@ -567,7 +543,7 @@
 					[filename]:this.formAdmin.tagList.join(',')
 				}
 			
-				this.editReportByItem(p);
+				this.editReportByItem(p,'移除标签');
 				setTimeout(() => {
 					this.getMyreportList();
 				}, 400);
@@ -593,7 +569,7 @@
 					[item.fieldname]:this.formAdmin.tagList.join(',')
 				}
 			
-				this.editReportByItem(p);
+				this.editReportByItem(p,'添加标签');
 				setTimeout(() => {
 					this.getMyreportList();
 				}, 400);
@@ -604,7 +580,9 @@
 				var id  = Vue.obserable.trigger({
 					type:'getCurrentSourceId'
 				})
-				
+				if(!s.formAdmin.id){
+					return;
+				}
 				var p = {
 					username:s.userinfo.username,
 					usertoken:s.userinfo.accesstoken,
@@ -612,7 +590,7 @@
 					id:s.formAdmin.id,
 					[key]:s.formAdmin[key]
 				}
-				this.editReportByItem(p)
+				this.editReportByItem(p,'修改分类');
 			},
 
 			modifyReport(model,key){
@@ -629,7 +607,7 @@
 					id:s.formAdmin.id,
 					[key]:model
 				}
-				this.editReportByItem(p)
+				this.editReportByItem(p,'修改作品 :'+key);
 			},
 
 			editItem(item){
@@ -650,6 +628,16 @@
 
 			previewReport(){//双击预览作品、
 				this.showPreview = true;
+				var s = this;
+				if(s.menus[s.currentType] === "h5-zmiti"&&s.reportList[s.currentReportIndex].previewurl){
+					setTimeout(() => {
+						new QRCode(this.$refs['qrcode'],{
+							height:130,
+							width:130,
+							text:s.reportList[s.currentReportIndex].previewurl
+						})
+					}, 100);
+				}
 			},
 
 			showDetail(report,index){
@@ -727,6 +715,8 @@
 					console.log(item.publicadtype , this.menus[this.currentType])
 					return item.publicadtype === this.menus[this.currentType];
 				});
+				this.currentReportIndex = 0;
+				this.formAdmin = this.reportList[this.currentReportIndex]||{};
 				//this.reportList = this.reportList.concat([]);
 			},
 			getMyreportList(fn){
@@ -788,6 +778,7 @@
 										s.filterReportList();
 										if( s.currentReportIndex>-1){
 											s.formAdmin = s.reportList[ s.currentReportIndex ]||{};
+										
 										    s.formAdmin && s.formAdmin.userlabel &&(s.formAdmin.tagList = s.formAdmin.userlabel.split(','));
 										}
 									}
@@ -816,7 +807,8 @@
 						publicadtype:s.menus[s.currentType],
 						userlabel:s.formUpload.tagList.concat([]).join(','),
 						author:s.formUpload.author,
-						telphone:s.formUpload.telphone
+						telphone:s.formUpload.telphone,
+						previewurl:s.formUpload.previewurl
 				}
 				this.p = p;
 				if(s.uploader){
@@ -928,9 +920,12 @@
 				uploader.on('uploadComplete', function (file) {
 					iNow++;
 					if(iNow === i){
-						/* s.formUpload = {
+						s.formUpload = {
 							tagList:[]
-						}; */
+						};
+						s.formAdmin = {
+							tagList:[]
+						}
 						s.getMyreportList();
 					}
 					//
@@ -973,7 +968,7 @@
 				
 			},
 			cancel(){
-				this.formUser = {};
+			//	this.formUser = {};
 			},
 			
 		}
