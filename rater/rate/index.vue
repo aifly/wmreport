@@ -113,8 +113,8 @@
 			</div>
 		</Split>
 		
-
-		<div class="lt-full wm-report-C" v-if='showPreview'>
+		<Detail :checkReport='checkReport' :configList='configList' type="rater" :showPreview='showPreview'  :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
+		<!-- <div class="lt-full wm-report-C" v-if='showPreview &&false '>
 			<div class="wm-preview-action">
 				<span title='下载'>
 					<a target="_blank" :href='reportList[currentReportIndex].filepath' :download="reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname">
@@ -182,6 +182,9 @@
 						</section>
 					</div>
 				</div>
+				<div class="wm-report-qrcode" ref='qrcode'>
+
+				</div>
 			</div>
 			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
 				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
@@ -235,7 +238,7 @@
 			</section>
 
 			<div class="wm-rater-mask-tip"  v-if='"jpg jpeg tiff png gif".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</div>
-		</div>
+		</div> -->
 	</div>
 </template>
 
@@ -244,41 +247,10 @@
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
 	import Vue from 'vue';
-
-		import $ from 'jquery';
-	window.$ = window.jQuery  = $;
-var printAreaCount = 0;
-		$.fn.printArea = function () {
-			var ele = this;
-			var idPrefix = "printArea_";
-			removePrintArea(idPrefix + printAreaCount);
-			printAreaCount++;
-			var iframeId = idPrefix + printAreaCount;
-			var iframeStyle = 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;';
-			var iframe = document.createElement('IFRAME');
-			$(iframe).attr({
-				style: iframeStyle,
-				id: iframeId
-			});
-			document.body.appendChild(iframe);
-			var doc = iframe.contentWindow.document;
-			$(document).find("link").filter(function () {
-				return $(this).attr("rel").toLowerCase() == "stylesheet";
-			}).each(function () {
-				doc.write('<link type="text/css" rel="stylesheet" href="'
-						+ $(this).attr("href") + '" >');
-				});
-			doc.write('<div class="' + $(ele).attr("class") + '">' + $(ele).html()
-					+ '</div>');
-			doc.close();
-			var frameWindow = iframe.contentWindow;
-			frameWindow.close();
-			frameWindow.focus();
-			frameWindow.print();
-		}
-		 function removePrintArea(id) {
-			$("iframe#" + id).remove();
-		};
+	import QRCode from '../../components/lib/qrcode';
+	import Detail from '../../common/mask/detail';
+	import $ from 'jquery';
+ 
 
 	export default {
 		props:['obserable'],
@@ -319,6 +291,7 @@ var printAreaCount = 0;
 			}
 		},
 		components:{
+			Detail
 		},
 
 		beforeCreate(){
@@ -403,6 +376,17 @@ var printAreaCount = 0;
 			previewReport(){//双击预览作品、
 			   this.showMaskDetail = true;
 			   this.showPreview = true;
+
+			   var s = this;
+				if(s.reportList[s.currentReportIndex].publicadtype === "h5-zmiti"&&s.reportList[s.currentReportIndex].previewurl){
+					setTimeout(() => {
+						new QRCode(this.$refs['qrcode'],{
+							height:130,
+							width:130,
+							text:s.reportList[s.currentReportIndex].previewurl
+						})
+					}, 100);
+				}
 			},
 
 			showDetail(report,index){

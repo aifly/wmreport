@@ -118,10 +118,6 @@
 
 			</div>
 		</Split>
-
-
-		 
-
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 	</div>
 </template>
@@ -131,7 +127,7 @@
 	import './lastcheck.css';
 	import symbinUtil from '../lib/util';
 	import Vue from "vue";
-	import Detail from './detail'
+	import Detail from '../../common/mask/detail';
 
 	export default {
 		props:['obserable'],

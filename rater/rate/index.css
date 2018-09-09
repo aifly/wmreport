@@ -556,6 +556,7 @@ body {
   min-width: 300px;
   bottom: 0;
   left: 0;
+  z-index: 12;
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
   -webkit-transition: 0.4s;
@@ -642,6 +643,25 @@ body {
   justify-content: center;
   -webkit-align-items: center;
   align-items: center;
+}
+
+.wm-rater-main-ui .wm-report-C .wm-report-qrcode {
+  width: 130px;
+  height: 130px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.wm-rater-main-ui .wm-report-C .wm-report-qrcode img {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.wm-rater-main-ui .wm-report-C .wm-report-print {
+  display: none;
 }
 
 .wm-rater-main-ui .wm-report-C .wm-preview-action {
@@ -740,6 +760,7 @@ body {
   padding: 10px;
   box-sizing: border-box;
   position: absolute;
+  z-index: 13;
   width: 100%;
   min-width: 300px;
   bottom: 0;

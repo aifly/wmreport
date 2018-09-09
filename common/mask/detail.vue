@@ -103,6 +103,20 @@
 				
 			</section>
 
+			<section  v-if='type === "rater"' class="wm-report-check-in-mask" :class="{'hide':nextReport}">
+				<div>
+					<Input placeholder="请输入您的评价" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].comments"/>
+				</div>
+				<div>
+					<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{"pass":reportList[currentReportIndex].score === 100}'  class="wm-report-adopt" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>
+						<span>{{reportList[currentReportIndex].score === 100 ? '已':''}}通过</span>
+					</div>
+					<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{"reject":reportList[currentReportIndex].score === 0}'  class="wm-report-reject" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>
+						<span>{{reportList[currentReportIndex].score === 0 ? '已':''}}拒绝</span>
+					</div>
+				</div>
+			</section>
+
             <section v-if='type*1 === 2'  class="wm-reset" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
 				<img :src="imgs.reset" alt="">
 			</section>
@@ -113,6 +127,7 @@
 <script>
 	import Vue from 'vue';
 	import $ from 'jquery';
+	import './detail.css';
 	import QRCode from '../../components/lib/qrcode';
 	window.$ = window.jQuery  = $;
 var printAreaCount = 0;
@@ -149,7 +164,7 @@ var printAreaCount = 0;
 		};
 
 	export default {
-		props:['obserable','nextReport','showMaskDetail','currentType','currentReportIndex','closePreview','reportList','showPreview','type','configList','checkReportById'],
+		props:['obserable','nextReport','showMaskDetail','currentType','checkReport','currentReportIndex','closePreview','reportList','showPreview','type','configList','checkReportById'],
 		name:'zmitiindex',
 		data(){
 			return{

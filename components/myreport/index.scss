@@ -9,6 +9,9 @@ $color: #be0000;
         background: red;
     }
 
+    
+
+
     height: 100%;
 
     @include pos(r);
@@ -869,12 +872,13 @@ $color: #be0000;
 
             & > div {
                 float: left;
-
+                
                 &:nth-of-type(1) {
                     text-align: center;
                     width: 30%;
-                    text-align: right;
+                    text-align: left;
                     margin-left: 2%;
+                    text-indent: 2em;
                 }
 
                 &:nth-of-type(2) {
@@ -950,11 +954,26 @@ $color: #be0000;
                 position: relative !important;
             }
 
+            .wm-report-qrcode{
+                width: 130px;
+                height: 130px;
+                @include pos(a);
+                right: 0;
+                bottom: 0;
+                z-index: 10;
+                img{
+                    @include pos(a);
+                    left: 0;
+                    top: 0;
+                }
+            }
+
             .wm-report-detail {
                 padding: 10px;
                 box-sizing: border-box;
 
                 @include pos(a);
+                z-index: 12;
 
                 width: 100%;
                 min-width: 300px;
@@ -967,6 +986,8 @@ $color: #be0000;
                 color: #fff;
 
                 @include transition(0.4s);
+
+                
 
                 &.hide {
                     height: 40px;
@@ -1096,46 +1117,6 @@ $color: #be0000;
                 max-height: 1000vh;
             }
          }
-
-        .wm-report-close {
-            $color: #fff;
-
-            @include pos(a);
-
-            width: 40px;
-            height: 40px;
-
-            @include br();
-
-            cursor: pointer;
-            //border: 2px solid $color;
-            right: 20px;
-
-            @include transform(rotate(45deg));
-
-            top: 60px;
-            z-index: 10;
-            background:#000;
-
-            &:before,
-            &:after {
-                content: '';
-
-                @include pos(a);
-
-                width: 18px;
-                height: 2px;
-                background: $color;
-                left: 50%;
-                top: 50%;
-                @include transform(translate3d(-50%, -50%, 0));
-            }
-
-            &:after {
-                width: 2px;
-                height: 18px;
-            }
-        }
     }
 
     .wm-report-tips {

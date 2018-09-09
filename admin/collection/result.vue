@@ -113,7 +113,7 @@
 <script>
 	import symbinUtil from '../lib/util';
 	import Vue from "vue";
-	import Detail from './detail';
+	import Detail from '../../common/mask/detail';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
