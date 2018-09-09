@@ -167,7 +167,7 @@
 			//this.addadUser();
 			this.getaduserlist();
 
-			var s = this;
+			/*var s = this;
 
 			symbinUtil.ajax({
 				url:'http://api.symbin.cn/v1/wmadexcel/adexcel',
@@ -180,6 +180,19 @@
 				},
 				success(data){
 					console.log(data,' =======');
+				}
+			})*/
+			var s = this;
+			symbinUtil.ajax({
+				url:window.config.baseUrl+'/wmadadmin/createzip/',
+				data:{
+					admintoken:s.userinfo.admintoken,
+					adminusername:s.userinfo.adminusername,
+					urls:'http://api.symbin.cn/wmpublicadupload/2018/3021678740.jpg,http://api.symbin.cn/wmpublicadupload/2018/1039108971.jpg'
+				},
+				success(data){
+					console.log('111111111111111111')
+					console.log(data,' ----------- ');
 				}
 			})
 

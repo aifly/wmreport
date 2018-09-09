@@ -531,6 +531,7 @@
 			},
 
 			editReportByItem(p){
+				alert(1);
 				var s = this;
 				symbinUtil.ajax({
 					_this:s,
