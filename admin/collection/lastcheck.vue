@@ -23,17 +23,17 @@
 									<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
 								</div>
 							</div>
-							<div class="wm-collection-check-action" >
+							<div class="wm-collection-check-action wm-collection-check-action-reset" >
 								<Checkbox v-model="selectAll">全选</Checkbox>
-								<Button type="primary" size='small'  @click.stop='checkAction(1)'>撤销终审</Button>
-								<ul v-if='showCheckAction && false' >
+								<Button type="primary" size='small'  @click.stop='showCheckAction = true'>操作 <Icon type="ios-arrow-up" /></Button>
+								<ul v-if='showCheckAction' >
 									<li @click.stop="checkAction(1)">
 										<Icon type="ios-checkmark-circle-outline" />
-										通过
+										撤销审核
 									</li>
-									<li @click.stop="checkAction(2)">
-										<Icon type="ios-close-circle-outline" />
-										拒绝
+									<li @click.stop="checkAction('download')">
+										<label  v-if='!isdownloading' ><Icon type="ios-cloud-download-outline" /></label>
+										<label  v-else  class="demo-spin-icon-load1"><Icon type="ios-loading" /></label> 下载
 									</li>
 								</ul>
 							</div>
@@ -61,7 +61,7 @@
 								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 							</li>	
 						</ul>
-						<div class="wm-collection-pagetion">
+						<div class="wm-collection-pagetion" v-if='!selectAll'>
 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 						</div>
 					</div>
@@ -164,7 +164,7 @@
 				page:1,
 				pagenum:20,
 				raterReportList:[],
-
+				isdownloading:false
 			}
 		},
 		components:{
@@ -172,9 +172,11 @@
 		},
 		watch:{
 			selectAll(val){
-				this.reportList.forEach((item)=>{
-					item.checked = val;
-				})
+				this.getReportList(()=>{
+					this.reportList.forEach((item)=>{
+						item.checked = val;
+					});
+				});
 			},
 			mainType(val){
 				
@@ -326,20 +328,55 @@
 			checkAction(status){
 				this.showCheckAction = false;
 				var s = this;
-			
-				var ids =  [];
-				s.reportList.map((item)=>{
-					if(item.checked){
-						ids.push(item.id)
+
+
+				if(status === 'download'){
+					var urls =  [];
+					s.reportList.map((item)=>{
+						if(item.checked){
+							urls.push(item.filepath);
+						}
+					});
+					if(!urls.length){
+						s.$Message.error('请至少选择一个要下载的作品');
+						return;
 					}
-				});
-				if(!ids.length){
-					s.$Message.error('请至少选择一个要审核的作品');
-					return;
+					s.isdownloading = true;
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/createzip',
+						data:{
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername,
+							urls:urls.join(',')
+						},
+						error(){
+							s.isdownloading = false;
+						},
+						success(data){
+							s.isdownloading = false;
+							s.showCheckAction = false;
+							if(data.getret === 0){
+								window.location.href = data.zipurl;
+							}
+						}
+					})
+				}else{
+					var ids =  [];
+					s.reportList.map((item)=>{
+						if(item.checked){
+							ids.push(item.id)
+						}
+					});
+					if(!ids.length){
+						s.$Message.error('请至少选择一个要审核的作品');
+						return;
+					}
+				
+					
+					this.check(status,ids);
+
 				}
 			
-				
-				this.check(status,ids);
 				
 			},
 			changeKwType(type){
@@ -375,7 +412,7 @@
 				this.getReportList();
 				//this.classicType  = '全部';
 			},
-			getReportList(){
+			getReportList(fn){
 				var id = this.$route.params.id;
 				var s = this;
 
@@ -396,6 +433,8 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
+				p['isselectall'] = s.selectAll | 0;
+
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getresouredetaillist/',
@@ -416,7 +455,7 @@
 									s.reportList.forEach((item)=>{
 										item.checked = false;
 									});
-									s.selectAll = false;
+									//s.selectAll = false;
 									if(s.reportList.length){
 										s.currentReportIndex = 0;
 										s.formAdmin = s.reportList[s.currentReportIndex];
@@ -435,6 +474,7 @@
 											})
 										}
 									})
+									fn && fn();
 								}
 							}
 						},30)

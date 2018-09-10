@@ -45,7 +45,10 @@
                                 <Icon type="ios-paper-plane" />
                                 征集管理
                             </template>
-                             <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid+"/0"' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
+                           <!--  <MenuItem name='recruit' to='/recruit/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name.indexOf("recruit")>-1}'>
+                                征集管理
+                            </MenuItem> -->
+                            <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid+"/0"' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
                                 {{resource.resourcecnname}}
                             </MenuItem>
                         </Submenu>
@@ -115,11 +118,10 @@
             }
             
             if(this.$route.name !== 'login'){
-                this.getResourceList();
+               this.getResourceList();
             }
             setTimeout(() => {
                 $('.ivu-menu-submenu-title').trigger('click')
-                
             }, 100);
         },
        
@@ -141,7 +143,6 @@
                                 return data.list;
                             });
                         }
-
                     }
                 })
 			},

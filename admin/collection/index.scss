@@ -167,17 +167,47 @@ body{
 					line-height: 36px;
 					@include pos(r);
 
+					&.wm-collection-check-action-reset{
+						ul{
+							li{
+								&:nth-of-type(2) {
+									color: #333;
+
+									i {
+										color: #333;
+									}
+								}
+
+								&:nth-of-type(1) {
+									color: #be0000;
+									i {
+										color: #be0000;
+									}
+								}
+
+								&:hover {
+									background: #be0000;
+									color: rgb(255, 255, 255);
+									i {
+										color: #fff;
+									}
+								}
+							}
+						}
+					}
+
 					ul {
 						
-						width: 80px;
+						width: 90px;
 						margin-left: 40px;
 						@include pos(a);
 						border: 1px solid #ccc;
 						background: #fff;
 						margin-top: 2px;
 						@include br(4px);
-						text-indent:10px;
+						//text-indent:10px;
 						li {
+							padding-left: 10px;
 							i{
 								font-size:16px;
 								vertical-align: middle;
@@ -193,6 +223,12 @@ body{
 							}
 							&:nth-of-type(2){
 								color:#be0000;
+							}
+							&:nth-of-type(3) {
+								color: #333;
+								i{
+									color: #333;
+								}
 							}
 							&:hover {
 								background: #be0000;
@@ -290,7 +326,7 @@ body{
 			}
 			 li.wm-collection-report-item {
 			 	display: inline-block;
-			 	width: 18%;
+			 	width: 17.8%;
 			 	margin: 12px;
 			 	height: 130px;
 			 	background: #f4f4f4;
@@ -508,7 +544,7 @@ body{
 						border-color:#f5a420;
 						.wm-collection-raterreport-item-left,
 						.wm-collection-raterreport-item-right{
-							border-right: 1px solid #f5a420;
+							border-color: #f5a420;
 							&>header{
 								border-color:#f5a420;
 								
@@ -1009,6 +1045,10 @@ body{
 					color:#ccc;
 					cursor: not-allowed;
 				}
+			}
+			&.wm-download{
+				margin-left: 20px;
+				cursor: pointer;
 			}
 		}
 		.wm-collection-last-check{

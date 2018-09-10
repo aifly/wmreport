@@ -264,22 +264,59 @@ body {
   position: relative;
 }
 
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2),
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2),
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2) {
+  color: #333;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2) i,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2) i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2) i,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2) i {
+  color: #333;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1),
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1),
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1) {
+  color: #be0000;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1) i,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1) i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1) i,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(1) i {
+  color: #be0000;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover {
+  background: #be0000;
+  color: white;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover i,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover i,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:hover i {
+  color: #fff;
+}
+
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul,
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul {
-  width: 80px;
+  width: 90px;
   margin-left: 40px;
   position: absolute;
   border: 1px solid #ccc;
   background: #fff;
   margin-top: 2px;
   border-radius: 4px;
-  text-indent: 10px;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li,
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li {
+  padding-left: 10px;
   cursor: pointer;
   width: 100%;
   line-height: 30px;
@@ -312,6 +349,18 @@ body {
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2),
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(2) {
   color: #be0000;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3),
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3), .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3),
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3) {
+  color: #333;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3) i,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3) i, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3) i,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:nth-of-type(3) i {
+  color: #333;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action ul li:hover,
@@ -432,7 +481,7 @@ body {
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item {
   display: inline-block;
-  width: 18%;
+  width: 17.8%;
   margin: 12px;
   height: 130px;
   background: #f4f4f4;
@@ -735,7 +784,7 @@ body {
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right, .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left,
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-right {
-  border-right: 1px solid #f5a420;
+  border-color: #f5a420;
 }
 
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-rater-list > ul li.active .wm-collection-raterreport-item-left > header,
@@ -1325,4 +1374,9 @@ body {
 .wm-collection-ui .wm-collection-footer span:nth-of-type(2).disabled, .wm-lastcheck-ui .wm-collection-footer span:nth-of-type(2).disabled {
   color: #ccc;
   cursor: not-allowed;
+}
+
+.wm-collection-ui .wm-collection-footer span.wm-download, .wm-lastcheck-ui .wm-collection-footer span.wm-download {
+  margin-left: 20px;
+  cursor: pointer;
 }

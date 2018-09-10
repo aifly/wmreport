@@ -505,13 +505,7 @@
 				}
 			},
 
-<<<<<<< HEAD
 			editReportByItem(p){
-				alert(1);
-=======
-			editReportByItem(p,arg){
-				//alert(arg);
->>>>>>> 386367bf644919f40cd473492814fae06057151b
 				var s = this;
 				symbinUtil.ajax({
 					_this:s,

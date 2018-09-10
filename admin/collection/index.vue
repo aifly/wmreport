@@ -33,15 +33,21 @@
 							</div>
 							<div class="wm-collection-check-action">
 								<Checkbox v-model="selectAll">全选</Checkbox>
-								<Button type="primary" size='small' @click.stop='showCheckAction = true'>审核 <Icon type="ios-arrow-up" /></Button>
+								<Button type="primary" size='small' @click.stop='showCheckAction = true'>操作 <Icon type="ios-arrow-up" /></Button>
 								<ul v-if='showCheckAction'>
 									<li @click.stop="checkAction(1)">
-										<Icon type="ios-checkmark-circle-outline" />
+										<label for=""><Icon type="ios-checkmark-circle-outline" /></label>
 										通过
 									</li>
 									<li @click.stop="checkAction(2)">
-										<Icon type="ios-close-circle-outline" />
+										<label for="">
+											<Icon type="ios-close-circle-outline" />
+										</label>
 										拒绝
+									</li>
+									<li @click.stop="checkAction('download')">
+										<label  v-if='!isdownloading' ><Icon type="ios-cloud-download-outline" /></label>
+										<label  v-else  class="demo-spin-icon-load1"><Icon type="ios-loading" /></label> 下载
 									</li>
 								</ul>
 							</div>
@@ -73,7 +79,7 @@
 								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 							</li>	
 						</ul>
-						<div class="wm-collection-pagetion">
+						<div class="wm-collection-pagetion" v-if='!selectAll'>
 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 						</div>
 					</div>
@@ -109,86 +115,12 @@
 					<div class="wm-tag-list"  v-if='item.fieldname === "userlabel"'>
 						<Tag v-if='formAdmin && formAdmin.tagList&&formAdmin.tagList.length' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 					</div>
-					<!-- 
-					<section class="wm-tag-list-C" v-if='item.fieldname === "userlabel"'>
-						<div class="wm-userlabel-header">
-							<div>标签</div>
-							<div><input type="text" placeholder="输入标签名" v-model="detailtag" @keydown.13='addTagByDetail(item)' /></div>
-							<div>
-								<div class="wm-add-label" @click='addTagByDetail(item)'>
-
-								</div>
-							</div>
-							
-						</div> 
-						<div class="wm-tag-list">
-							<Tag  :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-if='tag' v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
-						</div>
-					</section>-->
+				
 				</div>
 
 
 			</div>
 		</Split>
-
-
-		<!-- 
-			<div class="lt-full wm-collection-report-C" v-if='showPreview &&　false'>
-			<span class="wm-report-close" @click="closePreview"></span>
-			<div  v-if='reportList[currentReportIndex].fileextname !== "mp3" &&reportList[currentReportIndex].fileextname!== "webm" &&reportList[currentReportIndex].fileextname !== "mp4" && reportList[currentReportIndex].fileextname!== "aac"&&reportList[currentReportIndex].fileextname!== "wma"&&reportList[currentReportIndex].fileextname!== "ogg"'>
-				<img :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
-				<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
-					<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
-				<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
-				<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
-					<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
-				<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
-				<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
-					<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
-						<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"' >
-							<span>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<section class="wm-report-check-in-mask" :class="{'hide':nextReport}">
-				<div>
-					<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
-					<span v-if='!reportList[currentReportIndex].remark && false' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>
-				</div>
-				<div>
-					<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{"pass":reportList[currentReportIndex].score === 100}'  class="wm-report-adopt" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>
-						<span>通过</span>
-					</div>
-					<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{"reject":reportList[currentReportIndex].score === 0}'  class="wm-report-reject" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>
-						<span>拒绝</span>
-					</div>
-				</div>
-				
-			</section>
-		</div> 
-		-->
-
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 
 	</div>
@@ -237,6 +169,7 @@
 				page:1,
 				pagenum:20,
 				raterReportList:[],
+				isdownloading :false
 
 			}
 		},
@@ -247,9 +180,11 @@
 		},
 		watch:{
 			selectAll(val){
-				this.reportList.forEach((item)=>{
-					item.checked = val;
-				})
+				this.getReportList(()=>{
+					this.reportList.forEach((item)=>{
+						item.checked = val;
+					});
+				});
 			},
 			mainType(val){
 				window.location.hash = "/collection/"+this.$route.params.id+'/'+val;
@@ -401,20 +336,66 @@
 			},
 
 			checkAction(status){
-				this.showCheckAction = false;
+				
 				var s = this;
-			
-				var ids =  [];
-				s.reportList.map((item)=>{
-					if(item.checked){
-						ids.push(item.id)
+				if(status === 'download'){
+					var urls =  [];
+					s.reportList.map((item)=>{
+						if(item.checked){
+							urls.push(item.filepath);
+						}
+					});
+					if(!urls.length){
+						s.$Message.error('请至少选择一个要下载的作品');
+						return;
 					}
-				});
-				if(!ids.length){
-					s.$Message.error('请至少选择一个要审核的作品');
-					return;
+					s.isdownloading = true;
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/createzip',
+						data:{
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername,
+							urls:urls.join(',')
+						},
+						error(){
+							s.isdownloading = false;
+						},
+						success(data){
+							s.isdownloading = false;
+							s.showCheckAction = false;
+							if(data.getret === 0){
+								console.log(data);
+								/* var a = document.createElement('a');
+								a.href = data.zipurl;
+								a.innerHTML = '下载';
+								a.download = data.zipurl;
+								a.style.position = 'fixed';
+								a.style.left = '-100px';
+								a.style.opacity = 0;
+								document.body.appendChild(a);
+								a.target = '_blank';
+								//a.click(); */
+								window.location.href = data.zipurl;
+
+
+							}
+						}
+					})
+				}else{
+					var ids =  [];
+					s.reportList.map((item)=>{
+						if(item.checked){
+							ids.push(item.id)
+						}
+					});
+					if(!ids.length){
+						s.$Message.error('请至少选择一个要审核的作品');
+						return;
+					}
+					this.check(status,ids);
+
 				}
-				this.check(status,ids);
+			
 				
 			},
 			changeKwType(type){
@@ -451,7 +432,7 @@
 				this.getReportList();
 				//this.classicType  = '全部';
 			},
-			getReportList(){
+			getReportList(fn){
 				var id = this.$route.params.id;
 				
 				var s = this;
@@ -472,8 +453,9 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
+				p['isselectall'] = s.selectAll | 0;
 
-				console.log(p);
+				//console.log(p);
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadadmin/getresouredetaillist/',
@@ -494,7 +476,8 @@
 									s.reportList.forEach((item)=>{
 										item.checked = false;
 									});
-									s.selectAll = false;
+								
+									///s.selectAll  = false;
 									if(s.reportList.length){
 										//s.currentReportIndex = 0;
 
@@ -518,6 +501,8 @@
 											})
 										}
 									})
+
+									fn && fn();
 								}
 							}
 						},30)
@@ -558,9 +543,26 @@
 	}
 </script>
  <style>
-	.demo-spin-icon-load{
+	.demo-spin-icon-load1{
         animation: ani-demo-spin 1s linear infinite;
-    }
+		-webkit-animation: ani-demo-spin 1s linear infinite;
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+		position: relative;
+		top: 4px;
+		left: -2px;;
+	}
+	.demo-spin-icon-load1 i{
+		position: absolute;
+		left: 50%;
+		top:50%;
+		text-indent:0;
+		-webkit-transform:translate(-50%,-50%);
+		transform:translate(-50%,-50%);
+		margin-top: 0 !important;
+
+	}
     @keyframes ani-demo-spin {
         from { transform: rotate(0deg);}
         50%  { transform: rotate(180deg);}

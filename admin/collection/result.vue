@@ -95,7 +95,7 @@
 					</div>
 				</li>
 			</ul>
-			<div class="wm-collection-pagetion">
+			<div class="wm-collection-pagetion" v-if='!selectAll'>
 				<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 			</div>
 		</div>
@@ -104,6 +104,7 @@
 			<span ><Checkbox @on-change='selectAllReport' v-model="selectAll">全选</Checkbox></span>
 			<span :class="{'disabled':passCount <= 0}" @click='preview'>{{isFilter?'返回':'预览'}}</span>
 			<Button type='primary' :disabled="passCount === 0"  class="wm-collection-last-check" @click='lastCheck'>通过终审(<span v-html='passCount'></span>)</Button>
+			<span class="wm-download" @click='downLoadFile'>下载</span>
 		</div>
 
 		<Detail :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='raterReportList'></Detail>
@@ -172,12 +173,18 @@
 				},
 				deep:true 
 			},*/
-			selectAll(val){
-				this.raterReportList.forEach((item,i)=>{
-					item.checked = val;
-					this.passCount = val?i+1:0;
 
-				})
+			selectAll(val){
+
+
+				this.getRaterReportList(()=>{
+					this.raterReportList.forEach((item,i)=>{
+						item.checked = val;
+						this.passCount = val?i+1:0;
+					})
+				});
+
+			
 			},
 			mainType(val){
 				if(val === 1){
@@ -194,6 +201,36 @@
 		},
 		methods:{
 
+			downLoadFile(){
+				var s = this;
+				var urls = [];
+
+				this.raterReportList.map(item=>{
+					if(item.checked){
+						urls.push(item.filepath);
+					}
+				})
+				if(urls.length<=0){
+					s.$Message.error('请至少选择一个要下载的作品');
+					return;
+				}
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/createzip',
+					data:{
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername,
+						urls:urls.join(',')
+					},
+					error(){
+						s.isdownloading = false;
+					},
+					success(data){
+						if(data.getret === 0){
+							window.location.href = data.zipurl;
+						}
+					}
+				})
+			},
 
 			selectAllReport(){
 				this.raterReportList.forEach((item,i)=>{
@@ -267,7 +304,7 @@
 				this.isFilter = true;
 			},
 
-			getRaterReportList(){//获取评审管理列表 
+			getRaterReportList(fn){//获取评审管理列表 
 				var id = this.$route.params.id;
 				var s = this;
 
@@ -288,6 +325,8 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
+
+				p['isselectall'] = s.selectAll | 0;
 				
 				symbinUtil.ajax({
 					_this:s,
@@ -313,8 +352,10 @@
 										item.checked = false;
 									});
 
-									s.selectAll = false;
+									//s.selectAll = false;
 									s.passCount = 0;
+
+									fn && fn();
 									
 									if(s.reportList.length){
 										s.currentReportIndex = 0;
