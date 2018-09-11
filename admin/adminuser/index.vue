@@ -27,6 +27,18 @@
 				</FormItem>
 			</Form>
 		</Modal>
+
+		 <div style="position:absolute;bottom:250px;">
+			 <quill-editor 
+			v-model="content" 
+			ref="myQuillEditor" 
+			:options="editorOption" 
+			@blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
+			@change="onEditorChange($event)">
+			</quill-editor>
+
+			<div>{{content}}</div>
+		 </div>
 	</div>
 </template>
 
@@ -34,12 +46,31 @@
 	import './index.css';
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
+	import Vue from 'vue';
+	import VueQuillEditor from 'vue-quill-editor';
+	import 'quill/dist/quill.core.css'
+	import 'quill/dist/quill.snow.css'
+	import 'quill/dist/quill.bubble.css'
+	Vue.use(VueQuillEditor)
 
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
 		data(){
 			return{
+				content:"",
+				editorOption:{
+					modules:{
+                        toolbar:[
+						  ['bold', 'italic', 'underline','code', 'strike','color','link'],        // toggled buttons
+						  [{size:['small',false,'large','huge','12']}],//'12','14',false,'16','18','20','22','24'
+						  [{ 'color': [] }],
+						  [{ 'align': [] }],
+						  [{list:'ordered'},{list:'bullet'}],
+                          ['code-block','image','video','clean']
+                        ]
+                    }
+				},
 				visible:false,
 				imgs:window.imgs,
 				isLoading:false,
@@ -182,7 +213,7 @@
 					console.log(data,' =======');
 				}
 			})*/
-			var s = this;
+			/* var s = this;
 			symbinUtil.ajax({
 				url:window.config.baseUrl+'/wmadadmin/createzip/',
 				data:{
@@ -194,11 +225,18 @@
 					console.log('111111111111111111')
 					console.log(data,' ----------- ');
 				}
-			})
+			}) */
 
 		},
 		
 		methods:{
+
+			onEditorBlur(){//失去焦点事件
+            },
+            onEditorFocus(){//获得焦点事件
+            },
+            onEditorChange(){//内容改变事件
+            },
 
 			checkUser(params){
 				var s = this;
