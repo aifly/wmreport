@@ -7,6 +7,7 @@ import Vote from './admin/vote/index';
 import Login from './admin/login/index';
 import Detail from './admin/detail/index';
 import Recruit from './admin/recruit/index';
+import Recruitaction from './admin/recruitaction/index';
 import Rater from './admin/rater/index';
 import Collection from './admin/collection/index';
 import iView from 'iview';
@@ -60,6 +61,11 @@ const router = new VueRouter({
 			 name: 'ratedetail',
 			component: Detail,
 			props: true
+		},{
+			path: '/recruitaction/:id?',
+			name: 'recruitaction',
+			component: Recruitaction,
+			props:true
 		}, {
 			path: '/user/',
 			name: 'user',

@@ -180,6 +180,8 @@
 		},
 		watch:{
 			selectAll(val){
+
+				
 				this.getReportList(()=>{
 					this.reportList.forEach((item)=>{
 						item.checked = val;

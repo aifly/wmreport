@@ -50,11 +50,11 @@ var imgs = {
 	dongmanIco:'./assets/images/dongman-ico.png',
 
 
-}
+};
 
-Date.prototype.Format = function (fmt) { //author: meizz 
+/* Date.prototype.Format = function (fmt) { //author: meizz 
 	var o = {
-		"M+": this.getMonth() + 1, //月份 
+		"M+": this.getMonthgetMonth() + 1, //月份 
 		"d+": this.getDate(), //日 
 		"h+": this.getHours(), //小时 
 		"m+": this.getMinutes(), //分 
@@ -67,10 +67,43 @@ Date.prototype.Format = function (fmt) { //author: meizz
 		if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
 	return fmt;
 }
-window.config = {
-	baseUrl:'http://10.137.0.3/v1'
-}
+ */
 
-if(window.location.href.indexOf('localhost')>-1||window.location.href.indexOf('zmiti.com')>-1){
-	window.config.baseUrl = "https://api.symbin.cn/v1";
-}
+
+(function () {
+	var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
+		videoExtensions = 'mp4,webm,ogg,aac,wma,vnd.dlna.adts,mp3'.split(','),
+		textExtensions = ' xlsx, pdf, doc, ppt, xlsx, doc, docx, pdf, txt, ppt, pptx, xls, rar, css, scss,vb, zip'.split(',');
+	var allExtensions = imgExtensions.concat(videoExtensions).concat(textExtensions);
+	window.config = {
+		baseUrl: 'http://10.137.0.3/v1',
+		accepts: [{
+			id: 0,
+			name: '图片',
+			type: 'Image',
+			extensions: imgExtensions.join(',')
+		}, {
+			id: 1,
+			name: '视频',
+			type:'video',
+			extensions: videoExtensions.join(',')
+		}, {
+			id: 2,
+			name: '文本',
+			type:'text',
+			extensions: textExtensions.join(',')
+		}, {
+			id: 3,
+			name: '全部',
+			type:'all',
+			extensions: allExtensions.join(',')
+		}]
+	}
+
+	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
+		window.config.baseUrl = "https://api.symbin.cn/v1";
+	}
+
+})();
+
+

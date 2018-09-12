@@ -1,5 +1,5 @@
 <template>
-	<div class="wm-recurit-ui lt-full" @click.stop='showCondition = false;showCheckAction = false'>
+	<div class="wm-recurit-ui lt-full" >
 		<header class="wm-recurit-header">
 			<h1>征集管理</h1>
 			<div><Icon type="ios-create-outline" />发布新的征集</div>
@@ -9,7 +9,22 @@
 				<li v-for='(item,i) in resourceList' :key="i">
 					<header>
 						<div>{{item.resourcecnname}}</div>
+						<div class="wm-recurit-action">
+							<Button size='small' :to="'/collection/'+item.resourceid+'/0'">详情</Button>
+							<Button size='small'>编辑</Button>
+							<Button size='small' :to="'/collection/'+item.resourceid+'/1'">评选</Button>
+							<Button size='small' type='error'>删除</Button>
+						</div>
 					</header>
+					<div class="wm-recurit-item">
+						路径 ：{{item.dirid}}
+					</div>
+					<div class="wm-recurit-item">
+						起止时间： {{item.starttime}} - {{item.endtime}}
+					</div>
+					<div class="wm-recurit-item zmiti-text-overflow" :title='item.resourcedesc'>
+						说明：{{item.resourcedesc}}
+					</div>
 				</li>
 			</ul>
 		</div>
@@ -47,7 +62,11 @@
 				});
 				if(dataList){
 					clearInterval(t);
-					this.resourceList = dataList;
+					var arr = [];
+					for(var i = 0 ; i<10;i++){
+						arr = arr.concat(dataList);
+					}
+					this.resourceList =  arr;
 				
 				}
 			},30);

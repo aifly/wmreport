@@ -45,12 +45,12 @@
                                 <Icon type="ios-paper-plane" />
                                 征集管理
                             </template>
-                           <!--  <MenuItem name='recruit' to='/recruit/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name.indexOf("recruit")>-1}'>
+                            <MenuItem name='recruit' to='/recruit/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name.indexOf("recruit")>-1||$route.name.indexOf("collection")>-1}'>
                                 征集管理
-                            </MenuItem> -->
-                            <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid+"/0"' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
-                                {{resource.resourcecnname}}
                             </MenuItem>
+                            <!-- <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid+"/0"' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
+                                {{resource.resourcecnname}}
+                            </MenuItem> -->
                         </Submenu>
                         <Submenu name='2'>
                             <template slot="title">
@@ -106,6 +106,7 @@
            }
         },
 		mounted(){
+            window.s = this;
            ///this.menus = this.defaultMenu.concat([]);
             var obserable = Vue.obserable;
             
