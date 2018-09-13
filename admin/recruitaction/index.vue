@@ -6,10 +6,10 @@
 		 <div class="wm-recruitaction-content">
 			 <div class="wm-recruitaction-form">
 				<div class="wm-recruitaction-progress">
-					<div @click='current = 0' :class="{'active':current === 0}">
+					<div @click='current = 0' :class="{'active':current >= 0}">
 						<span>1</span>
 					</div>
-					<div @click='current = 1' :class="{'active':current === 1}">
+					<div @click='current = 1' :class="{'active':current >= 1}">
 						<span>2</span>
 					</div>
 				</div>
@@ -29,7 +29,18 @@
 					</div>
 					<div class="wm-recruitaction-form-item">
 						<section>允许上传的类型</section>
-						<Checkbox v-for='(item,i) in accepts' :key="i">{{item.name}}</Checkbox>
+						<section class="wm-accept-list">
+							<Checkbox v-model="item.checked" :checked='item.checked' v-for='(item,i) in accepts' :key="i">{{item.name}}</Checkbox>
+						</section>
+					</div>
+					<div class="wm-recruitaction-next-btn">
+						<Button long type='primary' size='large'>下一步</Button>
+					</div>
+				</div>
+				<div v-if='current === 1'>
+					<h1  class="wm-recruitaction-title">{{formRecruit.resourcecnname}}</h1>
+					<div class="wm-default-field">
+						<div v-for='(field,i) in formRecruit.configList.fieldList' :key='i'></div>
 					</div>
 				</div>
 			 </div>
@@ -48,7 +59,7 @@
 			return{
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
-				current:0,
+				current:1,
 				accepts:window.config.accepts,
 				formRecruit:{
 					resourcecnname:'',
@@ -56,6 +67,45 @@
 					endtime:'',
 					starttime:'',
 					dirid:'',
+					configList:{
+						acceptsList:[
+
+						],
+						fieldlist:[
+							{
+								"name": "编号",
+								"type": "text",
+								"notnull": 1,
+								"default": "",
+								"primary":1,
+								"fieldtype": "varchar",
+								"fieldname": "id",
+								"length": 36,
+								"loading": 0,
+								"edit": 0
+							},{
+								"name": "名称",
+								"type": "text",
+								"notnull": 1,
+								"default": "",
+								"fieldtype": "varchar",
+								"fieldname": "name",
+								"length": 255,
+								"loading": 1,
+								"edit": 1
+							},
+							{
+								"name": "说明",
+								"type": "textarea",
+								"notnull": 0,
+								"default": "",
+								"fieldtype": "text",
+								"fieldname": "desc",
+								"loading": 1,
+								"edit": 1
+							}
+						]
+					},
 					
 
 				}
@@ -65,7 +115,16 @@
 			
 		},
 		watch:{
-		
+			accepts:{
+				handler(val){
+					window.val = val;
+					val.forEach((item)=>{
+						item.checked = val[val.length-1].checked;		
+					});
+					val = val.concat([]);
+				},
+				deep:true,
+			}
 		},
 		mounted() {
 			 

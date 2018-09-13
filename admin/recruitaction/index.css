@@ -93,9 +93,7 @@ body {
   display: -webkit-flex;
   flex-flow: row;
   justify-content: center;
-  align-items: center;
   -webkit-justify-content: center;
-  -webkit-align-items: center;
 }
 
 .wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form {
@@ -177,6 +175,21 @@ body {
 .wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form .wm-recruitaction-form-item section {
   height: 30px;
   line-height: 30px;
+  padding-top: 4px;
+}
+
+.wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form .wm-recruitaction-form-item section.wm-accept-list {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+}
+
+.wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form .wm-recruitaction-form-item section.wm-accept-list label {
+  display: block;
+  flex: 1;
+  -webkit-flex: 1;
 }
 
 .wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form .wm-recruitaction-form-item label {
@@ -193,4 +206,9 @@ body {
 
 .wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form .wm-recruitaction-form-item textarea {
   display: none;
+}
+
+.wm-recruitaction-ui .wm-recruitaction-content .wm-recruitaction-form .wm-recruitaction-next-btn button {
+  background: #fcb90a;
+  border-color: #fcb90a;
 }
