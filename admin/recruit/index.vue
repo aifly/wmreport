@@ -2,7 +2,8 @@
 	<div class="wm-recurit-ui lt-full" >
 		<header class="wm-recurit-header">
 			<h1>征集管理</h1>
-			<div><Icon type="ios-create-outline" />发布新的征集</div>
+			<div v-if='false'><Icon type="ios-create-outline" />发布新的征集</div>
+			<div></div>
 		</header>
 		<div class="wm-recurit-list wm-scroll">
 			<ul>
@@ -11,9 +12,9 @@
 						<div>{{item.resourcecnname}}</div>
 						<div class="wm-recurit-action">
 							<Button size='small' :to="'/collection/'+item.resourceid+'/0'">详情</Button>
-							<Button size='small'>编辑</Button>
+							<Button size='small' v-if='false'>编辑</Button>
 							<Button size='small' :to="'/collection/'+item.resourceid+'/1'">评选</Button>
-							<Button size='small' type='error'>删除</Button>
+							<Button size='small' v-if='false' type='error'>删除</Button>
 						</div>
 					</header>
 					<div class="wm-recurit-item">
