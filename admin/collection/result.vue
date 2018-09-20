@@ -49,9 +49,9 @@
 
 							<img class="status" v-if='raterreport.status === 3' :src="imgs.guidang" alt="">
 							<div v-if='"png jpg jpeg gif".indexOf(raterreport.fileextname)>-1' >
-								<img  :src="raterreport.pcbilethum" alt="">
+								<img  :src="raterreport.mobilethum" alt="">
 							</div>
-							<div v-else :style="{background:'url('+raterreport.pcbilethum+') no-repeat center center'}">
+							<div v-else :style="{background:'url('+raterreport.mobilethum+') no-repeat center center'}">
 
 							</div>
 							<div class="wm-collection-raterreport-content">

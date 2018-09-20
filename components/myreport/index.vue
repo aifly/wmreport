@@ -43,7 +43,7 @@
 										<img :src="imgs.pass1" alt="">
 									</div>
 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-										<img :src="report.pcbilethum||imgs.poster" alt="">
+										<img :src="report.mobilethum||imgs.poster" alt="">
 									</div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 									
@@ -120,7 +120,7 @@
 			</div>
 			<div slot="right" class="wm-myreport-right wm-scroll" v-if='reportList[currentReportIndex]'>
 				<div   class="wm-right-thumb">
-					<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
+					<img :src='reportList[currentReportIndex].mobilethum||imgs.poster' />	
 				</div>
 				
 				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>

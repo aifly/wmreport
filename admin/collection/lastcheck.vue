@@ -46,7 +46,7 @@
 						<ul>
 							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' >
-									<img :src="report.pcbilethum||imgs.poster" alt="">
+									<img :src="report.mobilethum||imgs.poster" alt="">
 								</div>
 								<div class="wm-collection-report-status">
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
@@ -71,7 +71,7 @@
 				<h1 style="height:30px"></h1>
 				<div   class="wm-right-thumb">
 					<div>
-						<img :src='reportList[currentReportIndex].pcbilethum||imgs.poster' />	
+						<img :src='reportList[currentReportIndex].mobilethum||imgs.poster' />	
 					</div>
 				</div>
 				
