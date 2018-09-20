@@ -17,6 +17,9 @@ var imgs = {
 	raterLoginBg:'./assets/images/raterlogin.png',
 
 	man:'./assets/images/man.png',
+	downloadbg:'./assets/images/downloadbg.jpg',
+	downloadbg1:'./assets/images/downloadbg1.jpg',
+	createzip: './assets/images/createzip.png',
 	group:'./assets/images/group.png',
 	scoreIco:'./assets/images/score-ico.png',
 	logout:'./assets/images/logout.png',
@@ -76,7 +79,7 @@ var imgs = {
 		textExtensions = ' xlsx, pdf, doc, ppt, xlsx, doc, docx, pdf, txt, ppt, pptx, xls, rar, css, scss,vb, zip'.split(',');
 	var allExtensions = imgExtensions.concat(videoExtensions).concat(textExtensions);
 	window.config = {
-		baseUrl: 'http://10.137.0.3/v1',
+		baseUrl: 'https://api.symbin.cn/v1',
 		accepts: [{
 			id: 0,
 			name: '图片',

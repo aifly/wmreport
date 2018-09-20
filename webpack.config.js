@@ -6,6 +6,7 @@ var config = {
         'index': "./index.js",
         'admin': "./admin.js",
         'rater': "./rater.js",
+        'download': "./download.js",
         ///endor: ['react','react-dom','iscroll','jquery']
     },
     output: {

@@ -150,6 +150,7 @@
                     success(data){
                         if(data.getret === 0){
                                 s.sourceList = data.list;
+                               
                                 obserable.on("getCurrentSourceId",()=>{
                                     return data.list[0].resourceid;
                                 })

@@ -28,7 +28,7 @@
 			</Form>
 		</Modal>
 
-		 <div style="position:absolute;bottom:250px;">
+		 <div style="position:absolute;bottom:250px;" v-if='false'>
 			 <quill-editor 
 			v-model="content" 
 			ref="myQuillEditor" 

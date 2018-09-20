@@ -140,6 +140,7 @@
                     success(data){
                         if(data.getret === 0){
                             s.resourceList = data.list;
+                         
                             Vue.obserable.on('getResource',()=>{
                                 return data.list;
                             });

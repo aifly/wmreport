@@ -63,10 +63,10 @@
 				if(dataList){
 					clearInterval(t);
 					var arr = [];
-					for(var i = 0 ; i<10;i++){
+					/* for(var i = 0 ; i<10;i++){
 						arr = arr.concat(dataList);
-					}
-					this.resourceList =  arr;
+					} */
+					this.resourceList =  dataList;
 				
 				}
 			},30);
