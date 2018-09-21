@@ -2,19 +2,24 @@
 	<div class="wm-collection-ui " @click.stop='showCondition = false;showCheckAction = false'>
 		
 		<div  class="wm-collection-left-main-ui">
-			<header class='wm-collection-left-header'>
+			<header class='wm-collection-left-header' v-if='viewW<=760'>
 				<div class="wm-collection-search-content">
 					<div>
 						<Input  v-model="keyword" @on-keydown='searchReport' search enter-button="搜索" @on-search='searchReport' placeholder="搜索关键字" />
 					</div>
-					
 				</div>
 			</header>
 			<header class="wm-collection-left-search-condition-header">
 				<div>分类：<span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
+				<div class="wm-collection-search-content">
+					<div>
+						<Input  v-model="keyword" @on-keydown='searchReport' search enter-button="搜索" @on-search='searchReport' placeholder="搜索关键字" />
+					</div>
+				</div>
 				<div class="wm-collection-check-action" >
 					<Checkbox v-model="selectAll">全选</Checkbox>
-					<Button type="primary" size='small' @click="checkAction('download')" >批量下载 </Button>
+					<Button type="primary" size='small' :disabled='downloadCount<=0' @click="checkAction('download')" >批量下载 </Button>
+					<Button class='wm-href' :to='uploadUrl' size='small' style="background: #f5a420;color:#fff;">上报</Button>
 				</div>
 			</header>
 			<div class="wm-scroll wm-collection-report-list">
@@ -22,60 +27,44 @@
 					<li class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 						<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'  @click="previewReport(i,report)" >
 							<img :src="report.pcbilethum||imgs.poster" alt="">
-							<Button type='primary' @click.stop="checkAction(report)">下载</Button>
+							<Button type='primary' v-if='report.publicadtype !== "h5-zmiti"' @click.stop="checkAction(report)">下载</Button>
 							<span class='wm-report-shadow' v-if='"aac ogg  mp3 mp4 webm aac wma vnd.dlna.adts ".indexOf(report.fileextname)>-1'></span>
 						</div>
 						<div class="wm-collection-check">
-							<Checkbox v-model="report.checked"></Checkbox>
+							<Checkbox @on-change='changeChecked(report,i)' v-model="report.checked"></Checkbox>
 						</div>
 						<div class="wm-report-action" v-if='report.isLoaded'>
 							<div class="wm-report-action-icon"></div>
 						</div>
 						<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 						<div v-if='report' class='wm-report-item-attr'>
+							<div>上传单位：{{report.username}}</div>
+						</div>
+						<div v-if='report' class='wm-report-item-attr'>
 							<div>尺寸：{{report.fileattr}}</div>
 							<div>大小：{{report.filesize+report.filesizeunit}}</div>
 						</div>
-						<div v-if='report' class='wm-report-item-attr'>
-							<div>类型：{{report.publicadtype.split('-')[0]}}</div>
-						</div>
+						
 					</li>	
 				</ul>
 				<ul v-else class='wm-media-list'>
 					<li class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
-						<div><Checkbox v-model="report.checked"></Checkbox></div>
+						<div><Checkbox @on-change='changeChecked(report,i)' v-model="report.checked"></Checkbox></div>
 						<div class='wm-collection-report-content' @click="previewReport(i,report)">
-							<div >
+							<div>
 								<img :src="report.pcbilethum||imgs.poster" alt="">
 							</div>
 							<div>
-								<div style="opacity:0;">1</div>
 								<div class='zmiti-text-overflow'>{{report.filetitle}}</div>
+								<div>上传单位：{{report.username}}</div>
 								<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>
 							</div>
 						</div>
 						<div>
-							<Icon  @click.stop="checkAction(report)" type="md-cloud-download" />
+							<Icon @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
+							<Icon class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
 						</div>
-						<!-- <div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'  @click="previewReport(i,report)" >
-							<img :src="report.pcbilethum||imgs.poster" alt="">
-							<Button type='primary' @click.stop="checkAction(report)">下载</Button>
-							<span class='wm-report-shadow' v-if='"aac ogg  mp3 mp4 webm aac wma vnd.dlna.adts ".indexOf(report.fileextname)>-1'></span>
-						</div>
-						<div class="wm-collection-check">
-							<Checkbox v-model="report.checked"></Checkbox>
-						</div>
-						<div class="wm-report-action" v-if='report.isLoaded'>
-							<div class="wm-report-action-icon"></div>
-						</div>
-						<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-						<div v-if='report' class='wm-report-item-attr'>
-							<div>尺寸：{{report.fileattr}}</div>
-							<div>大小：{{report.filesize+report.filesizeunit}}</div>
-						</div>
-						<div v-if='report' class='wm-report-item-attr'>
-							<div>类型：{{report.publicadtype.split('-')[0]}}</div>
-						</div> -->
+					 
 					</li>	
 				</ul>
 				<div class="wm-collection-pagetion" >
@@ -128,11 +117,13 @@
 				isLoading:false,
 				selectAll:false,
 				scale:1,
+				uploadUrl:window.config.uploadUrl,
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
 				viewW:document.documentElement.clientWidth,
 				resourcecnname:'',
 				kwType:'关键字',
+				downloadCount:0,
 				mobileReport:{
 					 
 				},
@@ -321,17 +312,42 @@
 		watch:{
 			selectAll(val){
 
-				this.getReportList(()=>{
-					this.reportList.forEach((item)=>{
-						item.checked = val;
-					});
+				var len = this.reportList.length;
+				this.reportList.forEach((item)=>{
+					item.checked = val;
+					this.downloadCount = val? len:0;
 				});
 			},
+
+			downloadCount(){
+				var size = 0 ;
+				this.reportList.forEach((item)=>{
+					if(item.checked){
+						size += item.filesize*1;
+					}
+					
+				});
+				if(size/1000/1000>400){
+					this.$Message.error('打包文件已经超出最大范围,请减少下载数量。');
+				}
+			},
+		 
 			mainType(val){
 				//window.location.hash = "/collection/"+this.$route.params.id+'/'+val;
 			}
 		},
 		methods:{
+
+			changeChecked(report,i){
+				if(report.checked){
+					this.downloadCount += 1;
+				}
+				else{
+					this.downloadCount -= 1;
+				}
+				 
+				//console.log(this.passCount);
+			},
 
 		 
 			searchReport(){

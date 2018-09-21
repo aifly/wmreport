@@ -52,8 +52,8 @@
 .wm-collection-ui {
   width: 1240px;
   margin: 344px auto 0;
-  padding: 0 20px;
-  border-radius: 4px;
+  padding: 5px 20px;
+  border-radius: 8px;
   background: #fff;
   position: relative;
   z-index: 1000;
@@ -132,6 +132,10 @@
   height: 36px;
   line-height: 36px;
   position: relative;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action a {
+  background: #f5a420;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action.wm-collection-check-action-reset ul li:nth-of-type(2) {
@@ -247,8 +251,8 @@
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header {
   height: 40px;
   line-height: 38px;
-  margin-top: 2px;
-  border: 1px solid #eee;
+  margin-top: 12px;
+  border: 1px solid #ee;
   box-sizing: border-box;
   border-radius: 4px;
   display: flex;
@@ -284,6 +288,20 @@
   color: #fff;
   text-align: center;
   border-radius: 3px;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div:nth-of-type(2) {
+  flex: 1;
+  -webkit-flex: 1;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div:nth-of-type(3) {
+  width: 200px;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header .wm-collection-search-content {
+  flex: 1;
+  -webkit-flex: 1;
 }
 
 .wm-collection-pagetion {
@@ -497,7 +515,7 @@
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i {
-  color: #ff;
+  color: #fff;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul {
@@ -624,6 +642,10 @@
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div .wm-unit {
   font-size: 12px;
+  color: #ccc;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div:nth-of-type(2) > div:nth-of-type(2) {
   color: #ccc;
 }
 
@@ -860,6 +882,309 @@
   max-height: 60vh;
 }
 
+@media all and (max-width: 1025px) {
+  .wm-collection-ui {
+    width: 1000px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item {
+    display: inline-block;
+    width: 302px;
+    margin-right: 18px;
+    margin-top: 20px;
+    box-sizing: border-box;
+    height: 370px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item:nth-of-type(3n+3) {
+    margin-right: 0;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item:nth-of-type(4n) {
+    margin-right: 18px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg {
+    width: 100%;
+    height: 80%;
+    border: 1px solid #eee;
+    background: #f4f4f4;
+    display: flex;
+    display: -webkit-flex;
+    flex-flow: row;
+    box-sizing: border-box;
+    position: relative;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .wm-report-shadow {
+    position: absolute;
+    width: 100px;
+    left: 50%;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: -50px;
+    top: 70%;
+    background: rgba(0, 0, 0, 0.1);
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg:hover button {
+    display: block;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg button {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    display: none;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg.active {
+    border-color: #f5a420;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-name {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #333;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-item-attr {
+    display: flex;
+    display: -webkit-flex;
+    flex-flow: row;
+    justify-content: space-between;
+    color: #999999;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-check {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 10;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-collection-report-status {
+    position: absolute;
+    width: 50px;
+    top: 0;
+    right: 0;
+  }
+  @-webkit-keyframes warning-animation {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 3em 0;
+    }
+  }
+  @keyframes warning-animation {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 3em 0;
+    }
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-disabled-mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled {
+    color: #be0000;
+    font-size: 12px;
+    z-index: 10;
+    width: 85%;
+    padding-left: 20px;
+    left: 50%;
+    border: 1px solid #be0000;
+    border-radius: 3px;
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
+    background: rgba(255, 255, 255, 0.8);
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span {
+    position: absolute;
+    left: 0;
+    top: 0px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    border: 1px solid #be0000;
+    border-radius: 50%;
+    left: 2px;
+    top: 5px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-file-disabled span:after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    background: #be0000;
+    left: 2px;
+    top: 13px;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    z-index: 1000;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 2px;
+    position: absolute;
+    right: 10px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action .wm-report-action-icon:before {
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #bbb;
+    left: 4px;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    border-left: none;
+    border-top: none;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul {
+    display: block;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action:hover ul i {
+    color: #fff;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul {
+    display: none;
+    background: #fff;
+    width: 80px;
+    margin-top: 20px;
+    margin-right: 10px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    text-indent: -.4rem;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul .wm-del-ico i {
+    vertical-align: middle;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li {
+    display: block;
+    height: 30px;
+    cursor: pointer;
+    line-height: 30px;
+    width: 100%;
+    margin: 0;
+    text-indent: .5em;
+    vertical-align: middle;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li .ivu-poptip-rel {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    position: absolute;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover {
+    background: #be0000;
+    color: #fff;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover div {
+    color: #fff;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li:hover .ivu-poptip-body-message {
+    color: #000;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li > div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item .wm-report-action ul li i {
+    font-size: 20px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list {
+    width: 100%;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item {
+    width: 100%;
+    height: 80px;
+    line-height: 70px;
+    text-align: center;
+    display: block;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    -webkit-box-orient: horizontal;
+    display: flex;
+    display: -webkit-flex;
+    flex-flow: row;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(1) {
+    width: 60px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(2) {
+    line-height: 20px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) {
+    width: 60px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) i {
+    font-size: 20px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content {
+    flex: 1;
+    -webkit-flex: 1;
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    -webkit-box-orient: horizontal;
+    display: flex;
+    display: -webkit-flex;
+    flex-flow: row;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div {
+    margin-right: 20px;
+    text-align: left;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div .wm-unit {
+    font-size: 12px;
+    color: #ccc;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div:nth-of-type(2) > div:nth-of-type(2) {
+    color: #ccc;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item img {
+    width: 60px;
+  }
+}
+
 @media all and (max-width: 750px) {
   body {
     overflow-x: hidden;
@@ -937,8 +1262,8 @@
     width: 100%;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header {
-    height: 40px;
-    line-height: 38px;
+    height: 70px;
+    line-height: 78px;
     margin-top: 2px;
     border: 1px solid #eee;
     box-sizing: border-box;
@@ -975,16 +1300,12 @@
     text-align: center;
     border-radius: 3px;
   }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header .wm-collection-search-content,
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header .wm-collection-check-action {
     display: none;
-    width: 30%;
-    height: 36px;
-    border: 1px solid red;
-    line-height: 36px;
-    position: relative;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list {
-    margin-top: 50px;
+    margin-top: 30px;
   }
   .wm-collection-pagetion {
     width: 100%;
@@ -1175,14 +1496,11 @@
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(2) {
     line-height: 20px;
   }
-  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) {
-    width: 1px;
-  }
-  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) .ivu-icon {
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) .wm-downlad-ico {
     display: none;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) i {
-    font-size: 20px;
+    font-size: 40px;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content {
     flex: 1;
@@ -1196,14 +1514,14 @@
     display: flex;
     display: -webkit-flex;
     flex-flow: row;
+    height: 100px;
+    margin: 20px 0;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div {
     margin-right: 20px;
     text-align: left;
     height: 50px;
-  }
-  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div > div:nth-of-type(1) {
-    height: 0;
+    font-size: 22px;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div .zmiti-text-overflow {
     position: relative;
@@ -1212,12 +1530,15 @@
     line-height: 30px;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div .wm-unit {
-    line-height: 50px;
-    font-size: 24px;
     color: #ccc;
+    font-size: 22px;
+  }
+  .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div:nth-of-type(2) > div:nth-of-type(2) {
+    color: #ccc;
+    line-height: 30px;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item img {
-    width: 60px;
+    width: 70px;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-pagetion {
     line-height: 100px;

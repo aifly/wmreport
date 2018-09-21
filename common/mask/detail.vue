@@ -60,7 +60,7 @@
 					</div>
 				</div>
 				<div class="wm-report-qrcode" ref='qrcode'>
-
+					<div>扫描二维码查看</div>
 				</div>
 			</div>
 			<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>

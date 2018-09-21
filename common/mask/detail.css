@@ -64,6 +64,16 @@
   top: 0;
 }
 
+.wm-report-qrcode > div {
+  width: 100%;
+  left: -100%;
+  top: 50%;
+  position: absolute;
+  font-size: 16px;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
 .wm-report-print {
   display: none;
   z-index: 1000;
