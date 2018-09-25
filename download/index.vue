@@ -468,6 +468,8 @@
 					})
 				}else{
 					 s.isdownloading = true;
+					 console.log(status.filepath);
+					 return;
 					 symbinUtil.ajax({
 						url:window.config.baseUrl+'/wmshare/createzip',
 						data:{

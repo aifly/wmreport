@@ -59,7 +59,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="wm-report-qrcode" ref='qrcode'>
+				<div class="wm-report-qrcode" ref='qrcode' v-if='reportList[currentReportIndex].publicadtype === "h5-zmiti" &&reportList[currentReportIndex].previewurl'>
 					<div>扫描二维码查看</div>
 				</div>
 			</div>
