@@ -45,13 +45,7 @@ const router = new VueRouter({
 		
 	]
 });
-router.beforeEach((to, from, next) => { //导航守卫。
-	//console.log(to,from);
-	if (window.location.href.indexOf('h5.zmiti.com') > -1) {
-		window.location.href = 'http://h5.wenming.cn/wmreport/rater.html';
-	}
-	next();
-});
+
 new Vue({
 	router,
 	data: {
