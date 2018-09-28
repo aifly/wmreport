@@ -1,44 +1,15 @@
 <template>
 	<div class="wm-adminuser-main-ui">
 		<header>
-			<div>用户管理</div>
+			<div>我的下载</div>
 			<section>
-				<Button type="primary" icon='md-add-circle' @click="addNewAduser">新增用户</Button>
+				<Button v-if='false' type="primary" icon='md-add-circle' @click="addNewAduser">新增用户</Button>
 			</section>
 		</header>
-		<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>
+		<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='downloadList' :columns='columns'   stripe></Table>
 
-		<Modal
-			v-model="visible"
-			:title="currentUserId === -1? '新增用户':'编辑用户'"
-			@on-ok="ok"
-			@on-cancel="cancel">
-			<Form ref="formAdmin" :model="formAdmin" :label-width="72" >
-				<FormItem label="账号：" prop="ratername">
-					<Input :disabled = 'currentUserId !== -1'  v-model="formAdmin.username" placeholder="账号" autocomplete="off" />
-					
-				</FormItem>
-				<FormItem label="密码：" prop="userpwd">
-					<Input ref='pass' :disabled='!showPass' v-model="formAdmin.userpwd" placeholder="密码" autocomplete="off" />
-					<Button :disabled='currentUserId ===-1' type="primary" style="margin-top:10px" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>
-				</FormItem>
-				<FormItem label="昵称：" prop="nickname">
-					<Input v-model="formAdmin.nickname" placeholder="昵称" autocomplete="off" />
-				</FormItem>
-			</Form>
-		</Modal>
-
-		 <div style="position:absolute;bottom:250px;" v-if='false'>
-			 <quill-editor 
-			v-model="content" 
-			ref="myQuillEditor" 
-			:options="editorOption" 
-			@blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
-			@change="onEditorChange($event)">
-			</quill-editor>
-
-			<div>{{content}}</div>
-		 </div>
+	
+		 
 	</div>
 </template>
 
@@ -47,52 +18,55 @@
 	import sysbinVerification from '../lib/verification';
 	import symbinUtil from '../lib/util';
 	import Vue from 'vue';
-	import VueQuillEditor from 'vue-quill-editor';
-	import 'quill/dist/quill.core.css'
-	import 'quill/dist/quill.snow.css'
-	import 'quill/dist/quill.bubble.css'
-	Vue.use(VueQuillEditor)
+	
 
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
 		data(){
 			return{
-				content:"",
-				editorOption:{
-					modules:{
-                        toolbar:[
-						  ['bold', 'italic', 'underline','code', 'strike','color','link'],        // toggled buttons
-						  [{size:['small',false,'large','huge','12']}],//'12','14',false,'16','18','20','22','24'
-						  [{ 'color': [] }],
-						  [{ 'align': [] }],
-						  [{list:'ordered'},{list:'bullet'}],
-                          ['code-block','image','video','clean']
-                        ]
-                    }
-				},
-				visible:false,
+				
 				imgs:window.imgs,
 				isLoading:false,
 				currentUserId:-1,
 				split1: 0.8,
 				showPass:false,
 				viewH:window.innerHeight,
-
-				formAdmin:{
-					userpwd:'111111'
-				},
-				userList:[],
+				
+				downloadList:[],
 				columns:[
 					{
-						title:"用户名",
-						key:'username',
+						title:"名称",
+						key:'tasktitle',
 						align:'center'
 						
 					},
 					{
-						title:"昵称",
-						key:'nickname',
+						title:"状态",
+						key:'taskstatus',
+						align:'center',
+						render:(h,params)=>{
+							var status = '等待打包中';
+							switch(params.row.taskstatus){
+								case 0:
+								break;
+								case 1:
+								status = '正在打包';
+								break;
+								case 2:
+								status = '打包成功';
+								break;
+								case 4:
+								status = '打包失败';
+								break;
+							}
+							return h('div',{},status);
+						}
+							
+					},
+					{
+						title:"创建时间",
+						key:'createtime',
 						align:'center'
 					},{
 						title:'操作',
@@ -100,31 +74,7 @@
 						align:'center',
 						render:(h,params)=>{
 							return h('div', [
-                               
-                                h('Button', {
-                                    props: {
-                                        type: 'primary',
-                                        size: 'small'
-                                    },
-                                    style: {
-										margin: '2px 5px',
-										border:'none',
-										background:'#fab82e',
-										color:'#fff',
-										padding: '3px 7px 2px',
-										fontSize: '12px',
-										borderRadius: '3px'
-
-                                    },
-                                    on: {
-                                        click: () => {
-											this.currentUserId = params.row.userid;
-											this.formAdmin = params.row;
-											this.visible = true;
-                                        }
-                                    }
-                                }, '编辑'),
-                                h('Poptip',{
+                               /* h('Poptip',{
 									props:{
 										confirm:true,
 										title:"确定要删除吗"
@@ -148,19 +98,20 @@
 											}
 										}
 									}, '删除')
-								]), h('Button', {
+								]),*/ h('Button', {
                                     props: {
                                         type: 'primary',
-                                        size: 'small'
+                                        size: 'small',
+                                        disabled:params.row.taskstatus !== 2
                                     },
                                     style: {
 										margin: '2px 5px',
 										border:'none',
-										background:params.row.status*1 === 0 ? 'rgb(2, 29, 236)':'#b20000',
+										//	background:params.row.status*1 === 0 ? 'rgb(2, 29, 236)':'#b20000',
 										color:'#fff',
 										padding: '3px 7px 2px',
 										fontSize: '12px',
-										borderRadius: '3px'
+										borderRadius: '3px',
 
                                     },
                                     on: {
@@ -168,13 +119,10 @@
 											/*this.currentUserId = params.row.userid;
 											this.formAdmin = params.row;
 											this.visible = true;*/
-
-											this.checkUser(params);
-
-											
+											window.location.href = params.row.taskresult;
                                         }
                                     }
-                                }, params.row.status*1 === 1 ? '撤销':"审核"),
+                                },'下载'),
                             ]);
 						}
 					}
@@ -196,7 +144,7 @@
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
 			//this.addadUser();
-			this.getaduserlist();
+			this.getDownloadlist();
 
 			var s = this;
 
@@ -252,7 +200,7 @@
 					success(data){
 						console.log(data);
 						s.$Message[data.getret === 0 ? "success":"error"](data.getmsg);
-						s.getaduserlist();
+						s.getDownloadlist();
 					}
 
 				})
@@ -297,7 +245,7 @@
 					},success(data){
 						if(data.getret === 0){
 							s.$Message.success(data.getmsg);
-							s.getaduserlist();
+							s.getDownloadlist();
 						}
 						else{
 							s.$Message.error(data.getmsg);
@@ -314,22 +262,23 @@
 				};
 				this.visible = true;
 			},
-			getaduserlist(){
+			getDownloadlist(){
 				var s = this;
 				symbinUtil.ajax({
 					_this:s,
-					url:window.config.baseUrl+'/wmadadmin/getaduserlist/',
+					url:window.config.baseUrl+'/wmadadmin/getuserziplist/',
 					//validate:s.validate,
 					data:{
 						admintoken:s.userinfo.admintoken,
 						adminusername:s.userinfo.adminusername,
 						pagenum:1000,
-						status:-1,//查询全部
+						usertype:2
+						//status:-1,//查询全部
 					},
 					success(data){
 						console.log(data);
 						if(data.getret === 0){
-							s.userList = data.list;
+							s.downloadList = data.list;
 						}
 						else{
 							s.$Message.error(data.getmsg);
@@ -340,66 +289,6 @@
 			},
 
 
-			addadUser(){
-
-				 
-			},
-
-			 
-			ok(){
-				var s = this;
-
-				if(s.currentUserId<=-1){
-
-					symbinUtil.ajax({
-						_this:s,
-						url:window.config.baseUrl+'/wmadadmin/addaduser/',
-						validate:s.validate,
-						data:{
-							username:s.formAdmin.username,
-							userpwd:s.formAdmin.userpwd,
-							nickname:s.formAdmin.nickname,
-							status:1,
-							admintoken:s.userinfo.admintoken,
-							adminusername:s.userinfo.adminusername
-						},success(data){
-							if(data.getret === 0){
-								s.$Message.success(data.getmsg);
-								s.getaduserlist();
-							}
-							else{
-								s.$Message.error(data.getmsg);
-							}
-						}
-	
-					})
-				}else{
-					symbinUtil.ajax({
-						_this:s,
-						url:window.config.baseUrl+'/wmadadmin/editaduser/',
-						validate:s.validate,
-						data:{
-							username:s.formAdmin.username,
-							nickname:s.formAdmin.nickname,
-							userid:s.currentUserId,
-							admintoken:s.userinfo.admintoken,
-							adminusername:s.userinfo.adminusername
-						},success(data){
-							if(data.getret === 0){
-								s.$Message.success(data.getmsg);
-							}
-							else{
-								s.$Message.error(data.getmsg);
-							}
-						}
-	
-					})
-				}
-				
-			},
-			cancel(){
-				this.formUser = {};
-			}
 		}
 	}
 </script>

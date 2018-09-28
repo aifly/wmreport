@@ -119,6 +119,7 @@
 			</div>
 		</Split>
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
+		<Download :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></Download>
 	</div>
 </template>
 
@@ -128,7 +129,7 @@
 	import symbinUtil from '../lib/util';
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
-
+	import Download from '../../common/mask/download';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -139,6 +140,7 @@
 				selectAll:false,
 				scale:.8,
 				imgs:window.imgs,
+				showDownloadtip:false,
 				viewH:document.documentElement.clientHeight,
 				resourcecnname:'',
 				kwType:'关键字',
@@ -168,7 +170,8 @@
 			}
 		},
 		components:{
-			Detail
+			Detail,
+			Download
 		},
 		watch:{
 			selectAll(val){
@@ -183,6 +186,10 @@
 			}
 		},
 		methods:{
+
+			hideDownloadTip(){
+				this.showDownloadtip = false;
+			},
 
 			modifyPublicadtype(key){
 				var s = this;
@@ -357,6 +364,8 @@
 							s.showCheckAction = false;
 							if(data.getret === 0){
 								window.location.href = data.zipurl;
+							}else if(data.getret === 2001){
+								s.showDownloadtip = true;
 							}
 						}
 					})

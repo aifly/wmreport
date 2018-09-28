@@ -9,6 +9,7 @@ import Detail from './admin/detail/index';
 import Recruit from './admin/recruit/index';
 import Recruitaction from './admin/recruitaction/index';
 import Rater from './admin/rater/index';
+import Download from './admin/download/index';
 import Collection from './admin/collection/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
@@ -71,10 +72,16 @@ const router = new VueRouter({
 			name: 'user',
 			component: User,
 			props: true
-		}, {
+		},
+		 {
 			path: '/rater/',
 			name: 'rater',
 			component: Rater,
+			props: true
+		}, {
+			path: '/download/',
+			name: 'download',
+			component: Download,
 			props: true
 		}
 		

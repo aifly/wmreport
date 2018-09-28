@@ -122,7 +122,7 @@
 			</div>
 		</Split>
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
-
+		<Download :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></Download>
 	</div>
 </template>
 
@@ -133,6 +133,7 @@
 	import LastCheck from './lastcheck.vue'
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
+	import Download from '../../common/mask/download';
 
 	export default {
 		props:['obserable'],
@@ -142,6 +143,7 @@
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				isLoading:false,
 				selectAll:false,
+				showDownloadtip:false,
 				scale:.8,
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
@@ -176,7 +178,8 @@
 		components:{
 			Result,
 			LastCheck,
-			Detail
+			Detail,
+			Download
 		},
 		watch:{
 			selectAll(val){
@@ -193,6 +196,10 @@
 			}
 		},
 		methods:{
+
+			hideDownloadTip(){
+				this.showDownloadtip = false;
+			},
 
 			modifyPublicadtype(key){
 				var s = this;
@@ -365,8 +372,8 @@
 						success(data){
 							s.isdownloading = false;
 							s.showCheckAction = false;
+							
 							if(data.getret === 0){
-								console.log(data);
 								/* var a = document.createElement('a');
 								a.href = data.zipurl;
 								a.innerHTML = '下载';
@@ -379,7 +386,9 @@
 								//a.click(); */
 								window.location.href = data.zipurl;
 
-
+							}
+							else if(data.getret === 2001){//文件大小超过限制，请到下载页面下载
+								s.showDownloadtip = true;
 							}
 						}
 					})

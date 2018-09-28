@@ -60,6 +60,9 @@
                             <MenuItem name='user' to='/user/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "user"}'>
                                 个人中心
                             </MenuItem>
+                            <MenuItem name='download' to='/download/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "download"}'>
+                                我的下载
+                            </MenuItem>
                         </Submenu>
                     </Menu>
                 </div>
