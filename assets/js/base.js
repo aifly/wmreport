@@ -51,6 +51,8 @@ var imgs = {
 	videoIco:'./assets/images/video-ico.png',
 	audioIco:'./assets/images/audio-ico.png',
 	dongmanIco:'./assets/images/dongman-ico.png',
+	big:'./assets/images/big.cur',
+	small:'./assets/images/small.cur'
 
 
 };

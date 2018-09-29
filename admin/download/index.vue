@@ -149,7 +149,8 @@
 			var s = this;
 
 
-			symbinUtil.ajax({
+			
+			/*symbinUtil.ajax({
 				url:'http://api.symbin.cn/v1/wmadadmin/getuserziplist/',
 				data:{
 					admintoken:s.userinfo.admintoken,
@@ -160,7 +161,6 @@
 					console.log(data,' =======');
 				}
 			})
-			/*
 			/* var s = this;
 			symbinUtil.ajax({
 				url:window.config.baseUrl+'/wmadadmin/createzip/',

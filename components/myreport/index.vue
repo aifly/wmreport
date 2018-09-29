@@ -54,7 +54,7 @@
 										</span>
 										被管理员发回，不可用
 									</span>
-									<div class="wm-report-action" v-if='report.isLoaded'>
+									<div class="wm-report-action" v-if='report.isLoaded && !isUpLoading'>
 										<div class="wm-report-action-icon"></div>
 										<ul>
 											<li @click='showReportDetail(report)'>
@@ -133,7 +133,7 @@
 
 					<div v-if='item.fieldname ==="filesize && false" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
-						<span v-if='!item.canedit'>{{reportList[currentReportIndex][item.fieldname]+ ' ' +reportList[currentReportIndex]['filesizeunit']}}</span>
+						<span v-if='!item.canedit'>{{(reportList[currentReportIndex][item.fieldname]||'')}} {{(reportList[currentReportIndex]['filesizeunit']||'')}}</span>
 					</div>
 
 					<div  v-if='item.type ===  "select"'>
@@ -256,7 +256,7 @@
 				showUploadDialog:false,
 				visible:false,
 				imgs:window.imgs,
-				isLoading:false,
+				isUpLoading:false,
 				tag:"",
 				beforeUploadTag:"",
 				currentType:0,
@@ -470,6 +470,9 @@
 			},
 
 			deleteReport(i){
+				if(this.isUpLoading){
+					return;
+				}
 				var s = this;
 				var id  = Vue.obserable.trigger({
 					type:'getCurrentSourceId'
@@ -626,6 +629,9 @@
 			},
 
 			previewReport(){//双击预览作品、
+				if(this.isUpLoading){
+					return;
+				}
 				this.showPreview = true;
 				var s = this;
 				if(s.menus[s.currentType] === "h5-zmiti"&&s.reportList[s.currentReportIndex].previewurl){
@@ -640,12 +646,18 @@
 			},
 
 			showDetail(report,index){
+				if(this.isUpLoading){
+					return;
+				}
 				this.currentReportIndex = index;
 				this.formAdmin = report;
 				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 				//this.currentReport = report;
 			},
 			showReportDetail(report){
+				if(this.isUpLoading){
+					return;
+				}
 				this.visible = true;
 				this.formAdmin = report;
 				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
@@ -825,17 +837,43 @@
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
 					pick: '.wm-upload-before',
+					chunkSize:5*1024*1024,
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
 					compress:false,
 					prepareNextFile:true,//是否允许在文件传输时提前把下一个文件准备好。 对于一个文件的准备工作比较耗时，比如图片压缩，md5序列化。 如果能提前在当前文件传输期处理，可以节省总体耗时。
 					formData:p,
+					thumb:{
+						
+						//height: 110,
+						// 图片质量，只有type为`image/jpeg`的时候才有效。
+						quality: 100,
+						// 是否允许放大，如果想要生成小图的时候不失真，此选项应该设置为false.
+						allowMagnify: true,
+						// 是否允许裁剪。
+						crop: true,
+						// 为空的话则保留原有图片格式。
+						// 否则强制转换成指定的类型。
+						type: 'image/jpeg'
+					},
+				
 					accept:accepts[s.currentType],
 					dnd:'.wm-myreport-left',
 					disableGlobalDnd :true,//是否禁掉整个页面的拖拽功能，如果不禁用，图片拖进来的时候会默认被浏览器打开。
 				});
 
+				uploader.on('uploadBeforeSend',function(obj,data){
+					data.uploadfilename = s.formUpload.filetitle;
+					data.filedesc = s.formUpload.filedesc;
+					data.publicadtype = s.menus[s.currentType];
+					if(s.formUpload.tagList){
+						data.userlabel = s.formUpload.tagList.concat([]).join(',');
+					}
+					data.author = s.formUpload.author;
+					data.telphone = s.formUpload.telphone;
+					data.previewurl = s.formUpload.previewurl;
+				});
 				
 				uploader.on('dndAccept',(file,a)=>{
 					if(accepts[s.currentType].extensions.indexOf(file['0'].type.split('/')[1])<=-1){
@@ -856,16 +894,27 @@
 				s.uploader = uploader;
 
 				// 当有文件添加进来的时候
+
+				
 				var i = 0;
+				var fileIndex = 0;
+				
 				uploader.on('fileQueued', function (file) {
 
 					i++;
+					s.isUpLoading = true;
 					 
+					
+					uploader.upload();
+					
+
+
+					
 					s.reportList.unshift({
 						reportid:file.id,
 						reportname:file.name,
 						status:0,
-						thumi:imgs.poster,
+						mobilethum:imgs.poster,
 						type:file.type,
 						process:0,
 						bulk:file.size,
@@ -874,12 +923,16 @@
 						suffix:file.ext,
 						labels:''
 					})
-					uploader.upload();
-					/* // webuploader事件.当选择文件后，文件被加载到文件队列中，触发该事件。等效于 uploader.onFileueued = function(file){...} ，类似js的事件定义。
-					$list.append('<div id="' + file.id + '" class="item">' +
-						'<h4 class="info">' + file.name + '</h4>' +
-						'<p class="state">等待上传...</p>' +
-						'</div>'); */
+					
+						
+					uploader.makeThumb( file, function( error, ret ) {
+						
+						if ( error ) {
+						} else {
+							uploader.base64 = ret;
+							
+						}
+					},1000,1000);
 				});
 				// 文件上传过程中创建进度条实时显示。
 				uploader.on('uploadProgress', function (file, percentage) {
@@ -903,8 +956,94 @@
 				});
 
 				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
-				uploader.on('uploadSuccess', function (file) {
+				var iNow = 0;
+				uploader.on('uploadSuccess', function (file,response) {
 					console.log('success')
+
+					setTimeout(() => {
+						
+						if(s.formAdmin.publicadtype !== '图片-zmiti'){
+							iNow++;
+							if(iNow === i){
+								s.formUpload = {
+									tagList:[]
+								};
+								s.formAdmin = {
+									tagList:[]
+								}
+								s.getMyreportList();
+								s.isUpLoading = false;
+							}
+							return;
+						}
+						var w = file._info.width;
+						var h = file._info.height;
+						var width =0,height = 0;
+						if(w>800){
+							width = 800;
+							height = h * 800 / w;
+						}else{
+							width = w;
+							height = h;
+						}
+						
+						uploader.makeThumb( file, function( error, ret ) {
+						
+							if ( error ) {
+							} else {
+								uploader.base64 = ret;
+								if(uploader.base64 && response.id){
+
+									s.reportList.forEach((item)=>{
+										if(item.reportid === file.id){
+											item.mobilethum = ret;
+										};
+									})
+									setTimeout(() => {
+										s.reportList = s.reportList.concat([]);
+									}, 10);
+
+									symbinUtil.ajax({
+										url:window.config.baseUrl+'/wmadvuser/base64_image/',
+										data:{
+											username:s.userinfo.username,
+											usertoken:s.userinfo.accesstoken,
+											resourceid:id,
+											id:response.id,
+											setcontents:uploader.base64,
+											width:w,
+											height:h
+										},
+										success(data){
+											console.log(data);
+											if(data.getret === 0){
+												iNow++;
+												if(iNow === i){
+													s.formUpload = {
+														tagList:[]
+													};
+													s.formAdmin = {
+														tagList:[]
+													}
+													s.getMyreportList();
+													s.isUpLoading = false;
+												}
+											}
+										}
+									})
+								}
+								
+							}
+						},width,height);
+
+					}, 100);
+
+
+					
+					
+				
+
+					
 				//	$('#' + file.id).addClass('upload-state-done');
 				});
 
@@ -915,18 +1054,9 @@
 				});
 
 				// 完成上传完了，成功或者失败，先删除进度条。
-				var iNow = 0;
+				
 				uploader.on('uploadComplete', function (file) {
-					iNow++;
-					if(iNow === i){
-						s.formUpload = {
-							tagList:[]
-						};
-						s.formAdmin = {
-							tagList:[]
-						}
-						s.getMyreportList();
-					}
+					
 					//
 					/* $('#' + file.id).find('.progress').remove();
 					$('#' + file.id).find('p.state').text('已上传'); */
