@@ -232,6 +232,7 @@
 
 .wm-collection-report-C > div .wm-report-detail.hide {
   height: 40px;
+  bottom: -40px;
   overflow: hidden;
 }
 
@@ -263,7 +264,7 @@
 .wm-collection-report-C > div .wm-report-detail > span:before, .wm-collection-report-C > div .wm-report-detail > span:after {
   content: '';
   right: -12px;
-  top: 3px;
+  top: 0px;
   position: absolute;
   width: 8px;
   height: 8px;
@@ -275,7 +276,7 @@
 }
 
 .wm-collection-report-C > div .wm-report-detail > span:after {
-  top: 6px;
+  top: 4px;
 }
 
 .wm-collection-report-C > div .wm-report-detail .wm-myreport-field-item {

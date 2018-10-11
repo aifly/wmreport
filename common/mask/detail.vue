@@ -130,6 +130,7 @@
 	import $ from 'jquery';
 	import './detail.css';
 	import QRCode from '../../components/lib/qrcode';
+import symbinUtil from '../../components/lib/util';
 	window.$ = window.jQuery  = $;
 var printAreaCount = 0;
 		$.fn.printArea = function () {
@@ -200,6 +201,8 @@ var printAreaCount = 0;
             (Vue.obserable|| this.obserable).on('closeOriginalImg',()=>{
             	this.showOriginalImg = false;
 			})
+
+			
 			
 			
         },

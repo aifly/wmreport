@@ -590,8 +590,8 @@
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item {
   width: 100%;
-  height: 80px;
-  line-height: 70px;
+  height: 100px;
+  line-height: 100px;
   text-align: center;
   display: block;
   display: -webkit-box;
@@ -637,6 +637,7 @@
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div {
   margin-right: 20px;
+  font-size: 12px;
   text-align: left;
 }
 
@@ -645,8 +646,9 @@
   color: #ccc;
 }
 
-.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div:nth-of-type(2) > div:nth-of-type(2) {
-  color: #ccc;
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item .wm-collection-report-content > div:nth-of-type(2) {
+  -webkit-transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item img {
@@ -1130,7 +1132,7 @@
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item {
     width: 100%;
-    height: 80px;
+    height: 100px;
     line-height: 70px;
     text-align: center;
     display: block;
@@ -1473,7 +1475,7 @@
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item {
     width: 100%;
-    height: 80px;
+    height: 100px;
     line-height: 70px;
     text-align: center;
     display: block;

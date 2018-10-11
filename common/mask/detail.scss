@@ -177,6 +177,7 @@
             //margin-left: -1px;
             &.hide {
                 height: 40px;
+                 bottom: -40px;
                 overflow: hidden;
                 &>span {
 
@@ -214,7 +215,7 @@
                 &:after {
                     content: '';
                     right: -12px;
-                    top: 3px;
+                    top: 0px;
                     @include pos(a);
                     width: 8px;
                     height: 8px;
@@ -225,7 +226,7 @@
                 }
 
                 &:after {
-                    top: 6px;
+                    top: 4px;
                 }
             }
 

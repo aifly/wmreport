@@ -17,8 +17,8 @@
 					</div>
 				</div>
 				<div class="wm-collection-check-action" >
-					<Checkbox v-model="selectAll">全选</Checkbox>
-					<Button type="primary" size='small' :disabled='downloadCount<=0' @click="checkAction('download')" >批量下载 </Button>
+					<Checkbox v-model="selectAll" v-if='classicType === "图片-zmiti"'>全选</Checkbox>
+					<Button type="primary" size='small' :style="{opacity:classicType !== '图片-zmiti'?0:1}" :disabled='downloadCount<=0 || classicType !== "图片-zmiti"' @click="checkAction('download')" >批量下载 </Button>
 					<Button class='wm-href' :to='uploadUrl' size='small' style="background: #f5a420;color:#fff;">上报</Button>
 				</div>
 			</header>
@@ -38,6 +38,12 @@
 						</div>
 						<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 						<div v-if='report' class='wm-report-item-attr'>
+							<div>作品编号：{{report.id}}</div>
+						</div>
+						<div v-if='report' class='wm-report-item-attr'>
+							<div>审核时间：{{report.audittime}}</div>
+						</div>
+						<div v-if='report' class='wm-report-item-attr'>
 							<div>上传单位：{{report.username}}</div>
 						</div>
 						<div v-if='report' class='wm-report-item-attr'>
@@ -56,6 +62,8 @@
 							</div>
 							<div>
 								<div class='zmiti-text-overflow'>{{report.filetitle}}</div>
+								<div>作品编号：{{report.id}}</div>
+								<div>审核时间：{{report.audittime}}</div>
 								<div>上传单位：{{report.username}}</div>
 								<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>
 							</div>
@@ -99,6 +107,7 @@
 				<Icon type="md-close" />
 			</div>
 		</div>
+		<a :href="downloadImg" v-if='downloadImg' style="opacity:0;position:fixed;top:100%;left:100%" ref='downloadimg' target='_blank'>1</a>
 	</div>
 </template>
 
@@ -124,6 +133,7 @@
 				resourcecnname:'',
 				kwType:'关键字',
 				downloadCount:0,
+				downloadImg:'',
 				mobileReport:{
 					 
 				},
@@ -390,12 +400,13 @@
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = true;
+				window.location.hash = '/';
 				this.obserable.trigger({
 					type:'closeOriginalImg'
 				})
 			},
 
-			previewReport(index,report){//双击预览作品、
+			previewReport(index,report,flag){//双击预览作品、
 				
 				if(window.innerWidth<=760){
 					if(report.publicadtype === 'h5-zmiti'){
@@ -417,6 +428,11 @@
 					this.showPreview = true;
 					this.currentReportIndex = index;
 				}
+				if(flag){
+					//symbinUtil.changeURLPar(window.location.href,'id',-1);
+				}
+				window.location.hash = '/'+report.id+'/';
+				
 			},
 
 			showDetail(report,index){
@@ -437,13 +453,20 @@
 				
 				if(status === 'download'){
 					var urls =  [];
+					var downloadSize = 0;
 					s.reportList.map((item)=>{
 						if(item.checked){
+							downloadSize+=item.filesize*1;
 							urls.push(item.filepath);
 						}
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
+						return;
+					}
+
+					if(downloadSize>50){
+						this.$Message.error('压缩文件过大，请减少选项或选择单个下载');
 						return;
 					}
 					s.isdownloading = true;
@@ -467,8 +490,10 @@
 						}
 					})
 				}else{
-					 s.isdownloading = true;
-					 console.log(status.filepath);
+					 s.downloadImg = status.filepath;
+					 setTimeout(() => {
+						 s.$refs['downloadimg'].click();
+					 }, 100);
 					 return;
 					 symbinUtil.ajax({
 						url:window.config.baseUrl+'/wmshare/createzip',
@@ -573,9 +598,26 @@
 		},
 		mounted(){
 		
-			this.getReportList();
+			this.getReportList(()=>{
+				var id = this.$route.params.id;
+				if(id){
+					var index = -1,
+						report = {};
+					this.reportList.map((item,i)=>{
+						if(item.id === id){
+							index = i;
+							report = item;
+						}
+					});
+					index > -1 && this.previewReport(index,report,true);
+					
+				}
+			});
 			
 			window.s = this;
+
+
+			
 
 
 			window.onkeydown = (e)=>{
