@@ -65,6 +65,8 @@
 		</div>
 		<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
 			<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
+			<!-- <div class='video' id='video' ref='video'></div> -->
+			
 			<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
 				<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 				<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
@@ -177,6 +179,7 @@ var printAreaCount = 0;
 		},
 		watch:{
 			showPreview(val){
+				
 				if(val){
 					var s = this;
 					if(s.reportList[s.currentReportIndex].publicadtype === "h5-zmiti" &&s.reportList[s.currentReportIndex].previewurl){
@@ -188,6 +191,22 @@ var printAreaCount = 0;
 							})
 						}, 100);
 					}
+					if(s.reportList[s.currentReportIndex].publicadtype === "视频-zmiti"){
+						var video = s.reportList[s.currentReportIndex].filepath;
+						return;
+
+						setTimeout(() => {
+							var flashvars={
+								f:video,
+								c:0,
+								b:1,
+								i:'http://www.ckplayer.com/static/images/cqdw.jpg'
+							};
+							var params={bgcolor:'#FFF',allowFullScreen:true,allowScriptAccess:'always',wmode:'transparent'};
+							CKobject.embedSWF(window.config.swf,'video','ckplayer_video','800','400',flashvars,params);	
+						}, 100);
+					}
+
 				}
 			}
 		},

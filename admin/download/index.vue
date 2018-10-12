@@ -47,20 +47,28 @@
 						align:'center',
 						render:(h,params)=>{
 							var status = '等待打包中';
+							var color = 'rgb(242,195,69)';
 							switch(params.row.taskstatus){
 								case 0:
 								break;
 								case 1:
 								status = '正在打包';
+								color= '#333';
 								break;
 								case 2:
 								status = '打包成功';
+								color= 'green';
 								break;
 								case 4:
 								status = '打包失败';
+								color = '#be0000';
 								break;
 							}
-							return h('div',{},status);
+							return h('div',{
+								style:{
+									color
+								}
+							},status);
 						}
 							
 					},

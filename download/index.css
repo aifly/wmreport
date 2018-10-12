@@ -249,10 +249,10 @@
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header {
-  height: 40px;
+  height: 80px;
   line-height: 38px;
   margin-top: 12px;
-  border: 1px solid #ee;
+  border: 1px solid #eee;
   box-sizing: border-box;
   border-radius: 4px;
   display: flex;
@@ -290,13 +290,37 @@
   border-radius: 3px;
 }
 
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div:nth-of-type(1) span i {
+  font-size: 16px;
+  vertical-align: middle;
+  margin-top: -4px;
+}
+
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div:nth-of-type(2) {
   flex: 1;
   -webkit-flex: 1;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  align-items: center;
+  -webkit-align-items: center;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div:nth-of-type(2) > div {
+  width: 100%;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header > div:nth-of-type(3) {
   width: 200px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  align-items: center;
+  -webkit-align-items: center;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header .wm-collection-search-content {
@@ -1264,7 +1288,7 @@
     width: 100%;
   }
   .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header {
-    height: 70px;
+    height: 100px;
     line-height: 78px;
     margin-top: 2px;
     border: 1px solid #eee;

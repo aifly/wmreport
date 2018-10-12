@@ -10,18 +10,47 @@
 				</div>
 			</header>
 			<header class="wm-collection-left-search-condition-header">
-				<div>分类：<span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
+
+				<div class='wm-download-header-label'>
+					<div>
+						分类：<span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> 
+					</div>
+					<div>
+						排序：
+						<span @click.stop='searchBySort("time")' :class="{'active':sort===-1||sort === 1}">审核时间<Icon type="md-arrow-up" v-if='sort===-1' /><Icon type="md-arrow-down" v-if='sort ===1' /></span>
+						<span @click.stop='searchBySort("name")' :class="{'active':sort===2||sort === 3}">作品名称<Icon type="md-arrow-up" v-if='sort===3' /><Icon type="md-arrow-down" v-if='sort===2' /></span>
+					</div>
+				</div>
 				<div class="wm-collection-search-content">
 					<div>
-						<Input  v-model="keyword" @on-keydown='searchReport' search enter-button="搜索" @on-search='searchReport' placeholder="搜索关键字" />
+						<Input size='large'  v-model="keyword" @on-keydown='searchReport' search enter-button="搜索" @on-search='searchReport' placeholder="搜索关键字" />
 					</div>
 				</div>
 				<div class="wm-collection-check-action" >
-					<Checkbox v-model="selectAll" v-if='classicType === "图片-zmiti"'>全选</Checkbox>
-					<Button type="primary" size='small' :style="{opacity:classicType !== '图片-zmiti'?0:1}" :disabled='downloadCount<=0 || classicType !== "图片-zmiti"' @click="checkAction('download')" >批量下载 </Button>
-					<Button class='wm-href' :to='uploadUrl' size='small' style="background: #f5a420;color:#fff;">上报</Button>
+					<div>
+						<Checkbox v-model="selectAll" v-if='classicType === "图片-zmiti"'>全选</Checkbox>
+						<Button type="primary" size='small' :style="{opacity:classicType !== '图片-zmiti'?0:1}" :disabled='downloadCount<=0 || classicType !== "图片-zmiti"' @click="checkAction('download')" >批量下载 </Button>
+						<Button class='wm-href' :to='uploadUrl' size='small' style="background: #f5a420;color:#fff;">上报</Button>
+					</div>
 				</div>
+
+				<!-- <div></div>
+				
+				 -->
 			</header>
+			<!-- <header class="wm-collection-left-search-condition-header">
+				<div>
+					排序：
+					<span @click.stop='searchBySort()' :class="{'active':sort===-1}">审核时间<Icon type="md-arrow-up" v-if='sort===-1' /><Icon type="md-arrow-down" v-if='sort!==-1' /></span>
+					<span @click.stop='searchBySort()' :class="{'active':sort===2||sort === 3}">作品名称</span>
+			    </div>
+				<div class="wm-collection-search-content">
+				
+				</div>
+				<div class="wm-collection-check-action" >
+					
+				</div>
+			</header> -->
 			<div class="wm-scroll wm-collection-report-list">
 				<ul v-if='publicadtype==="图片-zmiti"||publicadtype === "h5-zmiti" ||publicadtype==="动漫-zmiti" '>
 					<li class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
@@ -145,6 +174,7 @@
 				showPreview:false,
 				showMaskDetail:true,
 				mainType:0,
+				sort:-1,
 				showCheckAction:false,
 				configList:[
 					{
@@ -359,6 +389,16 @@
 				//console.log(this.passCount);
 			},
 
+			searchBySort(type){
+				if(type === 'time'){
+					this.sort = this.sort === -1 ? 1:-1;
+				}
+				else{
+					this.sort = this.sort === 2 ? 3:2;
+				}
+				this.getReportList();
+			},
+
 		 
 			searchReport(){
 				
@@ -465,8 +505,8 @@
 						return;
 					}
 
-					if(downloadSize>50){
-						this.$Message.error('压缩文件过大，请减少选项或选择单个下载');
+					if(downloadSize>100){
+						this.$Message.error('打包文件超过100M 可能会引起压缩超时，请减少打包内容或选择单个下载');
 						return;
 					}
 					s.isdownloading = true;
@@ -558,6 +598,9 @@
 				}
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
+				}
+				if(this.sort !== -1){
+					p['sort'] = this.sort;
 				}
 				p['isselectall'] = s.selectAll | 0;
 
