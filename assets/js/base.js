@@ -52,7 +52,13 @@ var imgs = {
 	audioIco:'./assets/images/audio-ico.png',
 	dongmanIco:'./assets/images/dongman-ico.png',
 	big:'./assets/images/big.cur',
-	small:'./assets/images/small.cur'
+	small:'./assets/images/small.cur',
+	h5:'./assets/images/t-h5.png',
+	图片:'./assets/images/t-img.png',
+	视频:'./assets/images/t-mp4.png',
+	音频:'./assets/images/t-mp3.png',
+	动漫:'./assets/images/t-dongman.png',
+	
 
 
 };

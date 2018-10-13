@@ -7,12 +7,16 @@
 				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报审核</li>
 				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
 				<li @click='mainType = 2' :class="{'active':mainType === 2}">终审归档</li>
+				<li @click='mainType = 4' :class="{'active':mainType === 4}">前端预览</li>
 			</ul>
 		</div>
 
 		<Result  v-if='mainType  === 1'></Result>
 		<LastCheck  v-if='mainType  === 2'></LastCheck>
 		<Statistics  v-if='mainType  === 3'></Statistics>
+		<div  v-if='mainType  === 4' :style="{height:viewH - 64+'px',overflow:'auto',width:'100%'}" class='wm-scroll'>
+			<Download1 :isAdmin='true' ></Download1>
+		</div>
 
 		<Split v-model='scale' v-if='mainType === 0'> 
 			<div slot='left' class="wm-collection-left-main-ui">
@@ -73,8 +77,8 @@
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
 								</div>
-								<div class="wm-collection-check">
-									<Checkbox v-model="report.checked"></Checkbox>
+								<div class="wm-collection-check" @click='toggleChecked(i)'>
+									<Checkbox  v-model="report.checked"></Checkbox>
 								</div>
 								<div class="wm-report-action" v-if='report.isLoaded'>
 									<div class="wm-report-action-icon"></div>
@@ -82,7 +86,7 @@
 								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 							</li>	
 						</ul>
-						<div class="wm-collection-pagetion" v-if='!selectAll'>
+						<div class="wm-collection-pagetion">
 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 						</div>
 					</div>
@@ -138,7 +142,7 @@
 	import Detail from '../../common/mask/detail';
 	import Download from '../../common/mask/download';
 	import Statistics from './statistics';
-
+	import Download1 from '../../download/index.vue';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -175,7 +179,8 @@
 				page:1,
 				pagenum:20,
 				raterReportList:[],
-				isdownloading :false
+				isdownloading :false,
+				checkedList:[]
 
 			}
 		},
@@ -184,24 +189,48 @@
 			LastCheck,
 			Detail,
 			Download,
-			Statistics
+			Statistics,
+			Download1
 		},
 		watch:{
 			selectAll(val){
-
-				
-				this.getReportList(()=>{
-					this.reportList.forEach((item)=>{
-						item.checked = val;
-					});
+				this.reportList.forEach((item)=>{
+					item.checked = val;
+					if(val){
+						this.checkedList.push({
+							filepath:item.filepath,
+							id:tiem.id
+						});
+					}
+					else{
+						this.checkedList.length = 0;
+					}
 				});
+				/* this.getReportList(()=>{
+					
+				}); */
 			},
+			
 			mainType(val){
 				window.location.hash = "/collection/"+this.$route.params.id+'/'+val;
 			}
 		},
 		methods:{
-
+			toggleChecked(index){
+				var isChecked = !this.reportList[index].checked;
+				if(isChecked){
+					this.checkedList.push({
+						filepath:this.reportList[index].filepath,
+						id:this.reportList[index].id
+					});
+				}else{
+					this.checkedList.forEach((item,i)=>{
+						if(item.id === this.reportList[index].id){
+							this.checkedList.splice(i,1);
+						}
+					});
+				}
+			},
 			hideDownloadTip(){
 				this.showDownloadtip = false;
 			},
@@ -354,10 +383,8 @@
 				var s = this;
 				if(status === 'download'){
 					var urls =  [];
-					s.reportList.map((item)=>{
-						if(item.checked){
-							urls.push(item.filepath);
-						}
+					s.checkedList.map((item)=>{
+						urls.push(item.filepath);
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -399,11 +426,16 @@
 					})
 				}else{
 					var ids =  [];
-					s.reportList.map((item)=>{
+					/* s.reportList.map((item)=>{
 						if(item.checked){
 							ids.push(item.id)
 						}
-					});
+					}); */
+
+					s.checkedList.map((item,i)=>{
+						ids.push(item.id);
+					})
+
 					if(!ids.length){
 						s.$Message.error('请至少选择一个要审核的作品');
 						return;
@@ -452,6 +484,7 @@
 				var id = this.$route.params.id;
 				
 				var s = this;
+				window.report = s;
 
 				var  p  ={
 					admintoken:s.userinfo.admintoken,
@@ -469,7 +502,7 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
-				p['isselectall'] = s.selectAll | 0;
+				
 
 				//console.log(p);
 				symbinUtil.ajax({
@@ -491,6 +524,11 @@
 									s.totalnum = data.totalnum;
 									s.reportList.forEach((item)=>{
 										item.checked = false;
+										s.checkedList.forEach((ls)=>{
+											if(ls.id === item.id){
+												item.checked = true;
+											}
+										})
 									});
 								
 									///s.selectAll  = false;

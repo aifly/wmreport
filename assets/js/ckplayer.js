@@ -569,7 +569,6 @@ function ckplayerConfig() {
 			volume = v['volume'];
 			if(!this.CD) {
 				this.eject(this.errorList[6], v['container']);
-				alert(1)
 				return false;
 			}
 			//开始构建播放容器

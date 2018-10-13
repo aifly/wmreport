@@ -71,10 +71,6 @@
   flex-flow: column;
 }
 
-.wm-collection-statistics-manager > div.wm-statistics-user-count-C > div, .wm-collection-statistics-manager > div.wm-statistics-file-count-C > div {
-  border: 1px solid red;
-}
-
 .wm-collection-statistics-manager > div.wm-statistics-user-count-C > div:nth-of-type(1), .wm-collection-statistics-manager > div.wm-statistics-file-count-C > div:nth-of-type(1) {
   flex: 1;
 }
@@ -128,11 +124,71 @@
 
 .wm-collection-statistics-manager > div.wm-statistics-user-count-C {
   margin-right: 10px;
-  flex: 2;
-  -webkit-flex: 2;
+  flex: 3;
+  -webkit-flex: 3;
 }
 
 .wm-collection-statistics-manager > div.wm-statistics-file-count-C {
   flex: 5;
   -webkit-flex: 5;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(1) {
+  flex: 1;
+  -webkit-flex: 1;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(1) .wm-statistics-user-count div {
+  color: #333333;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(1) .wm-statistics-user-count div:nth-of-type(2) {
+  color: #999999;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(2) {
+  height: 100%;
+  flex: 2;
+  -webkit-flex: 2;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-flex-wrap: wrap;
+  align-items: center;
+  -webkit-align-items: center;
+  flex-wrap: wrap;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(2) > div {
+  width: 42%;
+  height: 50px;
+  background: #fff;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  margin: 0 4%;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-justify-content: space-between;
+  align-items: center;
+  -webkit-align-items: center;
+  justify-content: space-between;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(2) > div:hover {
+  border: 1px solid #be0000;
+  cursor: pointer;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(2) > div > div:nth-of-type(2) {
+  color: #be0000;
+  font-size: 20px;
+  font-weight: bold;
 }

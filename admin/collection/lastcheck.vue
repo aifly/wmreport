@@ -52,7 +52,7 @@
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
 								</div>
-								<div class="wm-collection-check">
+								<div class="wm-collection-check"  @click='toggleChecked(i)'>
 									<Checkbox v-model="report.checked"></Checkbox>
 								</div>
 								<div class="wm-report-action" v-if='report.isLoaded'>
@@ -166,7 +166,8 @@
 				page:1,
 				pagenum:20,
 				raterReportList:[],
-				isdownloading:false
+				isdownloading:false,
+				checkedList:[]
 			}
 		},
 		components:{
@@ -175,10 +176,18 @@
 		},
 		watch:{
 			selectAll(val){
-				this.getReportList(()=>{
-					this.reportList.forEach((item)=>{
-						item.checked = val;
-					});
+
+				this.reportList.forEach((item)=>{
+					item.checked = val;
+					if(val){
+						this.checkedList.push({
+							filepath:item.filepath,
+							id:item.id
+						});
+					}
+					else{
+						this.checkedList.length = 0;
+					}
 				});
 			},
 			mainType(val){
@@ -186,6 +195,22 @@
 			}
 		},
 		methods:{
+
+			toggleChecked(index){
+				var isChecked = !this.reportList[index].checked;
+				if(isChecked){
+					this.checkedList.push({
+						id:this.reportList[index].id,
+						filepath:this.reportList[index].filepath
+					});
+				}else{
+					this.checkedList.forEach((item,i)=>{
+						if(item.id === this.reportList[index].id){
+							this.checkedList.splice(i,1);
+						}
+					});
+				}
+			},
 
 			hideDownloadTip(){
 				this.showDownloadtip = false;
@@ -335,14 +360,10 @@
 			checkAction(status){
 				this.showCheckAction = false;
 				var s = this;
-
-
 				if(status === 'download'){
 					var urls =  [];
-					s.reportList.map((item)=>{
-						if(item.checked){
-							urls.push(item.filepath);
-						}
+					s.checkedList.map((item)=>{
+						urls.push(item.filepath);
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -371,21 +392,21 @@
 					})
 				}else{
 					var ids =  [];
-					s.reportList.map((item)=>{
+					/* s.reportList.map((item)=>{
 						if(item.checked){
 							ids.push(item.id)
 						}
-					});
+					}); */
+
+					s.checkedList.map((item,i)=>{
+						ids.push(item.id);
+					})
 					if(!ids.length){
 						s.$Message.error('请至少选择一个要审核的作品');
 						return;
 					}
-				
-					
 					this.check(status,ids);
-
 				}
-			
 				
 			},
 			changeKwType(type){
@@ -442,7 +463,7 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
-				p['isselectall'] = s.selectAll | 0;
+				//p['isselectall'] = s.selectAll | 0;
 
 				symbinUtil.ajax({
 					_this:s,
@@ -463,6 +484,11 @@
 									s.totalnum = data.totalnum;
 									s.reportList.forEach((item)=>{
 										item.checked = false;
+										s.checkedList.forEach((ls)=>{
+											if(ls.id === item.id){
+												item.checked = true;
+											}
+										})
 									});
 									//s.selectAll = false;
 									if(s.reportList.length){

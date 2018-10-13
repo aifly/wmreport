@@ -1,5 +1,5 @@
 <template>
-	<div class="wm-collection-ui " @click.stop='showCondition = false;showCheckAction = false'>
+	<div class="wm-user-dowload-ui " :class='{"isAdmin":isAdmin}' @click.stop='showCondition = false;showCheckAction = false'>
 		
 		<div  class="wm-collection-left-main-ui">
 			<header class='wm-collection-left-header' v-if='viewW<=760'>
@@ -59,7 +59,7 @@
 							<Button type='primary' v-if='report.publicadtype !== "h5-zmiti"' @click.stop="checkAction(report)">下载</Button>
 							<span class='wm-report-shadow' v-if='"aac ogg  mp3 mp4 webm aac wma vnd.dlna.adts ".indexOf(report.fileextname)>-1'></span>
 						</div>
-						<div class="wm-collection-check">
+						<div class="wm-collection-check" @click='toggleChecked(i)'>
 							<Checkbox @on-change='changeChecked(report,i)' v-model="report.checked"></Checkbox>
 						</div>
 						<div class="wm-report-action" v-if='report.isLoaded'>
@@ -147,7 +147,7 @@
 	import Detail from '../common/mask/detail';
 
 	export default {
-		props:['obserable'],
+		props:['obserable','isAdmin'],
 		name:'zmitiindex',
 		data(){
 			return{
@@ -342,6 +342,7 @@
 				pagenum:20,
 				raterReportList:[],
 				isdownloading :false,
+				checkedList:[]
 
 
 			}
@@ -356,6 +357,16 @@
 				this.reportList.forEach((item)=>{
 					item.checked = val;
 					this.downloadCount = val? len:0;
+					if(val){
+						this.checkedList.push({
+							filepath:item.filepath,
+							id:item.id,
+							filesize:item.filesize
+						});
+					}
+					else{
+						this.checkedList.length = 0;
+					}
 				});
 			},
 
@@ -377,6 +388,23 @@
 			}
 		},
 		methods:{
+
+			toggleChecked(index){
+				var isChecked = !this.reportList[index].checked;
+				if(isChecked){
+					this.checkedList.push({
+						filepath:this.reportList[index].filepath,
+						id:this.reportList[index].id,
+						filesize:this.reportList[index].filesize
+					});
+				}else{
+					this.checkedList.forEach((item,i)=>{
+						if(item.id === this.reportList[index].id){
+							this.checkedList.splice(i,1);
+						}
+					});
+				}
+			},
 
 			changeChecked(report,i){
 				if(report.checked){
@@ -494,11 +522,10 @@
 				if(status === 'download'){
 					var urls =  [];
 					var downloadSize = 0;
-					s.reportList.map((item)=>{
-						if(item.checked){
-							downloadSize+=item.filesize*1;
-							urls.push(item.filepath);
-						}
+					s.checkedList.map((item)=>{
+						downloadSize+=item.filesize*1;
+						urls.push(item.filepath);
+						
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -602,7 +629,7 @@
 				if(this.sort !== -1){
 					p['sort'] = this.sort;
 				}
-				p['isselectall'] = s.selectAll | 0;
+				//p['isselectall'] = s.selectAll | 0;
 
 				//console.log(p);
 				symbinUtil.ajax({
@@ -617,6 +644,11 @@
 							s.totalnum = data.totalnum.num;
 							s.reportList.forEach((item)=>{
 								item.checked = false;
+								s.checkedList.forEach((ls)=>{
+									if(ls.id === item.id){
+										item.checked = true;
+									}
+								})
 							});
 						
 							///s.selectAll  = false;
@@ -640,7 +672,6 @@
 			
 		},
 		mounted(){
-		
 			this.getReportList(()=>{
 				var id = this.$route.params.id;
 				if(id){

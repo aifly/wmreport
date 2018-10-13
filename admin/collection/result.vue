@@ -181,12 +181,10 @@
 			selectAll(val){
 
 
-				this.getRaterReportList(()=>{
-					this.raterReportList.forEach((item,i)=>{
-						item.checked = val;
-						this.passCount = val?i+1:0;
-					})
-				});
+				this.raterReportList.forEach((item,i)=>{
+					item.checked = val;
+					this.passCount = val?i+1:0;
+				})
 
 			
 			},
@@ -336,7 +334,7 @@
 					p[this.fieldname] = this.keyword;
 				}
 
-				p['isselectall'] = s.selectAll | 0;
+				//p['isselectall'] = s.selectAll | 0;
 				
 				symbinUtil.ajax({
 					_this:s,
