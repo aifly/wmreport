@@ -184,7 +184,6 @@
 
 .wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(2) > div:hover {
   border: 1px solid #be0000;
-  cursor: pointer;
 }
 
 .wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C > div:nth-of-type(2) > div > div:nth-of-type(2) {
