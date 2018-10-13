@@ -199,7 +199,7 @@
 					if(val){
 						this.checkedList.push({
 							filepath:item.filepath,
-							id:tiem.id
+							id:item.id
 						});
 					}
 					else{

@@ -15731,7 +15731,7 @@
 					if (val) {
 						_this.checkedList.push({
 							filepath: item.filepath,
-							id: tiem.id
+							id: item.id
 						});
 					} else {
 						_this.checkedList.length = 0;
