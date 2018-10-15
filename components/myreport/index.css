@@ -804,33 +804,36 @@
 
 .wm-myreport-main-ui .wm-myreport-right .wm-myreport-item {
   background: transparent;
-}
-
-.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div {
+  width: 100%;
   float: left;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
 }
 
 .wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(1) {
   text-align: center;
-  width: 30%;
+  width: 90px;
   text-align: left;
-  margin-left: 2%;
-  text-indent: 2em;
+  margin-left: 1%;
+  text-indent: 1em;
 }
 
 .wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div:nth-of-type(2) {
-  width: 68%;
+  -webkit-flex: 1;
+  flex: 1;
+  cursor: pointer;
   min-height: 30px;
+  position: relative;
 }
 
 .wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div input {
   height: 24px;
   border: 1px solid #eee;
   outline: none;
-}
-
-.wm-myreport-main-ui .wm-myreport-right .wm-myreport-item > div input::-webkit-input-placeholder {
-  color: #ccc;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .wm-myreport-main-ui .wm-report-mask-tip {

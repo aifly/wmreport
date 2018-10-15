@@ -69,7 +69,7 @@
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
-							<li @dblclick="previewReport(i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
+							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.mobilethum||imgs.poster" alt="">
 								</div>
@@ -94,13 +94,13 @@
 			</div>
 			<div slot="right" class="wm-collection-right wm-scroll" v-if='reportList[currentReportIndex]'>
 				<h1 style="height:30px"></h1>
-				<div   class="wm-right-thumb">
+				<div   class="wm-right-thumb" v-if='checkedList.length<=0'>
 					<div>
 						<img :src='reportList[currentReportIndex].mobilethum||imgs.poster' />	
 					</div>
 				</div>
 				
-				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+				<div v-if='item.loading && checkedList.length<=0' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
@@ -123,6 +123,17 @@
 						<Tag v-if='formAdmin && formAdmin.tagList&&formAdmin.tagList.length' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
 					</div>
 				
+				</div>
+
+				<div v-if='checkedList.length' class='wm-checkedlist-C'>
+					<ul>
+						<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in checkedList' :key="i">
+							<div :class="{'active':i === currentReportIndex}" >
+								<img :src="report.mobilethum||imgs.poster" alt="">
+							</div>
+							<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+						</li>	
+					</ul>
 				</div>
 
 
@@ -197,10 +208,7 @@
 				this.reportList.forEach((item)=>{
 					item.checked = val;
 					if(val){
-						this.checkedList.push({
-							filepath:item.filepath,
-							id:item.id
-						});
+						this.checkedList.push(item);
 					}
 					else{
 						this.checkedList.length = 0;
@@ -219,10 +227,7 @@
 			toggleChecked(index){
 				var isChecked = !this.reportList[index].checked;
 				if(isChecked){
-					this.checkedList.push({
-						filepath:this.reportList[index].filepath,
-						id:this.reportList[index].id
-					});
+					this.checkedList.push(this.reportList[index]);
 				}else{
 					this.checkedList.forEach((item,i)=>{
 						if(item.id === this.reportList[index].id){
@@ -331,7 +336,7 @@
 			showDetail(report,index){
 				clearTimeout(this.clickTimer);
 				this.clickTimer = setTimeout(() => {
-					report.checked = !report.checked;
+					//report.checked = !report.checked;
 					this.currentReportIndex = index;
 					this.formAdmin = report;
 					this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
@@ -521,9 +526,10 @@
 								if(data.getret === 0){
 									s.currentPage = 1;
 									s.reportList = data.list;
+									s.checkedList = data.list;
 									s.totalnum = data.totalnum;
 									s.reportList.forEach((item)=>{
-										item.checked = false;
+										item.checked = true;
 										s.checkedList.forEach((ls)=>{
 											if(ls.id === item.id){
 												item.checked = true;

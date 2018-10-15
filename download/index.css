@@ -59,7 +59,12 @@
   z-index: 1000;
 }
 
+.wm-user-dowload-ui .wm-href a {
+  color: #fff;
+}
+
 .wm-user-dowload-ui.isAdmin {
+  width: 100%;
   margin: 0 auto 0;
 }
 
@@ -69,6 +74,19 @@
 
 .wm-user-dowload-ui.isAdmin .wm-collection-report-item .wm-report-item-name {
   text-align: left !important;
+}
+
+.wm-user-dowload-ui.isAdmin .wm-collection-report-list ul {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.wm-user-dowload-ui.isAdmin .wm-collection-report-list ul li {
+  display: block !important;
 }
 
 .wm-user-dowload-ui.isAdmin .wm-collection-check-action a,

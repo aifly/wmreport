@@ -11,7 +11,11 @@ body{
 .wm-user-dowload-ui{
 	width: 1240px;
 	
+	.wm-href{
+		a{color:#fff}
+	}
 	&.isAdmin {
+		width:100%;
 		margin: 0 auto 0;
 
 		.wm-collection-left-main-ui{
@@ -21,6 +25,17 @@ body{
 
 			.wm-report-item-name{
 				text-align: left !important;
+			}
+		}
+		.wm-collection-report-list{
+			ul{
+				@include displayFlex(row);
+				-webkit-flex-wrap:wrap;
+				flex-wrap:wrap;
+				justify-content: space-between;
+				li{
+					display: block !important;
+				}
 			}
 		}
 		.wm-collection-check-action{

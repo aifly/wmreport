@@ -11,7 +11,7 @@
                 </div>
             </div>
             <div class='wm-statistics-user-upload-list'>
-                <Table :width="(viewW-300-100)*3/8" :bordered="false" :data='userList' :columns='columns'></Table>
+                <Table :width="(viewW-200-100)*3/8" :bordered="false" :data='userList' :columns='columns'></Table>
             </div>
         </div>
 		<div class='wm-statistics-file-count-C'>

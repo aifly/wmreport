@@ -66,7 +66,7 @@
                         </Submenu>
                     </Menu>
                 </div>
-                <Layout :style="{maxWidth:viewW-300+'px'}">
+                <Layout :style="{maxWidth:viewW-200+'px'}">
                    <router-view></router-view>
                 </Layout>
             </Layout>
@@ -195,14 +195,17 @@
                         adminusername:s.userinfo.adminusername,
 						admintoken:s.userinfo.admintoken
                     },
-                    
+                    error(){
+                        s.$Message.success('注销成功');
+                        symbinUtil.clearCookie('login');
+                        window.location.hash = '/login';
+                        window.sessionStorage.clear();
+                    },
                     success(data){
-                        if(data.getret === 0){
-                            s.$Message.success('注销成功');
-                            symbinUtil.clearCookie('login');
-                            window.location.hash = '/login';
-                            window.sessionStorage.clear();
-                        }
+                        s.$Message.success('注销成功');
+                        symbinUtil.clearCookie('login');
+                        window.location.hash = '/login';
+                        window.sessionStorage.clear();
                     }
                 });
             }

@@ -30,7 +30,9 @@
 					<div>
 						<Checkbox v-model="selectAll" v-if='classicType === "图片-zmiti"'>全选</Checkbox>
 						<Button type="primary" size='small' :style="{opacity:classicType !== '图片-zmiti'?0:1}" :disabled='downloadCount<=0 || classicType !== "图片-zmiti"' @click="checkAction('download')" >批量下载 </Button>
-						<Button class='wm-href' :to='uploadUrl' size='small' style="background: #f5a420;color:#fff;">上报</Button>
+						<Button class='wm-href' size='small' style="background: #f5a420;color:#fff;">
+							<a :href="uploadUrl" target='_blank'>上报</a>
+						</Button>
 					</div>
 				</div>
 
