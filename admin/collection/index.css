@@ -1186,11 +1186,11 @@ body {
 }
 
 .wm-collection-ui .wm-checkedlist-C ul li, .wm-lastcheck-ui .wm-checkedlist-C ul li {
-  border: 1px solid red;
   width: 40%;
   height: 130px;
   margin: 5%;
   position: relative;
+  border: 1px solid #ccc;
 }
 
 .wm-collection-ui .wm-checkedlist-C ul li > div, .wm-lastcheck-ui .wm-checkedlist-C ul li > div {
@@ -1206,6 +1206,10 @@ body {
   -webkit-justify-content: center;
   align-items: center;
   justify-content: center;
+}
+
+.wm-collection-ui .wm-checkedlist-C ul li > section, .wm-lastcheck-ui .wm-checkedlist-C ul li > section {
+  text-align: center;
 }
 
 .wm-collection-ui .wm-checkedlist-C ul li img, .wm-lastcheck-ui .wm-checkedlist-C ul li img {

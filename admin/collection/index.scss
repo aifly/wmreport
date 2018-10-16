@@ -891,11 +891,11 @@ body{
 			justify-content: center;
 
 			li{
-				border:1px solid red;
 				width: 40%;
 				height: 130px;
 				margin: 5%;
 				@include pos(r);
+				border:1px solid #ccc;
 				&>div{
 					@include pos(r);
 					width: 100%;
@@ -907,6 +907,10 @@ body{
 					-webkit-justify-content: center;
 					align-items: center;
 					justify-content: center;
+					
+				}
+				&>section{
+					text-align: center;
 				}
 				img{
 					width: auto;

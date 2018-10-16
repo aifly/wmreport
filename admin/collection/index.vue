@@ -131,7 +131,7 @@
 							<div :class="{'active':i === currentReportIndex}" >
 								<img :src="report.mobilethum||imgs.poster" alt="">
 							</div>
-							<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+							<section v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</section>
 						</li>	
 					</ul>
 				</div>
@@ -526,10 +526,9 @@
 								if(data.getret === 0){
 									s.currentPage = 1;
 									s.reportList = data.list;
-									s.checkedList = data.list;
 									s.totalnum = data.totalnum;
 									s.reportList.forEach((item)=>{
-										item.checked = true;
+										item.checked = false;
 										s.checkedList.forEach((ls)=>{
 											if(ls.id === item.id){
 												item.checked = true;
