@@ -1084,7 +1084,11 @@
 					if(attr === 'tagList' && s.formAdmin[attr].length){
 						p.userlabel = s.formAdmin[attr].join(',')
 					}
+					if(attr === 'filepath' || attr === 'pcbilethum' || attr === 'mobilethum'){
+						delete p[attr];
+					}
 				}
+				
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/editresource',
