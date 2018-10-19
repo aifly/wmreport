@@ -23620,11 +23620,7 @@
 					item.checked = val;
 					_this.downloadCount = val ? len : 0;
 					if (val) {
-						_this.checkedList.push({
-							filepath: item.filepath,
-							id: item.id,
-							filesize: item.filesize
-						});
+						_this.checkedList.push(item);
 					} else {
 						_this.checkedList.length = 0;
 					}
@@ -23654,11 +23650,7 @@
 
 				var isChecked = !this.reportList[index].checked;
 				if (isChecked) {
-					this.checkedList.push({
-						filepath: this.reportList[index].filepath,
-						id: this.reportList[index].id,
-						filesize: this.reportList[index].filesize
-					});
+					this.checkedList.push(this.reportList[index]);
 				} else {
 					this.checkedList.forEach(function (item, i) {
 						if (item.id === _this2.reportList[index].id) {
@@ -23779,9 +23771,11 @@
 				if (status === 'download') {
 					var urls = [];
 					var downloadSize = 0;
+					var filenameList = [];
 					s.checkedList.map(function (item) {
 						downloadSize += item.filesize * 1;
 						urls.push(item.filepath);
+						filenameList.push(item.filetitle + '.' + item.fileextname);
 					});
 					if (!urls.length) {
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -23796,7 +23790,8 @@
 					_componentsLibUtil2['default'].ajax({
 						url: window.config.baseUrl + '/wmshare/createzip',
 						data: {
-							urls: urls.join(',')
+							urls: urls.join(','),
+							filetitles: filenameList.join(',')
 						},
 						error: function error() {
 							s.isdownloading = false;

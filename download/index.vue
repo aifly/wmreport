@@ -360,11 +360,7 @@
 					item.checked = val;
 					this.downloadCount = val? len:0;
 					if(val){
-						this.checkedList.push({
-							filepath:item.filepath,
-							id:item.id,
-							filesize:item.filesize
-						});
+						this.checkedList.push(item);
 					}
 					else{
 						this.checkedList.length = 0;
@@ -394,11 +390,7 @@
 			toggleChecked(index){
 				var isChecked = !this.reportList[index].checked;
 				if(isChecked){
-					this.checkedList.push({
-						filepath:this.reportList[index].filepath,
-						id:this.reportList[index].id,
-						filesize:this.reportList[index].filesize
-					});
+					this.checkedList.push(this.reportList[index]);
 				}else{
 					this.checkedList.forEach((item,i)=>{
 						if(item.id === this.reportList[index].id){
@@ -524,9 +516,11 @@
 				if(status === 'download'){
 					var urls =  [];
 					var downloadSize = 0;
+					var filenameList = [];
 					s.checkedList.map((item)=>{
 						downloadSize+=item.filesize*1;
 						urls.push(item.filepath);
+						filenameList.push(item.filetitle+'.'+item.fileextname)
 						
 					});
 					if(!urls.length){
@@ -542,7 +536,8 @@
 					symbinUtil.ajax({
 						url:window.config.baseUrl+'/wmshare/createzip',
 						data:{
-							urls:urls.join(',')
+							urls:urls.join(','),
+							filetitles:filenameList.join(',')
 						},
 						error(){
 							s.isdownloading = false;
