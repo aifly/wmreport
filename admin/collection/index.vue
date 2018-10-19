@@ -349,10 +349,11 @@
 				var s = this;
 				if(status === 'download'){
 					var urls =  [];
-					s.reportList.map((item)=>{
-						if(item.checked){
-							urls.push(item.filepath);
-						}
+
+					var filenameList = [];
+					s.checkedList.map((item)=>{
+						urls.push(item.filepath);
+						filenameList.push(item.filetitle+'.'+item.fileextname)
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -364,7 +365,8 @@
 						data:{
 							admintoken:s.userinfo.admintoken,
 							adminusername:s.userinfo.adminusername,
-							urls:urls.join(',')
+							urls:urls.join(','),
+							filetitles:filenameList.join(',')
 						},
 						error(){
 							s.isdownloading = false;
