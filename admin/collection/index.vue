@@ -3,20 +3,13 @@
 		<div  class="wm-collection-left-pannel" :style="{height:viewH -   64+'px'}">
 			<h2 class="zmiti-text-overflow">{{resourcecnname}}</h2>
 			<ul>
-				<li @click='mainType = 3' :class="{'active':mainType === 3}">统计汇总</li>
 				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报审核</li>
 				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
 				<li @click='mainType = 2' :class="{'active':mainType === 2}">终审归档</li>
-				<li @click='mainType = 4' :class="{'active':mainType === 4}">前端预览</li>
 			</ul>
 		</div>
-
 		<Result  v-if='mainType  === 1'></Result>
 		<LastCheck  v-if='mainType  === 2'></LastCheck>
-		<Statistics  v-if='mainType  === 3'></Statistics>
-		<div  v-if='mainType  === 4' :style="{height:viewH - 64+'px',overflow:'auto',width:'100%'}" class='wm-scroll'>
-			<Download1 :isAdmin='true' ></Download1>
-		</div>
 
 		<Split v-model='scale' v-if='mainType === 0'> 
 			<div slot='left' class="wm-collection-left-main-ui">
@@ -69,7 +62,7 @@
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
-							<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
+							<li @dblclick="previewReport(i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.mobilethum||imgs.poster" alt="">
 								</div>
@@ -77,8 +70,8 @@
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
 								</div>
-								<div class="wm-collection-check" @click='toggleChecked(i)'>
-									<Checkbox  v-model="report.checked"></Checkbox>
+								<div class="wm-collection-check">
+									<Checkbox v-model="report.checked"></Checkbox>
 								</div>
 								<div class="wm-report-action" v-if='report.isLoaded'>
 									<div class="wm-report-action-icon"></div>
@@ -86,7 +79,7 @@
 								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
 							</li>	
 						</ul>
-						<div class="wm-collection-pagetion">
+						<div class="wm-collection-pagetion" v-if='!selectAll'>
 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 						</div>
 					</div>
@@ -94,13 +87,13 @@
 			</div>
 			<div slot="right" class="wm-collection-right wm-scroll" v-if='reportList[currentReportIndex]'>
 				<h1 style="height:30px"></h1>
-				<div   class="wm-right-thumb" v-if='checkedList.length<=0'>
+				<div   class="wm-right-thumb">
 					<div>
 						<img :src='reportList[currentReportIndex].mobilethum||imgs.poster' />	
 					</div>
 				</div>
 				
-				<div v-if='item.loading && checkedList.length<=0' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
+				<div v-if='item.loading' class="wm-myreport-title wm-myreport-item" v-for='(item,i) in configList' :key='i'>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
@@ -125,17 +118,6 @@
 				
 				</div>
 
-				<div v-if='checkedList.length' class='wm-checkedlist-C'>
-					<ul>
-						<li @dblclick="previewReport(i)" @click='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in checkedList' :key="i">
-							<div :class="{'active':i === currentReportIndex}" >
-								<img :src="report.mobilethum||imgs.poster" alt="">
-							</div>
-							<section v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</section>
-						</li>	
-					</ul>
-				</div>
-
 
 			</div>
 		</Split>
@@ -152,8 +134,7 @@
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
 	import Download from '../../common/mask/download';
-	import Statistics from './statistics';
-	import Download1 from '../../download/index.vue';
+
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -190,8 +171,7 @@
 				page:1,
 				pagenum:20,
 				raterReportList:[],
-				isdownloading :false,
-				checkedList:[]
+				isdownloading :false
 
 			}
 		},
@@ -199,43 +179,24 @@
 			Result,
 			LastCheck,
 			Detail,
-			Download,
-			Statistics,
-			Download1
+			Download
 		},
 		watch:{
 			selectAll(val){
-				this.reportList.forEach((item)=>{
-					item.checked = val;
-					if(val){
-						this.checkedList.push(item);
-					}
-					else{
-						this.checkedList.length = 0;
-					}
+
+				
+				this.getReportList(()=>{
+					this.reportList.forEach((item)=>{
+						item.checked = val;
+					});
 				});
-				/* this.getReportList(()=>{
-					
-				}); */
 			},
-			
 			mainType(val){
 				window.location.hash = "/collection/"+this.$route.params.id+'/'+val;
 			}
 		},
 		methods:{
-			toggleChecked(index){
-				var isChecked = !this.reportList[index].checked;
-				if(isChecked){
-					this.checkedList.push(this.reportList[index]);
-				}else{
-					this.checkedList.forEach((item,i)=>{
-						if(item.id === this.reportList[index].id){
-							this.checkedList.splice(i,1);
-						}
-					});
-				}
-			},
+
 			hideDownloadTip(){
 				this.showDownloadtip = false;
 			},
@@ -336,7 +297,7 @@
 			showDetail(report,index){
 				clearTimeout(this.clickTimer);
 				this.clickTimer = setTimeout(() => {
-					//report.checked = !report.checked;
+					report.checked = !report.checked;
 					this.currentReportIndex = index;
 					this.formAdmin = report;
 					this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
@@ -388,8 +349,10 @@
 				var s = this;
 				if(status === 'download'){
 					var urls =  [];
-					s.checkedList.map((item)=>{
-						urls.push(item.filepath);
+					s.reportList.map((item)=>{
+						if(item.checked){
+							urls.push(item.filepath);
+						}
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -431,16 +394,11 @@
 					})
 				}else{
 					var ids =  [];
-					/* s.reportList.map((item)=>{
+					s.reportList.map((item)=>{
 						if(item.checked){
 							ids.push(item.id)
 						}
-					}); */
-
-					s.checkedList.map((item,i)=>{
-						ids.push(item.id);
-					})
-
+					});
 					if(!ids.length){
 						s.$Message.error('请至少选择一个要审核的作品');
 						return;
@@ -489,7 +447,6 @@
 				var id = this.$route.params.id;
 				
 				var s = this;
-				window.report = s;
 
 				var  p  ={
 					admintoken:s.userinfo.admintoken,
@@ -507,7 +464,7 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
-				
+				p['isselectall'] = s.selectAll | 0;
 
 				//console.log(p);
 				symbinUtil.ajax({
@@ -529,11 +486,6 @@
 									s.totalnum = data.totalnum;
 									s.reportList.forEach((item)=>{
 										item.checked = false;
-										s.checkedList.forEach((ls)=>{
-											if(ls.id === item.id){
-												item.checked = true;
-											}
-										})
 									});
 								
 									///s.selectAll  = false;
