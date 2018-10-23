@@ -90,6 +90,7 @@ var imgs = {
 		swf: './assets/ckplayer/ckplayer.swf',
 		baseUrl: 'http://h5.wenming.cn/v1',
 		uploadUrl: 'http://h5.wenming.cn/wmreport/index.html#/',
+		
 		accepts: [{
 			id: 0,
 			name: '图片',

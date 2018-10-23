@@ -1,11 +1,13 @@
 <template>
 	<div class="wm-recurit-ui lt-full" >
 		<header class="wm-recurit-header">
-			<h1>征集管理</h1>
-			<div v-if='false'><Icon type="ios-create-outline" />发布新的征集</div>
-			<div></div>
+			<div>征集管理</div>
+			<div><Icon type="ios-create-outline" />发布新的征集</div>
 		</header>
-		<div class="wm-recurit-list wm-scroll">
+		<div class='wm-recurit-addstep' v-if='showDetail'>
+			<AddResource title='征集管理' :steps='addResourceSteps'></AddResource>
+		</div>
+		<div  v-else class="wm-recurit-list wm-scroll" >
 			<ul>
 				<li v-for='(item,i) in resourceList' :key="i">
 					<header>
@@ -29,13 +31,17 @@
 				</li>
 			</ul>
 		</div>
+		
 	</div>
 </template>
 
 <script>
 	import './index.css';
 	import symbinUtil from '../lib/util';
+	
 	import Vue from "vue";
+	
+	import AddResource from '../../common/addresource/index.vue';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -44,13 +50,24 @@
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
 				page:1,
+				addResourceSteps:[
+					{
+						title:'',
+						content:""
+					},
+					{
+						title:'',
+						content:""
+					}
+				],
 				pagenum:20,
 				resourceList:[],
+				showDetail:true,
 
 			}
 		},
 		components:{
-			
+			AddResource
 		},
 		watch:{
 		
