@@ -176,7 +176,7 @@
 				showPreview:false,
 				showMaskDetail:true,
 				mainType:0,
-				sort:-1,
+				sort:1,
 				showCheckAction:false,
 				configList:[
 					{
