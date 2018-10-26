@@ -78,25 +78,32 @@
 							<div>上传单位：{{report.username}}</div>
 						</div>
 						<div v-if='report' class='wm-report-item-attr'>
+							<div>浏览量：{{report.views+1}}</div>
+							<div>下载量：{{report.downloads}}</div>
+							
+						</div>
+						<div v-if='report' class='wm-report-item-attr'>
 							<div>尺寸：{{report.fileattr}}</div>
 							<div>大小：{{report.filesize+report.filesizeunit}}</div>
 						</div>
-						
 					</li>	
 				</ul>
 				<ul v-else class='wm-media-list'>
 					<li class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 						<div><Checkbox @on-change='changeChecked(report,i)' v-model="report.checked"></Checkbox></div>
 						<div class='wm-collection-report-content' @click="previewReport(i,report)">
-							<div>
+							<div style="line-height:130px;">
 								<img :src="report.pcbilethum||imgs.poster" alt="">
 							</div>
 							<div>
-								<div class='zmiti-text-overflow'>{{report.filetitle}}</div>
+								<div class='zmiti-text-overflow'>作品名称：{{report.filetitle}}</div>
 								<div>作品编号：{{report.id}}</div>
 								<div>审核时间：{{report.audittime}}</div>
 								<div>上传单位：{{report.username}}</div>
+								<div>浏览量：{{report.views+1}}</div>
+								<div>下载量：{{report.downloads}}</div>
 								<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>
+								
 							</div>
 						</div>
 						<div>
@@ -639,7 +646,10 @@
 							s.currentPage = 1;
 							s.reportList = data.list;
 							s.totalnum = data.totalnum.num;
+
+							var ids = [];
 							s.reportList.forEach((item)=>{
+								ids.push(item.id);
 								item.checked = false;
 								s.checkedList.forEach((ls)=>{
 									if(ls.id === item.id){
@@ -647,6 +657,18 @@
 									}
 								})
 							});
+
+							symbinUtil.ajax({
+								url:window.config.baseUrl+'/wmshare/getviews',
+								data:{
+									resourceid:p.resourceid,
+									id:ids.join(','),
+									field:'views'
+								},
+								success(data){
+									console.log(data);
+								}
+							})
 						
 							///s.selectAll  = false;
 							if(s.reportList.length){
