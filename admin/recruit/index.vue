@@ -3,7 +3,7 @@
 		<header class="wm-recurit-header">
 			<div>征集管理</div>
 			<div></div>
-			<div v-if='false' ><Icon type="ios-create-outline" />发布新的征集</div>
+			<div ><Icon type="ios-create-outline" />发布新的征集</div>
 		</header>
 		<div class='wm-recurit-addstep' v-if='showDetail'>
 			<AddResource title='征集管理' :steps='addResourceSteps'></AddResource>
@@ -63,7 +63,7 @@
 				],
 				pagenum:20,
 				resourceList:[],
-				showDetail:false,
+				showDetail:true,
 
 			}
 		},

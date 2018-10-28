@@ -126,6 +126,12 @@
   position: relative;
 }
 
+.wm-myreport-main-ui .wm-myreport-left header a {
+  position: absolute;
+  right: 20px;
+  top: 0px;
+}
+
 .wm-myreport-main-ui .wm-myreport-left header #wm-upload {
   position: absolute;
   top: 0;

@@ -3,10 +3,12 @@
 		<header>
 			<div>用户管理</div>
 			<section>
-				<Button type="primary" icon='md-add-circle' @click="addNewAduser">新增用户</Button>
+				<Button type="primary" icon='md-add-circle' v-if='!currentAuth.userid' @click="addNewAduser">新增用户</Button>
 			</section>
 		</header>
-		<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>
+		<Table v-if='!currentAuth.userid' ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>
+		<Table v-else  :data='currentAuth.resoucelist' :columns='columns1'   stripe></Table>
+		
 
 		<Modal
 			v-model="visible"
@@ -47,6 +49,7 @@
 				content:"",
 				
 				visible:false,
+				currentAuth:{},
 				imgs:window.imgs,
 				isLoading:false,
 				currentUserId:-1,
@@ -58,6 +61,64 @@
 					userpwd:'111111'
 				},
 				userList:[],
+				columns1:[
+					{
+						title:"征集",
+						key:'resourcecnname',
+						align:'center'
+					},{
+						title:"权限",
+						key:'authtype',
+						align:'center',
+						render:(h,params)=>{
+
+							return h('div',{
+								
+							},[
+								h('Checkbox',{
+									on:{
+										'on-change':(val)=>{
+											if(!val){
+												this.currentAuth.resoucelist[params.index].authtype = 0;
+											}else{
+												this.currentAuth.resoucelist[params.index].authtype = 1;
+											}
+										}
+									},
+									props:{
+										disabled:params.row.authtype >= 2 ,
+										value:params.row.authtype <= 2 && params.row.authtype > 0
+									}
+								},'读'),
+								h('Checkbox',{
+									on:{
+										'on-change':(val)=>{
+											if(!val){
+												this.currentAuth.resoucelist[params.index].authtype = 1;
+											}else{
+												this.currentAuth.resoucelist[params.index].authtype = 2;
+											}
+										}
+									},
+									props:{
+										value:params.row.authtype === 2
+									}
+								},'写'),
+								h('Button',{
+									props:{
+										size:'small',
+										type:'primary'
+									},
+									on:{
+										click:()=>{
+											this.updateAuth(params.row,params.index,this.currentAuth.userid);
+										}
+									}
+								},'确定'),
+							]);
+						}
+					}
+				],
 				columns:[
 					{
 						title:"用户名",
@@ -69,6 +130,32 @@
 						title:"昵称",
 						key:'nickname',
 						align:'center'
+					},
+					{
+						title:"权限",
+						key:'auth',
+						align:'center',
+						render:(h,params)=>{
+							var list = params.row.resoucelist;
+							var taglist = [];
+							list.forEach((item,i)=>{
+								if(item.resourcecnname){
+									var obj = h('div',{},[
+										h('span',{},item.resourcecnname ),
+										h('span',{
+											style:{
+												fontWeight:'bold',
+												marginLeft:'10px',
+												color:'green'
+											},
+											
+										},(item.authtype === 0 ? '': item.authtype === 1? ' 读' : '读 / 写'))
+									]);
+									taglist.push(obj)
+								}
+							})
+							return h('div',{},taglist,'11');
+						}
 					},{
 						title:'操作',
 						key:"action",
@@ -149,7 +236,42 @@
 											
                                         }
                                     }
-                                }, params.row.status*1 === 1 ? '撤销':"审核"),
+								}, params.row.status*1 === 1 ? '撤销':"审核"),
+								h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    style: {
+										margin: '2px 5px',
+										border:'none',
+										padding: '3px 7px 2px',
+										fontSize: '12px',
+										borderRadius: '3px'
+
+                                    },
+                                    on: {
+                                        click: () => {
+											this.currentAuth = params.row;
+
+											var s = this;
+											symbinUtil.ajax({
+												url:window.config.baseUrl+'/wmadadmin/getuserresourceauth',
+												data:{
+													admintoken:s.userinfo.admintoken,
+													adminusername:s.userinfo.adminusername,
+													userid:s.currentAuth.userid,
+												},
+												success(data){
+													
+													if(data.getret === 0){
+														s.currentAuth.resoucelist = data.list;
+													}
+												}
+											})
+										}
+                                    }
+                                }, '权限分配')
                             ]);
 						}
 					}
@@ -175,37 +297,29 @@
 
 			var s = this;
 
-
-			/* symbinUtil.ajax({
-				url:'http://api.symbin.cn/v1/wmadadmin/getuserziplist/',
-				data:{
-					admintoken:s.userinfo.admintoken,
-					adminusername:s.userinfo.adminusername,
-					usertype:2,
-				},
-				success(data){
-					console.log(data,' =======');
-				}
-			}) */
-			/*
-			/* var s = this;
-			symbinUtil.ajax({
-				url:window.config.baseUrl+'/wmadadmin/createzip/',
-				data:{
-					admintoken:s.userinfo.admintoken,
-					adminusername:s.userinfo.adminusername,
-					urls:'http://api.symbin.cn/wmpublicadupload/2018/3021678740.jpg,http://api.symbin.cn/wmpublicadupload/2018/1039108971.jpg'
-				},
-				success(data){
-					console.log('111111111111111111')
-					console.log(data,' ----------- ');
-				}
-			}) */
+ 
 
 		},
 		
 		methods:{
-
+			updateAuth(row,index,userid){
+				//this.currentAuth.resoucelist = this.currentAuth.resoucelist.concat([]);
+				console.log(row);
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/giveuserpermissions',
+					data:{
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername,
+						resourceid:row.resourceid,
+						userid,
+						authtype:row.authtype
+					},
+					success(data){
+						console.log(data);
+					}
+				})
+			},
 			onEditorBlur(){//失去焦点事件
             },
             onEditorFocus(){//获得焦点事件
@@ -225,7 +339,6 @@
 						status:params.row.status === 1 ? 0 : 1,
 					},
 					success(data){
-						console.log(data);
 						s.$Message[data.getret === 0 ? "success":"error"](data.getmsg);
 						s.getaduserlist();
 					}

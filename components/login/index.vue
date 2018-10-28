@@ -121,7 +121,8 @@
 								window.localStorage.setItem('wm_username','');
 								window.localStorage.setItem('wm_password','');
 							}
-							window.location.hash = '#/myreport/';
+							
+							window.location.hash = '#/myreport/1';
 							
 							_this.$Message.success('登录成功~');
 							

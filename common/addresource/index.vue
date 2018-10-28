@@ -15,17 +15,18 @@
 
 			<div class='wm-step-content-wrap'>
 				<ol :style="{width:400*steps.length+'px',WebkitTransform:'translate3d('+-400*current+'px,0,0)',transform:'translate3d('+-400*current+'px,0,0)'}">
-					<li>
-						<div v-if='current === 0'>
+					<li >
+						<div>
 							<h1 class="wm-recruitaction-title">{{formRecruit.resourcecnname||'发布新的征集'}}</h1>
 							<div class="wm-recruitaction-form-item">
 								<label for="">名称：</label><input v-model="formRecruit.resourcecnname" placeholder="请输入征集名称"/>
 							</div>
-							<div class="wm-recruitaction-form-item">
+							<div class="wm-recruitaction-form-item wm-recruitaction-desc">
 								<label for="">说明：</label><textarea placeholder="请输入征集说明" v-model="formRecruit.resourcedesc"></textarea>
 							</div>
-							<div class="wm-recruitaction-form-item">
-								<label for="">起止时间：</label>
+							<div class="wm-recruitaction-form-item displayBox">
+								<div><label for="">起止时间：</label></div>
+								<DatePicker v-model="formRecruit.datetimes" :value="formRecruit.datetimes" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="请选择开始和结束日期"></DatePicker>
 							</div>
 							<div class="wm-recruitaction-form-item">
 								<label for="">路径：</label>
@@ -37,44 +38,20 @@
 								</section>
 							</div>
 							<div class="wm-recruitaction-next-btn">
-								<Button long type='primary' size='large'>下一步</Button>
+								<Button long type='primary' size='large' @click="current = 1">下一步</Button>
 							</div>
 						</div>
-						<div v-if='current === 1'>
+						
+					</li>
+					<li >
+						<div>
 							<h1  class="wm-recruitaction-title">{{formRecruit.resourcecnname}}</h1>
 							<div class="wm-default-field">
 								<div v-for='(field,i) in formRecruit.configList.fieldList' :key='i'></div>
 							</div>
 						</div>
 					</li>
-					<li v-show='current===1'>
-						<div class='wm-addstudent-form-item'>
-							<label for="">姓名：</label><input placeholder="请输入姓名" type='text' v-model="formStudent.username"/>
-						</div>
-						<div class='wm-addstudent-form-item'>
-							<label for="">密码：</label><input disabled placeholder="请输入密码" type='text' v-model="formStudent.userpwd"/>
-						</div>
-						<div class='wm-addstudent-form-item'>
-							<label for="">职务：</label><input placeholder="请输入职务" type='text' v-model="formStudent.job"/>
-						</div>
-						<div class='wm-addstudent-form-item'>
-							<label for="">公司名称：</label><input placeholder="请输入公司名称" type='text' v-model="formStudent.companyname"/>
-						</div>
-						<div class='wm-addstudent-form-item'>
-							<label for="">邮箱：</label><input placeholder="请输入邮箱" type='text' v-model="formStudent.email"/>
-						</div>
-						<div class='wm-addstudent-form-item displayFlex'>
-							<div><label for="">所属小组：</label></div>
-							<Select v-model="formStudent.groupid" style="width:240px;background:transparent">
-						       <Option v-for="item in groupList" :value="item.groupid+''" :key="item.groupid">{{ item.groupname }}</Option>
-						    </Select>
-						</div>
-						
-						<div class='wm-addstudent-form-item'>
-							<label for="">详细地址：</label><textarea placeholder="请输入详细地址"  v-model="formStudent.detailaddress" ></textarea>
-						</div>
-						<div class='wm-next-step-btn' @click='insertStudent'>{{current>=steps.length-1?'完成':'下一步'}}</div>
-					</li>
+					
 				</ol>
 			</div>
 

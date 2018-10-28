@@ -29,15 +29,15 @@
                                     <Icon type="ios-paper" />
                                     我的上报
                                 </template>
-                                    <MenuItem to='/myreport/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "myreport"}' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
-                                    </MenuItem>
+                                <MenuItem :title='item.resourcecnname' :to='"/myreport/"+item.resourceid' class='zmiti-text-overflow' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.params.id  === item.resourceid }' :key='i' v-for="(item,i) in sourceList" :name="item.resourceid">{{item.resourcecnname}}
+                                </MenuItem>
                             </Submenu>
                              <Submenu name="2">
                                 <template slot="title">
                                     <Icon type="ios-paper" />
                                     我的
                                 </template>
-                                     <MenuItem to='/user/' name="13">个人中心 </MenuItem>
+                                <MenuItem to='/user/' name="13">个人中心 </MenuItem>
                             </Submenu>
                            
                         </Menu>
@@ -150,12 +150,22 @@
                     success(data){
                         if(data.getret === 0){
                                 s.sourceList = data.list;
+
+                                if(data.list.length<=0){
+                                    window.location.hash = '#/user/';
+                                }
                                
                                 obserable.on("getCurrentSourceId",()=>{
                                     return data.list[0].resourceid;
                                 })
-                                obserable.on("getFeildList",()=>{
-                                    return JSON.parse(data.list[0].tablefield).fieldlist;
+                                obserable.on("getFeildList",(index)=>{
+                                    var obj = {};
+                                    data.list.forEach((item)=>{
+                                        if(item.resourceid === index){
+                                            obj = item;
+                                        }
+                                    })
+                                    return JSON.parse(obj.tablefield).fieldlist;
                                 })
                             }
                     }

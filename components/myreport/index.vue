@@ -21,6 +21,7 @@
 							 上报{{menu.split('-')[0]}}
 						 </li>
 					 </ul>
+					 <a :href="'#/download/'+$route.params.id">查看更多>></a>
 				</header>
 				<section>
 					<div class="wm-myreport-list-C">
@@ -248,6 +249,7 @@
 	import QRCode from '../lib/qrcode';
 	import Detail from '../../common/mask/detail';
 
+	var json = {};
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -332,9 +334,15 @@
 						item.notnull = val|0;
 					}
 				});
+			},
+			"$route.params.id":(val)=>{
+				json.getMyreportList(()=>{
+					json.changeCurrentType(0,'first');
+				});
 			}
 		},
 		mounted(){
+			json = this;
 			this.userinfo = symbinUtil.getUserInfo();
 			this.getMyreportList(()=>{
 				this.changeCurrentType(0,'first');
@@ -342,9 +350,7 @@
 			var {obserable} = Vue;
 			var t = setInterval(()=>{
 				
-				var id  = obserable.trigger({
-					type:'getCurrentSourceId'
-				});
+				var id  = this.$route.params.id;
 				
 				if(id){
 					clearInterval(t);
@@ -432,9 +438,7 @@
 				}
 				//console.log(this.showUploadFile);
 				if(this.showUploadFile){
-					var id  = Vue.obserable.trigger({
-						type:'getCurrentSourceId'
-					});
+					var id  = this.$route.params.id;
 					this.upload(id);
 				}
 			},
@@ -442,9 +446,7 @@
 			changeCurrentType(index,type){
 				var s = this;
 				this.currentType = index;
-				var id  = Vue.obserable.trigger({
-					type:'getCurrentSourceId'
-				});
+				var id = this.$route.params.id;
 				this.upload(id);
 				this.currentReportIndex = 0;
 				this.filterReportList();
@@ -474,9 +476,7 @@
 					return;
 				}
 				var s = this;
-				var id  = Vue.obserable.trigger({
-					type:'getCurrentSourceId'
-				})
+				var id = this.$route.params.id;
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/delresource/',
@@ -530,9 +530,7 @@
 			removeTag(filename,index){
 				
 				var s = this;
-				var id  = Vue.obserable.trigger({
-					type:'getCurrentSourceId'
-				})
+				var id = this.$route.params.id;
 
 				this.formAdmin.tagList.splice(index,1);
 				this.detailtag = '';
@@ -556,9 +554,7 @@
 					return;
 				}
 				var s = this;
-				var id  = Vue.obserable.trigger({
-					type:'getCurrentSourceId'
-				})
+				var id = this.$route.params.id;
 				this.formAdmin.tagList = this.formAdmin.tagList||[];
 				this.formAdmin.tagList.push(this.detailtag);
 				this.detailtag = '';
@@ -579,9 +575,7 @@
 
 			modifyPublicadtype(key){
 				var s = this;
-				var id  = Vue.obserable.trigger({
-					type:'getCurrentSourceId'
-				})
+				var id = this.$route.params.id;
 				if(!s.formAdmin.id){
 					return;
 				}
@@ -598,9 +592,7 @@
 			modifyReport(model,key){
 				
 				var s = this;
-				var id = Vue.obserable.trigger({
-					type:'getCurrentSourceId'
-				});
+				var id = this.$route.params.id;
 				
 				var p = {
 					username:s.userinfo.username,
@@ -676,9 +668,7 @@
 				this.formUpload.tagList.splice(index,1);
 
 				if(this.showUploadFile){
-					var id  = Vue.obserable.trigger({
-						type:'getCurrentSourceId'
-					});
+					var id  = this.$route.params.id;
 					this.upload(id);
 				}
 			},
@@ -690,9 +680,7 @@
 				this.formUpload.tagList.push(this.beforeUploadTag);
 				this.beforeUploadTag =  '';
 				if(this.showUploadFile){
-					var id  = Vue.obserable.trigger({
-						type:'getCurrentSourceId'
-					});
+					var id  = this.$route.params.id;
 					this.upload(id);
 				}
 			},
@@ -723,7 +711,6 @@
 			filterReportList(){
 				
 				this.reportList = JSON.parse(this.defaultReportList).filter((item)=>{
-					console.log(item.publicadtype , this.menus[this.currentType])
 					return item.publicadtype === this.menus[this.currentType];
 				});
 				this.currentReportIndex = 0;
@@ -736,21 +723,18 @@
 				var t = setInterval(()=>{
 
 
-					var id  = obserable.trigger({
-						type:'getCurrentSourceId'
-					})
+					var id  = this.$route.params.id;
 					var tableFields = obserable.trigger({
-						type:"getFeildList"
+						type:"getFeildList",
+						data:s.$route.params.id
 					})
 				
 					
 					if(id){
-
-
 					
 						
 						this.configList = tableFields.concat([]);
-
+						
 						this.configList.map((col,i)=>{
 							
 							///s.formAdmin[col.fieldname] = '';
@@ -1015,7 +999,6 @@
 											height:h
 										},
 										success(data){
-											console.log(data);
 											if(data.getret === 0){
 												iNow++;
 												if(iNow === i){
@@ -1037,7 +1020,6 @@
 						},width,height);
 
 					}, 100);
-
 
 					
 					
@@ -1067,9 +1049,7 @@
 				
 				var {obserable} = Vue;
 				var s = this;
-				var id  = obserable.trigger({
-					type:'getCurrentSourceId'
-				})
+				var id  =  this.$route.params.id;
 				
 				var p = {
 					username:s.userinfo.username,

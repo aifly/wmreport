@@ -70,7 +70,8 @@
 
 			 &.wm-user-info{
 				 //@include displayBox(row);
-				 min-width: 200px;
+				 min-width: 300px;
+				 
 				 @include pos(r);
 				 img{
 					width: 30px;
@@ -80,7 +81,7 @@
 					 background: #ce0000;
 					 @include pos(a);
 					 right: 0;
-					 width: 80px;
+					 min-width: 80px;
 					 top: 0;
 					 height: 100%;
 					 cursor: pointer;

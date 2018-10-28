@@ -5,6 +5,7 @@ import Login from './components/login/index'
 import Register from './components/register/index';
 import MyReport from './components/myreport/index';
 import User from './components/user/index';
+import Dwonload from './download/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
 import './components/css/index.css';
@@ -38,7 +39,7 @@ const router = new VueRouter({
 			props: true
 		}, 
 		{
-			path:'/myreport/',
+			path:'/myreport/:id/',
 			name:'myreport',
 			component: MyReport,
 			props:true
@@ -47,6 +48,13 @@ const router = new VueRouter({
 			name: 'user',
 			component: User,
 			props: true
+		}, {
+			path: '/download/:id',
+			name: 'download',
+			component: Dwonload,
+			props: {
+				isAdmin:true
+			}
 		}
 		
 	]
