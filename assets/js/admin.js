@@ -12353,9 +12353,11 @@
 		},
 
 		getUserInfo: function getUserInfo() {
+			var key = arguments.length <= 0 || arguments[0] === undefined ? 'adminlogin' : arguments[0];
+
 			var loginObj = {};
 			try {
-				loginObj = JSON.parse(localStorage.getItem('adminlogin'));;
+				loginObj = JSON.parse(localStorage.getItem(key));;
 			} catch (error) {
 				this.clearCookie('adminlogin');
 				window.location.hash = '/login';
@@ -12488,10 +12490,12 @@
 	// 		<header>
 	// 			<div>用户管理</div>
 	// 			<section>
-	// 				<Button type="primary" icon='md-add-circle' @click="addNewAduser">新增用户</Button>
+	// 				<Button type="primary" icon='md-add-circle' v-if='!currentAuth.userid' @click="addNewAduser">新增用户</Button>
 	// 			</section>
 	// 		</header>
-	// 		<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>
+	// 		<Table v-if='!currentAuth.userid' ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>
+	// 		<Table v-else  :data='currentAuth.resoucelist' :columns='columns1'   stripe></Table>
+	//
 	//
 	// 		<Modal
 	// 			v-model="visible"
@@ -12550,6 +12554,7 @@
 				content: "",
 
 				visible: false,
+				currentAuth: {},
 				imgs: window.imgs,
 				isLoading: false,
 				currentUserId: -1,
@@ -12561,6 +12566,56 @@
 					userpwd: '111111'
 				},
 				userList: [],
+				columns1: [{
+					title: "征集",
+					key: 'resourcecnname',
+					align: 'center'
+				}, {
+					title: "权限",
+					key: 'authtype',
+					align: 'center',
+					render: function render(h, params) {
+
+						return h('div', {}, [h('Checkbox', {
+							on: {
+								'on-change': function onChange(val) {
+									if (!val) {
+										_this.currentAuth.resoucelist[params.index].authtype = 0;
+									} else {
+										_this.currentAuth.resoucelist[params.index].authtype = 1;
+									}
+								}
+							},
+							props: {
+								disabled: params.row.authtype >= 2,
+								value: params.row.authtype <= 2 && params.row.authtype > 0
+							}
+						}, '读'), h('Checkbox', {
+							on: {
+								'on-change': function onChange(val) {
+									if (!val) {
+										_this.currentAuth.resoucelist[params.index].authtype = 1;
+									} else {
+										_this.currentAuth.resoucelist[params.index].authtype = 2;
+									}
+								}
+							},
+							props: {
+								value: params.row.authtype === 2
+							}
+						}, '写'), h('Button', {
+							props: {
+								size: 'small',
+								type: 'primary'
+							},
+							on: {
+								click: function click() {
+									_this.updateAuth(params.row, params.index, _this.currentAuth.userid);
+								}
+							}
+						}, '确定')]);
+					}
+				}],
 				columns: [{
 					title: "用户名",
 					key: 'username',
@@ -12570,6 +12625,28 @@
 					title: "昵称",
 					key: 'nickname',
 					align: 'center'
+				}, {
+					title: "权限",
+					key: 'auth',
+					align: 'center',
+					render: function render(h, params) {
+						var list = params.row.resoucelist;
+						var taglist = [];
+						list.forEach(function (item, i) {
+							if (item.resourcecnname) {
+								var obj = h('div', {}, [h('span', {}, item.resourcecnname), h('span', {
+									style: {
+										fontWeight: 'bold',
+										marginLeft: '10px',
+										color: 'green'
+									}
+
+								}, item.authtype === 0 ? '' : item.authtype === 1 ? ' 读' : '读 / 写')]);
+								taglist.push(obj);
+							}
+						});
+						return h('div', {}, taglist, '11');
+					}
 				}, {
 					title: '操作',
 					key: "action",
@@ -12643,7 +12720,41 @@
 									_this.checkUser(params);
 								}
 							}
-						}, params.row.status * 1 === 1 ? '撤销' : "审核")]);
+						}, params.row.status * 1 === 1 ? '撤销' : "审核"), h('Button', {
+							props: {
+								type: 'primary',
+								size: 'small'
+							},
+							style: {
+								margin: '2px 5px',
+								border: 'none',
+								padding: '3px 7px 2px',
+								fontSize: '12px',
+								borderRadius: '3px'
+
+							},
+							on: {
+								click: function click() {
+									_this.currentAuth = params.row;
+
+									var s = _this;
+									_libUtil2['default'].ajax({
+										url: window.config.baseUrl + '/wmadadmin/getuserresourceauth',
+										data: {
+											admintoken: s.userinfo.admintoken,
+											adminusername: s.userinfo.adminusername,
+											userid: s.currentAuth.userid
+										},
+										success: function success(data) {
+
+											if (data.getret === 0) {
+												s.currentAuth.resoucelist = data.list;
+											}
+										}
+									});
+								}
+							}
+						}, '权限分配')]);
 					}
 				}],
 
@@ -12664,36 +12775,28 @@
 			this.getaduserlist();
 
 			var s = this;
-
-			/* symbinUtil.ajax({
-	  	url:'http://api.symbin.cn/v1/wmadadmin/getuserziplist/',
-	  	data:{
-	  		admintoken:s.userinfo.admintoken,
-	  		adminusername:s.userinfo.adminusername,
-	  		usertype:2,
-	  	},
-	  	success(data){
-	  		console.log(data,' =======');
-	  	}
-	  }) */
-			/*
-	  /* var s = this;
-	  symbinUtil.ajax({
-	  	url:window.config.baseUrl+'/wmadadmin/createzip/',
-	  	data:{
-	  		admintoken:s.userinfo.admintoken,
-	  		adminusername:s.userinfo.adminusername,
-	  		urls:'http://api.symbin.cn/wmpublicadupload/2018/3021678740.jpg,http://api.symbin.cn/wmpublicadupload/2018/1039108971.jpg'
-	  	},
-	  	success(data){
-	  		console.log('111111111111111111')
-	  		console.log(data,' ----------- ');
-	  	}
-	  }) */
 		},
 
 		methods: {
-
+			updateAuth: function updateAuth(row, index, userid) {
+				//this.currentAuth.resoucelist = this.currentAuth.resoucelist.concat([]);
+				console.log(row);
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadadmin/giveuserpermissions',
+					data: {
+						admintoken: s.userinfo.admintoken,
+						adminusername: s.userinfo.adminusername,
+						resourceid: row.resourceid,
+						userid: userid,
+						authtype: row.authtype
+					},
+					success: function success(data) {
+						console.log(data);
+						s.$Message[data.getret === 0 ? "success" : "error"](data.getmsg);
+					}
+				});
+			},
 			onEditorBlur: function onEditorBlur() {//失去焦点事件
 			},
 			onEditorFocus: function onEditorFocus() {//获得焦点事件
@@ -12713,7 +12816,6 @@
 						status: params.row.status === 1 ? 0 : 1
 					},
 					success: function success(data) {
-						console.log(data);
 						s.$Message[data.getret === 0 ? "success" : "error"](data.getmsg);
 						s.getaduserlist();
 					}
@@ -12903,7 +13005,7 @@
 /* 21 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>用户管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentUserId === -1? '新增用户':'编辑用户'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input :disabled = 'currentUserId !== -1'  v-model=\"formAdmin.username\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"userpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.userpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button :disabled='currentUserId ===-1' type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\t\t\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>用户管理</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button type=\"primary\" icon='md-add-circle' v-if='!currentAuth.userid' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table v-if='!currentAuth.userid' ref='scorelist'  :height='viewH - 64- 70 ' :data='userList' :columns='columns'   stripe></Table>\r\n\t\t<Table v-else  :data='currentAuth.resoucelist' :columns='columns1'   stripe></Table>\r\n\t\t\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\t:title=\"currentUserId === -1? '新增用户':'编辑用户'\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" >\r\n\t\t\t\t<FormItem label=\"账号：\" prop=\"ratername\">\r\n\t\t\t\t\t<Input :disabled = 'currentUserId !== -1'  v-model=\"formAdmin.username\" placeholder=\"账号\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"密码：\" prop=\"userpwd\">\r\n\t\t\t\t\t<Input ref='pass' :disabled='!showPass' v-model=\"formAdmin.userpwd\" placeholder=\"密码\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Button :disabled='currentUserId ===-1' type=\"primary\" style=\"margin-top:10px\" @click='modifyPass'>{{showPass?'确定修改':'修改密码'}}</Button>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t<FormItem label=\"昵称：\" prop=\"nickname\">\r\n\t\t\t\t\t<Input v-model=\"formAdmin.nickname\" placeholder=\"昵称\" autocomplete=\"off\" />\r\n\t\t\t\t</FormItem>\r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\t\t\r\n\t</div>\r\n";
 
 /***/ }),
 /* 22 */
@@ -14274,7 +14376,7 @@
 	// 		<header class="wm-recurit-header">
 	// 			<div>征集管理</div>
 	// 			<div></div>
-	// 			<div v-if='false' ><Icon type="ios-create-outline" />发布新的征集</div>
+	// 			<div ><Icon type="ios-create-outline" />发布新的征集</div>
 	// 		</header>
 	// 		<div class='wm-recurit-addstep' v-if='showDetail'>
 	// 			<AddResource title='征集管理' :steps='addResourceSteps'></AddResource>
@@ -14473,17 +14575,18 @@
 	//
 	// 			<div class='wm-step-content-wrap'>
 	// 				<ol :style="{width:400*steps.length+'px',WebkitTransform:'translate3d('+-400*current+'px,0,0)',transform:'translate3d('+-400*current+'px,0,0)'}">
-	// 					<li>
-	// 						<div v-if='current === 0'>
+	// 					<li >
+	// 						<div>
 	// 							<h1 class="wm-recruitaction-title">{{formRecruit.resourcecnname||'发布新的征集'}}</h1>
 	// 							<div class="wm-recruitaction-form-item">
 	// 								<label for="">名称：</label><input v-model="formRecruit.resourcecnname" placeholder="请输入征集名称"/>
 	// 							</div>
-	// 							<div class="wm-recruitaction-form-item">
+	// 							<div class="wm-recruitaction-form-item wm-recruitaction-desc">
 	// 								<label for="">说明：</label><textarea placeholder="请输入征集说明" v-model="formRecruit.resourcedesc"></textarea>
 	// 							</div>
-	// 							<div class="wm-recruitaction-form-item">
-	// 								<label for="">起止时间：</label>
+	// 							<div class="wm-recruitaction-form-item displayBox">
+	// 								<div><label for="">起止时间：</label></div>
+	// 								<DatePicker v-model="formRecruit.datetimes" :value="formRecruit.datetimes" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="请选择开始和结束日期"></DatePicker>
 	// 							</div>
 	// 							<div class="wm-recruitaction-form-item">
 	// 								<label for="">路径：</label>
@@ -14495,44 +14598,20 @@
 	// 								</section>
 	// 							</div>
 	// 							<div class="wm-recruitaction-next-btn">
-	// 								<Button long type='primary' size='large'>下一步</Button>
+	// 								<Button long type='primary' size='large' @click="current = 1">下一步</Button>
 	// 							</div>
 	// 						</div>
-	// 						<div v-if='current === 1'>
+	//
+	// 					</li>
+	// 					<li >
+	// 						<div>
 	// 							<h1  class="wm-recruitaction-title">{{formRecruit.resourcecnname}}</h1>
 	// 							<div class="wm-default-field">
 	// 								<div v-for='(field,i) in formRecruit.configList.fieldList' :key='i'></div>
 	// 							</div>
 	// 						</div>
 	// 					</li>
-	// 					<li v-show='current===1'>
-	// 						<div class='wm-addstudent-form-item'>
-	// 							<label for="">姓名：</label><input placeholder="请输入姓名" type='text' v-model="formStudent.username"/>
-	// 						</div>
-	// 						<div class='wm-addstudent-form-item'>
-	// 							<label for="">密码：</label><input disabled placeholder="请输入密码" type='text' v-model="formStudent.userpwd"/>
-	// 						</div>
-	// 						<div class='wm-addstudent-form-item'>
-	// 							<label for="">职务：</label><input placeholder="请输入职务" type='text' v-model="formStudent.job"/>
-	// 						</div>
-	// 						<div class='wm-addstudent-form-item'>
-	// 							<label for="">公司名称：</label><input placeholder="请输入公司名称" type='text' v-model="formStudent.companyname"/>
-	// 						</div>
-	// 						<div class='wm-addstudent-form-item'>
-	// 							<label for="">邮箱：</label><input placeholder="请输入邮箱" type='text' v-model="formStudent.email"/>
-	// 						</div>
-	// 						<div class='wm-addstudent-form-item displayFlex'>
-	// 							<div><label for="">所属小组：</label></div>
-	// 							<Select v-model="formStudent.groupid" style="width:240px;background:transparent">
-	// 						       <Option v-for="item in groupList" :value="item.groupid+''" :key="item.groupid">{{ item.groupname }}</Option>
-	// 						    </Select>
-	// 						</div>
 	//
-	// 						<div class='wm-addstudent-form-item'>
-	// 							<label for="">详细地址：</label><textarea placeholder="请输入详细地址"  v-model="formStudent.detailaddress" ></textarea>
-	// 						</div>
-	// 						<div class='wm-next-step-btn' @click='insertStudent'>{{current>=steps.length-1?'完成':'下一步'}}</div>
-	// 					</li>
 	// 				</ol>
 	// 			</div>
 	//
@@ -14731,7 +14810,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-addstudent-ui {\n  width: 100%;\n  background: #fff;\n  padding: 10px;\n  box-sizing: border-box;\n}\n\n.wm-addstudent-ui .wm-addstudent-header {\n  width: 50px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 100%;\n  padding: 0 20px;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n  line-height: 50px;\n  font-size: 20px;\n}\n\n.wm-addstudent-ui .wm-addstudent-header > div:nth-of-type(1) {\n  position: relative;\n  text-indent: .5em;\n}\n\n.wm-addstudent-ui .wm-addstudent-header > div:nth-of-type(1):before {\n  content: '';\n  width: 4px;\n  height: 24px;\n  background: #be0000;\n  left: -4px;\n  position: absolute;\n  top: 12px;\n}\n\n.wm-addstudent-ui .wm-addstudent-main {\n  border-top: 1px solid #dcdee2;\n  padding-top: 10px;\n  box-sizing: border-box;\n}\n\n.wm-addstudent-ui .wm-addstudent-step {\n  margin: 0 auto;\n  width: 94%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li {\n  flex: 1;\n  -webkit-flex: 1;\n  line-height: 24px;\n  height: 56px;\n  position: relative;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:before, .wm-addstudent-ui .wm-addstudent-step li:after {\n  content: '';\n  position: absolute;\n  width: 100%;\n  height: 4px;\n  background: #dcdcdc;\n  left: 50px;\n  top: 12px;\n  z-index: 0;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li > div {\n  position: absolute;\n  width: 100px;\n  text-align: center;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active1:after {\n  background: #f90;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active .wm-step-index {\n  background: #f90;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active section {\n  color: #f90;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active:before {\n  content: '';\n  background: #f90;\n  width: 50%;\n  z-index: 10;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li .wm-step-index {\n  border-radius: 50%;\n  width: 30px;\n  height: 30px;\n  font-size: 14px;\n  line-height: 30px;\n  text-align: center;\n  position: relative;\n  background: #dcdcdc;\n  margin: 0 auto;\n  color: #fff;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li .wm-step-index span {\n  position: relative;\n  z-index: 10;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:last-of-type {\n  flex: none;\n  -webkit-flex: none;\n  width: 100px;\n  text-align: right;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:last-of-type:after {\n  display: none;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:last-of-type:before {\n  background: #dcdcdc;\n  display: none;\n  left: -75%;\n  width: 100%;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap {\n  width: 400px;\n  min-height: 50vh;\n  overflow: hidden;\n  margin: 10px auto;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n  background: #fff;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li {\n  width: 400px;\n  padding: 0 20px;\n  box-sizing: border-box;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-title {\n  text-align: center;\n  color: #be0000;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item {\n  width: 100%;\n  height: 70px;\n  line-height: 70px;\n  background: #eeeeee;\n  margin: 10px 0;\n  border-radius: 4px;\n  padding: 0 20px;\n  position: relative;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item section {\n  height: 30px;\n  line-height: 30px;\n  padding-top: 4px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item section.wm-accept-list {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item section.wm-accept-list label {\n  display: block;\n  flex: 1;\n  -webkit-flex: 1;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item label {\n  display: inline-block;\n  margin-right: 10px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item input {\n  height: 34px;\n  background: transparent;\n  border: none;\n  outline: none;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item textarea {\n  position: absolute;\n  height: 60px;\n  width: 70%;\n  overflow: hidden;\n  resize: none;\n  top: 5px;\n  background: transparent;\n  border: none;\n  outline: none;\n  line-height: 30px;\n  padding-left: 10px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-next-btn button {\n  background: #fcb90a;\n  border-color: #fcb90a;\n}\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-addstudent-ui {\n  width: 100%;\n  background: #fff;\n  padding: 10px;\n  box-sizing: border-box;\n}\n\n.wm-addstudent-ui .wm-addstudent-header {\n  width: 50px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  width: 100%;\n  padding: 0 20px;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n  line-height: 50px;\n  font-size: 20px;\n}\n\n.wm-addstudent-ui .wm-addstudent-header > div:nth-of-type(1) {\n  position: relative;\n  text-indent: .5em;\n}\n\n.wm-addstudent-ui .wm-addstudent-header > div:nth-of-type(1):before {\n  content: '';\n  width: 4px;\n  height: 24px;\n  background: #be0000;\n  left: -4px;\n  position: absolute;\n  top: 12px;\n}\n\n.wm-addstudent-ui .wm-addstudent-main {\n  border-top: 1px solid #dcdee2;\n  padding-top: 10px;\n  box-sizing: border-box;\n}\n\n.wm-addstudent-ui .wm-addstudent-step {\n  margin: 0 auto;\n  width: 94%;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li {\n  flex: 1;\n  -webkit-flex: 1;\n  line-height: 24px;\n  height: 56px;\n  position: relative;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:before, .wm-addstudent-ui .wm-addstudent-step li:after {\n  content: '';\n  position: absolute;\n  width: 100%;\n  height: 4px;\n  background: #dcdcdc;\n  left: 50px;\n  top: 12px;\n  z-index: 0;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li > div {\n  position: absolute;\n  width: 100px;\n  text-align: center;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active1:after {\n  background: #f90;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active .wm-step-index {\n  background: #f90;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active section {\n  color: #f90;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li.active:before {\n  content: '';\n  background: #f90;\n  width: 50%;\n  z-index: 10;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li .wm-step-index {\n  border-radius: 50%;\n  width: 30px;\n  height: 30px;\n  font-size: 14px;\n  line-height: 30px;\n  text-align: center;\n  position: relative;\n  background: #dcdcdc;\n  margin: 0 auto;\n  color: #fff;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li .wm-step-index span {\n  position: relative;\n  z-index: 10;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:last-of-type {\n  flex: none;\n  -webkit-flex: none;\n  width: 100px;\n  text-align: right;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:last-of-type:after {\n  display: none;\n}\n\n.wm-addstudent-ui .wm-addstudent-step li:last-of-type:before {\n  background: #dcdcdc;\n  display: none;\n  left: -75%;\n  width: 100%;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap {\n  width: 400px;\n  min-height: 50vh;\n  overflow: hidden;\n  margin: 10px auto;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n  background: #fff;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li {\n  width: 400px;\n  padding: 0 20px;\n  box-sizing: border-box;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-title {\n  text-align: center;\n  color: #be0000;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item {\n  width: 100%;\n  height: 70px;\n  line-height: 70px;\n  background: #eeeeee;\n  margin: 10px 0;\n  border-radius: 4px;\n  padding: 0 20px;\n  position: relative;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item.displayBox {\n  padding: 0;\n  display: -webkit-box;\n  -webkit-box-align: center;\n  -webkit-box-pack: center;\n  -webkit-box-orient: horizontal;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item.displayBox > div:nth-of-type(1) {\n  width: 80px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item.displayBox > div:nth-of-type(2) {\n  flex: 1;\n  width: 240px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item.wm-recruitaction-desc {\n  line-height: 42px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item section {\n  height: 30px;\n  line-height: 30px;\n  padding-top: 4px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item section.wm-accept-list {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item section.wm-accept-list label {\n  display: block;\n  flex: 1;\n  -webkit-flex: 1;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item label {\n  display: inline-block;\n  margin-right: 10px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item input {\n  height: 34px;\n  background: transparent;\n  border: none;\n  outline: none;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-form-item textarea {\n  position: absolute;\n  height: 60px;\n  width: 70%;\n  overflow: hidden;\n  resize: none;\n  top: 5px;\n  background: transparent;\n  border: none;\n  outline: none;\n  line-height: 30px;\n  padding-left: 10px;\n}\n\n.wm-addstudent-ui .wm-step-content-wrap ol > li .wm-recruitaction-next-btn button {\n  background: #fcb90a;\n  border-color: #fcb90a;\n}\n", ""]);
 
 	// exports
 
@@ -14740,13 +14819,13 @@
 /* 56 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n    <div class=\"wm-addstudent-ui\">\r\n        <header class=\"wm-addstudent-header\">\r\n\t\t\t<div style=\"opacity:0\">{{title}} > 新增学员</div>\r\n\t\t</header>\r\n\t\t<div class='wm-addstudent-main' :style=\"{height:viewH- 64 - 64+'px'}\">\r\n\t\t\t<ul class='wm-addstudent-step'>\r\n\t\t\t\t<li v-for=\"(step,i) in steps\" :key='i' :class=\"{'active':current>=i,' active1':current>i}\" :title=\"step.title\" :content=\"step.content\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div class='wm-step-index' ><span>{{i+1}}</span></div>\r\n\t\t\t\t\t\t<section>{{step.title}}</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\r\n\t\t\t<div class='wm-step-content-wrap'>\r\n\t\t\t\t<ol :style=\"{width:400*steps.length+'px',WebkitTransform:'translate3d('+-400*current+'px,0,0)',transform:'translate3d('+-400*current+'px,0,0)'}\">\r\n\t\t\t\t\t<li>\r\n\t\t\t\t\t\t<div v-if='current === 0'>\r\n\t\t\t\t\t\t\t<h1 class=\"wm-recruitaction-title\">{{formRecruit.resourcecnname||'发布新的征集'}}</h1>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">名称：</label><input v-model=\"formRecruit.resourcecnname\" placeholder=\"请输入征集名称\"/>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">说明：</label><textarea placeholder=\"请输入征集说明\" v-model=\"formRecruit.resourcedesc\"></textarea>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">起止时间：</label>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">路径：</label>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<section>允许上传的类型</section>\r\n\t\t\t\t\t\t\t\t<section class=\"wm-accept-list\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"item.checked\" :checked='item.checked' v-for='(item,i) in accepts' :key=\"i\">{{item.name}}</Checkbox>\r\n\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-next-btn\">\r\n\t\t\t\t\t\t\t\t<Button long type='primary' size='large'>下一步</Button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='current === 1'>\r\n\t\t\t\t\t\t\t<h1  class=\"wm-recruitaction-title\">{{formRecruit.resourcecnname}}</h1>\r\n\t\t\t\t\t\t\t<div class=\"wm-default-field\">\r\n\t\t\t\t\t\t\t\t<div v-for='(field,i) in formRecruit.configList.fieldList' :key='i'></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t\t<li v-show='current===1'>\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item'>\r\n\t\t\t\t\t\t\t<label for=\"\">姓名：</label><input placeholder=\"请输入姓名\" type='text' v-model=\"formStudent.username\"/>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item'>\r\n\t\t\t\t\t\t\t<label for=\"\">密码：</label><input disabled placeholder=\"请输入密码\" type='text' v-model=\"formStudent.userpwd\"/>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item'>\r\n\t\t\t\t\t\t\t<label for=\"\">职务：</label><input placeholder=\"请输入职务\" type='text' v-model=\"formStudent.job\"/>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item'>\r\n\t\t\t\t\t\t\t<label for=\"\">公司名称：</label><input placeholder=\"请输入公司名称\" type='text' v-model=\"formStudent.companyname\"/>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item'>\r\n\t\t\t\t\t\t\t<label for=\"\">邮箱：</label><input placeholder=\"请输入邮箱\" type='text' v-model=\"formStudent.email\"/>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item displayFlex'>\r\n\t\t\t\t\t\t\t<div><label for=\"\">所属小组：</label></div>\r\n\t\t\t\t\t\t\t<Select v-model=\"formStudent.groupid\" style=\"width:240px;background:transparent\">\r\n\t\t\t\t\t\t       <Option v-for=\"item in groupList\" :value=\"item.groupid+''\" :key=\"item.groupid\">{{ item.groupname }}</Option>\r\n\t\t\t\t\t\t    </Select>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t<div class='wm-addstudent-form-item'>\r\n\t\t\t\t\t\t\t<label for=\"\">详细地址：</label><textarea placeholder=\"请输入详细地址\"  v-model=\"formStudent.detailaddress\" ></textarea>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class='wm-next-step-btn' @click='insertStudent'>{{current>=steps.length-1?'完成':'下一步'}}</div>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t</ol>\r\n\t\t\t</div>\r\n\r\n\t\t</div>\r\n    </div>\r\n";
+	module.exports = "\r\n    <div class=\"wm-addstudent-ui\">\r\n        <header class=\"wm-addstudent-header\">\r\n\t\t\t<div style=\"opacity:0\">{{title}} > 新增学员</div>\r\n\t\t</header>\r\n\t\t<div class='wm-addstudent-main' :style=\"{height:viewH- 64 - 64+'px'}\">\r\n\t\t\t<ul class='wm-addstudent-step'>\r\n\t\t\t\t<li v-for=\"(step,i) in steps\" :key='i' :class=\"{'active':current>=i,' active1':current>i}\" :title=\"step.title\" :content=\"step.content\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div class='wm-step-index' ><span>{{i+1}}</span></div>\r\n\t\t\t\t\t\t<section>{{step.title}}</section>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\r\n\t\t\t<div class='wm-step-content-wrap'>\r\n\t\t\t\t<ol :style=\"{width:400*steps.length+'px',WebkitTransform:'translate3d('+-400*current+'px,0,0)',transform:'translate3d('+-400*current+'px,0,0)'}\">\r\n\t\t\t\t\t<li >\r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<h1 class=\"wm-recruitaction-title\">{{formRecruit.resourcecnname||'发布新的征集'}}</h1>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">名称：</label><input v-model=\"formRecruit.resourcecnname\" placeholder=\"请输入征集名称\"/>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item wm-recruitaction-desc\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">说明：</label><textarea placeholder=\"请输入征集说明\" v-model=\"formRecruit.resourcedesc\"></textarea>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item displayBox\">\r\n\t\t\t\t\t\t\t\t<div><label for=\"\">起止时间：</label></div>\r\n\t\t\t\t\t\t\t\t<DatePicker v-model=\"formRecruit.datetimes\" :value=\"formRecruit.datetimes\" format=\"yyyy/MM/dd\" type=\"daterange\" placement=\"bottom-end\" placeholder=\"请选择开始和结束日期\"></DatePicker>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<label for=\"\">路径：</label>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-form-item\">\r\n\t\t\t\t\t\t\t\t<section>允许上传的类型</section>\r\n\t\t\t\t\t\t\t\t<section class=\"wm-accept-list\">\r\n\t\t\t\t\t\t\t\t\t<Checkbox v-model=\"item.checked\" :checked='item.checked' v-for='(item,i) in accepts' :key=\"i\">{{item.name}}</Checkbox>\r\n\t\t\t\t\t\t\t\t</section>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-recruitaction-next-btn\">\r\n\t\t\t\t\t\t\t\t<Button long type='primary' size='large' @click=\"current = 1\">下一步</Button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t</li>\r\n\t\t\t\t\t<li >\r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<h1  class=\"wm-recruitaction-title\">{{formRecruit.resourcecnname}}</h1>\r\n\t\t\t\t\t\t\t<div class=\"wm-default-field\">\r\n\t\t\t\t\t\t\t\t<div v-for='(field,i) in formRecruit.configList.fieldList' :key='i'></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</li>\r\n\t\t\t\t\t\r\n\t\t\t\t</ol>\r\n\t\t\t</div>\r\n\r\n\t\t</div>\r\n    </div>\r\n";
 
 /***/ }),
 /* 57 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-recurit-ui lt-full\" >\r\n\t\t<header class=\"wm-recurit-header\">\r\n\t\t\t<div>征集管理</div>\r\n\t\t\t<div></div>\r\n\t\t\t<div v-if='false' ><Icon type=\"ios-create-outline\" />发布新的征集</div>\r\n\t\t</header>\r\n\t\t<div class='wm-recurit-addstep' v-if='showDetail'>\r\n\t\t\t<AddResource title='征集管理' :steps='addResourceSteps'></AddResource>\r\n\t\t</div>\r\n\t\t<div  v-else class=\"wm-recurit-list wm-scroll\" >\r\n\t\t\t<ul>\r\n\t\t\t\t<li v-for='(item,i) in resourceList' :key=\"i\">\r\n\t\t\t\t\t<header>\r\n\t\t\t\t\t\t<div>{{item.resourcecnname}}</div>\r\n\t\t\t\t\t\t<div class=\"wm-recurit-action\">\r\n\t\t\t\t\t\t\t<Button size='small' :to=\"'/collection/'+item.resourceid+'/0'\">详情</Button>\r\n\t\t\t\t\t\t\t<Button size='small' v-if='false'>编辑</Button>\r\n\t\t\t\t\t\t\t<Button size='small' :to=\"'/collection/'+item.resourceid+'/1'\">评选</Button>\r\n\t\t\t\t\t\t\t<Button size='small' v-if='false' type='error'>删除</Button>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-recurit-item\">\r\n\t\t\t\t\t\t路径 ：{{item.dirid}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-recurit-item\">\r\n\t\t\t\t\t\t起止时间： {{item.starttime}} - {{item.endtime}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-recurit-item zmiti-text-overflow\" :title='item.resourcedesc'>\r\n\t\t\t\t\t\t说明：{{item.resourcedesc}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t\t\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-recurit-ui lt-full\" >\r\n\t\t<header class=\"wm-recurit-header\">\r\n\t\t\t<div>征集管理</div>\r\n\t\t\t<div></div>\r\n\t\t\t<div ><Icon type=\"ios-create-outline\" />发布新的征集</div>\r\n\t\t</header>\r\n\t\t<div class='wm-recurit-addstep' v-if='showDetail'>\r\n\t\t\t<AddResource title='征集管理' :steps='addResourceSteps'></AddResource>\r\n\t\t</div>\r\n\t\t<div  v-else class=\"wm-recurit-list wm-scroll\" >\r\n\t\t\t<ul>\r\n\t\t\t\t<li v-for='(item,i) in resourceList' :key=\"i\">\r\n\t\t\t\t\t<header>\r\n\t\t\t\t\t\t<div>{{item.resourcecnname}}</div>\r\n\t\t\t\t\t\t<div class=\"wm-recurit-action\">\r\n\t\t\t\t\t\t\t<Button size='small' :to=\"'/collection/'+item.resourceid+'/0'\">详情</Button>\r\n\t\t\t\t\t\t\t<Button size='small' v-if='false'>编辑</Button>\r\n\t\t\t\t\t\t\t<Button size='small' :to=\"'/collection/'+item.resourceid+'/1'\">评选</Button>\r\n\t\t\t\t\t\t\t<Button size='small' v-if='false' type='error'>删除</Button>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</header>\r\n\t\t\t\t\t<div class=\"wm-recurit-item\">\r\n\t\t\t\t\t\t路径 ：{{item.dirid}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-recurit-item\">\r\n\t\t\t\t\t\t起止时间： {{item.starttime}} - {{item.endtime}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"wm-recurit-item zmiti-text-overflow\" :title='item.resourcedesc'>\r\n\t\t\t\t\t\t说明：{{item.resourcedesc}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</li>\r\n\t\t\t</ul>\r\n\t\t</div>\r\n\t\t\r\n\t</div>\r\n";
 
 /***/ }),
 /* 58 */
@@ -15408,7 +15487,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	// <template>
-	// 	<div class="wm-adminuser-main-ui">
+	// 	<div class="wm-adminuser-main-ui lt-full" >
 	// 		<header>
 	// 			<div>我的下载</div>
 	// 			<section>
@@ -15446,7 +15525,7 @@
 	var _vue2 = _interopRequireDefault(_vue);
 
 	exports['default'] = {
-		props: ['obserable'],
+		props: ['obserable', 'isUser'],
 		name: 'zmitiindex',
 		data: function data() {
 			return {
@@ -15457,6 +15536,7 @@
 				split1: 0.8,
 				showPass: false,
 				viewH: window.innerHeight,
+				viewW: window.innerWidth,
 
 				downloadList: [],
 				columns: [{
@@ -15566,46 +15646,15 @@
 			///this.validate = validate;
 		},
 		mounted: function mounted() {
-			this.userinfo = _libUtil2['default'].getUserInfo();
+			var key = this.isUser ? 'login' : 'adminlogin';
+			this.userinfo = _libUtil2['default'].getUserInfo(key);
 			//this.addadUser();
 			this.getDownloadlist();
 
 			var s = this;
-
-			/*symbinUtil.ajax({
-	  	url:'http://api.symbin.cn/v1/wmadadmin/getuserziplist/',
-	  	data:{
-	  		admintoken:s.userinfo.admintoken,
-	  		adminusername:s.userinfo.adminusername,
-	  		usertype:2,
-	  	},
-	  	success(data){
-	  		console.log(data,' =======');
-	  	}
-	  })
-	  /* var s = this;
-	  symbinUtil.ajax({
-	  	url:window.config.baseUrl+'/wmadadmin/createzip/',
-	  	data:{
-	  		admintoken:s.userinfo.admintoken,
-	  		adminusername:s.userinfo.adminusername,
-	  		urls:'http://api.symbin.cn/wmpublicadupload/2018/3021678740.jpg,http://api.symbin.cn/wmpublicadupload/2018/1039108971.jpg'
-	  	},
-	  	success(data){
-	  		console.log('111111111111111111')
-	  		console.log(data,' ----------- ');
-	  	}
-	  }) */
 		},
 
 		methods: {
-
-			onEditorBlur: function onEditorBlur() {//失去焦点事件
-			},
-			onEditorFocus: function onEditorFocus() {//获得焦点事件
-			},
-			onEditorChange: function onEditorChange() {//内容改变事件
-			},
 
 			checkUser: function checkUser(params) {
 				var s = this;
@@ -15619,7 +15668,7 @@
 						status: params.row.status === 1 ? 0 : 1
 					},
 					success: function success(data) {
-						console.log(data);
+
 						s.$Message[data.getret === 0 ? "success" : "error"](data.getmsg);
 						s.getDownloadlist();
 					}
@@ -15683,19 +15732,27 @@
 			},
 			getDownloadlist: function getDownloadlist() {
 				var s = this;
+
+				var url = window.config.baseUrl + '/wmadadmin/getuserziplist/';
+				var data = {
+					admintoken: s.userinfo.admintoken,
+					adminusername: s.userinfo.adminusername,
+					pagenum: 1000,
+					usertype: 2
+					//status:-1,//查询全部
+				};
+
+				if (s.isUser) {
+					url = window.config.baseUrl + '/wmadvuser/getuserziplist';
+					data.username = s.userinfo.username;
+					data.usertoken = s.userinfo.accesstoken;
+				}
+
 				_libUtil2['default'].ajax({
-					_this: s,
-					url: window.config.baseUrl + '/wmadadmin/getuserziplist/',
-					//validate:s.validate,
-					data: {
-						admintoken: s.userinfo.admintoken,
-						adminusername: s.userinfo.adminusername,
-						pagenum: 1000,
-						usertype: 2
-						//status:-1,//查询全部
-					},
+					url: url,
+					data: data,
 					success: function success(data) {
-						console.log(data);
+
 						if (data.getret === 0) {
 							s.downloadList = data.list;
 						} else {
@@ -15748,7 +15805,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\r\n.lt-full {\r\n  width: 100%;\r\n  height: 100%;\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n}\r\n\r\n.zmiti-text-overflow {\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  word-break: break-all;\r\n  text-overflow: ellipsis;\r\n  -webkit-text-overflow: ellipsis;\r\n}\r\n\r\n.zmiti-play {\r\n  width: .8rem;\r\n  height: .8rem;\r\n  border-radius: 50%;\r\n  position: fixed;\r\n  z-index: 1000;\r\n  right: .5rem;\r\n  top: .5rem;\r\n}\r\n\r\n.zmiti-play.rotate {\r\n  -webkit-animation: rotate 5s linear infinite;\r\n  animation: rotate 5s linear infinite;\r\n}\r\n\r\n.symbin-left {\r\n  float: left !important;\r\n}\r\n\r\n.symbin-right {\r\n  float: right !important;\r\n}\r\n\r\n@-webkit-keyframes rotate {\r\n  to {\r\n    -webkit-transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n\r\n.wm-adminuser-main-ui > header {\r\n  background: #fff;\r\n  height: 50px;\r\n  width: 100%;\r\n  line-height: 50px;\r\n  display: flex;\r\n  display: -webkit-flex;\r\n  flex-flow: row;\r\n  justify-content: space-between;\r\n  -webkit-justify-content: space-between;\r\n}\r\n\r\n.wm-adminuser-main-ui > header > section {\r\n  margin-right: 30px;\r\n}\r\n\r\n.wm-adminuser-main-ui > header > div {\r\n  font-size: 20px;\r\n  margin-left: 40px;\r\n  position: relative;\r\n}\r\n\r\n.wm-adminuser-main-ui > header > div:before {\r\n  content: \"\";\r\n  position: absolute;\r\n  width: 2px;\r\n  height: 20px;\r\n  background: #cc0000;\r\n  top: 15px;\r\n  left: -10px;\r\n}\r\n\r\n.wm-adminuser-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {\r\n  left: 30px;\r\n}\r\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-adminuser-main-ui {\n  padding: 0 1%;\n  background: #fff;\n}\n\n.wm-adminuser-main-ui > header {\n  height: 50px;\n  width: 100%;\n  line-height: 50px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  justify-content: space-between;\n  -webkit-justify-content: space-between;\n}\n\n.wm-adminuser-main-ui > header > section {\n  margin-right: 30px;\n}\n\n.wm-adminuser-main-ui > header > div {\n  font-size: 20px;\n  margin-left: 40px;\n  position: relative;\n}\n\n.wm-adminuser-main-ui > header > div:before {\n  content: \"\";\n  position: absolute;\n  width: 2px;\n  height: 20px;\n  background: #cc0000;\n  top: 15px;\n  left: -10px;\n}\n\n.wm-adminuser-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {\n  left: 30px;\n}\n", ""]);
 
 	// exports
 
@@ -15757,7 +15814,7 @@
 /* 74 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui\">\r\n\t\t<header>\r\n\t\t\t<div>我的下载</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button v-if='false' type=\"primary\" icon='md-add-circle' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='downloadList' :columns='columns'   stripe></Table>\r\n\r\n\t\r\n\t\t \r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-adminuser-main-ui lt-full\" >\r\n\t\t<header>\r\n\t\t\t<div>我的下载</div>\r\n\t\t\t<section>\r\n\t\t\t\t<Button v-if='false' type=\"primary\" icon='md-add-circle' @click=\"addNewAduser\">新增用户</Button>\r\n\t\t\t</section>\r\n\t\t</header>\r\n\t\t<Table ref='scorelist'  :height='viewH - 64- 70 ' :data='downloadList' :columns='columns'   stripe></Table>\r\n\r\n\t\r\n\t\t \r\n\t</div>\r\n";
 
 /***/ }),
 /* 75 */
@@ -28248,10 +28305,11 @@
 		},
 
 		getUserInfo: function getUserInfo() {
+			var key = arguments.length <= 0 || arguments[0] === undefined ? 'login' : arguments[0];
 
 			var loginObj = {};
 			try {
-				loginObj = JSON.parse(localStorage.getItem('login'));
+				loginObj = JSON.parse(localStorage.getItem(key));
 			} catch (error) {
 				this.clearCookie('login');
 				window.location.hash = '/login';
@@ -28394,7 +28452,7 @@
 	// 				</div>
 	// 				<div>
 	// 					<div>您所下载的文件正在打包中，为了不影响您浏览，</div>
-	// 					<div>请在 <a href="#/download/">我的下载</a> 中查看</div>
+	// 					<div>请在 <a href="javascript:void(0)">我的下载</a> 中查看</div>
 	// 				</div>
 	// 			</div>
 	//
@@ -28404,6 +28462,8 @@
 	// </template>
 	//
 	// <script>
+
+	///下载提示框
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -28471,7 +28531,7 @@
 /* 97 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-download-mask-ui\" v-if='isdownloading'>\r\n\t\t<div class='wm-download-loading' >\r\n\t\t\t<header>\r\n\t\t\t\t<div>下载提示</div>\r\n\t\t\t\t<div @click=\"hideDownloadTip\"><Icon type=\"md-close\" /></div>\r\n\t\t\t</header>\r\n\t\t\t<div  class='wm-download-tip'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.createzip\" alt=\"\">\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div>您所下载的文件正在打包中，为了不影响您浏览，</div>\r\n\t\t\t\t\t<div>请在 <a href=\"#/download/\">我的下载</a> 中查看</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div class=\"wm-download-btn\" @click=\"hideDownloadTip\">我知道了</div>\r\n\t\t</div>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-download-mask-ui\" v-if='isdownloading'>\r\n\t\t<div class='wm-download-loading' >\r\n\t\t\t<header>\r\n\t\t\t\t<div>下载提示</div>\r\n\t\t\t\t<div @click=\"hideDownloadTip\"><Icon type=\"md-close\" /></div>\r\n\t\t\t</header>\r\n\t\t\t<div  class='wm-download-tip'>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.createzip\" alt=\"\">\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<div>您所下载的文件正在打包中，为了不影响您浏览，</div>\r\n\t\t\t\t\t<div>请在 <a href=\"javascript:void(0)\">我的下载</a> 中查看</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<div class=\"wm-download-btn\" @click=\"hideDownloadTip\">我知道了</div>\r\n\t\t</div>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 98 */

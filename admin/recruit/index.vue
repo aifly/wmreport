@@ -63,7 +63,7 @@
 				],
 				pagenum:20,
 				resourceList:[],
-				showDetail:true,
+				showDetail:false,
 
 			}
 		},

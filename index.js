@@ -5,7 +5,8 @@ import Login from './components/login/index'
 import Register from './components/register/index';
 import MyReport from './components/myreport/index';
 import User from './components/user/index';
-import Dwonload from './download/index';
+import DownLoad from './download/index';
+import MyDownload from './admin/download/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
 import './components/css/index.css';
@@ -51,11 +52,20 @@ const router = new VueRouter({
 		}, {
 			path: '/download/:id',
 			name: 'download',
-			component: Dwonload,
+			component: DownLoad,
 			props: {
-				isAdmin:true
+				isAdmin:true,
+				isUser:true
+			}
+		}, {
+			path: '/mydownload/',
+			name: 'mydownload',
+			component: MyDownload,
+			props: {
+				isUser:true
 			}
 		}
+
 		
 	]
 });

@@ -76,16 +76,17 @@
   text-align: left !important;
 }
 
-.wm-user-dowload-ui.isAdmin .wm-collection-report-list ul {
+.wm-user-dowload-ui.isAdmin .wm-collection-report-list > ul {
   display: flex;
   display: -webkit-flex;
   flex-flow: row;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
   justify-content: space-between;
+  -webkit-justify-content: space-between;
 }
 
-.wm-user-dowload-ui.isAdmin .wm-collection-report-list ul li {
+.wm-user-dowload-ui.isAdmin .wm-collection-report-list > ul li {
   display: block !important;
 }
 
@@ -120,6 +121,10 @@
 
 .wm-user-dowload-ui.isAdmin .wm-collection-check-action .ivu-checkbox span {
   height: 14px;
+}
+
+.wm-user-dowload-ui.isUser {
+  overflow: auto;
 }
 
 .wm-user-dowload-ui .wm-collection-left-pannel {
@@ -692,6 +697,12 @@
   flex-flow: row;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
+  clear: both;
+}
+
+.wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div {
+  float: left;
+  box-sizing: border-box;
 }
 
 .wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(1) {
@@ -699,11 +710,14 @@
 }
 
 .wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(2) {
+  width: 80%;
+  flex: 1;
   line-height: 20px;
 }
 
 .wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) {
   width: 60px;
+  text-align: right;
 }
 
 .wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) i {
@@ -803,10 +817,6 @@
   -webkit-justify-content: space-between;
   margin: 0 auto;
   padding: 60px 0;
-}
-
-.wm-user-dowload-ui .wm-download-loading .wm-download-tip div {
-  line-height: 70px;
 }
 
 .wm-user-dowload-ui .wm-download-loading .wm-download-tip img {

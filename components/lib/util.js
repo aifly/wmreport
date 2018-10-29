@@ -12,11 +12,11 @@ var symbinUtil = {
 		return url.match(pattern) ? url.replace(eval('/(' + arg + '=)([^&]*)/gi'), replaceText) : (url.match('[\?]') ? url + '&' + replaceText : url + '?' + replaceText);
 	},
 
-	getUserInfo(){
+	getUserInfo(key = 'login'){
 		
 		var loginObj = {};
 		try {
-			loginObj = JSON.parse(localStorage.getItem('login'));
+			loginObj = JSON.parse(localStorage.getItem(key));
 		} catch (error) {
 			this.clearCookie('login');
 			window.location.hash = '/login';

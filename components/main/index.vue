@@ -38,6 +38,7 @@
                                     我的
                                 </template>
                                 <MenuItem to='/user/' name="13">个人中心 </MenuItem>
+                                <MenuItem to='/mydownload/' name="14">我的下载 </MenuItem>
                             </Submenu>
                            
                         </Menu>

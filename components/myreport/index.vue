@@ -21,7 +21,7 @@
 							 上报{{menu.split('-')[0]}}
 						 </li>
 					 </ul>
-					 <a :href="'#/download/'+$route.params.id">查看更多>></a>
+					 <a :href="'#/download/'+$route.params.id">查看全部>></a>
 				</header>
 				<section>
 					<div class="wm-myreport-list-C">
@@ -942,8 +942,10 @@
 				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
 				var iNow = 0;
 				uploader.on('uploadSuccess', function (file,response) {
-					console.log('success')
-
+					if(response.getret === 2000){
+						s.$Message.error('您没有上传的权限');
+						return;
+					};
 					setTimeout(() => {
 						
 						if(s.formAdmin.publicadtype !== '图片-zmiti'){

@@ -1,5 +1,5 @@
 <template>
-	<div class="wm-user-dowload-ui " :class='{"isAdmin":isAdmin}' @click.stop='showCondition = false;showCheckAction = false'>
+	<div class="wm-user-dowload-ui " :class='{"isAdmin":isAdmin,"isUser wm-scroll":isUser}' :style="{height:isUser?viewH-90+'px':'auto'}" @click.stop='showCondition = false;showCheckAction = false'>
 		
 		<div  class="wm-collection-left-main-ui">
 			<header class='wm-collection-left-header' v-if='viewW<=760'>
@@ -146,6 +146,7 @@
 			</div>
 		</div>
 		<a :href="downloadImg" v-if='downloadImg' style="opacity:0;position:fixed;top:100%;left:100%" ref='downloadimg' target='_blank'>1</a>
+		<DownloadTip :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></DownloadTip>
 	</div>
 </template>
 
@@ -154,9 +155,10 @@
 	import symbinUtil from '../components/lib/util';
 	import Vue from "vue";
 	import Detail from '../common/mask/detail';
+	import DownloadTip from '../common/mask/download';
 
 	export default {
-		props:['obserable','isAdmin'],
+		props:['obserable','isAdmin','isUser'],
 		name:'zmitiindex',
 		data(){
 			return{
@@ -164,6 +166,7 @@
 				isLoading:false,
 				selectAll:false,
 				scale:1,
+				showDownloadtip:false,
 				uploadUrl:window.config.uploadUrl,
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
@@ -186,157 +189,7 @@
 				sort:1,
 				showCheckAction:false,
 				configList:[
-					{
-						"name": "名称",
-						"type": "text",
-						"notnull": 1,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "filetitle",
-						"length": 255,
-						"loading": 1,
-						"edit": 1
-					},
-					{
-						"name": "说明",
-						"type": "textarea",
-						"notnull": 0,
-						"default": "",
-						"fieldtype": "text",
-						"fieldname": "filedesc",
-						"loading": 1,
-						"edit": 1
-					},
-					{
-						"name": "创建时间",
-						"type": "text",
-						"notnull": 1,
-						"default": "CURRENT_TIMESTAMP",
-						"fieldtype": "datetime",
-						"fieldname": "createtime",
-						"loading": 1,
-						"edit": 0
-					},
-					{
-						"name": "属性",
-						"type": "text",
-						"notnull": 1,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "fileattr",
-						"length": 255,
-						"loading": 1,
-						"edit": 0
-					},
-					{
-						"name": "上传者",
-						"type": "text",
-						"notnull": 1,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "username",
-						"length": 255,
-						"loading": 1,
-						"edit": 0
-					},
-					{
-						"name": "扩展名",
-						"type": "text",
-						"notnull": 1,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "fileextname",
-						"length": 16,
-						"loading": 1,
-						"edit": 0
-					},
-					{
-						"name": "大小",
-						"type": "text",
-						"notnull": 1,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "filesize",
-						"length": 16,
-						"loading": 1,
-						"edit": 0
-					},
-					{
-						"name": "单位",
-						"type": "text",
-						"notnull": 1,
-						"default": "B",
-						"fieldtype": "varchar",
-						"fieldname": "filesizeunit",
-						"length": 8,
-						"loading": 0,
-						"edit": 0
-					},
-					{
-						"name": "类型",
-						"type": "select",
-						"notnull": 1,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "publicadtype",
-						"ismultiselection": 0,
-						"data": [
-							"图片-zmiti",
-							"视频-zmiti",
-							"音频-zmiti",
-							"动漫-zmiti",
-							"h5-zmiti"
-
-						],
-						"length": 64,
-						"loading": 1,
-						"edit": 1
-					},
-					{
-						"name": "作者",
-						"type": "text",
-						"notnull": 0,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "author",
-						"length": 64,
-						"loading": 1,
-						"edit": 1
-					},
-					{
-						"name": "电话",
-						"type": "text",
-						"notnull": 0,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "telphone",
-						"length": 16,
-						"placeholder": "作者联系电话",
-						"loading": 1,
-						"edit": 1
-					}, {
-						"name": "预览地址",
-						"type": "text",
-						"notnull": 0,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "previewurl",
-						"length": 500,
-						"placeholder": "h5作品浏览地址",
-						"loading": 1,
-						"edit": 1
-					},
-					{
-						"name": "标签",
-						"type": "text",
-						"notnull": 0,
-						"default": "",
-						"fieldtype": "varchar",
-						"fieldname": "userlabel",
-						"length": 255,
-						"loading": 1,
-						"edit": 0
-					}
+					
 				],
 				currentReportIndex:0,
 				menus:['图片-zmiti','视频-zmiti','音频-zmiti','动漫-zmiti','h5-zmiti'],
@@ -357,7 +210,8 @@
 			}
 		},
 		components:{
-			Detail
+			Detail,
+			DownloadTip
 		},
 		watch:{
 			selectAll(val){
@@ -393,6 +247,9 @@
 			}
 		},
 		methods:{
+			hideDownloadTip(){
+				this.showDownloadtip = false;
+			},
 
 			toggleChecked(index){
 				var isChecked = !this.reportList[index].checked;
@@ -534,32 +391,76 @@
 						s.$Message.error('请至少选择一个要下载的作品');
 						return;
 					}
+					if(this.isUser || this.isAdmin){
 
-					if(downloadSize>100){
-						this.$Message.error('打包文件超过100M 可能会引起压缩超时，请减少打包内容或选择单个下载');
-						return;
-					}
-					s.isdownloading = true;
-					symbinUtil.ajax({
-						url:window.config.baseUrl+'/wmshare/createzip',
-						data:{
+						s.isdownloading = true;
+						var url = window.config.baseUrl+'/wmadvuser/createzip';
+						var data = {
+							admintoken:s.userinfo.admintoken,
+							adminusername:s.userinfo.adminusername,
 							urls:urls.join(','),
 							filetitles:filenameList.join(',')
-						},
-						error(){
-							s.isdownloading = false;
-							s.$Message.error('打包失败');
-						},
-						success(data){
-							s.isdownloading = false;
-							if(data.getret === 0){
-								console.log(data);
-								window.location.href = data.zipurl;
-
-
+						}
+						if(this.isUser){
+							window.config.baseUrl+'/wmadadmin/createzip';
+							data = {
+								username : s.userinfo.username,
+								usertoken : s.userinfo.accesstoken,
+								urls:urls.join(','),
+								filetitles:filenameList.join(',')
 							}
 						}
-					})
+						symbinUtil.ajax({
+							url,
+							data,
+							error(){
+								s.isdownloading = false;
+								s.$Message.error('打包失败');
+							},
+							success(data){
+								s.isdownloading = false;
+								if(data.getret === 0){
+									console.log(data);
+									//window.location.href = data.zipurl;
+	
+	
+								}
+								else if(data.getret === 2001){//文件大小超过限制，请到下载页面下载
+									s.showDownloadtip = true;
+								}
+							}
+						})
+
+
+					}else{
+
+						if(downloadSize>100){
+							this.$Message.error('打包文件超过100M 可能会引起压缩超时，请减少打包内容或选择单个下载');
+							return;
+						}
+						s.isdownloading = true;
+						symbinUtil.ajax({
+							url:window.config.baseUrl+'/wmshare/createzip',
+							data:{
+								urls:urls.join(','),
+								filetitles:filenameList.join(',')
+							},
+							error(){
+								s.isdownloading = false;
+								s.$Message.error('打包失败');
+							},
+							success(data){
+								s.isdownloading = false;
+								if(data.getret === 0){
+									console.log(data);
+									window.location.href = data.zipurl;
+	
+	
+								}
+							}
+						})
+					}
+
 				}else{
 					 s.downloadImg = status.filepath;
 					 setTimeout(() => {
@@ -617,7 +518,7 @@
 				var s = this;
 
 				var  p  ={
-					resourceid:1,
+					resourceid:s.$route.params.id ||1,
 					pagenum:s.pagenum,
 					page:s.page
 				};
@@ -691,6 +592,8 @@
 			
 		},
 		mounted(){
+			var key =  this.isUser ?　'login':'adminlogin';
+			this.userinfo = symbinUtil.getUserInfo(key);
 			this.getReportList(()=>{
 				var id = this.$route.params.id;
 				if(id){
@@ -708,6 +611,27 @@
 			});
 			
 			window.s = this;
+
+
+			var t = setInterval(()=>{
+
+				this.configList = Vue.obserable.trigger({
+					type:"getFeildList",
+					data:this.$route.params.id
+				});
+
+				if(this.configList){
+
+					this.configList.forEach((item)=>{
+						if(item.fieldname === 'publicadtype'){
+							this.menus = item.data;
+						}
+					});
+					clearInterval(t);
+				}
+			},30)
+
+			
 
 
 			

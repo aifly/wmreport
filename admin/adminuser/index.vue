@@ -317,6 +317,7 @@
 					},
 					success(data){
 						console.log(data);
+						s.$Message[data.getret === 0 ? "success":"error"](data.getmsg);
 					}
 				})
 			},

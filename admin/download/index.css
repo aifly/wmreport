@@ -49,8 +49,12 @@
   }
 }
 
-.wm-adminuser-main-ui > header {
+.wm-adminuser-main-ui {
+  padding: 0 1%;
   background: #fff;
+}
+
+.wm-adminuser-main-ui > header {
   height: 50px;
   width: 100%;
   line-height: 50px;

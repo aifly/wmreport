@@ -28,11 +28,12 @@ body{
 			}
 		}
 		.wm-collection-report-list{
-			ul{
+			&>ul{
 				@include displayFlex(row);
 				-webkit-flex-wrap:wrap;
 				flex-wrap:wrap;
 				justify-content: space-between;
+				-webkit-justify-content: space-between;
 				li{
 					display: block !important;
 				}
@@ -66,6 +67,9 @@ body{
 			}
 		}
 		
+	}
+	&.isUser{
+		overflow: auto;
 	}
 	margin:344px auto 0;
 
@@ -603,17 +607,22 @@ body{
 					 @include displayFlex(row);
 					 border-bottom: 1px solid #eee;
 					 padding-bottom: 10px;
+					 clear: both;
 
 					 &>div{
+						 float: left;
+						 box-sizing: border-box;
 						 &:nth-of-type(1){
 							width: 60px;
 						 }
 						 &:nth-of-type(2){
-
-							 line-height: 20px;
+							width: 80%;
+							flex:1;
+							line-height: 20px;
 						 }
 						 &:nth-of-type(3){
 							 width: 60px;
+							 text-align: right;
 							 i{
 								 font-size:20px;
 							 }
@@ -707,7 +716,7 @@ body{
 			margin:0 auto;
 			padding: 60px 0;
 			div{
-				line-height: 70px;
+				//line-height: 70px;
 			}
 			img{
 				width: 100px;

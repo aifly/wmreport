@@ -23046,10 +23046,11 @@
 		},
 
 		getUserInfo: function getUserInfo() {
+			var key = arguments.length <= 0 || arguments[0] === undefined ? 'login' : arguments[0];
 
 			var loginObj = {};
 			try {
-				loginObj = JSON.parse(localStorage.getItem('login'));
+				loginObj = JSON.parse(localStorage.getItem(key));
 			} catch (error) {
 				this.clearCookie('login');
 				window.location.hash = '/login';

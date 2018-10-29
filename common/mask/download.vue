@@ -11,7 +11,7 @@
 				</div>
 				<div>
 					<div>您所下载的文件正在打包中，为了不影响您浏览，</div>
-					<div>请在 <a href="#/download/">我的下载</a> 中查看</div>
+					<div>请在 <a href="javascript:void(0)">我的下载</a> 中查看</div>
 				</div>
 			</div>
 
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+
+	///下载提示框
 	import './download.css';
 	export default {
 		name:"",

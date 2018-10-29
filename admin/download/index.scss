@@ -5,8 +5,11 @@ $viewW: 750px;
 $color: #be0000;
 
 .wm-adminuser-main-ui{
+    
+    padding:0 1%;
+    background: #fff;
+
     &>header {
-        background: #fff;
         height: 50px;
         width: 100%;
         line-height: 50px;

@@ -12,10 +12,10 @@ var symbinUtil = {
 		return url.match(pattern) ? url.replace(eval('/(' + arg + '=)([^&]*)/gi'), replaceText) : (url.match('[\?]') ? url + '&' + replaceText : url + '?' + replaceText);
 	},
 
-	getUserInfo(){
+	getUserInfo(key = 'adminlogin') {
 		var loginObj = {};
 		try {
-			loginObj = JSON.parse(localStorage.getItem('adminlogin'));;
+			loginObj = JSON.parse(localStorage.getItem(key));;
 
 		} catch (error) {
 			this.clearCookie('adminlogin');

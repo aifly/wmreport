@@ -1,5 +1,5 @@
 <template>
-	<div class="wm-adminuser-main-ui">
+	<div class="wm-adminuser-main-ui lt-full" >
 		<header>
 			<div>我的下载</div>
 			<section>
@@ -21,7 +21,7 @@
 	
 
 	export default {
-		props:['obserable'],
+		props:['obserable','isUser'],
 		name:'zmitiindex',
 		data(){
 			return{
@@ -32,6 +32,7 @@
 				split1: 0.8,
 				showPass:false,
 				viewH:window.innerHeight,
+				viewW:window.innerWidth,
 				
 				downloadList:[],
 				columns:[
@@ -150,49 +151,20 @@
 			///this.validate = validate;
 		},
 		mounted(){
-			this.userinfo = symbinUtil.getUserInfo();
+			var key =  this.isUser ?　'login':'adminlogin';
+			this.userinfo = symbinUtil.getUserInfo(key);
 			//this.addadUser();
 			this.getDownloadlist();
 
 			var s = this;
 
-
-			
-			/*symbinUtil.ajax({
-				url:'http://api.symbin.cn/v1/wmadadmin/getuserziplist/',
-				data:{
-					admintoken:s.userinfo.admintoken,
-					adminusername:s.userinfo.adminusername,
-					usertype:2,
-				},
-				success(data){
-					console.log(data,' =======');
-				}
-			})
-			/* var s = this;
-			symbinUtil.ajax({
-				url:window.config.baseUrl+'/wmadadmin/createzip/',
-				data:{
-					admintoken:s.userinfo.admintoken,
-					adminusername:s.userinfo.adminusername,
-					urls:'http://api.symbin.cn/wmpublicadupload/2018/3021678740.jpg,http://api.symbin.cn/wmpublicadupload/2018/1039108971.jpg'
-				},
-				success(data){
-					console.log('111111111111111111')
-					console.log(data,' ----------- ');
-				}
-			}) */
+ 
 
 		},
 		
 		methods:{
 
-			onEditorBlur(){//失去焦点事件
-            },
-            onEditorFocus(){//获得焦点事件
-            },
-            onEditorChange(){//内容改变事件
-            },
+		 
 
 			checkUser(params){
 				var s = this;
@@ -206,7 +178,7 @@
 						status:params.row.status === 1 ? 0 : 1,
 					},
 					success(data){
-						console.log(data);
+						 
 						s.$Message[data.getret === 0 ? "success":"error"](data.getmsg);
 						s.getDownloadlist();
 					}
@@ -272,19 +244,27 @@
 			},
 			getDownloadlist(){
 				var s = this;
-				symbinUtil.ajax({
-					_this:s,
-					url:window.config.baseUrl+'/wmadadmin/getuserziplist/',
-					//validate:s.validate,
-					data:{
+				
+				var url = window.config.baseUrl+'/wmadadmin/getuserziplist/';
+				var data = {
 						admintoken:s.userinfo.admintoken,
 						adminusername:s.userinfo.adminusername,
 						pagenum:1000,
 						usertype:2
 						//status:-1,//查询全部
-					},
+					};
+
+				if(s.isUser){
+					url = window.config.baseUrl+'/wmadvuser/getuserziplist';
+					data.username = s.userinfo.username;
+					data.usertoken = s.userinfo.accesstoken;
+				}
+
+				symbinUtil.ajax({
+					url,
+					data,
 					success(data){
-						console.log(data);
+						
 						if(data.getret === 0){
 							s.downloadList = data.list;
 						}
