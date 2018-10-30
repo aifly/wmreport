@@ -48,7 +48,7 @@
 			</section>
 
 		</div>
-		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
+		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 mov webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
 			<img :title='showOriginalImg?"点击还原":"点击放大"' :style="{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}" @click.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex]['pcbilethum']||imgs.poster" alt="" />
 			<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 				<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
@@ -63,7 +63,7 @@
 				<div>扫描二维码查看</div>
 			</div>
 		</div>
-		<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
+		<div v-if='"mp4 webm mov".indexOf(reportList[currentReportIndex].fileextname)>-1'>
 			<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
 			<!-- <div class='video' id='video' ref='video'></div> -->
 			

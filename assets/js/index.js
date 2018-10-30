@@ -12577,7 +12577,7 @@
 	// 			</section>
 	//
 	// 		</div>
-	// 		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
+	// 		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 mov webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
 	// 			<img :title='showOriginalImg?"点击还原":"点击放大"' :style="{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}" @click.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex]['pcbilethum']||imgs.poster" alt="" />
 	// 			<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 	// 				<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
@@ -12592,7 +12592,7 @@
 	// 				<div>扫描二维码查看</div>
 	// 			</div>
 	// 		</div>
-	// 		<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
+	// 		<div v-if='"mp4 webm mov".indexOf(reportList[currentReportIndex].fileextname)>-1'>
 	// 			<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
 	// 			<!-- <div class='video' id='video' ref='video'></div> -->
 	//
@@ -23721,7 +23721,7 @@
 /* 92 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n    <div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t<div class=\"wm-preview-action\">\r\n\t\t\t<span title='下载'>\r\n\t\t\t\t<a target=\"_blank\" :href='reportList[currentReportIndex].filepath' :download=\"reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname\">\r\n\t\t\t\t\t<Icon type=\"ios-download-outline\" />\r\n\t\t\t\t</a>\r\n\t\t\t</span>\r\n\t\t\t<span title='打印' @click='printPage'><Icon type=\"md-print\" /></span>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t</div>\r\n\t\t<div class=\"wm-report-print\" ref='page' >\r\n\t\t\t<section style=\"display:flex;\r\n\t\t\t\t\t\t-webkit-display:flex;\r\n\t\t\t\t\t\tflex-flow: column;\r\n\t\t\t\t\t\t-webkit-flex-flow: column;\r\n\t\t\t\t\t\twidth:100%;\r\n\t\t\t\t\t\theight:100%;\r\n\t\t\t\t\t\t-webkit-justify-content: space-between;\r\n\t\t\t\t\t\tjustify-content: space-between;\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t<div style=\"height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;\">{{reportList[currentReportIndex].filetitle}}</div>\r\n\t\t\t\t<div style=\"\r\n\t\t\t\t\t\tflex:1;\r\n\t\t\t\t\t\t-webkit-flex:1;\r\n\t\t\t\t\t\tbox-sizing:border-box;\r\n\t\t\t\t\t\toverflow:hidden;\r\n\t\t\t\t\t\tmargin-top:20px;\r\n\t\t\t\t\t\ttext-align:center;\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t\t<img style=\"position:relative;top:50%;\r\n\t\t\t\t\t\ttransform:translate(0,-50%);\r\n\t\t\t\t\t\t-webkit-transform:translate(0,-50%);\r\n\t\t\t\t\t\t;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;\" :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000\">{{reportList[currentReportIndex].filedesc}}</div>\r\n\r\n\t\t\t\t<div  style=\"display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;\">\r\n\t\t\t\t\t<div>上传者：{{reportList[currentReportIndex].username}}</div>\r\n\t\t\t\t\t<div v-if='reportList[currentReportIndex].fileattr'>\r\n\t\t\t\t\t\t尺寸：{{reportList[currentReportIndex].fileattr}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;\">\r\n\t\t\t\t\t<div style=\"padding:0 10px;line-height:40px;;font-size:13px;border:1px solid #ddd;color:#ddd;border-radius:5px;text-align:center;margin:6px 20px 0 0;display:inline-block;\" v-for='(tag,i) in reportList[currentReportIndex].userlabel.split(\",\")' :key='i'>{{tag}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t</section>\r\n\r\n\t\t</div>\r\n\t\t<div  :class='{\"original\":showOriginalImg}' v-if='\"mp3 mp4 webm aac wma ogg\".indexOf(reportList[currentReportIndex].fileextname)<=-1'>\r\n\t\t\t<img :title='showOriginalImg?\"点击还原\":\"点击放大\"' :style=\"{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}\" @click.stop=\"showOriginalImg = !showOriginalImg\"  :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex]['pcbilethum']||imgs.poster\" alt=\"\" />\r\n\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname] ||'暂无'}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-report-qrcode\" ref='qrcode' v-if='reportList[currentReportIndex].publicadtype === \"h5-zmiti\" &&reportList[currentReportIndex].previewurl'>\r\n\t\t\t\t<div>扫描二维码查看</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t<!-- <div class='video' id='video' ref='video'></div> -->\r\n\t\t\t\r\n\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<section v-if='type*1 === 0' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t\r\n\t\t</section>\r\n\r\n\t\t<section  v-if='type === \"rater\"' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入您的评价\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].comments\"/>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 100 ? '已':''}}通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 0 ? '已':''}}拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\r\n\t\t<section v-if='type*1 === 2'  class=\"wm-reset\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t<img :src=\"imgs.reset\" alt=\"\">\r\n\t\t</section>\r\n\r\n\t\t<section class=\"wm-detail-mask-tip\" v-if='false && \"jpg jpeg tiff png gif\".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>\r\n\t\t\r\n\t</div>\r\n";
+	module.exports = "\r\n    <div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t<div class=\"wm-preview-action\">\r\n\t\t\t<span title='下载'>\r\n\t\t\t\t<a target=\"_blank\" :href='reportList[currentReportIndex].filepath' :download=\"reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname\">\r\n\t\t\t\t\t<Icon type=\"ios-download-outline\" />\r\n\t\t\t\t</a>\r\n\t\t\t</span>\r\n\t\t\t<span title='打印' @click='printPage'><Icon type=\"md-print\" /></span>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t</div>\r\n\t\t<div class=\"wm-report-print\" ref='page' >\r\n\t\t\t<section style=\"display:flex;\r\n\t\t\t\t\t\t-webkit-display:flex;\r\n\t\t\t\t\t\tflex-flow: column;\r\n\t\t\t\t\t\t-webkit-flex-flow: column;\r\n\t\t\t\t\t\twidth:100%;\r\n\t\t\t\t\t\theight:100%;\r\n\t\t\t\t\t\t-webkit-justify-content: space-between;\r\n\t\t\t\t\t\tjustify-content: space-between;\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t<div style=\"height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;\">{{reportList[currentReportIndex].filetitle}}</div>\r\n\t\t\t\t<div style=\"\r\n\t\t\t\t\t\tflex:1;\r\n\t\t\t\t\t\t-webkit-flex:1;\r\n\t\t\t\t\t\tbox-sizing:border-box;\r\n\t\t\t\t\t\toverflow:hidden;\r\n\t\t\t\t\t\tmargin-top:20px;\r\n\t\t\t\t\t\ttext-align:center;\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t\t<img style=\"position:relative;top:50%;\r\n\t\t\t\t\t\ttransform:translate(0,-50%);\r\n\t\t\t\t\t\t-webkit-transform:translate(0,-50%);\r\n\t\t\t\t\t\t;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;\" :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000\">{{reportList[currentReportIndex].filedesc}}</div>\r\n\r\n\t\t\t\t<div  style=\"display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;\">\r\n\t\t\t\t\t<div>上传者：{{reportList[currentReportIndex].username}}</div>\r\n\t\t\t\t\t<div v-if='reportList[currentReportIndex].fileattr'>\r\n\t\t\t\t\t\t尺寸：{{reportList[currentReportIndex].fileattr}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;\">\r\n\t\t\t\t\t<div style=\"padding:0 10px;line-height:40px;;font-size:13px;border:1px solid #ddd;color:#ddd;border-radius:5px;text-align:center;margin:6px 20px 0 0;display:inline-block;\" v-for='(tag,i) in reportList[currentReportIndex].userlabel.split(\",\")' :key='i'>{{tag}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t</section>\r\n\r\n\t\t</div>\r\n\t\t<div  :class='{\"original\":showOriginalImg}' v-if='\"mp3 mp4 mov webm aac wma ogg\".indexOf(reportList[currentReportIndex].fileextname)<=-1'>\r\n\t\t\t<img :title='showOriginalImg?\"点击还原\":\"点击放大\"' :style=\"{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}\" @click.stop=\"showOriginalImg = !showOriginalImg\"  :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex]['pcbilethum']||imgs.poster\" alt=\"\" />\r\n\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname] ||'暂无'}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-report-qrcode\" ref='qrcode' v-if='reportList[currentReportIndex].publicadtype === \"h5-zmiti\" &&reportList[currentReportIndex].previewurl'>\r\n\t\t\t\t<div>扫描二维码查看</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='\"mp4 webm mov\".indexOf(reportList[currentReportIndex].fileextname)>-1'>\r\n\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t<!-- <div class='video' id='video' ref='video'></div> -->\r\n\t\t\t\r\n\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<section v-if='type*1 === 0' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t\r\n\t\t</section>\r\n\r\n\t\t<section  v-if='type === \"rater\"' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入您的评价\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].comments\"/>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 100 ? '已':''}}通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 0 ? '已':''}}拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\r\n\t\t<section v-if='type*1 === 2'  class=\"wm-reset\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t<img :src=\"imgs.reset\" alt=\"\">\r\n\t\t</section>\r\n\r\n\t\t<section class=\"wm-detail-mask-tip\" v-if='false && \"jpg jpeg tiff png gif\".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>\r\n\t\t\r\n\t</div>\r\n";
 
 /***/ }),
 /* 93 */
@@ -67442,15 +67442,22 @@
 
 				var s = this;
 
+				var urls = [];
+				var downloadSize = 0;
+				var filenameList = [];
+
+				var ids = [];
+				s.checkedList.map(function (item) {
+					downloadSize += item.filesize * 1;
+					urls.push(item.filepath);
+					filenameList.push(item.filetitle + '.' + item.fileextname);
+					ids.push(item.id);
+				});
+
 				if (status === 'download') {
-					var urls = [];
-					var downloadSize = 0;
-					var filenameList = [];
-					s.checkedList.map(function (item) {
-						downloadSize += item.filesize * 1;
-						urls.push(item.filepath);
-						filenameList.push(item.filetitle + '.' + item.fileextname);
-					});
+
+					s.getviews('downloads', s.$route.params.id || 1, ids);
+
 					if (!urls.length) {
 						s.$Message.error('请至少选择一个要下载的作品');
 						return;
@@ -67499,6 +67506,7 @@
 							return;
 						}
 						s.isdownloading = true;
+						s.getviews('downloads', s.$route.params.id || 1, ids);
 						_componentsLibUtil2['default'].ajax({
 							url: window.config.baseUrl + '/wmshare/createzip',
 							data: {
@@ -67520,6 +67528,7 @@
 					}
 				} else {
 					s.downloadImg = status.filepath;
+					s.getviews('downloads', s.$route.params.id || 1, [status.id]);
 					setTimeout(function () {
 						s.$refs['downloadimg'].click();
 					}, 100);
@@ -67564,6 +67573,34 @@
 				}
 				this.page = 1;
 				this.getReportList();
+			},
+
+			getviews: function getviews(key, resourceid, ids) {
+				if (key === undefined) key = 'views';
+
+				var s = this;
+				_componentsLibUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmshare/getviews',
+					data: {
+						resourceid: resourceid,
+						id: ids.join(','),
+						field: key
+					},
+					success: function success(data) {
+						console.log(data);
+						if (data.getret === 0) {
+							if (key === 'downloads') {
+								s.reportList.forEach(function (item, i) {
+									ids.forEach(function (id, k) {
+										if (item.id === id) {
+											item.downloads += 1;
+										}
+									});
+								});
+							}
+						}
+					}
+				});
 			},
 
 			getReportList: function getReportList(fn) {
@@ -67612,17 +67649,7 @@
 								});
 							});
 
-							_componentsLibUtil2['default'].ajax({
-								url: window.config.baseUrl + '/wmshare/getviews',
-								data: {
-									resourceid: p.resourceid,
-									id: ids.join(','),
-									field: 'views'
-								},
-								success: function success(data) {
-									console.log(data);
-								}
-							});
+							s.getviews('views', p.resourceid, ids);
 
 							///s.selectAll  = false;
 							if (s.reportList.length) {
@@ -69023,7 +69050,7 @@
 	// 				</header>
 	// 				<section>
 	// 					<div class="wm-myreport-list-C">
-	// 						<div v-show='reportList.length<=0' class="wm-no-report">
+	// 						<div v-show='reportList.length<=0 && hasAuth' class="wm-no-report">
 	// 							<div >
 	// 								<img :src="imgs['upload'+(currentType+1)]" alt="">
 	// 								<Button type="primary" size='large'>点我上报</Button>
@@ -69078,7 +69105,7 @@
 	// 							</ul>
 	// 						</div>
 	// 					</div>
-	// 					<footer class="wm-report-footer">
+	// 					<footer class="wm-report-footer" v-show='hasAuth'>
 	// 						<div v-show='currentType === 0 && reportList.length>0' >
 	// 							<div class="wm-upload" @click='showUploadDialog = true'></div>
 	// 							<div class="lt-full">
@@ -69291,7 +69318,7 @@
 					mimeTypes: 'image/*'
 				}, {
 					title: 'Video',
-					extensions: 'mp4,webm',
+					extensions: 'mp4,webm,mov,quicktime',
 					mimeTypes: 'video/*'
 				}, {
 					title: 'Audio',
@@ -69299,7 +69326,7 @@
 					mimeTypes: 'auido/*'
 				}, {
 					title: 'All',
-					extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+					extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,mov,aac,ogg,aac,wma,vnd.dlna.adts',
 					mimeTypes: '*/*'
 				}, {
 					title: 'Images',
@@ -69314,6 +69341,7 @@
 				detailtag: '',
 				showReportTip: false,
 				defaultReportList: [],
+				hasAuth: false,
 				menus: [],
 				colorList: ['default', 'success', 'primary', 'error', 'warning', 'red', 'orange', 'gold', 'yellow'],
 				split1: 0.8,
@@ -69362,13 +69390,16 @@
 				json.getMyreportList(function () {
 					json.changeCurrentType(0, 'first');
 				});
+				json.getAuth();
 			}
 		},
 		mounted: function mounted() {
 			var _this2 = this;
 
 			json = this;
+
 			this.userinfo = _libUtil2['default'].getUserInfo();
+			this.getAuth();
 			this.getMyreportList(function () {
 				_this2.changeCurrentType(0, 'first');
 			});
@@ -69420,6 +69451,29 @@
 		},
 
 		methods: {
+
+			getAuth: function getAuth() {
+				var id = this.$route.params.id;
+				var s = this;
+				_libUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmadvuser/getuserauth',
+					data: {
+						username: s.userinfo.username,
+						usertoken: s.userinfo.accesstoken,
+						resourceid: id
+					},
+					success: function success(data) {
+						if (data.getret === 0) {
+							if (data.authtype < 2) {
+								//没有写的权限；
+								s.hasAuth = false;
+							} else {
+								s.hasAuth = true;
+							}
+						}
+					}
+				});
+			},
 
 			checkUpload: function checkUpload(val, type) {
 				var _this3 = this;
@@ -69541,7 +69595,7 @@
 								it.canedit = false;
 							});
 							s.reportList[s.currentReportIndex].status = 0;
-							s.filterReportList();
+							s.getMyreportList();
 							s.configList = s.configList.concat([]);
 						}
 					}
@@ -69748,7 +69802,7 @@
 
 				var t = setInterval(function () {
 
-					var id = _this8.$route.params.id;
+					var id = s.$route.params.id;
 					var tableFields = obserable.trigger({
 						type: "getFeildList",
 						data: s.$route.params.id
@@ -69764,11 +69818,6 @@
 							if (col.fieldname === 'publicadtype') {
 								s.menus = col.data.concat([]);
 							}
-							/* if(col.notnull){
-	      	setTimeout(() => {
-	      		s.ruleValidate[col.fieldname] = { required: true, message: col.name + '不能为空', trigger: 'blur' }
-	      	}, 1000);
-	      } */
 						});
 
 						clearInterval(t);
@@ -69882,9 +69931,30 @@
 				});
 
 				uploader.on('dndAccept', function (file, a) {
+					console.log(accepts[s.currentType].extensions, file['0'].type.split('/')[1]);
+
 					if (accepts[s.currentType].extensions.indexOf(file['0'].type.split('/')[1]) <= -1) {
 						s.$Message.error('目前不支持' + file['0'].type.split('/')[1] + '文件格式');
+						return;
 					}
+
+					_libUtil2['default'].ajax({
+						url: window.config.baseUrl + '/wmadvuser/getuserauth',
+						data: {
+							username: s.userinfo.username,
+							usertoken: s.userinfo.accesstoken,
+							resourceid: id
+						},
+						success: function success(data) {
+							if (data.getret === 0) {
+								if (data.authtype < 2) {
+									//没有写的权限；
+									s.$Message.error('您没有上传的权限');
+									uploader.stop();
+								} else {}
+							}
+						}
+					});
 				});
 
 				uploader.on("beforeFileQueued", function (file) {
@@ -69913,28 +69983,45 @@
 					i++;
 					s.isUpLoading = true;
 
-					uploader.upload();
+					_libUtil2['default'].ajax({
+						url: window.config.baseUrl + '/wmadvuser/getuserauth',
+						data: {
+							username: s.userinfo.username,
+							usertoken: s.userinfo.accesstoken,
+							resourceid: id
+						},
+						success: function success(data) {
+							if (data.getret === 0) {
+								if (data.authtype < 2) {
+									//没有写的权限；
+									s.$Message.error('您没有上传的权限');
+									uploader.stop();
+								} else {
+									uploader.upload();
+									s.reportList.unshift({
+										reportid: file.id,
+										reportname: file.name,
+										status: 0,
+										mobilethum: imgs.poster,
+										type: file.type,
+										process: 0,
+										bulk: file.size,
+										size: '1920*1080',
+										remark: '',
+										suffix: file.ext,
+										labels: ''
+									});
 
-					s.reportList.unshift({
-						reportid: file.id,
-						reportname: file.name,
-						status: 0,
-						mobilethum: imgs.poster,
-						type: file.type,
-						process: 0,
-						bulk: file.size,
-						size: '1920*1080',
-						remark: '',
-						suffix: file.ext,
-						labels: ''
-					});
+									uploader.makeThumb(file, function (error, ret) {
 
-					uploader.makeThumb(file, function (error, ret) {
-
-						if (error) {} else {
-							uploader.base64 = ret;
+										if (error) {} else {
+											uploader.base64 = ret;
+										}
+									}, 1000, 1000);
+								}
+							}
 						}
-					}, 1000, 1000);
+					});
 				});
 				// 文件上传过程中创建进度条实时显示。
 				uploader.on('uploadProgress', function (file, percentage) {
@@ -70146,7 +70233,7 @@
 /* 156 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-myreport-main-ui\">\r\n\r\n\r\n\t\t\r\n\r\n\t\t <Split v-model=\"split1\">\r\n\t\t\t<div slot=\"left\" class=\"wm-myreport-left\">\r\n\t\t\t\t<div class=\"wm-myreport-upload-C lt-full\">\r\n\r\n\t\t\t\t</div>\r\n\t\t\t\t<header > \r\n\t\t\t\t\t <span>我的上报 </span><span style='font-size:12px;color:#f5a420;left:70px;'>(双击打开浏览)</span>\r\n\t\t\t\t\t <ul>\r\n\t\t\t\t\t\t <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key=\"i\" :class=\"{'active':currentType === i}\">\r\n\t\t\t\t\t\t\t <img v-if='i===0' :src=\"imgs.imgIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===1' :src=\"imgs.videoIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===2' :src=\"imgs.audioIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===3' :src=\"imgs.dongmanIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===4' :src=\"imgs.h5Ico\" alt=\"\">\r\n\t\t\t\t\t\t\t 上报{{menu.split('-')[0]}}\r\n\t\t\t\t\t\t </li>\r\n\t\t\t\t\t </ul>\r\n\t\t\t\t\t <a :href=\"'#/download/'+$route.params.id\">查看全部>></a>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section>\r\n\t\t\t\t\t<div class=\"wm-myreport-list-C\">\r\n\t\t\t\t\t\t<div v-show='reportList.length<=0' class=\"wm-no-report\">\r\n\t\t\t\t\t\t\t<div >\r\n\t\t\t\t\t\t\t\t<img :src=\"imgs['upload'+(currentType+1)]\" alt=\"\">\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='large'>点我上报</Button>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\" style=\"color:#f5a420;font-size:16px;font-weight:bold;\" v-html='\"支持上传格式：\"+accepts[currentType].extensions'></div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload\"  @click='showUploadDialog = true' ></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='reportList.length>0' class=\"wm-report-list\" :style=\"{height:viewH - 60-60-20- 80+'px'}\">\r\n\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click.prevent='showDetail(report,i)'  class=\"wm-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-status\" v-if='report.status === 0'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.uncheck1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div  class=\"wm-report-status\" v-if='report.status === 1'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.pass1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"report.mobilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<span v-if='!report.isLoaded' class=\"wm-file-progress\">{{report.process}}</span>\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<div v-if='!report.isLoaded' class=\"wm-uploading\"></div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-disabled-mask\" v-if='report.status===2'></div>\r\n\t\t\t\t\t\t\t\t\t<span class=\"wm-file-disabled\" v-if='report.status === 2'>\r\n\t\t\t\t\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t\t被管理员发回，不可用\r\n\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded && !isUpLoading'>\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click='showReportDetail(report)'>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-create\" /> 编辑\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li>\r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Poptip\t\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"color:#000\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tconfirm\r\n\t\t\t\t\t\t\t\t\t\t\t\t\ttitle=\"确定要删除此作品吗?\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t@on-ok=\"deleteReport(i)\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"wm-del-ico\"><Icon type=\"ios-trash-outline\" /> 删除</div>\r\n\t\t\t\t\t\t\t\t\t\t\t\t</Poptip>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<footer class=\"wm-report-footer\">\r\n\t\t\t\t\t\t<div v-show='currentType === 0 && reportList.length>0' >\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加图片</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 1 && reportList.length>0' class=\"wm-uplad-add-video\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加视频</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 2 && reportList.length>0' class=\"wm-uplad-add-audio\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加音频</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 3 && reportList.length>0' class=\"wm-uplad-add-dongman\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加动漫</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 4 && reportList.length>0' class=\"wm-uplad-add-h5\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加h5</span>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</footer>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-myreport-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<img :src='reportList[currentReportIndex].mobilethum||imgs.poster' />\t\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && (item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\r\n\t\t\t\t\t\t<input :placeholder=\"item.placeholder\" @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize && false\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{(reportList[currentReportIndex][item.fieldname]||'')}} {{(reportList[currentReportIndex]['filesizeunit']||'')}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div @dblclick=\"editItem(item)\" v-if='false && item.type === \"select\" && !item.canedit '>\r\n\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i' closable v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\ttitle=\"编辑作品信息\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" :rules=\"ruleValidate\">\r\n\t\t\t\t<FormItem v-if='item.edit' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'> \r\n\t\t\t\t\t<Input v-if='item.type === \"text\"'  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Input v-if='item.type === \"textarea\" ' :type=\"item.type\"  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.placeholder||item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t</Select>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.type === \"label\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"tag\" @keydown.13='addTag' />\r\n\t\t\t\t\t\t<Tag @on-close=\"deltag(tag)\" closable :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" v-for=\"(tag,i) in formAdmin.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\t:footer-hide='true'\r\n\t\t\tv-model=\"showUploadDialog \"\r\n\t\t\t:title=\"'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form  ref=\"formUpload\" :model=\"formUpload\" :label-width=\"90\" >\r\n\t\t\t\t<FormItem class=\"wm-report-upload-item\" v-if='item.edit || item.fieldname === \"userlabel\"' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'  :class=\"{'wm-require':item.notnull}\"> \r\n\t\t\t\t\t<Input @on-blur='checkUpload' v-if='item.type === \"text\"&& item.fieldname !== \"userlabel\"'  v-model=\"formUpload[item.fieldname]\" :placeholder=\"item.placeholder||item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t\t<Input  @on-blur='checkUpload' v-if='item.fieldname === \"filedesc\"'  :type=\"item.type\"  v-model=\"formUpload[item.fieldname]\"  :placeholder=\"item.placeholder||item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<div  v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='checkUpload($event,\"select\")' v-model=\"formAdmin[item.fieldname]\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"beforeUploadTag\" @keydown.13='addTagBeforeUpload' />\r\n\t\t\t\t\t\t<Tag color='warning' @on-close=\"deltag(tag)\" closable  v-for=\"(tag,i) in formUpload.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\r\n\t\t\t\t<FormItem class=\"wm-before-upload-C\">\r\n\t\t\t\t\t<section :class=\"{'disabled':!showUploadFile}\">\r\n\t\t\t\t\t\t<div class=\"wm-upload-before\" v-show='showUploadFile'></div>\r\n\t\t\t\t\t\t<Icon type=\"ios-add-circle\" />\r\n\t\t\t\t\t\t<div>上传附件</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t\t<div class=\"wm-upload-tip\" style=\"position: absolute;bottom: 0;width: 300px;margin-left: 30px;color:#f5a420;font-size:16px;font-weight:bold;    word-wrap: break-word;\" v-html='\"支持上传格式：\"+accepts[currentType].extensions'></div>\r\n\t\t\t\t</FormItem>\r\n\r\n\t\t\t\t<FormItem class=\"wm-before-upload-C\" label=\"\">\r\n\t\t\t\t\t<div style=\"margin-left:-80px;color:#b20000\">提示：选择文件后自动上传</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t\t<Detail  :configList='configList' type=\"myreport\" :showPreview='showPreview'  :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>\r\n\r\n\t\t<div class=\"wm-report-tips lt-full\" v-if='showReportTip'>\r\n\t\t\t<img :src=\"imgs.tip\" alt=\"\" @click=\"showReportTip = false\">\r\n\t\t</div>\r\n\r\n\r\n\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-myreport-main-ui\">\r\n\r\n\r\n\t\t\r\n\r\n\t\t <Split v-model=\"split1\">\r\n\t\t\t<div slot=\"left\" class=\"wm-myreport-left\">\r\n\t\t\t\t<div class=\"wm-myreport-upload-C lt-full\">\r\n\r\n\t\t\t\t</div>\r\n\t\t\t\t<header > \r\n\t\t\t\t\t <span>我的上报 </span><span style='font-size:12px;color:#f5a420;left:70px;'>(双击打开浏览)</span>\r\n\t\t\t\t\t <ul>\r\n\t\t\t\t\t\t <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key=\"i\" :class=\"{'active':currentType === i}\">\r\n\t\t\t\t\t\t\t <img v-if='i===0' :src=\"imgs.imgIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===1' :src=\"imgs.videoIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===2' :src=\"imgs.audioIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===3' :src=\"imgs.dongmanIco\" alt=\"\">\r\n\t\t\t\t\t\t\t <img v-if='i===4' :src=\"imgs.h5Ico\" alt=\"\">\r\n\t\t\t\t\t\t\t 上报{{menu.split('-')[0]}}\r\n\t\t\t\t\t\t </li>\r\n\t\t\t\t\t </ul>\r\n\t\t\t\t\t <a :href=\"'#/download/'+$route.params.id\">查看全部>></a>\r\n\t\t\t\t</header>\r\n\t\t\t\t<section>\r\n\t\t\t\t\t<div class=\"wm-myreport-list-C\">\r\n\t\t\t\t\t\t<div v-show='reportList.length<=0 && hasAuth' class=\"wm-no-report\">\r\n\t\t\t\t\t\t\t<div >\r\n\t\t\t\t\t\t\t\t<img :src=\"imgs['upload'+(currentType+1)]\" alt=\"\">\r\n\t\t\t\t\t\t\t\t<Button type=\"primary\" size='large'>点我上报</Button>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\" style=\"color:#f5a420;font-size:16px;font-weight:bold;\" v-html='\"支持上传格式：\"+accepts[currentType].extensions'></div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload\"  @click='showUploadDialog = true' ></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='reportList.length>0' class=\"wm-report-list\" :style=\"{height:viewH - 60-60-20- 80+'px'}\">\r\n\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t<li @dblclick=\"previewReport(report)\" @click.prevent='showDetail(report,i)'  class=\"wm-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-status\" v-if='report.status === 0'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.uncheck1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div  class=\"wm-report-status\" v-if='report.status === 1'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"imgs.pass1\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'>\r\n\t\t\t\t\t\t\t\t\t\t<img :src=\"report.mobilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<span v-if='!report.isLoaded' class=\"wm-file-progress\">{{report.process}}</span>\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<div v-if='!report.isLoaded' class=\"wm-uploading\"></div>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-disabled-mask\" v-if='report.status===2'></div>\r\n\t\t\t\t\t\t\t\t\t<span class=\"wm-file-disabled\" v-if='report.status === 2'>\r\n\t\t\t\t\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t\t被管理员发回，不可用\r\n\t\t\t\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded && !isUpLoading'>\r\n\t\t\t\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t\t\t\t\t<ul>\r\n\t\t\t\t\t\t\t\t\t\t\t<li @click='showReportDetail(report)'>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Icon type=\"ios-create\" /> 编辑\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t\t<li>\r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\t<Poptip\t\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"color:#000\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\tconfirm\r\n\t\t\t\t\t\t\t\t\t\t\t\t\ttitle=\"确定要删除此作品吗?\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t@on-ok=\"deleteReport(i)\"\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"wm-del-ico\"><Icon type=\"ios-trash-outline\" /> 删除</div>\r\n\t\t\t\t\t\t\t\t\t\t\t\t</Poptip>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t</li>\r\n\t\t\t\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t</li>\t\r\n\t\t\t\t\t\t\t</ul>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<footer class=\"wm-report-footer\" v-show='hasAuth'>\r\n\t\t\t\t\t\t<div v-show='currentType === 0 && reportList.length>0' >\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加图片</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 1 && reportList.length>0' class=\"wm-uplad-add-video\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加视频</span>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 2 && reportList.length>0' class=\"wm-uplad-add-audio\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加音频</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 3 && reportList.length>0' class=\"wm-uplad-add-dongman\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加动漫</span>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-upload-tip\">按住ctrl键可以上传多个文件，支持拖拽上传</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-show='currentType === 4 && reportList.length>0' class=\"wm-uplad-add-h5\">\r\n\t\t\t\t\t\t\t<div class=\"wm-upload\" @click='showUploadDialog = true'></div>\r\n\t\t\t\t\t\t\t<div class=\"lt-full\">\r\n\t\t\t\t\t\t\t\t<Icon type=\"md-add\" /> <span>点击添加h5</span>\r\n\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</footer>\r\n\t\t\t\t</section>\r\n\t\t\t</div>\r\n\t\t\t<div slot=\"right\" class=\"wm-myreport-right wm-scroll\" v-if='reportList[currentReportIndex]'>\r\n\t\t\t\t<div   class=\"wm-right-thumb\">\r\n\t\t\t\t\t<img :src='reportList[currentReportIndex].mobilethum||imgs.poster' />\t\r\n\t\t\t\t</div>\r\n\t\t\t\t\r\n\t\t\t\t<div v-if='item.loading' class=\"wm-myreport-title wm-myreport-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && (item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname!==\"userlabel\" && item.fieldname!==\"filesize\"&&(item.type === \"text\" ||item.type === \"textarea\")' >\r\n\t\t\t\t\t\t<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\r\n\t\t\t\t\t\t<input :placeholder=\"item.placeholder\" @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-else type=\"text\" v-model=\"reportList[currentReportIndex][item.fieldname]\">\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize && false\" &&(item.type === \"text\" ||item.type === \"textarea\"  ||item.type === \"select\")'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname ===\"filesize\" &&(item.type === \"text\" ||item.type === \"textarea\")' @dblclick=\"editItem(item)\" >\r\n\t\t\t\t\t\t<span v-if='!item.canedit'>{{(reportList[currentReportIndex][item.fieldname]||'')}} {{(reportList[currentReportIndex]['filesizeunit']||'')}}</span>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div  v-if='item.type ===  \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='modifyPublicadtype(item.fieldname)'   v-model=\"formAdmin[item.fieldname]\" size='small'  style=\"width:100px\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"k\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t\r\n\t\t\t\t\t<div @dblclick=\"editItem(item)\" v-if='false && item.type === \"select\" && !item.canedit '>\r\n\t\t\t\t\t\t{{formAdmin[item.fieldname]&& formAdmin[item.fieldname].split('-')[0]}}\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<section class=\"wm-tag-list-C\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<div class=\"wm-userlabel-header\">\r\n\t\t\t\t\t\t\t<div>标签</div>\r\n\t\t\t\t\t\t\t<div><input type=\"text\" placeholder=\"输入标签名\" v-model=\"detailtag\" @keydown.13='addTagByDetail(item)' /></div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class=\"wm-add-label\" @click='addTagByDetail(item)'>\r\n\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-tag-list\">\r\n\t\t\t\t\t\t\t<Tag @on-close='removeTag(item.fieldname,i)' :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" :key='i' closable v-if='tag' v-for=\"(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')\">{{tag}}</Tag>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t</div>\r\n\r\n\r\n\t\t\t</div>\r\n\t\t</Split>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\tv-model=\"visible\"\r\n\t\t\ttitle=\"编辑作品信息\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form ref=\"formAdmin\" :model=\"formAdmin\" :label-width=\"72\" :rules=\"ruleValidate\">\r\n\t\t\t\t<FormItem v-if='item.edit' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'> \r\n\t\t\t\t\t<Input v-if='item.type === \"text\"'  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t<Input v-if='item.type === \"textarea\" ' :type=\"item.type\"  v-model=\"formAdmin[item.fieldname]\" :placeholder=\"item.placeholder||item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<Select v-model=\"formAdmin[item.fieldname]\" v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t</Select>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.type === \"label\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"tag\" @keydown.13='addTag' />\r\n\t\t\t\t\t\t<Tag @on-close=\"deltag(tag)\" closable :color=\"colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]\" v-for=\"(tag,i) in formAdmin.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\r\n\r\n\t\t<Modal\r\n\t\t\t:footer-hide='true'\r\n\t\t\tv-model=\"showUploadDialog \"\r\n\t\t\t:title=\"'添加上报'+(menus[currentType]?menus[currentType].split('-')[0]:'')\"\r\n\t\t\t@on-ok=\"ok\"\r\n\t\t\t@on-cancel=\"cancel\">\r\n\t\t\t<Form  ref=\"formUpload\" :model=\"formUpload\" :label-width=\"90\" >\r\n\t\t\t\t<FormItem class=\"wm-report-upload-item\" v-if='item.edit || item.fieldname === \"userlabel\"' :label=\"item.name+'：'\" :prop=\"item.field\" v-for='(item,i) in configList' :key='i'  :class=\"{'wm-require':item.notnull}\"> \r\n\t\t\t\t\t<Input @on-blur='checkUpload' v-if='item.type === \"text\"&& item.fieldname !== \"userlabel\"'  v-model=\"formUpload[item.fieldname]\" :placeholder=\"item.placeholder||item.name\" autocomplete=\"off\" />\r\n\t\t\t\t\t\r\n\t\t\t\t\t<Input  @on-blur='checkUpload' v-if='item.fieldname === \"filedesc\"'  :type=\"item.type\"  v-model=\"formUpload[item.fieldname]\"  :placeholder=\"item.placeholder||item.name\" autocomplete=\"off\"/>\r\n\t\t\t\t\t<div  v-if='item.type === \"select\"'>\r\n\t\t\t\t\t\t<Select @on-change='checkUpload($event,\"select\")' v-model=\"formAdmin[item.fieldname]\">\r\n\t\t\t\t\t\t\t<Option v-for=\"(dt,k) in item.data\" :value=\"dt\" :key=\"dt\">{{ dt.split('-')[0] }}</Option>\r\n\t\t\t\t\t\t</Select>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class=\"wm-tags\" v-if='item.fieldname === \"userlabel\"'>\r\n\t\t\t\t\t\t<input placeholder=\"按回车添加标签\" type=\"text\" v-model=\"beforeUploadTag\" @keydown.13='addTagBeforeUpload' />\r\n\t\t\t\t\t\t<Tag color='warning' @on-close=\"deltag(tag)\" closable  v-for=\"(tag,i) in formUpload.tagList\" :key='i'>{{tag}}</Tag>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</FormItem>\r\n\r\n\t\t\t\t<FormItem class=\"wm-before-upload-C\">\r\n\t\t\t\t\t<section :class=\"{'disabled':!showUploadFile}\">\r\n\t\t\t\t\t\t<div class=\"wm-upload-before\" v-show='showUploadFile'></div>\r\n\t\t\t\t\t\t<Icon type=\"ios-add-circle\" />\r\n\t\t\t\t\t\t<div>上传附件</div>\r\n\t\t\t\t\t</section>\r\n\t\t\t\t\t<div class=\"wm-upload-tip\" style=\"position: absolute;bottom: 0;width: 300px;margin-left: 30px;color:#f5a420;font-size:16px;font-weight:bold;    word-wrap: break-word;\" v-html='\"支持上传格式：\"+accepts[currentType].extensions'></div>\r\n\t\t\t\t</FormItem>\r\n\r\n\t\t\t\t<FormItem class=\"wm-before-upload-C\" label=\"\">\r\n\t\t\t\t\t<div style=\"margin-left:-80px;color:#b20000\">提示：选择文件后自动上传</div>\r\n\t\t\t\t</FormItem>\r\n\t\t\t\t \r\n\t\t\t</Form>\r\n\t\t</Modal>\r\n\t\t<Detail  :configList='configList' type=\"myreport\" :showPreview='showPreview'  :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>\r\n\r\n\t\t<div class=\"wm-report-tips lt-full\" v-if='showReportTip'>\r\n\t\t\t<img :src=\"imgs.tip\" alt=\"\" @click=\"showReportTip = false\">\r\n\t\t</div>\r\n\r\n\r\n\r\n\t</div>\r\n";
 
 /***/ }),
 /* 157 */

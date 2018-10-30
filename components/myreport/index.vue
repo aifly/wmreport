@@ -25,7 +25,7 @@
 				</header>
 				<section>
 					<div class="wm-myreport-list-C">
-						<div v-show='reportList.length<=0' class="wm-no-report">
+						<div v-show='reportList.length<=0 && hasAuth' class="wm-no-report">
 							<div >
 								<img :src="imgs['upload'+(currentType+1)]" alt="">
 								<Button type="primary" size='large'>点我上报</Button>
@@ -80,7 +80,7 @@
 							</ul>
 						</div>
 					</div>
-					<footer class="wm-report-footer">
+					<footer class="wm-report-footer" v-show='hasAuth'>
 						<div v-show='currentType === 0 && reportList.length>0' >
 							<div class="wm-upload" @click='showUploadDialog = true'></div>
 							<div class="lt-full">
@@ -269,7 +269,7 @@
 						mimeTypes: 'image/*'
 					},{
 						title: 'Video',
-						extensions: 'mp4,webm',
+						extensions: 'mp4,webm,mov,quicktime',
 						mimeTypes: 'video/*'
 					},{
 						title: 'Audio',
@@ -277,7 +277,7 @@
 						mimeTypes: 'auido/*'
 					},{
 						title: 'All',
-						extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,aac,ogg,aac,wma,vnd.dlna.adts',
+						extensions: 'mp3,gif,jpg,jpeg,bmp,png,tiff,tif,mp4,webm,mov,aac,ogg,aac,wma,vnd.dlna.adts',
 						mimeTypes: '*/*'
 					},{
 						title: 'Images',
@@ -293,6 +293,7 @@
 				detailtag:'',
 				showReportTip:false,
 				defaultReportList:[],
+				hasAuth:false,
 				menus:[],
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
@@ -339,11 +340,18 @@
 				json.getMyreportList(()=>{
 					json.changeCurrentType(0,'first');
 				});
+				json.getAuth();
 			}
 		},
 		mounted(){
 			json = this;
+
+
+			
+
+
 			this.userinfo = symbinUtil.getUserInfo();
+			this.getAuth();
 			this.getMyreportList(()=>{
 				this.changeCurrentType(0,'first');
 			});
@@ -397,6 +405,29 @@
 		},
 		
 		methods:{
+
+			getAuth(){
+				var id = this.$route.params.id;
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/getuserauth',
+					data:{
+						username:s.userinfo.username,
+						usertoken:s.userinfo.accesstoken,
+						resourceid:id,
+					},
+					success(data){
+						if(data.getret === 0){
+							if(data.authtype<2){//没有写的权限；
+								s.hasAuth = false;
+							}else{
+								s.hasAuth = true;
+							}
+						}
+						
+					}
+				})
+			},
 
 			checkUpload(val,type){
 				this.showUploadFile = true;
@@ -521,7 +552,7 @@
 								it.canedit = false;
 							});
 							s.reportList[s.currentReportIndex].status = 0;
-							s.filterReportList();
+							s.getMyreportList();
 							s.configList = s.configList.concat([]);
 						}
 					}
@@ -720,10 +751,12 @@
 			getMyreportList(fn){
 				var s = this;
 				var {obserable} = Vue;
+				
 				var t = setInterval(()=>{
 
-
-					var id  = this.$route.params.id;
+					
+					
+					var id  = s.$route.params.id;
 					var tableFields = obserable.trigger({
 						type:"getFeildList",
 						data:s.$route.params.id
@@ -741,11 +774,7 @@
 							if(col.fieldname === 'publicadtype'){
 								s.menus = col.data.concat([]);
 							}
-							/* if(col.notnull){
-								setTimeout(() => {
-									s.ruleValidate[col.fieldname] = { required: true, message: col.name + '不能为空', trigger: 'blur' }
-								}, 1000);
-							} */
+							
 						})
 						
 						clearInterval(t);
@@ -786,6 +815,8 @@
 				},20)
 
 			},
+
+
 
 			upload(id){
 
@@ -860,9 +891,33 @@
 				});
 				
 				uploader.on('dndAccept',(file,a)=>{
+					console.log(accepts[s.currentType].extensions,(file['0'].type.split('/')[1]))
+
 					if(accepts[s.currentType].extensions.indexOf(file['0'].type.split('/')[1])<=-1){
 						s.$Message.error('目前不支持'+file['0'].type.split('/')[1]+'文件格式');
+						return;
 					}
+
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadvuser/getuserauth',
+						data:{
+							username:s.userinfo.username,
+							usertoken:s.userinfo.accesstoken,
+							resourceid:id,
+						},
+						success(data){
+							if(data.getret === 0){
+								if(data.authtype<2){//没有写的权限；
+									s.$Message.error('您没有上传的权限');
+									uploader.stop();
+								}else{
+								
+								}
+							}
+							
+						}
+					})
+
 				})
 
 				uploader.on("beforeFileQueued",function(file){
@@ -887,36 +942,53 @@
 
 					i++;
 					s.isUpLoading = true;
-					 
-					
-					uploader.upload();
-					
 
-
-					
-					s.reportList.unshift({
-						reportid:file.id,
-						reportname:file.name,
-						status:0,
-						mobilethum:imgs.poster,
-						type:file.type,
-						process:0,
-						bulk:file.size,
-						size:'1920*1080',
-						remark:'',
-						suffix:file.ext,
-						labels:''
-					})
-					
-						
-					uploader.makeThumb( file, function( error, ret ) {
-						
-						if ( error ) {
-						} else {
-							uploader.base64 = ret;
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadvuser/getuserauth',
+						data:{
+							username:s.userinfo.username,
+							usertoken:s.userinfo.accesstoken,
+							resourceid:id,
+						},
+						success(data){
+							if(data.getret === 0){
+								if(data.authtype<2){//没有写的权限；
+									s.$Message.error('您没有上传的权限');
+									uploader.stop();
+								}else{
+									uploader.upload();
+									s.reportList.unshift({
+										reportid:file.id,
+										reportname:file.name,
+										status:0,
+										mobilethum:imgs.poster,
+										type:file.type,
+										process:0,
+										bulk:file.size,
+										size:'1920*1080',
+										remark:'',
+										suffix:file.ext,
+										labels:''
+									})
+										
+									uploader.makeThumb( file, function( error, ret ) {
+										
+										if ( error ) {
+										} else {
+											uploader.base64 = ret;
+											
+										}
+									},1000,1000);
+								}
+							}
 							
 						}
-					},1000,1000);
+					})
+
+					
+					 
+					
+					
 				});
 				// 文件上传过程中创建进度条实时显示。
 				uploader.on('uploadProgress', function (file, percentage) {

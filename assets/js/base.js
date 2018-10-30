@@ -81,10 +81,10 @@ var imgs = {
  */
 
 
+var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
+	videoExtensions = 'mp4,webm,mov,ogg,aac,wma,vnd.dlna.adts,mp3'.split(','),
+	textExtensions = ' xlsx, pdf, doc, ppt, xlsx, doc, docx, pdf, txt, ppt, pptx, xls, rar, css, scss,vb, zip'.split(',');
 (function () {
-	var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
-		videoExtensions = 'mp4,webm,ogg,aac,wma,vnd.dlna.adts,mp3'.split(','),
-		textExtensions = ' xlsx, pdf, doc, ppt, xlsx, doc, docx, pdf, txt, ppt, pptx, xls, rar, css, scss,vb, zip'.split(',');
 	var allExtensions = imgExtensions.concat(videoExtensions).concat(textExtensions);
 	window.config = {
 		swf: './assets/ckplayer/ckplayer.swf',

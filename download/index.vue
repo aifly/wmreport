@@ -376,17 +376,28 @@
 			checkAction(status){
 				
 				var s = this;
+
+
+				var urls =  [];
+				var downloadSize = 0;
+				var filenameList = [];
+
+				var ids = [];
+				s.checkedList.map((item)=>{
+					downloadSize+=item.filesize*1;
+					urls.push(item.filepath);
+					filenameList.push(item.filetitle+'.'+item.fileextname)
+					ids.push(item.id)
+					
+				});
 				
 				if(status === 'download'){
-					var urls =  [];
-					var downloadSize = 0;
-					var filenameList = [];
-					s.checkedList.map((item)=>{
-						downloadSize+=item.filesize*1;
-						urls.push(item.filepath);
-						filenameList.push(item.filetitle+'.'+item.fileextname)
-						
-					});
+					
+					
+
+
+					s.getviews('downloads',s.$route.params.id ||1,ids);
+
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
 						return;
@@ -439,6 +450,7 @@
 							return;
 						}
 						s.isdownloading = true;
+						s.getviews('downloads',s.$route.params.id ||1,ids);
 						symbinUtil.ajax({
 							url:window.config.baseUrl+'/wmshare/createzip',
 							data:{
@@ -463,6 +475,7 @@
 
 				}else{
 					 s.downloadImg = status.filepath;
+					 s.getviews('downloads',s.$route.params.id ||1,[status.id]);
 					 setTimeout(() => {
 						 s.$refs['downloadimg'].click();
 					 }, 100);
@@ -512,6 +525,32 @@
 
 				
 			},
+
+			getviews(key='views',resourceid,ids){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmshare/getviews',
+					data:{
+						resourceid,
+						id:ids.join(','),
+						field:key
+					},
+					success(data){
+						console.log(data);
+						if(data.getret === 0){
+							if(key === 'downloads'){
+								s.reportList.forEach((item,i)=>{
+									ids.forEach((id,k)=>{
+										if(item.id === id){
+											item.downloads += 1;
+										}
+									})
+								})
+							}
+						}
+					}
+				})
+			},
 			 
 			getReportList(fn){
 				
@@ -559,17 +598,7 @@
 								})
 							});
 
-							symbinUtil.ajax({
-								url:window.config.baseUrl+'/wmshare/getviews',
-								data:{
-									resourceid:p.resourceid,
-									id:ids.join(','),
-									field:'views'
-								},
-								success(data){
-									console.log(data);
-								}
-							})
+							s.getviews('views',p.resourceid,ids);
 						
 							///s.selectAll  = false;
 							if(s.reportList.length){

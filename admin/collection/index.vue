@@ -70,8 +70,9 @@
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
 								</div>
-								<div class="wm-collection-check">
-									<Checkbox v-model="report.checked"></Checkbox>
+								
+								<div class="wm-collection-check" @click='toggleChecked(i)'>
+									<Checkbox  v-model="report.checked"></Checkbox>
 								</div>
 								<div class="wm-report-action" v-if='report.isLoaded'>
 									<div class="wm-report-action-icon"></div>
@@ -171,7 +172,8 @@
 				page:1,
 				pagenum:20,
 				raterReportList:[],
-				isdownloading :false
+				isdownloading :false,
+				checkedList:[]
 
 			}
 		},
@@ -184,18 +186,48 @@
 		watch:{
 			selectAll(val){
 
-				
-				this.getReportList(()=>{
-					this.reportList.forEach((item)=>{
-						item.checked = val;
-					});
+				var len = this.reportList.length;
+				this.reportList.forEach((item)=>{
+					item.checked = val;
+					if(val){
+						this.checkedList.push(item);
+					}
+					else{
+						this.checkedList.length = 0;
+					}
 				});
+
 			},
 			mainType(val){
 				window.location.hash = "/collection/"+this.$route.params.id+'/'+val;
 			}
 		},
 		methods:{
+
+
+			toggleChecked(index){
+				var isChecked = !this.reportList[index].checked;
+				if(isChecked){
+					this.checkedList.push(this.reportList[index]);
+				}else{
+					this.checkedList.forEach((item,i)=>{
+						if(item.id === this.reportList[index].id){
+							this.checkedList.splice(i,1);
+						}
+					});
+				}
+			},
+
+			changeChecked(report,i){
+				if(report.checked){
+					this.downloadCount += 1;
+				}
+				else{
+					this.downloadCount -= 1;
+				}
+				 
+				//console.log(this.passCount);
+			},
 
 			hideDownloadTip(){
 				this.showDownloadtip = false;
@@ -344,6 +376,32 @@
 				})
 			},
 
+			getviews(key='views',resourceid,ids){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmshare/getviews',
+					data:{
+						resourceid,
+						id:ids.join(','),
+						field:key
+					},
+					success(data){
+						console.log(data);
+						if(data.getret === 0){
+							if(key === 'downloads'){
+								s.reportList.forEach((item,i)=>{
+									ids.forEach((id,k)=>{
+										if(item.id === id){
+											item.downloads += 1;
+										}
+									})
+								})
+							}
+						}
+					}
+				})
+			},
+
 			checkAction(status){
 				
 				var s = this;
@@ -351,15 +409,19 @@
 					var urls =  [];
 
 					var filenameList = [];
+					var ids = [];
 					s.checkedList.map((item)=>{
 						urls.push(item.filepath);
 						filenameList.push(item.filetitle+'.'+item.fileextname)
+						ids.push(item.id);
 					});
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
 						return;
 					}
 					s.isdownloading = true;
+
+					s.getviews('downloads',s.$route.params.id,ids);
 					symbinUtil.ajax({
 						url:window.config.baseUrl+'/wmadadmin/createzip',
 						data:{
@@ -466,7 +528,7 @@
 				if(this.fieldname !== -1){
 					p[this.fieldname] = this.keyword;
 				}
-				p['isselectall'] = s.selectAll | 0;
+				//p['isselectall'] = s.selectAll | 0;
 
 				//console.log(p);
 				symbinUtil.ajax({
@@ -486,10 +548,20 @@
 									s.currentPage = 1;
 									s.reportList = data.list;
 									s.totalnum = data.totalnum;
+									var ids = [];
+									 
 									s.reportList.forEach((item)=>{
+										ids.push(item.id);
 										item.checked = false;
+										s.checkedList.forEach((ls)=>{
+											if(ls.id === item.id){
+												item.checked = true;
+											}
+										})
 									});
-								
+
+									s.getviews('views',id,ids);
+									 
 									///s.selectAll  = false;
 									if(s.reportList.length){
 										//s.currentReportIndex = 0;
@@ -503,6 +575,8 @@
 											this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 										}
 									}
+
+								
 									resourceList.map((item)=>{
 										if(item.resourceid === id){
 											s.resourcecnname = item.resourcecnname;

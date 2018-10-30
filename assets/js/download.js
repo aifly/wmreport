@@ -12036,7 +12036,7 @@
 	// 			</section>
 	//
 	// 		</div>
-	// 		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
+	// 		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 mov webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
 	// 			<img :title='showOriginalImg?"点击还原":"点击放大"' :style="{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}" @click.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex]['pcbilethum']||imgs.poster" alt="" />
 	// 			<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
 	// 				<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
@@ -12051,7 +12051,7 @@
 	// 				<div>扫描二维码查看</div>
 	// 			</div>
 	// 		</div>
-	// 		<div v-if='reportList[currentReportIndex].fileextname=== "mp4" ||reportList[currentReportIndex].fileextname=== "webm" '>
+	// 		<div v-if='"mp4 webm mov".indexOf(reportList[currentReportIndex].fileextname)>-1'>
 	// 			<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
 	// 			<!-- <div class='video' id='video' ref='video'></div> -->
 	//
@@ -23180,7 +23180,7 @@
 /* 92 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n    <div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t<div class=\"wm-preview-action\">\r\n\t\t\t<span title='下载'>\r\n\t\t\t\t<a target=\"_blank\" :href='reportList[currentReportIndex].filepath' :download=\"reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname\">\r\n\t\t\t\t\t<Icon type=\"ios-download-outline\" />\r\n\t\t\t\t</a>\r\n\t\t\t</span>\r\n\t\t\t<span title='打印' @click='printPage'><Icon type=\"md-print\" /></span>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t</div>\r\n\t\t<div class=\"wm-report-print\" ref='page' >\r\n\t\t\t<section style=\"display:flex;\r\n\t\t\t\t\t\t-webkit-display:flex;\r\n\t\t\t\t\t\tflex-flow: column;\r\n\t\t\t\t\t\t-webkit-flex-flow: column;\r\n\t\t\t\t\t\twidth:100%;\r\n\t\t\t\t\t\theight:100%;\r\n\t\t\t\t\t\t-webkit-justify-content: space-between;\r\n\t\t\t\t\t\tjustify-content: space-between;\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t<div style=\"height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;\">{{reportList[currentReportIndex].filetitle}}</div>\r\n\t\t\t\t<div style=\"\r\n\t\t\t\t\t\tflex:1;\r\n\t\t\t\t\t\t-webkit-flex:1;\r\n\t\t\t\t\t\tbox-sizing:border-box;\r\n\t\t\t\t\t\toverflow:hidden;\r\n\t\t\t\t\t\tmargin-top:20px;\r\n\t\t\t\t\t\ttext-align:center;\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t\t<img style=\"position:relative;top:50%;\r\n\t\t\t\t\t\ttransform:translate(0,-50%);\r\n\t\t\t\t\t\t-webkit-transform:translate(0,-50%);\r\n\t\t\t\t\t\t;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;\" :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000\">{{reportList[currentReportIndex].filedesc}}</div>\r\n\r\n\t\t\t\t<div  style=\"display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;\">\r\n\t\t\t\t\t<div>上传者：{{reportList[currentReportIndex].username}}</div>\r\n\t\t\t\t\t<div v-if='reportList[currentReportIndex].fileattr'>\r\n\t\t\t\t\t\t尺寸：{{reportList[currentReportIndex].fileattr}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;\">\r\n\t\t\t\t\t<div style=\"padding:0 10px;line-height:40px;;font-size:13px;border:1px solid #ddd;color:#ddd;border-radius:5px;text-align:center;margin:6px 20px 0 0;display:inline-block;\" v-for='(tag,i) in reportList[currentReportIndex].userlabel.split(\",\")' :key='i'>{{tag}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t</section>\r\n\r\n\t\t</div>\r\n\t\t<div  :class='{\"original\":showOriginalImg}' v-if='\"mp3 mp4 webm aac wma ogg\".indexOf(reportList[currentReportIndex].fileextname)<=-1'>\r\n\t\t\t<img :title='showOriginalImg?\"点击还原\":\"点击放大\"' :style=\"{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}\" @click.stop=\"showOriginalImg = !showOriginalImg\"  :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex]['pcbilethum']||imgs.poster\" alt=\"\" />\r\n\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname] ||'暂无'}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-report-qrcode\" ref='qrcode' v-if='reportList[currentReportIndex].publicadtype === \"h5-zmiti\" &&reportList[currentReportIndex].previewurl'>\r\n\t\t\t\t<div>扫描二维码查看</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp4\" ||reportList[currentReportIndex].fileextname=== \"webm\" '>\r\n\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t<!-- <div class='video' id='video' ref='video'></div> -->\r\n\t\t\t\r\n\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<section v-if='type*1 === 0' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t\r\n\t\t</section>\r\n\r\n\t\t<section  v-if='type === \"rater\"' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入您的评价\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].comments\"/>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 100 ? '已':''}}通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 0 ? '已':''}}拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\r\n\t\t<section v-if='type*1 === 2'  class=\"wm-reset\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t<img :src=\"imgs.reset\" alt=\"\">\r\n\t\t</section>\r\n\r\n\t\t<section class=\"wm-detail-mask-tip\" v-if='false && \"jpg jpeg tiff png gif\".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>\r\n\t\t\r\n\t</div>\r\n";
+	module.exports = "\r\n    <div class=\"lt-full wm-collection-report-C\" v-if='showPreview'>\r\n\t\t<div class=\"wm-preview-action\">\r\n\t\t\t<span title='下载'>\r\n\t\t\t\t<a target=\"_blank\" :href='reportList[currentReportIndex].filepath' :download=\"reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname\">\r\n\t\t\t\t\t<Icon type=\"ios-download-outline\" />\r\n\t\t\t\t</a>\r\n\t\t\t</span>\r\n\t\t\t<span title='打印' @click='printPage'><Icon type=\"md-print\" /></span>\r\n\t\t\t<span class=\"wm-report-close\" @click=\"closePreview\"></span>\r\n\t\t</div>\r\n\t\t<div class=\"wm-report-print\" ref='page' >\r\n\t\t\t<section style=\"display:flex;\r\n\t\t\t\t\t\t-webkit-display:flex;\r\n\t\t\t\t\t\tflex-flow: column;\r\n\t\t\t\t\t\t-webkit-flex-flow: column;\r\n\t\t\t\t\t\twidth:100%;\r\n\t\t\t\t\t\theight:100%;\r\n\t\t\t\t\t\t-webkit-justify-content: space-between;\r\n\t\t\t\t\t\tjustify-content: space-between;\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t<div style=\"height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;\">{{reportList[currentReportIndex].filetitle}}</div>\r\n\t\t\t\t<div style=\"\r\n\t\t\t\t\t\tflex:1;\r\n\t\t\t\t\t\t-webkit-flex:1;\r\n\t\t\t\t\t\tbox-sizing:border-box;\r\n\t\t\t\t\t\toverflow:hidden;\r\n\t\t\t\t\t\tmargin-top:20px;\r\n\t\t\t\t\t\ttext-align:center;\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\">\r\n\t\t\t\t\t<img style=\"position:relative;top:50%;\r\n\t\t\t\t\t\ttransform:translate(0,-50%);\r\n\t\t\t\t\t\t-webkit-transform:translate(0,-50%);\r\n\t\t\t\t\t\t;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;\" :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex].pcbilethum||imgs.poster\" alt=\"\" />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000\">{{reportList[currentReportIndex].filedesc}}</div>\r\n\r\n\t\t\t\t<div  style=\"display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;\">\r\n\t\t\t\t\t<div>上传者：{{reportList[currentReportIndex].username}}</div>\r\n\t\t\t\t\t<div v-if='reportList[currentReportIndex].fileattr'>\r\n\t\t\t\t\t\t尺寸：{{reportList[currentReportIndex].fileattr}}\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div style=\"width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;\">\r\n\t\t\t\t\t<div style=\"padding:0 10px;line-height:40px;;font-size:13px;border:1px solid #ddd;color:#ddd;border-radius:5px;text-align:center;margin:6px 20px 0 0;display:inline-block;\" v-for='(tag,i) in reportList[currentReportIndex].userlabel.split(\",\")' :key='i'>{{tag}}</div>\r\n\t\t\t\t</div>\r\n\t\t\t</section>\r\n\r\n\t\t</div>\r\n\t\t<div  :class='{\"original\":showOriginalImg}' v-if='\"mp3 mp4 mov webm aac wma ogg\".indexOf(reportList[currentReportIndex].fileextname)<=-1'>\r\n\t\t\t<img :title='showOriginalImg?\"点击还原\":\"点击放大\"' :style=\"{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}\" @click.stop=\"showOriginalImg = !showOriginalImg\"  :class=\"reportList[currentReportIndex].fileextname\" :src=\"reportList[currentReportIndex]['pcbilethum']||imgs.poster\" alt=\"\" />\r\n\t\t\t<div class=\"wm-report-detail\"  :class=\"{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}\" >\r\n\t\t\t\t<span v-if='\"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a\".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div  class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname] ||'暂无'}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-report-qrcode\" ref='qrcode' v-if='reportList[currentReportIndex].publicadtype === \"h5-zmiti\" &&reportList[currentReportIndex].previewurl'>\r\n\t\t\t\t<div>扫描二维码查看</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='\"mp4 webm mov\".indexOf(reportList[currentReportIndex].fileextname)>-1'>\r\n\t\t\t<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>\r\n\t\t\t<!-- <div class='video' id='video' ref='video'></div> -->\r\n\t\t\t\r\n\t\t\t<div class=\"wm-report-detail wm-video-detail\" :class=\"{'hide':showMaskDetail}\" >\r\n\t\t\t\t<span @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<div v-if='reportList[currentReportIndex].fileextname=== \"mp3\" ||reportList[currentReportIndex].fileextname=== \"ogg\"||reportList[currentReportIndex].fileextname=== \"aac\"||reportList[currentReportIndex].fileextname=== \"wma\" '>\r\n\t\t\t<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>\r\n\t\t\t<div class=\"wm-report-detail wm-audio\" :class=\"{'wm-audio':showMaskDetail}\"  >\r\n\t\t\t\t<div class=\"wm-myreport-title wm-myreport-field-item\" v-for='(item,i) in configList' :key='i'>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"'>{{item.name}}：</div>\r\n\t\t\t\t\t<div v-if='item.fieldname === \"filetitle\" || item.fieldname === \"filedesc\"' >\r\n\t\t\t\t\t\t<span>{{reportList[currentReportIndex][item.fieldname]}}</span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<section v-if='type*1 === 0' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入拒绝的原因(非必填)\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].remark\"/>\r\n\t\t\t\t<span v-if='!reportList[currentReportIndex].remark && false' class=\"wm-collection-placeholder\">请输入拒绝的原因(非必填)</span>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t\t\t<span>通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReportById(reportList[currentReportIndex],2,currentReportIndex)'>\r\n\t\t\t\t\t<span>拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t\r\n\t\t</section>\r\n\r\n\t\t<section  v-if='type === \"rater\"' class=\"wm-report-check-in-mask\" :class=\"{'hide':nextReport}\">\r\n\t\t\t<div>\r\n\t\t\t\t<Input placeholder=\"请输入您的评价\" :disabled='!!reportList[currentReportIndex].raterid' type=\"textarea\" v-model=\"reportList[currentReportIndex].comments\"/>\r\n\t\t\t</div>\r\n\t\t\t<div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid || reportList[currentReportIndex].score === 100' :class='{\"pass\":reportList[currentReportIndex].score === 100}'  class=\"wm-report-adopt\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 100 ? '已':''}}通过</span>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div  v-if='!reportList[currentReportIndex].raterid  || reportList[currentReportIndex].score === 0' :class='{\"reject\":reportList[currentReportIndex].score === 0}'  class=\"wm-report-reject\" @click='checkReport(reportList[currentReportIndex],100,currentReportIndex)'>\r\n\t\t\t\t\t<span>{{reportList[currentReportIndex].score === 0 ? '已':''}}拒绝</span>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</section>\r\n\r\n\t\t<section v-if='type*1 === 2'  class=\"wm-reset\" @click='checkReportById(reportList[currentReportIndex],1,currentReportIndex)'>\r\n\t\t\t<img :src=\"imgs.reset\" alt=\"\">\r\n\t\t</section>\r\n\r\n\t\t<section class=\"wm-detail-mask-tip\" v-if='false && \"jpg jpeg tiff png gif\".indexOf(reportList[currentReportIndex].fileextname)>-1'>双击放大浏览</section>\r\n\t\t\r\n\t</div>\r\n";
 
 /***/ }),
 /* 93 */
@@ -66954,15 +66954,22 @@
 
 				var s = this;
 
+				var urls = [];
+				var downloadSize = 0;
+				var filenameList = [];
+
+				var ids = [];
+				s.checkedList.map(function (item) {
+					downloadSize += item.filesize * 1;
+					urls.push(item.filepath);
+					filenameList.push(item.filetitle + '.' + item.fileextname);
+					ids.push(item.id);
+				});
+
 				if (status === 'download') {
-					var urls = [];
-					var downloadSize = 0;
-					var filenameList = [];
-					s.checkedList.map(function (item) {
-						downloadSize += item.filesize * 1;
-						urls.push(item.filepath);
-						filenameList.push(item.filetitle + '.' + item.fileextname);
-					});
+
+					s.getviews('downloads', s.$route.params.id || 1, ids);
+
 					if (!urls.length) {
 						s.$Message.error('请至少选择一个要下载的作品');
 						return;
@@ -67011,6 +67018,7 @@
 							return;
 						}
 						s.isdownloading = true;
+						s.getviews('downloads', s.$route.params.id || 1, ids);
 						_componentsLibUtil2['default'].ajax({
 							url: window.config.baseUrl + '/wmshare/createzip',
 							data: {
@@ -67032,6 +67040,7 @@
 					}
 				} else {
 					s.downloadImg = status.filepath;
+					s.getviews('downloads', s.$route.params.id || 1, [status.id]);
 					setTimeout(function () {
 						s.$refs['downloadimg'].click();
 					}, 100);
@@ -67076,6 +67085,34 @@
 				}
 				this.page = 1;
 				this.getReportList();
+			},
+
+			getviews: function getviews(key, resourceid, ids) {
+				if (key === undefined) key = 'views';
+
+				var s = this;
+				_componentsLibUtil2['default'].ajax({
+					url: window.config.baseUrl + '/wmshare/getviews',
+					data: {
+						resourceid: resourceid,
+						id: ids.join(','),
+						field: key
+					},
+					success: function success(data) {
+						console.log(data);
+						if (data.getret === 0) {
+							if (key === 'downloads') {
+								s.reportList.forEach(function (item, i) {
+									ids.forEach(function (id, k) {
+										if (item.id === id) {
+											item.downloads += 1;
+										}
+									});
+								});
+							}
+						}
+					}
+				});
 			},
 
 			getReportList: function getReportList(fn) {
@@ -67124,17 +67161,7 @@
 								});
 							});
 
-							_componentsLibUtil2['default'].ajax({
-								url: window.config.baseUrl + '/wmshare/getviews',
-								data: {
-									resourceid: p.resourceid,
-									id: ids.join(','),
-									field: 'views'
-								},
-								success: function success(data) {
-									console.log(data);
-								}
-							});
+							s.getviews('views', p.resourceid, ids);
 
 							///s.selectAll  = false;
 							if (s.reportList.length) {
