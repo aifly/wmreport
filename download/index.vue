@@ -357,7 +357,11 @@
 				if(flag){
 					//symbinUtil.changeURLPar(window.location.href,'id',-1);
 				}
-				window.location.hash = '/'+report.id+'/';
+				if(this.isUser || this.isAdmin){
+
+				}else{
+					window.location.hash = '/'+report.id+'/';
+				}
 				
 			},
 
