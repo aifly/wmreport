@@ -3,6 +3,7 @@
 		<header>
 			<div>用户管理</div>
 			<section>
+				<input type="text" placeholder="请输入昵称或用户名搜索" v-model='kw'/>
 				<Button type="primary" icon='md-add-circle' v-if='!currentAuth.userid' @click="addNewAduser">新增用户</Button>
 			</section>
 		</header>
@@ -47,7 +48,7 @@
 		data(){
 			return{
 				content:"",
-				
+				kw:'',
 				visible:false,
 				currentAuth:{},
 				imgs:window.imgs,
@@ -278,7 +279,8 @@
 				],
 
 				
-				userinfo:{}
+				userinfo:{},
+				defaultUserList:[]
 			}
 		},
 		components:{
@@ -295,10 +297,25 @@
 			//this.addadUser();
 			this.getaduserlist();
 
+			Vue.obserable.on('freshadminuser',()=>{
+				this.currentAuth = {};
+			})
+
 			var s = this;
 
  
 
+		},
+		watch:{
+			kw(val){
+				if(val){
+					this.userList = this.defaultUserList.filter(item=>{
+						return item.username.indexOf(val)>-1 || item.nickname.indexOf(val)>-1;
+					})
+				}else{
+					this.userList = this.defaultUserList.concat([]);
+				}
+			}
 		},
 		
 		methods:{
@@ -419,6 +436,7 @@
 						console.log(data);
 						if(data.getret === 0){
 							s.userList = data.list;
+							s.defaultUserList = data.list.concat([]);
 						}
 						else{
 							s.$Message.error(data.getmsg);

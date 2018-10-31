@@ -1,5 +1,5 @@
 <template>
-	<div class="wm-user-dowload-ui " :class='{"isAdmin":isAdmin,"isUser wm-scroll":isUser}' :style="{height:isUser?viewH-90+'px':'auto'}" @click.stop='showCondition = false;showCheckAction = false'>
+	<div class="wm-user-dowload-ui " :class='{"isAdmin":isAdmin,"isUser wm-scroll":isUser,"showpreview":showPreview&&(isAdmin||isUser)}' :style="{height:isUser||isAdmin?viewH-(showPreview?0:90)+'px':'auto'}" @click.stop='showCondition = false;showCheckAction = false'>
 		
 		<div  class="wm-collection-left-main-ui">
 			<header class='wm-collection-left-header' v-if='viewW<=760'>
@@ -326,8 +326,11 @@
 			closePreview(){
 				this.showPreview = false;
 				this.showMaskDetail = true;
-				window.location.hash = '/';
-				this.obserable.trigger({
+				if(this.isAdmin||this.isUser){}
+				else{
+					window.location.hash = '/'+this.$route.params.resourceid;
+				}
+				(this.obserable||Vue.obserable).trigger({
 					type:'closeOriginalImg'
 				})
 			},
@@ -360,7 +363,7 @@
 				if(this.isUser || this.isAdmin){
 
 				}else{
-					window.location.hash = '/'+report.id+'/';
+					window.location.hash = '/'+(this.$route.params.resourceid||1)+'/'+report.id+'/';
 				}
 				
 			},
@@ -396,10 +399,6 @@
 				});
 				
 				if(status === 'download'){
-					
-					
-
-
 					s.getviews('downloads',s.$route.params.id ||1,ids);
 
 					if(!urls.length){
@@ -435,7 +434,6 @@
 							success(data){
 								s.isdownloading = false;
 								if(data.getret === 0){
-									console.log(data);
 									//window.location.href = data.zipurl;
 	
 	
@@ -468,7 +466,6 @@
 							success(data){
 								s.isdownloading = false;
 								if(data.getret === 0){
-									console.log(data);
 									window.location.href = data.zipurl;
 	
 	
@@ -508,7 +505,6 @@
 			},
 			changeKwType(type){
 				this.kwType = type;
-				console.log(this.kwType)
 				this.showCondition = false;
 			},
 			searchByClassic(type){
@@ -540,7 +536,6 @@
 						field:key
 					},
 					success(data){
-						console.log(data);
 						if(data.getret === 0){
 							if(key === 'downloads'){
 								s.reportList.forEach((item,i)=>{
@@ -561,7 +556,7 @@
 				var s = this;
 
 				var  p  ={
-					resourceid:s.$route.params.id ||1,
+					resourceid:s.$route.params.resourceid ||1,
 					pagenum:s.pagenum,
 					page:s.page
 				};
@@ -585,7 +580,6 @@
 					url:window.config.baseUrl+'/wmshare/getthefinallist/',
 					data:p,
 					success(data){
-						console.log(data);
 						if(data.getret === 0){
 							s.currentPage = 1;
 							s.reportList = data.list;

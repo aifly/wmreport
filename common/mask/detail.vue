@@ -181,7 +181,10 @@ var printAreaCount = 0;
 			showPreview(val){
 				
 				if(val){
+
+
 					var s = this;
+					this.getviews(s.reportList[s.currentReportIndex].id);
 					if(s.reportList[s.currentReportIndex].publicadtype === "h5-zmiti" &&s.reportList[s.currentReportIndex].previewurl){
 						setTimeout(() => {
 							new QRCode(this.$refs['qrcode'],{
@@ -229,7 +232,23 @@ var printAreaCount = 0;
 		methods:{
 			printPage(){//打印页面
 				$(this.$refs['page']).printArea();
-			}
+			},
+			getviews(id){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmshare/getviews',
+					data:{
+						resourceid:s.$route.params.resourceid||s.$route.params.id,
+						id,
+						field:'views'
+					},
+					success(data){
+						if(data.getret === 0){
+							
+						}
+					}
+				})
+			},
         }
 	}
     

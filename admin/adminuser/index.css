@@ -65,6 +65,13 @@
   margin-right: 30px;
 }
 
+.wm-adminuser-main-ui > header > section input {
+  height: 32px;
+  border-radius: 4px;
+  padding-left: 10px;
+  border: 1px solid #be0000;
+}
+
 .wm-adminuser-main-ui > header > div {
   font-size: 20px;
   margin-left: 40px;

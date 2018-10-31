@@ -112,9 +112,17 @@
 						</Select>
 					</div>
 					
-					<div v-if='item.fieldname === "userlabel"'>标签：</div>
+					<!--
 					<div class="wm-tag-list"  v-if='item.fieldname === "userlabel"'>
 						<Tag v-if='formAdmin && formAdmin.tagList&&formAdmin.tagList.length' :color="colorList[i]?colorList[i]:colorList[i-formAdmin.tagList.length]" :key='i'  v-for="(tag,i) in (reportList[currentReportIndex][item.fieldname]||'').split(',')">{{tag}}</Tag>
+					</div>
+ -->
+					 <div v-if='item.fieldname === "userlabel"'>标签：</div>
+					<div class="wm-tags" v-if='item.fieldname === "userlabel"'>
+						<input placeholder="按回车添加标签" type="text" v-model="beforeUploadTag" @keydown.13='addTagBeforeUpload' />
+						<h2 style="height:30px;">
+						</h2>
+						<Tag color='warning' v-if='tag' @on-close="deltag(tag)" closable  v-for="(tag,i) in reportList[currentReportIndex].userlabel.split(',')" :key='i'>{{tag}}</Tag>
 					</div>
 				
 				</div>
@@ -145,6 +153,7 @@
 				isLoading:false,
 				selectAll:false,
 				showDownloadtip:false,
+				beforeUploadTag:"",
 				scale:.8,
 				imgs:window.imgs,
 				viewH:document.documentElement.clientHeight,
@@ -203,6 +212,33 @@
 			}
 		},
 		methods:{
+			deltag(name){
+
+				var taglist = this.reportList[this.currentReportIndex].userlabel.split(',');
+				var index = -1;
+				taglist.forEach((item,i)=>{
+					if(item === name){
+						index = i;
+					}
+				})
+				taglist.splice(index,1);
+				this.reportList[this.currentReportIndex].userlabel = taglist.join(',');
+
+				this.modifyReport(this.reportList[this.currentReportIndex].userlabel,'userlabel');
+				
+			},
+			addTagBeforeUpload(){
+				if(!this.beforeUploadTag){
+					return;
+				}
+				this.formAdmin.tagList = this.formAdmin.tagList || [];
+				this.formAdmin.tagList.push(this.beforeUploadTag);
+				var taglist = this.reportList[this.currentReportIndex].userlabel.split(',');
+				taglist.push(this.beforeUploadTag);
+				this.reportList[this.currentReportIndex].userlabel = taglist.join(',');
+				this.modifyReport(this.reportList[this.currentReportIndex].userlabel,'userlabel');
+				this.beforeUploadTag = '';
+			},
 
 
 			toggleChecked(index){

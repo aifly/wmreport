@@ -14,6 +14,14 @@ body{
 	.wm-href{
 		a{color:#fff}
 	}
+	
+	&.showpreview{
+
+		@include pos(f);
+		left: 0;	
+		top: 0;
+
+	}
 	&.isAdmin {
 		width:100%;
 		margin: 0 auto 0;

@@ -63,6 +63,12 @@
   color: #fff;
 }
 
+.wm-user-dowload-ui.showpreview {
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
 .wm-user-dowload-ui.isAdmin {
   width: 100%;
   margin: 0 auto 0;

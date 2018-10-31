@@ -50,7 +50,7 @@ const router = new VueRouter({
 			component: User,
 			props: true
 		}, {
-			path: '/download/:id',
+			path: '/download/:resourceid',
 			name: 'download',
 			component: DownLoad,
 			props: {

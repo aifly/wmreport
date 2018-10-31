@@ -22,7 +22,7 @@
             </Header>
             <Layout class="wm-main-layout">
                 <div class="wm-tab-C" :style='{height:(viewH - 64)+"px"}'>
-                    <Menu width='300'   theme='dark'>
+                    <Menu width='300'   theme='dark'  @on-select='select'>
                         
                         <Submenu name="1">
                             <template slot="title">
@@ -130,7 +130,18 @@
         },
        
 		methods:{
-
+            select(name){
+                switch (name) {
+                    case "adminuser":
+                        Vue.obserable.trigger({
+                            type:'freshadminuser'
+                        })
+                        break;
+                
+                    default:
+                        break;
+                }
+            },
             getResourceList(){
                 var s = this;
                 symbinUtil.ajax({

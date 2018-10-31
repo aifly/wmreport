@@ -138,6 +138,10 @@
   background: rgba(0, 0, 0, 0.8);
   z-index: 1000;
   position: fixed !important;
+  left: 0;
+  top: 0;
+  width: 100vw !important;
+  height: 100vh !important;
   display: flex;
   display: -webkit-flex;
   flex-flow: row;

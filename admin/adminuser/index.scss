@@ -16,6 +16,13 @@ $color: #be0000;
         &>section {
             margin-right: 30px;
             ;
+
+            input{
+                height: 32px;
+                @include br(4px);
+                padding-left: 10px;
+                border:1px solid #be0000;
+            }
         }
         &>div {
             font-size: 20px;

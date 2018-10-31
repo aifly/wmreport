@@ -16,7 +16,7 @@ Vue.obserable = obserable;
  const router = new VueRouter({
      routes: [
          {
-             path: '/:id?',
+             path: '/:resourceid/:id?',
              name: 'download',
              component: Download,
              props: true
