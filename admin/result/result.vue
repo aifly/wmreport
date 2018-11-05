@@ -174,6 +174,7 @@
 <script>
 	import symbinUtil from '../lib/util';
 	import Vue from "vue";
+	import './index.css';
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',

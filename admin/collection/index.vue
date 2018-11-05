@@ -6,10 +6,12 @@
 				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报审核</li>
 				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
 				<li @click='mainType = 2' :class="{'active':mainType === 2}">终审归档</li>
+				<li @click='mainType = 3' :class="{'active':mainType === 3}">统计</li>
 			</ul>
 		</div>
 		<Result  v-if='mainType  === 1'></Result>
 		<LastCheck  v-if='mainType  === 2'></LastCheck>
+		<Statistics  v-if='mainType  === 3'></Statistics>
 
 		<Split v-model='scale' v-if='mainType === 0'> 
 			<div slot='left' class="wm-collection-left-main-ui">
@@ -54,11 +56,13 @@
 						</div>
 					</header>
 					<header class="wm-collection-left-search-condition-header">
-						<div>分类：<span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> </div>
-						<div>状态：<span @click.stop='searchByStatus("全部")' :class="{'active':statusType == '全部'}">全部</span>
+						<div>分类： <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span><span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> </div>
+						<div>状态：
 							<span @click.stop='searchByStatus("待审核")' :class="{'active':statusType == '待审核'}">待审核</span>
 							<span :class="{'active':statusType == '已通过'}" @click.stop='searchByStatus("已通过")'>已通过</span>
-							<span :class="{'active':statusType == '已拒绝'}" @click.stop='searchByStatus("已拒绝")'>已拒绝</span> </div>
+							<span :class="{'active':statusType == '已拒绝'}" @click.stop='searchByStatus("已拒绝")'>已拒绝</span> 
+							<span @click.stop='searchByStatus("全部")' :class="{'active':statusType == '全部'}">全部</span>
+						</div>
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
@@ -140,6 +144,7 @@
 	import symbinUtil from '../lib/util';
 	import Result from './result.vue';
 	import LastCheck from './lastcheck.vue'
+	import Statistics from './statistics.vue'
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
 	import Download from '../../common/mask/download';
@@ -171,11 +176,11 @@
 				configList:[],
 				currentReportIndex:0,
 				menus:[],
-				classicType:'全部',
-				statusType:'全部',
+				classicType:'',
+				statusType:'待审核',
 				publicadtype:-1,
 				totalnum:0,
-				status:-1,
+				status:0,
 				currentPage:0,
 				classic:-1,
 				page:1,
@@ -190,7 +195,8 @@
 			Result,
 			LastCheck,
 			Detail,
-			Download
+			Download,
+			Statistics
 		},
 		watch:{
 			selectAll(val){
@@ -620,6 +626,7 @@
 											s.configList.map((item)=>{
 												if(item.fieldname === 'publicadtype'){
 													s.menus = item.data;
+													s.classicType = s.menus[0];
 												}
 											})
 										}

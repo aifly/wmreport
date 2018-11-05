@@ -7,6 +7,7 @@ import Vote from './admin/vote/index';
 import Login from './admin/login/index';
 import Detail from './admin/detail/index';
 import Recruit from './admin/recruit/index';
+import Result from './admin/result/result';
 import Recruitaction from './admin/recruitaction/index';
 import Rater from './admin/rater/index';
 import Download from './admin/download/index';
@@ -82,6 +83,11 @@ const router = new VueRouter({
 			path: '/download/',
 			name: 'download',
 			component: Download,
+			props: true
+		}, {
+			path: '/result/',
+			name: 'result',
+			component: Result,
 			props: true
 		}
 		
