@@ -176,7 +176,7 @@
 				configList:[],
 				currentReportIndex:0,
 				menus:[],
-				classicType:'',
+				classicType:'图片-zmiti',
 				statusType:'待审核',
 				publicadtype:-1,
 				totalnum:0,
@@ -524,6 +524,7 @@
 				this.classicType  = type;
 				//this.statusType  = '全部';
 				//publicadtype
+
 				if(type !== '全部'){
 					this.menus.map((menu)=>{
 						if(type === menu){
@@ -626,7 +627,8 @@
 											s.configList.map((item)=>{
 												if(item.fieldname === 'publicadtype'){
 													s.menus = item.data;
-													s.classicType = s.menus[0];
+													//s.classicType = s.menus[0];
+													///s.publicadtype= s.menus[0];
 												}
 											})
 										}
