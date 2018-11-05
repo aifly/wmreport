@@ -178,7 +178,7 @@
 				menus:[],
 				classicType:'图片-zmiti',
 				statusType:'待审核',
-				publicadtype:-1,
+				publicadtype:'图片-zmiti',
 				totalnum:0,
 				status:0,
 				currentPage:0,
