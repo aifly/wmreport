@@ -33,6 +33,11 @@
 						<Button class='wm-href' size='small' style="background: #f5a420;color:#fff;">
 							<a :href="uploadUrl" target='_blank'>上报</a>
 						</Button>
+
+						<Button class='wm-href' size='small' style="background: #f5a420;color:#fff;"  @click="gettestviews()" >
+							测试下载
+						</Button>
+					
 					</div>
 				</div>
 
@@ -577,6 +582,22 @@
 					}
 				})
 			},
+			/*测试下载接口*/
+			gettestviews(){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/downloadfile',
+					data:{
+						/*resourceid,*/
+						id:'1913551438'
+						
+					},
+					success(data){
+						console.log(data);
+					}
+				})
+			},
+			/*测试下载接口结束*/
 			 
 			getReportList(fn){
 				
