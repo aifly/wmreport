@@ -629,8 +629,11 @@ body{
 							line-height: 20px;
 						 }
 						 &:nth-of-type(3){
-							 width: 60px;
+							 width: 280px;
 							 text-align: right;
+							 a{
+								 margin: 0 5px;
+							 }
 							 i{
 								 font-size:20px;
 							 }
@@ -1854,4 +1857,20 @@ body{
 
 	}
 
+
+
+
+}
+
+.wm-help{
+	@include pos(f);
+	z-index: 1000;
+	right: 100px;
+	top: 340px;
+	border:1px solid #f90;
+	background: #f90;
+	@include br(4px);
+	padding: 3px 10px;
+	color:#fff;
+	cursor: pointer;
 }

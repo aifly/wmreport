@@ -722,8 +722,12 @@
 }
 
 .wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) {
-  width: 60px;
+  width: 280px;
   text-align: right;
+}
+
+.wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) a {
+  margin: 0 5px;
 }
 
 .wm-user-dowload-ui .wm-collection-left-main-ui .wm-collection-report-list > ul.wm-media-list li.wm-collection-report-item > div:nth-of-type(3) i {
@@ -1797,4 +1801,17 @@
     width: auto;
     max-height: 60vh;
   }
+}
+
+.wm-help {
+  position: fixed;
+  z-index: 1000;
+  right: 100px;
+  top: 340px;
+  border: 1px solid #f90;
+  background: #f90;
+  border-radius: 4px;
+  padding: 3px 10px;
+  color: #fff;
+  cursor: pointer;
 }

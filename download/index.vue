@@ -91,7 +91,7 @@
 				<ul v-else class='wm-media-list'>
 					<li class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 						<div><Checkbox @on-change='changeChecked(report,i)' v-model="report.checked"></Checkbox></div>
-						<div class='wm-collection-report-content' @click="previewReport(i,report)">
+						<div class='wm-collection-report-content' >
 							<div style="line-height:130px;">
 								<img :src="report.pcbilethum||imgs.poster" alt="">
 							</div>
@@ -107,8 +107,11 @@
 							</div>
 						</div>
 						<div>
-							<Icon @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
-							<Icon class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
+							<Icon v-if='false' @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
+							<Icon v-if='false' class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
+							<a href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
+							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路2(高速)]</a>
+							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路3(推荐)]</a>
 						</div>
 					 
 					</li>	
@@ -147,6 +150,16 @@
 		</div>
 		<a :href="downloadImg" v-if='downloadImg' style="opacity:0;position:fixed;top:100%;left:100%" ref='downloadimg' target='_blank'>1</a>
 		<DownloadTip :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></DownloadTip>
+
+		<div class='wm-help' @click="visiable = true" v-if='false'>
+			下载帮助
+		</div>
+		<Modal
+			v-model="visiable"
+			title="下载帮助"
+			>
+			<p>QQ群号：947613787 </p>
+		</Modal>
 	</div>
 </template>
 
@@ -165,6 +178,7 @@
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				isLoading:false,
 				selectAll:false,
+				visiable:false,
 				scale:1,
 				showDownloadtip:false,
 				uploadUrl:window.config.uploadUrl,
@@ -380,7 +394,7 @@
 				},200);
 			},
 
-			checkAction(status){
+			checkAction(status,index){
 				
 				var s = this;
 
@@ -393,6 +407,7 @@
 				s.checkedList.map((item)=>{
 					downloadSize+=item.filesize*1;
 					urls.push(item.filepath);
+					
 					filenameList.push(item.filetitle+'.'+item.fileextname)
 					ids.push(item.id)
 					
@@ -475,7 +490,19 @@
 					}
 
 				}else{
-					 s.downloadImg = status.filepath;
+					s.downloadImg = status.filepath;
+					if(index === 1){
+					}else if(index === 2){
+						s.downloadImg = status.filepath1;
+					}
+					else if(index === 3){
+						if(status.publicadtype === '视频-zmiti'){
+							s.downloadImg = 'https://pan.baidu.com/s/13ooNmqnDGgFOAwBHKbo99A';
+						}
+						else if(status.publicadtype === '音频-zmiti'){
+							s.downloadImg = 'https://pan.baidu.com/s/1AlH9vXjva29ofkq5eC-67A';
+						}
+					}
 					 s.getviews('downloads',s.$route.params.id ||1,[status.id]);
 					 setTimeout(() => {
 						 s.$refs['downloadimg'].click();
@@ -587,6 +614,7 @@
 
 							var ids = [];
 							s.reportList.forEach((item)=>{
+								item.filepath1 = item.filepath.replace('uploads/','');
 								ids.push(item.id);
 								item.checked = false;
 								s.checkedList.forEach((ls)=>{
@@ -600,6 +628,7 @@
 						
 							///s.selectAll  = false;
 							if(s.reportList.length){
+
 								//s.currentReportIndex = 0;
 
 								s.formAdmin = s.reportList[s.currentReportIndex];
