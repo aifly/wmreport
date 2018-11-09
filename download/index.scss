@@ -1859,7 +1859,13 @@ body{
 
 
 
-
+	
+}
+.wm-data-loading{
+	width: 100%;
+	text-align: center;
+	color:#b20000;
+	font-size:12px;
 }
 
 .wm-help{
@@ -1873,4 +1879,12 @@ body{
 	padding: 3px 10px;
 	color:#fff;
 	cursor: pointer;
+}
+
+.wm-download-help{
+	@include pos(a);
+	color:#be0000;
+	right: 300px;
+	bottom: 20px;
+
 }

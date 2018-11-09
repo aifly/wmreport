@@ -34,7 +34,7 @@
 							<a :href="uploadUrl" target='_blank'>上报</a>
 						</Button>
 
-						<Button class='wm-href' size='small' style="background: #f5a420;color:#fff;"  @click="gettestviews()" >
+						<Button v-if='false' class='wm-href' size='small' style="background: #f5a420;color:#fff;"  @click="gettestviews()" >
 							测试下载
 						</Button>
 					
@@ -108,8 +108,12 @@
 								<div>浏览量：{{report.views+1}}</div>
 								<div>下载量：{{report.downloads}}</div>
 								<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>
-								
 							</div>
+							<div class='wm-download-help'>
+								{{'提示：如遇'+report.publicadtype.split('-')[0]+'直接播放，可在播放页右键选择'+report.publicadtype.split('-')[0]+'另存即可'}}<br/>
+								如下载显示404信息，则表示下载人数过多，可刷新或者选择其它线路
+							</div>
+
 						</div>
 						<div>
 							<Icon v-if='false' @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
@@ -121,6 +125,10 @@
 					 
 					</li>	
 				</ul>
+				<div v-if='showLoading' class='wm-data-loading'> 
+					<Icon type="ios-loading" size=20 class="demo-spin-icon-load1"></Icon>
+					<div>数据加载中...</div>
+				</div>
 				<div class="wm-collection-pagetion" >
 					<Page :current='currentPage' @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 				</div>
@@ -185,6 +193,7 @@
 				selectAll:false,
 				visiable:false,
 				scale:1,
+				showLoading:false,
 				showDownloadtip:false,
 				uploadUrl:window.config.uploadUrl,
 				imgs:window.imgs,
@@ -497,8 +506,12 @@
 				}else{
 					s.downloadImg = status.filepath;
 					if(index === 1){
+						s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile?id='+status.id;
 					}else if(index === 2){
 						s.downloadImg = status.filepath1;
+						var data = window.config.downloadConfig[this.$route.params.resourceid||'1'];
+						s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&filetitle="+encodeURI(status.filetitle.replace(/\s+/g, ""))+"&newfilename="+status.newfilename+"&fileextname="+status.fileextname;
+
 					}
 					else if(index === 3){
 						if(status.publicadtype === '视频-zmiti'){
@@ -508,7 +521,9 @@
 							s.downloadImg = 'https://pan.baidu.com/s/1AlH9vXjva29ofkq5eC-67A';
 						}
 					}
+					
 					 s.getviews('downloads',s.$route.params.id ||1,[status.id]);
+					 
 					 setTimeout(() => {
 						 s.$refs['downloadimg'].click();
 					 }, 100);
@@ -587,6 +602,7 @@
 				var s = this;
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadvuser/downloadfile',
+					type:'get',
 					data:{
 						/*resourceid,*/
 						id:'1913551438'
@@ -602,7 +618,8 @@
 			getReportList(fn){
 				
 				var s = this;
-
+				s.showLoading = true;
+				s.reportList.length = 0;
 				var  p  ={
 					resourceid:s.$route.params.resourceid ||1,
 					pagenum:s.pagenum,
@@ -627,7 +644,12 @@
 					_this:s,
 					url:window.config.baseUrl+'/wmshare/getthefinallist/',
 					data:p,
+					error(){
+						s.showLoading = false;
+					},
 					success(data){
+						s.showLoading = false;
+
 						if(data.getret === 0){
 							s.currentPage = 1;
 							s.reportList = data.list;
@@ -737,15 +759,19 @@
 	}
 </script>
  <style>
+  
 	.demo-spin-icon-load1{
         animation: ani-demo-spin 1s linear infinite;
 		-webkit-animation: ani-demo-spin 1s linear infinite;
 		display: inline-block;
 		width: 20px;
 		height: 20px;
-		position: relative;
 		top: 4px;
 		left: -2px;;
+	}
+	.ivu-spin-main{
+		top: 100px !important;
+
 	}
 	.demo-spin-icon-load1 i{
 		position: absolute;
@@ -755,6 +781,7 @@
 		-webkit-transform:translate(-50%,-50%);
 		transform:translate(-50%,-50%);
 		margin-top: 0 !important;
+		font-size:20px;
 
 	}
     @keyframes ani-demo-spin {
