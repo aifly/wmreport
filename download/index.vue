@@ -33,6 +33,11 @@
 						<Button class='wm-href' size='small' style="background: #f5a420;color:#fff;">
 							<a :href="uploadUrl" target='_blank'>上报</a>
 						</Button>
+
+						<Button v-if='false' class='wm-href' size='small' style="background: #f5a420;color:#fff;"  @click="gettestviews()" >
+							测试下载
+						</Button>
+					
 					</div>
 				</div>
 
@@ -91,7 +96,7 @@
 				<ul v-else class='wm-media-list'>
 					<li class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 						<div><Checkbox @on-change='changeChecked(report,i)' v-model="report.checked"></Checkbox></div>
-						<div class='wm-collection-report-content' @click="previewReport(i,report)">
+						<div class='wm-collection-report-content' >
 							<div style="line-height:130px;">
 								<img :src="report.pcbilethum||imgs.poster" alt="">
 							</div>
@@ -103,16 +108,27 @@
 								<div>浏览量：{{report.views+1}}</div>
 								<div>下载量：{{report.downloads}}</div>
 								<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>
-								
 							</div>
+							<div class='wm-download-help'>
+								{{'提示：如遇'+report.publicadtype.split('-')[0]+'直接播放，可在播放页右键选择'+report.publicadtype.split('-')[0]+'另存即可'}}<br/>
+								如下载显示404信息，则表示下载人数过多，可刷新或者选择其它线路
+							</div>
+
 						</div>
 						<div>
-							<Icon @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
-							<Icon class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
+							<Icon v-if='false' @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
+							<Icon v-if='false' class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
+							<a href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
+							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路2(高速)]</a>
+							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路3(推荐)]</a>
 						</div>
 					 
 					</li>	
 				</ul>
+				<div v-if='showLoading' class='wm-data-loading'> 
+					<Icon type="ios-loading" size=20 class="demo-spin-icon-load1"></Icon>
+					<div>数据加载中...</div>
+				</div>
 				<div class="wm-collection-pagetion" >
 					<Page :current='currentPage' @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 				</div>
@@ -147,6 +163,16 @@
 		</div>
 		<a :href="downloadImg" v-if='downloadImg' style="opacity:0;position:fixed;top:100%;left:100%" ref='downloadimg' target='_blank'>1</a>
 		<DownloadTip :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></DownloadTip>
+
+		<div class='wm-help' @click="visiable = true" v-if='false'>
+			下载帮助
+		</div>
+		<Modal
+			v-model="visiable"
+			title="下载帮助"
+			>
+			<p>QQ群号：947613787 </p>
+		</Modal>
 	</div>
 </template>
 
@@ -165,7 +191,9 @@
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				isLoading:false,
 				selectAll:false,
+				visiable:false,
 				scale:1,
+				showLoading:false,
 				showDownloadtip:false,
 				uploadUrl:window.config.uploadUrl,
 				imgs:window.imgs,
@@ -380,7 +408,7 @@
 				},200);
 			},
 
-			checkAction(status){
+			checkAction(status,index){
 				
 				var s = this;
 
@@ -393,6 +421,7 @@
 				s.checkedList.map((item)=>{
 					downloadSize+=item.filesize*1;
 					urls.push(item.filepath);
+					
 					filenameList.push(item.filetitle+'.'+item.fileextname)
 					ids.push(item.id)
 					
@@ -475,8 +504,26 @@
 					}
 
 				}else{
-					 s.downloadImg = status.filepath;
+					s.downloadImg = status.filepath;
+					if(index === 1){
+						s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile?id='+status.id;
+					}else if(index === 2){
+						s.downloadImg = status.filepath1;
+						var data = window.config.downloadConfig[this.$route.params.resourceid||'1'];
+						s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&filetitle="+encodeURI(status.filetitle.replace(/\s+/g, ""))+"&newfilename="+status.newfilename+"&fileextname="+status.fileextname;
+
+					}
+					else if(index === 3){
+						if(status.publicadtype === '视频-zmiti'){
+							s.downloadImg = 'https://pan.baidu.com/s/13ooNmqnDGgFOAwBHKbo99A';
+						}
+						else if(status.publicadtype === '音频-zmiti'){
+							s.downloadImg = 'https://pan.baidu.com/s/1AlH9vXjva29ofkq5eC-67A';
+						}
+					}
+					
 					 s.getviews('downloads',s.$route.params.id ||1,[status.id]);
+					 
 					 setTimeout(() => {
 						 s.$refs['downloadimg'].click();
 					 }, 100);
@@ -550,11 +597,29 @@
 					}
 				})
 			},
+			/*测试下载接口*/
+			gettestviews(){
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadvuser/downloadfile',
+					type:'get',
+					data:{
+						/*resourceid,*/
+						id:'1913551438'
+						
+					},
+					success(data){
+						console.log(data);
+					}
+				})
+			},
+			/*测试下载接口结束*/
 			 
 			getReportList(fn){
 				
 				var s = this;
-
+				s.showLoading = true;
+				s.reportList.length = 0;
 				var  p  ={
 					resourceid:s.$route.params.resourceid ||1,
 					pagenum:s.pagenum,
@@ -579,7 +644,12 @@
 					_this:s,
 					url:window.config.baseUrl+'/wmshare/getthefinallist/',
 					data:p,
+					error(){
+						s.showLoading = false;
+					},
 					success(data){
+						s.showLoading = false;
+
 						if(data.getret === 0){
 							s.currentPage = 1;
 							s.reportList = data.list;
@@ -587,6 +657,7 @@
 
 							var ids = [];
 							s.reportList.forEach((item)=>{
+								item.filepath1 = item.filepath.replace('uploads/','');
 								ids.push(item.id);
 								item.checked = false;
 								s.checkedList.forEach((ls)=>{
@@ -600,6 +671,7 @@
 						
 							///s.selectAll  = false;
 							if(s.reportList.length){
+
 								//s.currentReportIndex = 0;
 
 								s.formAdmin = s.reportList[s.currentReportIndex];
@@ -687,15 +759,19 @@
 	}
 </script>
  <style>
+  
 	.demo-spin-icon-load1{
         animation: ani-demo-spin 1s linear infinite;
 		-webkit-animation: ani-demo-spin 1s linear infinite;
 		display: inline-block;
 		width: 20px;
 		height: 20px;
-		position: relative;
 		top: 4px;
 		left: -2px;;
+	}
+	.ivu-spin-main{
+		top: 100px !important;
+
 	}
 	.demo-spin-icon-load1 i{
 		position: absolute;
@@ -705,6 +781,7 @@
 		-webkit-transform:translate(-50%,-50%);
 		transform:translate(-50%,-50%);
 		margin-top: 0 !important;
+		font-size:20px;
 
 	}
     @keyframes ani-demo-spin {

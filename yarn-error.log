@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js satrt
+  C:\Program Files\nodejs\node.exe C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js star
 
 PATH: 
   C:\Users\13910\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\13910\bin;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files\Git\cmd;C:\Program Files\TortoiseSVN\bin;C:\Program Files (x86)\MySQL\MySQL Fabric 1.5 & MySQL Utilities 1.5;C:\Program Files (x86)\MySQL\MySQL Fabric 1.5 & MySQL Utilities 1.5\Doctrine extensions for PHP;C:\Program Files\nodejs;F:\xuchang2018\tools\Microsoft VS Code\bin;C:\WINDOWS\System32\OpenSSH;C:\Users\13910\AppData\Local\Programs\Python\Python36\Scripts;C:\Users\13910\AppData\Local\Programs\Python\Python36;C:\Ruby25-x64\bin;C:\Users\13910\AppData\Local\Microsoft\WindowsApps;C:\Users\13910\AppData\Roaming\npm;F:\install\Microsoft VS Code\bin;F:\mysql\MySQL Server 5.5\bin;F:\xuchang2018\tools\Microsoft VS Code\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
@@ -43,13 +43,14 @@ npm manifest:
       "html-webpack-plugin": "^2.30.1",
       "iscroll": "^5.2.0",
       "iview": "^3.0.0",
-      "iview-loader": "^1.1.0",
+      "iview-loader": "^1.2.2",
       "jquery": "^2.2.3",
       "less": "^2.5.3",
       "less-loader": "^4.1.0",
       "less-plugin-clean-css": "^1.5.1",
       "open-browser-webpack-plugin": "^0.0.5",
       "style-loader": "^0.13.0",
+      "tinymce": "^4.8.2",
       "url-loader": "^0.5.7",
       "velocity": "^0.7.2",
       "velocity-animate": "^1.5.1",
@@ -58,6 +59,7 @@ npm manifest:
       "vue-hot-reload-api": "^2.2.4",
       "vue-html-loader": "^1.2.4",
       "vue-loader": "^7.3.0",
+      "vue-quill-editor": "^3.0.6",
       "vue-router": "^3.0.1",
       "vue-style-loader": "^3.0.1",
       "vue-template-compiler": "^2.5.2",
@@ -1625,6 +1627,10 @@ Lockfile:
     version "1.2.0"
     resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   
+  deep-equal@^1.0.1:
+    version "1.0.1"
+    resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
+  
   deep-extend@~0.4.0:
     version "0.4.2"
     resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.4.2.tgz#48b699c27e334bf89f10892be432f6e4c7d34a7f"
@@ -1838,6 +1844,10 @@ Lockfile:
     version "1.2.0"
     resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
   
+  eventemitter3@^2.0.3:
+    version "2.0.3"
+    resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-2.0.3.tgz#b5e1079b59fb5e1ba2771c0a993be060a58c99ba"
+  
   events@^1.0.0:
     version "1.1.1"
     resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
@@ -1895,6 +1905,10 @@ Lockfile:
       utils-merge "1.0.1"
       vary "~1.1.2"
   
+  extend@^3.0.1, extend@^3.0.2:
+    version "3.0.2"
+    resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
+  
   extend@~3.0.0:
     version "3.0.1"
     resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.1.tgz#a755ea7bc1adfcc5a31ce7e762dbaadc5e636444"
@@ -1921,6 +1935,10 @@ Lockfile:
   fast-deep-equal@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-1.0.0.tgz#96256a3bc975595eb36d82e9929d060d893439ff"
+  
+  fast-diff@1.1.2:
+    version "1.1.2"
+    resolved "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.1.2.tgz#4b62c42b8e03de3f848460b639079920695d0154"
   
   fast-json-stable-stringify@^2.0.0:
     version "2.0.0"
@@ -3164,6 +3182,10 @@ Lockfile:
     dependencies:
       no-case "^2.2.0"
   
+  parchment@^1.1.4:
+    version "1.1.4"
+    resolved "https://registry.yarnpkg.com/parchment/-/parchment-1.1.4.tgz#aeded7ab938fe921d4c34bc339ce1168bc2ffde5"
+  
   parse-glob@^3.0.4:
     version "3.0.4"
     resolved "https://registry.yarnpkg.com/parse-glob/-/parse-glob-3.0.4.tgz#b2c376cfb11f35513badd173ef0bb6e3a388391c"
@@ -3613,6 +3635,25 @@ Lockfile:
   quick-lru@^1.0.0:
     version "1.1.0"
     resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
+  
+  quill-delta@^3.6.2:
+    version "3.6.3"
+    resolved "https://registry.yarnpkg.com/quill-delta/-/quill-delta-3.6.3.tgz#b19fd2b89412301c60e1ff213d8d860eac0f1032"
+    dependencies:
+      deep-equal "^1.0.1"
+      extend "^3.0.2"
+      fast-diff "1.1.2"
+  
+  quill@^1.3.4:
+    version "1.3.6"
+    resolved "https://registry.yarnpkg.com/quill/-/quill-1.3.6.tgz#99f4de1fee85925a0d7d4163b6d8328f23317a4d"
+    dependencies:
+      clone "^2.1.1"
+      deep-equal "^1.0.1"
+      eventemitter3 "^2.0.3"
+      extend "^3.0.1"
+      parchment "^1.1.4"
+      quill-delta "^3.6.2"
   
   randomatic@^1.1.3:
     version "1.1.7"
@@ -4266,6 +4307,10 @@ Lockfile:
     version "1.4.1"
     resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
   
+  tinymce@^4.8.2:
+    version "4.8.2"
+    resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-4.8.2.tgz#2ba65ee56f6641d8dcaca85db3fb36e9b35a3010"
+  
   tinytim@0.1.1:
     version "0.1.1"
     resolved "https://registry.yarnpkg.com/tinytim/-/tinytim-0.1.1.tgz#c968a1e5559ad9553224ef7627bab34e3caef8a8"
@@ -4548,6 +4593,13 @@ Lockfile:
       postcss-selector-parser "^1.1.2"
       source-map "^0.5.3"
   
+  vue-quill-editor@^3.0.6:
+    version "3.0.6"
+    resolved "https://registry.yarnpkg.com/vue-quill-editor/-/vue-quill-editor-3.0.6.tgz#1f85646211d68a31a80a72cb7f45bb2f119bc8fb"
+    dependencies:
+      object-assign "^4.1.1"
+      quill "^1.3.4"
+  
   vue-router@^3.0.1:
     version "3.0.1"
     resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.0.1.tgz#d9b05ad9c7420ba0f626d6500d693e60092cc1e9"
@@ -4710,7 +4762,7 @@ Lockfile:
       y18n "^3.2.0"
 
 Trace: 
-  Error: Command "satrt" not found.
+  Error: Command "star" not found. Did you mean "start"?
       at new MessageError (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
       at C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:87307:17
       at Generator.next (<anonymous>)

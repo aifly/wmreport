@@ -90,6 +90,16 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 		swf: './assets/ckplayer/ckplayer.swf',
 		baseUrl: 'http://h5.wenming.cn/v1',
 		uploadUrl: 'http://h5.wenming.cn/wmreport/index.html#/',
+		downloadConfig:{
+			"1":{
+				p1: "wmpublicadupload",
+				p2:'2018'
+			},
+			"2": {
+				p1: "wmpublicadupload1",
+				p2: '2018'
+			}
+		},
 		
 		accepts: [{
 			id: 0,
