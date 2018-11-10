@@ -100,6 +100,18 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 				p2: '2018'
 			}
 		},
+		adminDownloadConfig:{
+			"1":{
+				p1: "public",
+				p2:'downloads',
+				p3:'zip'
+			},
+			"2": {
+				p1: "public",
+				p2:'downloads',
+				p3:'zip'
+			}
+		},
 		
 		accepts: [{
 			id: 0,
@@ -125,7 +137,7 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	}
 
 	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
-		window.config.baseUrl = "https://api.symbin.cn/v1";
+		///window.config.baseUrl = "https://api.symbin.cn/v1";
 	}
 
 })();

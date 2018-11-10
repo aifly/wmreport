@@ -475,11 +475,11 @@
 						error(){
 							s.isdownloading = false;
 						},
-						success(data){
+						success(dt){
 							s.isdownloading = false;
 							s.showCheckAction = false;
 							
-							if(data.getret === 0){
+							if(dt.getret === 0){
 								/* var a = document.createElement('a');
 								a.href = data.zipurl;
 								a.innerHTML = '下载';
@@ -490,10 +490,17 @@
 								document.body.appendChild(a);
 								a.target = '_blank';
 								//a.click(); */
-								window.location.href = data.zipurl;
+								
+								var data = window.config.adminDownloadConfig[s.$route.params.id||'1'];
+								var name = dt.zipurl.split('/')[dt.zipurl.split('/').length-1];
+								var extname = name.split('.')[1]||'zip';
+
+								window.location.href = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&p3="+data.p3+"&filetitle="+encodeURI(name)+"&newfilename="+name.split('.')[0]+"&fileextname="+extname;
+								//window.location.href = data.zipurl;
+
 
 							}
-							else if(data.getret === 2001){//文件大小超过限制，请到下载页面下载
+							else if(dt.getret === 2001){//文件大小超过限制，请到下载页面下载
 								s.showDownloadtip = true;
 							}
 						}

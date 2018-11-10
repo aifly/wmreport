@@ -753,8 +753,6 @@
 				var {obserable} = Vue;
 				
 				var t = setInterval(()=>{
-
-					
 					
 					var id  = s.$route.params.id;
 					var tableFields = obserable.trigger({
@@ -762,8 +760,7 @@
 						data:s.$route.params.id
 					})
 				
-					
-					if(id){
+					if(tableFields){
 					
 						
 						this.configList = tableFields.concat([]);

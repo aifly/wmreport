@@ -128,7 +128,15 @@
 											/*this.currentUserId = params.row.userid;
 											this.formAdmin = params.row;
 											this.visible = true;*/
+											var data = window.config.adminDownloadConfig[this.$route.params.id||'1'];
+											var name = params.row.taskresult.split('/')[params.row.taskresult.split('/').length-1];
+											var extname = name.split('.')[1]||'zip';
+											/*console.log(window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&p3="+data.p3+"&filetitle="+encodeURI(name)+"&newfilename="+name+"&fileextname="+extname);											
 											window.location.href = params.row.taskresult;
+											return;*/
+
+
+											window.location.href = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&p3="+data.p3+"&filetitle="+encodeURI(name)+"&newfilename="+name.split('.')[0]+"&fileextname="+extname;
                                         }
                                     }
                                 },'下载'),

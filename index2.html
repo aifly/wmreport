@@ -8,6 +8,20 @@
 	</style>
 </head>
 <body>
-<h1><a href="http://h5.wenming.cn/wmreport/index.html">中国文明网公益广告上报系统 点击进入</a></h1>
+	
+	<script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.js"></script>
+	<script>
+		$(function(){
+			$.ajax({
+				url:"https://api.symbin.cn/v1/wmadvuser/downloadfile/",
+				data:{
+					id:'1448959619'
+				},
+				success:function(data){
+					console.log(data);
+				}
+			})
+		})
+	</script>
 </body>
 </html>
