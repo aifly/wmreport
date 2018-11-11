@@ -629,14 +629,17 @@ body{
 							line-height: 20px;
 						 }
 						 &:nth-of-type(3){
+
 							 width: 280px;
 							 text-align: right;
+							 a{
+								 margin: 0 5px;
+							 }
 							 i{
 								 font-size:20px;
 							 }
 						 }
 						 
-					 }
 						 @include displayBox(horizontal);
 						 @include displayFlex(row);
  
@@ -654,6 +657,7 @@ body{
 								  @include transform(scale(.9));
 							 }
 						 }
+					 }
 					 img{
 						 width: 60px;
 
@@ -1847,5 +1851,35 @@ body{
 		}
 
 	}
+
+
+
+	
+}
+.wm-data-loading{
+	width: 100%;
+	text-align: center;
+	color:#b20000;
+	font-size:12px;
+}
+
+.wm-help{
+	@include pos(f);
+	z-index: 1000;
+	right: 100px;
+	top: 340px;
+	border:1px solid #f90;
+	background: #f90;
+	@include br(4px);
+	padding: 3px 10px;
+	color:#fff;
+	cursor: pointer;
+}
+
+.wm-download-help{
+	@include pos(a);
+	color:#be0000;
+	right: 300px;
+	bottom: 20px;
 
 }
