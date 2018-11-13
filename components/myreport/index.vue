@@ -1103,6 +1103,7 @@
 				// 文件上传失败，显示上传出错。
 				uploader.on('uploadError', function (file) {
 					console.log('error')
+					s.$Message.error('文件上传超时，请刷新重试');
 					//$('#' + file.id).find('p.state').text('上传出错');
 				});
 

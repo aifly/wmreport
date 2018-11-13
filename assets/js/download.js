@@ -66714,9 +66714,10 @@
 	// 						<div>
 	// 							<Icon v-if='false' @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
 	// 							<Icon v-if='false' class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
-	// 							<a href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
-	// 							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路2(高速)]</a>
-	// 							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路3(推荐)]</a>
+	// 							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
+	// 							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路1]</a>
+	// 							<a  href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路2(高速)]</a>
+	// 							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路2(推荐)]</a>
 	// 						</div>
 	//
 	// 					</li>	
@@ -66726,7 +66727,7 @@
 	// 					<div>数据加载中...</div>
 	// 				</div>
 	// 				<div class="wm-collection-pagetion" >
-	// 					<Page :current='currentPage' @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
+	// 					<Page  @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 	// 				</div>
 	// 			</div>
 	// 		</div>
@@ -66841,11 +66842,10 @@
 				currentPage: 0,
 				classic: -1,
 				page: 1,
-				pagenum: 20,
+				pagenum: 200,
 				raterReportList: [],
 				isdownloading: false,
 				checkedList: []
-
 			};
 		},
 		components: {
@@ -66915,6 +66915,12 @@
 			},
 
 			searchBySort: function searchBySort(type) {
+
+				if (window.config.isRequestLocal) {
+					this.$Message.error('当前下载量过大，此功能暂停使用');
+					return;
+				}
+
 				if (type === 'time') {
 					this.sort = this.sort === -1 ? 1 : -1;
 				} else {
@@ -66927,6 +66933,10 @@
 				var _this3 = this;
 
 				if (this.keyword) {
+					if (window.config.isRequestLocal) {
+						this.$Message.error('当前下载量过大，此功能暂停使用');
+						return;
+					}
 					clearTimeout(this.timer);
 					this.timer = setTimeout(function () {
 						if (!_this3.keyword) {
@@ -67102,18 +67112,20 @@
 				} else {
 					s.downloadImg = status.filepath;
 					if (index === 1) {
-						s.downloadImg = window.config.baseUrl + '/wmadvuser/downloadfile?id=' + status.id;
+						//s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile?id='+status.id;
+
 					} else if (index === 2) {
-						s.downloadImg = status.filepath1;
-						var data = window.config.downloadConfig[this.$route.params.resourceid || '1'];
-						s.downloadImg = window.config.baseUrl + '/wmadvuser/downloadfile1?p1=' + data.p1 + "&p2=" + data.p2 + "&filetitle=" + encodeURI(status.filetitle.replace(/\s+/g, "")) + "&newfilename=" + status.newfilename + "&fileextname=" + status.fileextname;
-					} else if (index === 3) {
-						if (status.publicadtype === '视频-zmiti') {
-							s.downloadImg = 'https://pan.baidu.com/s/13ooNmqnDGgFOAwBHKbo99A';
-						} else if (status.publicadtype === '音频-zmiti') {
-							s.downloadImg = 'https://pan.baidu.com/s/1AlH9vXjva29ofkq5eC-67A';
+							s.downloadImg = status.filepath1;
+							var data = window.config.downloadConfig[this.$route.params.resourceid || '1'];
+							//s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&filetitle="+encodeURI(status.filetitle.replace(/\s+/g, ""))+"&newfilename="+status.newfilename+"&fileextname="+status.fileextname;
+							s.downloadImg = window.config.baseUrl + '/wmadvuser/download2?downloadfilename=' + encodeURI(status.filetitle.replace(/\s+/g, "")) + '.' + status.fileextname + '&fileurl=' + status.filepath.replace('uploads//', 'uploads/');
+						} else if (index === 3) {
+							if (status.publicadtype === '视频-zmiti') {
+								s.downloadImg = 'https://pan.baidu.com/s/13ooNmqnDGgFOAwBHKbo99A';
+							} else if (status.publicadtype === '音频-zmiti') {
+								s.downloadImg = 'https://pan.baidu.com/s/1AlH9vXjva29ofkq5eC-67A';
+							}
 						}
-					}
 
 					s.getviews('downloads', s.$route.params.id || 1, [status.id]);
 
@@ -67231,9 +67243,26 @@
 				//p['isselectall'] = s.selectAll | 0;
 
 				//console.log(p);
+
+				var url = window.config.baseUrl + '/wmshare/getthefinallist/',
+				    type = 'post';
+
+				if (window.config.isRequestLocal) {
+					url = window.config[p.publicadtype];
+					type = 'get';
+					var data = window.localStorage.getItem(p.publicadtype);
+					if (data) {
+						try {
+							var list = JSON.parse(data);
+							s.reportList = list;
+							s.totalnum = s.reportList.length;
+						} catch (e) {}
+					}
+				}
 				_componentsLibUtil2['default'].ajax({
 					_this: s,
-					url: window.config.baseUrl + '/wmshare/getthefinallist/',
+					url: url,
+					type: type,
 					data: p,
 					error: function error() {
 						s.showLoading = false;
@@ -67244,7 +67273,9 @@
 						if (data.getret === 0) {
 							s.currentPage = 1;
 							s.reportList = data.list;
-							s.totalnum = data.totalnum.num;
+							s.totalnum = window.config.isRequestLocal ? data.list.length : data.totalnum.num;
+
+							window.localStorage.setItem(p.publicadtype, JSON.stringify(data.list));
 
 							var ids = [];
 							s.reportList.forEach(function (item) {
@@ -67422,7 +67453,7 @@
 /* 136 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div class=\"wm-user-dowload-ui \" :class='{\"isAdmin\":isAdmin,\"isUser wm-scroll\":isUser,\"showpreview\":showPreview&&(isAdmin||isUser)}' :style=\"{height:isUser||isAdmin?viewH-(showPreview?0:90)+'px':'auto'}\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t\r\n\t\t<div  class=\"wm-collection-left-main-ui\">\r\n\t\t\t<header class='wm-collection-left-header' v-if='viewW<=760'>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<Input  v-model=\"keyword\" @on-keydown='searchReport' search enter-button=\"搜索\" @on-search='searchReport' placeholder=\"搜索关键字\" />\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</header>\r\n\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\r\n\t\t\t\t<div class='wm-download-header-label'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t分类：<span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> \r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t排序：\r\n\t\t\t\t\t\t<span @click.stop='searchBySort(\"time\")' :class=\"{'active':sort===-1||sort === 1}\">审核时间<Icon type=\"md-arrow-up\" v-if='sort===-1' /><Icon type=\"md-arrow-down\" v-if='sort ===1' /></span>\r\n\t\t\t\t\t\t<span @click.stop='searchBySort(\"name\")' :class=\"{'active':sort===2||sort === 3}\">作品名称<Icon type=\"md-arrow-up\" v-if='sort===3' /><Icon type=\"md-arrow-down\" v-if='sort===2' /></span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<Input size='large'  v-model=\"keyword\" @on-keydown='searchReport' search enter-button=\"搜索\" @on-search='searchReport' placeholder=\"搜索关键字\" />\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-check-action\" >\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<Checkbox v-model=\"selectAll\" v-if='classicType === \"图片-zmiti\"'>全选</Checkbox>\r\n\t\t\t\t\t\t<Button type=\"primary\" size='small' :style=\"{opacity:classicType !== '图片-zmiti'?0:1}\" :disabled='downloadCount<=0 || classicType !== \"图片-zmiti\"' @click=\"checkAction('download')\" >批量下载 </Button>\r\n\t\t\t\t\t\t<Button class='wm-href' size='small' style=\"background: #f5a420;color:#fff;\">\r\n\t\t\t\t\t\t\t<a :href=\"uploadUrl\" target='_blank'>上报</a>\r\n\t\t\t\t\t\t</Button>\r\n\r\n\t\t\t\t\t\t<Button v-if='false' class='wm-href' size='small' style=\"background: #f5a420;color:#fff;\"  @click=\"gettestviews()\" >\r\n\t\t\t\t\t\t\t测试下载\r\n\t\t\t\t\t\t</Button>\r\n\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\r\n\t\t\t\t<!-- <div></div>\r\n\t\t\t\t\r\n\t\t\t\t -->\r\n\t\t\t</header>\r\n\t\t\t<!-- <header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t排序：\r\n\t\t\t\t\t<span @click.stop='searchBySort()' :class=\"{'active':sort===-1}\">审核时间<Icon type=\"md-arrow-up\" v-if='sort===-1' /><Icon type=\"md-arrow-down\" v-if='sort!==-1' /></span>\r\n\t\t\t\t\t<span @click.stop='searchBySort()' :class=\"{'active':sort===2||sort === 3}\">作品名称</span>\r\n\t\t\t    </div>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-check-action\" >\r\n\t\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t</header> -->\r\n\t\t\t<div class=\"wm-scroll wm-collection-report-list\">\r\n\t\t\t\t<ul v-if='publicadtype===\"图片-zmiti\"||publicadtype === \"h5-zmiti\" ||publicadtype===\"动漫-zmiti\" '>\r\n\t\t\t\t\t<li class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'  @click=\"previewReport(i,report)\" >\r\n\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t<Button type='primary' v-if='report.publicadtype !== \"h5-zmiti\"' @click.stop=\"checkAction(report)\">下载</Button>\r\n\t\t\t\t\t\t\t<span class='wm-report-shadow' v-if='\"aac ogg  mp3 mp4 webm aac wma vnd.dlna.adts \".indexOf(report.fileextname)>-1'></span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-check\" @click='toggleChecked(i)'>\r\n\t\t\t\t\t\t\t<Checkbox @on-change='changeChecked(report,i)' v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>作品编号：{{report.id}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>审核时间：{{report.audittime}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>上传单位：{{report.username}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>浏览量：{{report.views+1}}</div>\r\n\t\t\t\t\t\t\t<div>下载量：{{report.downloads}}</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>尺寸：{{report.fileattr}}</div>\r\n\t\t\t\t\t\t\t<div>大小：{{report.filesize+report.filesizeunit}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</li>\t\r\n\t\t\t\t</ul>\r\n\t\t\t\t<ul v-else class='wm-media-list'>\r\n\t\t\t\t\t<li class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t<div><Checkbox @on-change='changeChecked(report,i)' v-model=\"report.checked\"></Checkbox></div>\r\n\t\t\t\t\t\t<div class='wm-collection-report-content' >\r\n\t\t\t\t\t\t\t<div style=\"line-height:130px;\">\r\n\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class='zmiti-text-overflow'>作品名称：{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t<div>作品编号：{{report.id}}</div>\r\n\t\t\t\t\t\t\t\t<div>审核时间：{{report.audittime}}</div>\r\n\t\t\t\t\t\t\t\t<div>上传单位：{{report.username}}</div>\r\n\t\t\t\t\t\t\t\t<div>浏览量：{{report.views+1}}</div>\r\n\t\t\t\t\t\t\t\t<div>下载量：{{report.downloads}}</div>\r\n\t\t\t\t\t\t\t\t<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class='wm-download-help'>\r\n\t\t\t\t\t\t\t\t{{'提示：如遇'+report.publicadtype.split('-')[0]+'直接播放，可在播放页右键选择'+report.publicadtype.split('-')[0]+'另存即可'}}<br/>\r\n\t\t\t\t\t\t\t\t如下载显示404信息，则表示下载人数过多，可刷新或者选择其它线路\r\n\t\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<Icon v-if='false' @click=\"previewReport(i,report)\" type=\"md-arrow-dropright-circle\" />\r\n\t\t\t\t\t\t\t<Icon v-if='false' class='wm-downlad-ico'  @click.stop=\"checkAction(report)\" type=\"md-cloud-download\" />\r\n\t\t\t\t\t\t\t<a href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,1)\">[下载线路1]</a>\r\n\t\t\t\t\t\t\t<a href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,2)\" style='color:#056307;'>[下载线路2(高速)]</a>\r\n\t\t\t\t\t\t\t<a v-if='false' href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,3)\" style=\"color:#f00\">[下载线路3(推荐)]</a>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t \r\n\t\t\t\t\t</li>\t\r\n\t\t\t\t</ul>\r\n\t\t\t\t<div v-if='showLoading' class='wm-data-loading'> \r\n\t\t\t\t\t<Icon type=\"ios-loading\" size=20 class=\"demo-spin-icon-load1\"></Icon>\r\n\t\t\t\t\t<div>数据加载中...</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-pagetion\" >\r\n\t\t\t\t\t<Page :current='currentPage' @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<Detail :obserable='obserable' :checkReportById='checkReportById' :configList='configList' :type=\"'download'\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail> \r\n\r\n\t\t<div class='wm-download-loading-C' v-if='isdownloading' @click.stop=\"isdownloading = false\">\r\n\t\t\t<div class='wm-download-loading' >\r\n\t\t\t\t<header>\r\n\t\t\t\t\t<div>下载提示</div>\r\n\t\t\t\t\t<div @click=\"isdownloading = false\"><Icon type=\"md-close\" /></div>\r\n\t\t\t\t</header>\r\n\t\t\t\t<div  class='wm-download-tip'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src=\"imgs.createzip\" alt=\"\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>文件正在打包中，请稍后...</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<div class='wm-download-mobile-mask' v-if='viewW<=760 && mobileReport.filepath'>\r\n\t\t\t<img :src=\"mobileReport.filepath\" alt=\"\" v-if='\"jpg jpeg png gif tif tiff\".indexOf(mobileReport.ext)>-1'>\r\n\t\t\t<video controls v-if='\"webm mp4\".indexOf(mobileReport.ext)>-1' :src='mobileReport.filepath'></video>\r\n\t\t\t<audio controls v-if='\"mp3 ogg aac acc m4a\".indexOf(mobileReport.ext)>-1' :src='mobileReport.filepath'></audio>\r\n\t\t\t<div v-if='mobileReport.ext === \"h5\"'>{{mobileReport.filetitle}}</div>\r\n\t\t\t<div v-if='mobileReport.ext === \"h5\"'>{{mobileReport.filepath}}</div>\r\n\t\t\t<div class='wm-download-close' @click='mobileReport = {}'>\r\n\t\t\t\t<Icon type=\"md-close\" />\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<a :href=\"downloadImg\" v-if='downloadImg' style=\"opacity:0;position:fixed;top:100%;left:100%\" ref='downloadimg' target='_blank'>1</a>\r\n\t\t<DownloadTip :isdownloading='showDownloadtip' :hideDownloadTip=\"hideDownloadTip\"></DownloadTip>\r\n\r\n\t\t<div class='wm-help' @click=\"visiable = true\" v-if='false'>\r\n\t\t\t下载帮助\r\n\t\t</div>\r\n\t\t<Modal\r\n\t\t\tv-model=\"visiable\"\r\n\t\t\ttitle=\"下载帮助\"\r\n\t\t\t>\r\n\t\t\t<p>QQ群号：947613787 </p>\r\n\t\t</Modal>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div class=\"wm-user-dowload-ui \" :class='{\"isAdmin\":isAdmin,\"isUser wm-scroll\":isUser,\"showpreview\":showPreview&&(isAdmin||isUser)}' :style=\"{height:isUser||isAdmin?viewH-(showPreview?0:90)+'px':'auto'}\" @click.stop='showCondition = false;showCheckAction = false'>\r\n\t\t\r\n\t\t<div  class=\"wm-collection-left-main-ui\">\r\n\t\t\t<header class='wm-collection-left-header' v-if='viewW<=760'>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<Input  v-model=\"keyword\" @on-keydown='searchReport' search enter-button=\"搜索\" @on-search='searchReport' placeholder=\"搜索关键字\" />\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</header>\r\n\t\t\t<header class=\"wm-collection-left-search-condition-header\">\r\n\r\n\t\t\t\t<div class='wm-download-header-label'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t分类：<span @click.stop='searchByClassic(menu)' :class=\"{'active':classicType == menu}\" v-for='(menu,i) in menus' :key=\"i\">{{menu.split('-')[0]}}</span> \r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t排序：\r\n\t\t\t\t\t\t<span @click.stop='searchBySort(\"time\")' :class=\"{'active':sort===-1||sort === 1}\">审核时间<Icon type=\"md-arrow-up\" v-if='sort===-1' /><Icon type=\"md-arrow-down\" v-if='sort ===1' /></span>\r\n\t\t\t\t\t\t<span @click.stop='searchBySort(\"name\")' :class=\"{'active':sort===2||sort === 3}\">作品名称<Icon type=\"md-arrow-up\" v-if='sort===3' /><Icon type=\"md-arrow-down\" v-if='sort===2' /></span>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<Input size='large'  v-model=\"keyword\" @on-keydown='searchReport' search enter-button=\"搜索\" @on-search='searchReport' placeholder=\"搜索关键字\" />\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-check-action\" >\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<Checkbox v-model=\"selectAll\" v-if='classicType === \"图片-zmiti\"'>全选</Checkbox>\r\n\t\t\t\t\t\t<Button type=\"primary\" size='small' :style=\"{opacity:classicType !== '图片-zmiti'?0:1}\" :disabled='downloadCount<=0 || classicType !== \"图片-zmiti\"' @click=\"checkAction('download')\" >批量下载 </Button>\r\n\t\t\t\t\t\t<Button class='wm-href' size='small' style=\"background: #f5a420;color:#fff;\">\r\n\t\t\t\t\t\t\t<a :href=\"uploadUrl\" target='_blank'>上报</a>\r\n\t\t\t\t\t\t</Button>\r\n\r\n\t\t\t\t\t\t<Button v-if='false' class='wm-href' size='small' style=\"background: #f5a420;color:#fff;\"  @click=\"gettestviews()\" >\r\n\t\t\t\t\t\t\t测试下载\r\n\t\t\t\t\t\t</Button>\r\n\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\r\n\t\t\t\t<!-- <div></div>\r\n\t\t\t\t\r\n\t\t\t\t -->\r\n\t\t\t</header>\r\n\t\t\t<!-- <header class=\"wm-collection-left-search-condition-header\">\r\n\t\t\t\t<div>\r\n\t\t\t\t\t排序：\r\n\t\t\t\t\t<span @click.stop='searchBySort()' :class=\"{'active':sort===-1}\">审核时间<Icon type=\"md-arrow-up\" v-if='sort===-1' /><Icon type=\"md-arrow-down\" v-if='sort!==-1' /></span>\r\n\t\t\t\t\t<span @click.stop='searchBySort()' :class=\"{'active':sort===2||sort === 3}\">作品名称</span>\r\n\t\t\t    </div>\r\n\t\t\t\t<div class=\"wm-collection-search-content\">\r\n\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-check-action\" >\r\n\t\t\t\t\t\r\n\t\t\t\t</div>\r\n\t\t\t</header> -->\r\n\t\t\t<div class=\"wm-scroll wm-collection-report-list\">\r\n\t\t\t\t<ul v-if='publicadtype===\"图片-zmiti\"||publicadtype === \"h5-zmiti\" ||publicadtype===\"动漫-zmiti\" '>\r\n\t\t\t\t\t<li class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t<div :class=\"{'active':i === currentReportIndex}\" class='wm-report-item-bg'  @click=\"previewReport(i,report)\" >\r\n\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t<Button type='primary' v-if='report.publicadtype !== \"h5-zmiti\"' @click.stop=\"checkAction(report)\">下载</Button>\r\n\t\t\t\t\t\t\t<span class='wm-report-shadow' v-if='\"aac ogg  mp3 mp4 webm aac wma vnd.dlna.adts \".indexOf(report.fileextname)>-1'></span>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-collection-check\" @click='toggleChecked(i)'>\r\n\t\t\t\t\t\t\t<Checkbox @on-change='changeChecked(report,i)' v-model=\"report.checked\"></Checkbox>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class=\"wm-report-action\" v-if='report.isLoaded'>\r\n\t\t\t\t\t\t\t<div class=\"wm-report-action-icon\"></div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' :title='report.filetitle' class=\"wm-report-item-name zmiti-text-overflow\">{{report.filetitle}}</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>作品编号：{{report.id}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>审核时间：{{report.audittime}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>上传单位：{{report.username}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>浏览量：{{report.views+1}}</div>\r\n\t\t\t\t\t\t\t<div>下载量：{{report.downloads}}</div>\r\n\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div v-if='report' class='wm-report-item-attr'>\r\n\t\t\t\t\t\t\t<div>尺寸：{{report.fileattr}}</div>\r\n\t\t\t\t\t\t\t<div>大小：{{report.filesize+report.filesizeunit}}</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</li>\t\r\n\t\t\t\t</ul>\r\n\t\t\t\t<ul v-else class='wm-media-list'>\r\n\t\t\t\t\t<li class=\"wm-collection-report-item\" v-for='(report,i) in reportList' :key=\"i\">\r\n\t\t\t\t\t\t<div><Checkbox @on-change='changeChecked(report,i)' v-model=\"report.checked\"></Checkbox></div>\r\n\t\t\t\t\t\t<div class='wm-collection-report-content' >\r\n\t\t\t\t\t\t\t<div style=\"line-height:130px;\">\r\n\t\t\t\t\t\t\t\t<img :src=\"report.pcbilethum||imgs.poster\" alt=\"\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t\t<div class='zmiti-text-overflow'>作品名称：{{report.filetitle}}</div>\r\n\t\t\t\t\t\t\t\t<div>作品编号：{{report.id}}</div>\r\n\t\t\t\t\t\t\t\t<div>审核时间：{{report.audittime}}</div>\r\n\t\t\t\t\t\t\t\t<div>上传单位：{{report.username}}</div>\r\n\t\t\t\t\t\t\t\t<div>浏览量：{{report.views+1}}</div>\r\n\t\t\t\t\t\t\t\t<div>下载量：{{report.downloads}}</div>\r\n\t\t\t\t\t\t\t\t<div class='wm-unit'>大小：{{report.filesize+ ' '+report.filesizeunit}}</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class='wm-download-help'>\r\n\t\t\t\t\t\t\t\t{{'提示：如遇'+report.publicadtype.split('-')[0]+'直接播放，可在播放页右键选择'+report.publicadtype.split('-')[0]+'另存即可'}}<br/>\r\n\t\t\t\t\t\t\t\t如下载显示404信息，则表示下载人数过多，可刷新或者选择其它线路\r\n\t\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div>\r\n\t\t\t\t\t\t\t<Icon v-if='false' @click=\"previewReport(i,report)\" type=\"md-arrow-dropright-circle\" />\r\n\t\t\t\t\t\t\t<Icon v-if='false' class='wm-downlad-ico'  @click.stop=\"checkAction(report)\" type=\"md-cloud-download\" />\r\n\t\t\t\t\t\t\t<a v-if='false' href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,1)\">[下载线路1]</a>\r\n\t\t\t\t\t\t\t<a href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,2)\" style='color:#056307;'>[下载线路1]</a>\r\n\t\t\t\t\t\t\t<a  href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,1)\">[下载线路2(高速)]</a>\r\n\t\t\t\t\t\t\t<a v-if='false' href=\"javascript:void(0)\"  @click.stop=\"checkAction(report,3)\" style=\"color:#f00\">[下载线路2(推荐)]</a>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t \r\n\t\t\t\t\t</li>\t\r\n\t\t\t\t</ul>\r\n\t\t\t\t<div v-if='showLoading' class='wm-data-loading'> \r\n\t\t\t\t\t<Icon type=\"ios-loading\" size=20 class=\"demo-spin-icon-load1\"></Icon>\r\n\t\t\t\t\t<div>数据加载中...</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class=\"wm-collection-pagetion\" >\r\n\t\t\t\t\t<Page  @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total=\"totalnum\" show-total :page-size='pagenum' />\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<Detail :obserable='obserable' :checkReportById='checkReportById' :configList='configList' :type=\"'download'\" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail> \r\n\r\n\t\t<div class='wm-download-loading-C' v-if='isdownloading' @click.stop=\"isdownloading = false\">\r\n\t\t\t<div class='wm-download-loading' >\r\n\t\t\t\t<header>\r\n\t\t\t\t\t<div>下载提示</div>\r\n\t\t\t\t\t<div @click=\"isdownloading = false\"><Icon type=\"md-close\" /></div>\r\n\t\t\t\t</header>\r\n\t\t\t\t<div  class='wm-download-tip'>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<img :src=\"imgs.createzip\" alt=\"\">\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>文件正在打包中，请稍后...</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\r\n\t\t<div class='wm-download-mobile-mask' v-if='viewW<=760 && mobileReport.filepath'>\r\n\t\t\t<img :src=\"mobileReport.filepath\" alt=\"\" v-if='\"jpg jpeg png gif tif tiff\".indexOf(mobileReport.ext)>-1'>\r\n\t\t\t<video controls v-if='\"webm mp4\".indexOf(mobileReport.ext)>-1' :src='mobileReport.filepath'></video>\r\n\t\t\t<audio controls v-if='\"mp3 ogg aac acc m4a\".indexOf(mobileReport.ext)>-1' :src='mobileReport.filepath'></audio>\r\n\t\t\t<div v-if='mobileReport.ext === \"h5\"'>{{mobileReport.filetitle}}</div>\r\n\t\t\t<div v-if='mobileReport.ext === \"h5\"'>{{mobileReport.filepath}}</div>\r\n\t\t\t<div class='wm-download-close' @click='mobileReport = {}'>\r\n\t\t\t\t<Icon type=\"md-close\" />\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t\t<a :href=\"downloadImg\" v-if='downloadImg' style=\"opacity:0;position:fixed;top:100%;left:100%\" ref='downloadimg' target='_blank'>1</a>\r\n\t\t<DownloadTip :isdownloading='showDownloadtip' :hideDownloadTip=\"hideDownloadTip\"></DownloadTip>\r\n\r\n\t\t<div class='wm-help' @click=\"visiable = true\" v-if='false'>\r\n\t\t\t下载帮助\r\n\t\t</div>\r\n\t\t<Modal\r\n\t\t\tv-model=\"visiable\"\r\n\t\t\ttitle=\"下载帮助\"\r\n\t\t\t>\r\n\t\t\t<p>QQ群号：947613787 </p>\r\n\t\t</Modal>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 137 */

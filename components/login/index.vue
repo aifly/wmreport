@@ -28,7 +28,7 @@
 						</label>
 					</div>
 					<div>
-						<div @click="login">登录 <Icon v-if='showLoading' type="load-c" class="demo-spin-icon-load"></Icon></div>
+						<div @click="login">登录 <Icon v-if='showLoading' type="ios-loading" class="demo-spin-icon-load"></Icon></div>
 						<label><Checkbox v-model="checked">记住密码</Checkbox></label>
 					</div>
 				</div>

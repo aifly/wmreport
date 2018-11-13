@@ -118,9 +118,10 @@
 						<div>
 							<Icon v-if='false' @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
 							<Icon v-if='false' class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
-							<a href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
-							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路2(高速)]</a>
-							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路3(推荐)]</a>
+							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
+							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路1]</a>
+							<a  href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路2(高速)]</a>
+							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路2(推荐)]</a>
 						</div>
 					 
 					</li>	
@@ -130,7 +131,7 @@
 					<div>数据加载中...</div>
 				</div>
 				<div class="wm-collection-pagetion" >
-					<Page :current='currentPage' @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
+					<Page  @on-page-size-change='pagesizeChange'   @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 				</div>
 			</div>
 		</div>
@@ -229,12 +230,10 @@
 				currentPage:0,
 				classic:-1,
 				page:1,
-				pagenum:20,
+				pagenum:200,
 				raterReportList:[],
 				isdownloading :false,
-				checkedList:[]
-
-
+				checkedList:[],
 			}
 		},
 		components:{
@@ -304,6 +303,12 @@
 			},
 
 			searchBySort(type){
+
+				if(window.config.isRequestLocal){
+					this.$Message.error('当前下载量过大，此功能暂停使用');
+					return;
+				}
+
 				if(type === 'time'){
 					this.sort = this.sort === -1 ? 1:-1;
 				}
@@ -317,6 +322,10 @@
 			searchReport(){
 				
 				if(this.keyword){
+					if(window.config.isRequestLocal){
+						this.$Message.error('当前下载量过大，此功能暂停使用');
+						return;
+					}
 					clearTimeout(this.timer);
 					this.timer = setTimeout(() => {
 						if(!this.keyword){
@@ -506,12 +515,13 @@
 				}else{
 					s.downloadImg = status.filepath;
 					if(index === 1){
-						s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile?id='+status.id;
+						//s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile?id='+status.id;
+
 					}else if(index === 2){
 						s.downloadImg = status.filepath1;
 						var data = window.config.downloadConfig[this.$route.params.resourceid||'1'];
-						s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&filetitle="+encodeURI(status.filetitle.replace(/\s+/g, ""))+"&newfilename="+status.newfilename+"&fileextname="+status.fileextname;
-
+						//s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&filetitle="+encodeURI(status.filetitle.replace(/\s+/g, ""))+"&newfilename="+status.newfilename+"&fileextname="+status.fileextname;
+						s.downloadImg = window.config.baseUrl+'/wmadvuser/download2?downloadfilename='+encodeURI(status.filetitle.replace(/\s+/g, ""))+'.'+status.fileextname+'&fileurl='+status.filepath.replace('uploads//','uploads/');
 					}
 					else if(index === 3){
 						if(status.publicadtype === '视频-zmiti'){
@@ -640,9 +650,29 @@
 				//p['isselectall'] = s.selectAll | 0;
 
 				//console.log(p);
+
+				
+				var url = window.config.baseUrl+'/wmshare/getthefinallist/',
+					type = 'post';
+
+				if(window.config.isRequestLocal){
+					url = window.config[p.publicadtype];
+					type = 'get';
+					var data = window.localStorage.getItem(p.publicadtype);
+					if(data){
+						try{
+							var list = JSON.parse(data);
+							s.reportList = list;
+							s.totalnum = s.reportList.length;
+						}catch(e){
+
+						}
+					}
+				}
 				symbinUtil.ajax({
 					_this:s,
-					url:window.config.baseUrl+'/wmshare/getthefinallist/',
+					url,
+					type,
 					data:p,
 					error(){
 						s.showLoading = false;
@@ -653,7 +683,9 @@
 						if(data.getret === 0){
 							s.currentPage = 1;
 							s.reportList = data.list;
-							s.totalnum = data.totalnum.num;
+							s.totalnum = window.config.isRequestLocal? data.list.length :data.totalnum.num;
+
+							window.localStorage.setItem(p.publicadtype,JSON.stringify(data.list));
 
 							var ids = [];
 							s.reportList.forEach((item)=>{
