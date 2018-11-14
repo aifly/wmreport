@@ -119,7 +119,7 @@
 							<Icon v-if='false' @click="previewReport(i,report)" type="md-arrow-dropright-circle" />
 							<Icon v-if='false' class='wm-downlad-ico'  @click.stop="checkAction(report)" type="md-cloud-download" />
 							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路1]</a>
-							<a href="javascript:void(0)"  @click.stop="checkAction(report,2)" style='color:#056307;'>[下载线路1]</a>
+							<a href="javascript:void(0)"  @click.stop="checkAction(report,1)" style='color:#056307;'>[下载线路1]</a>
 							<a  href="javascript:void(0)"  @click.stop="checkAction(report,1)">[下载线路2(高速)]</a>
 							<a v-if='false' href="javascript:void(0)"  @click.stop="checkAction(report,3)" style="color:#f00">[下载线路2(推荐)]</a>
 						</div>
@@ -522,6 +522,7 @@
 						var data = window.config.downloadConfig[this.$route.params.resourceid||'1'];
 						//s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile1?p1='+data.p1+"&p2="+data.p2+"&filetitle="+encodeURI(status.filetitle.replace(/\s+/g, ""))+"&newfilename="+status.newfilename+"&fileextname="+status.fileextname;
 						s.downloadImg = window.config.baseUrl+'/wmadvuser/download2?downloadfilename='+encodeURI(status.filetitle.replace(/\s+/g, ""))+'.'+status.fileextname+'&fileurl='+status.filepath.replace('uploads//','uploads/');
+						//s.downloadImg = status.filepath;
 					}
 					else if(index === 3){
 						if(status.publicadtype === '视频-zmiti'){
@@ -656,7 +657,7 @@
 					type = 'post';
 
 				if(window.config.isRequestLocal){
-					url = window.config[p.publicadtype];
+					url = window.config[p.publicadtype]+"?t="+new Date().getTime();
 					type = 'get';
 					var data = window.localStorage.getItem(p.publicadtype);
 					if(data){

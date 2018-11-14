@@ -849,7 +849,7 @@
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
 					pick: '.wm-upload-before',
-					chunkSize:5*1024*1024,
+					chunkSize:10*1024*1024,
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
