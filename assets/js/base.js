@@ -90,7 +90,7 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 		swf: './assets/ckplayer/ckplayer.swf',
 		baseUrl: 'http://h5.wenming.cn/v1',
 		uploadUrl: 'http://h5.wenming.cn/wmreport/index.html#/',
-		isRequestLocal:true,//下载页面是否请求本地的json文件。
+		isRequestLocal:false,//下载页面是否请求本地的json文件。
 		"图片-zmiti":"./assets/js/img.json",
 		"视频-zmiti":"./assets/js/video.json",
 		"音频-zmiti":"./assets/js/audio.json",
