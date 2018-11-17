@@ -3990,6 +3990,8 @@
                     requestAccept, ret;
     
                 block.transport = tr;
+
+                owner.tr = tr;
     
                 tr.on( 'destroy', function() {
                     delete block.transport;
@@ -4030,7 +4032,12 @@
                             block.retried < opts.chunkRetry ) {
     
                         block.retried++;
-                        tr.send();
+                        console.log('正在重试第' + block.retried+"次");
+                        if(block.retried % 10 === 0){
+                            owner.trigger('uploadError', file, type , tr);
+                        }else{
+                            tr.send();
+                        }
     
                     } else {
     

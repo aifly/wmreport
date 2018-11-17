@@ -90,12 +90,14 @@ new Vue({
 
 		this.$router.obserable = obserable;
 
+		var s = this;
+
 		window.addEventListener("online", function(e) {
-			this.$Message.success('网络已链接')
+			s.$Message.success('网络已链接');
 		})
 
 		window.addEventListener("offline", function(e) {
-			this.$Message.success('网络已断开');
+			s.$Message.success('网络已断开');
 		})
 
 	}

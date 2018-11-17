@@ -44,7 +44,7 @@
 										<img :src="imgs.pass1" alt="">
 									</div>
 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-										<img :src="report.mobilethum||imgs.poster" alt="">
+										<img :src="report.upfilemergerstatus<2 ? imgs.merge:( report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
 									</div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 									
@@ -651,8 +651,12 @@
 				this.showOriginalImg = false;
 			},
 
-			previewReport(){//双击预览作品、
+			previewReport(report){//双击预览作品、
 				if(this.isUpLoading){
+					return;
+				}
+				if(report.upfilemergerstatus === 0){
+					this.$Message.error('请稍等，文件正在合并中...');
 					return;
 				}
 				this.showPreview = true;
@@ -849,10 +853,11 @@
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
 					pick: '.wm-upload-before',
-					chunkSize:10*1024*1024,
+					chunkSize:5*1024*1024,
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
+					chunkRetry:100,
 					timeout: 0,
 					compress:false,
 					prepareNextFile:true,//是否允许在文件传输时提前把下一个文件准备好。 对于一个文件的准备工作比较耗时，比如图片压缩，md5序列化。 如果能提前在当前文件传输期处理，可以节省总体耗时。
@@ -1008,8 +1013,7 @@
 					});
 				 
 				});
-
-				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
+ 
 				var iNow = 0;
 				uploader.on('uploadSuccess', function (file,response) {
 					if(response.getret === 2000){
@@ -1102,20 +1106,36 @@
 				});
 
 				// 文件上传失败，显示上传出错。
-				uploader.on('uploadError', function (file) {
-					console.log('error')
-					s.$Message.error('文件上传超时，请刷新重试');
+				uploader.on('uploadError', function (file,type,tr) {
+					
+					setTimeout(() => {
+						s.$Modal.confirm({
+							title: '确认继续重试吗?',
+							content: '',
+							okText: '确定',
+							cancelText: '取消',
+							onOk:()=>{
+								tr && tr.send();
+							},
+							onCancel:()=>{
+								uploader.stop();
+							}
+						});
+					},400);
 					//$('#' + file.id).find('p.state').text('上传出错');
 				});
 
 				// 完成上传完了，成功或者失败，先删除进度条。
 				
 				uploader.on('uploadComplete', function (file) {
-					
-					//
-					/* $('#' + file.id).find('.progress').remove();
-					$('#' + file.id).find('p.state').text('已上传'); */
+					 console.log(uploader.tr.send);
 				});
+
+
+				
+
+				/** 实现webupload hook，触发上传前，中，后的调用关键 **/
+				 
 				
 			},
 			ok(){

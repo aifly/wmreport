@@ -66,9 +66,9 @@
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul>
-							<li @dblclick="previewReport(i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
+							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-									<img :src="report.mobilethum.replace('uploads//','uploads/')||imgs.poster" alt="">
+									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
 								</div>
 								<div class="wm-collection-report-status">
 									<img v-if='report.status===1' :src="imgs.pass" alt="">
@@ -362,7 +362,11 @@
 				})
 			},
 
-			previewReport(index){//双击预览作品、
+			previewReport(report,index){//双击预览作品、
+				if(report.upfilemergerstatus === 0){
+					this.$Message.error('请稍等，文件正在合并中...');
+					return;
+				}
 				clearTimeout(this.clickTimer);
 				this.showPreview = true;
 				this.currentReportIndex = index;
