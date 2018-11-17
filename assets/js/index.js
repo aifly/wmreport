@@ -70030,6 +70030,7 @@
 				if (s.uploader) {
 					s.uploader.destroy();
 				}
+
 				var accepts = s.accepts;
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
@@ -70301,7 +70302,82 @@
 				// 完成上传完了，成功或者失败，先删除进度条。
 
 				uploader.on('uploadComplete', function (file) {
-					console.log(uploader.tr.send);
+					//console.log(uploader.tr.send);
+				});
+
+				return;
+
+				var fileMd5 = 0;
+
+				WebUploader.Uploader.register({
+					'before-send-file': 'beforeSendFile',
+					'before-send': 'beforeSend'
+				}, {
+					beforeSendFile: function beforeSendFile(file) {
+
+						console.log("beforeSendFile");
+						// Deferred对象在钩子回掉函数中经常要用到，用来处理需要等待的异步操作。
+						var task = new $.Deferred();
+						// 根据文件内容来查询MD5
+
+						new WebUploader.Uploader().md5File(file, 0, 10 * 1024 * 1024).progress(function (percentage) {
+							// 及时显示进度
+							console.log('计算md5进度:', percentage);
+						}).then(function (val) {
+							// 完成
+							console.log('md5 result:', val);
+							file.md5 = val;
+							fileMd5 = val;
+							// 模拟用户id
+							// file.uid = new Date().getTime() + "_" + Math.random() * 100;
+							file.uid = WebUploader.Base.guid();
+							// 进行md5判断
+
+							task.resolve();
+						});
+						return $.when(task);
+					},
+					beforeSend: function beforeSend(block) {
+						console.log("block");
+						var task = new $.Deferred();
+
+						$.ajax({
+							url: window.config.baseUrl + '/wmadvuser/uploadfile/',
+							type: 'post',
+							data: {
+								md5: fileMd5,
+								chunks: Math.ceil(file.size / 5 * 1024 * 1024),
+								chunk: block.chunk,
+								chunkSize: block.end - block.start,
+								username: s.userinfo.username,
+								usertoken: s.userinfo.accesstoken,
+								resourceid: id,
+								uploadfilename: s.formUpload.filetitle,
+								filedesc: s.formUpload.filedesc,
+								publicadtype: s.menus[s.currentType],
+								userlabel: s.formUpload.tagList.concat([]).join(','),
+								author: s.formUpload.author,
+								telphone: s.formUpload.telphone,
+								previewurl: s.formUpload.previewurl
+							},
+							success: function success(data) {
+
+								var status = data.getret;
+								task.resolve();
+								if (status == 1005) {
+									// 文件不存在，那就正常流程
+								} else if (status == 100) {
+										// 忽略上传过程，直接标识上传成功；
+										uploader.skipFile(file);
+										file.pass = true;
+									} else if (status == 102) {
+										// 部分已经上传到服务器了，但是差几个模块。
+										file.missChunks = data.data;
+									}
+							}
+						});
+						return $.when(task);
+					}
 				});
 
 				/** 实现webupload hook，触发上传前，中，后的调用关键 **/

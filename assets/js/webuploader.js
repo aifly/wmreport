@@ -4446,7 +4446,8 @@
                     deferred = Base.Deferred(),
                     blob = (file instanceof Blob) ? file :
                         this.request( 'get-file', file ).source;
-    
+
+                
                 md5.on( 'progress load', function( e ) {
                     e = e || {};
                     deferred.notify( e.total ? e.loaded / e.total : 1 );
@@ -4470,7 +4471,7 @@
                 }
     
                 md5.loadFromBlob( blob );
-    
+               
                 return deferred.promise();
             }
         });
