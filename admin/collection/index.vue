@@ -404,6 +404,7 @@
 						if(data.getret === 0){
 							s.selectAll = false;
 							s.getReportList();
+							s.checkedList.length = 0;
 							if(s.showPreview){
 								/* s.currentReportIndex++;
 								s.currentReportIndex %= s.reportList.length; */
@@ -423,6 +424,9 @@
 			},
 
 			getviews(key='views',resourceid,ids){
+				if(ids.length<=0){
+					return;
+				}
 				var s = this;
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmshare/getviews',

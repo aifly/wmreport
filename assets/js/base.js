@@ -34,7 +34,7 @@ var imgs = {
 	reject1:'./assets/images/reject1.png',
 	user:'./assets/images/user.png',
 	media:'./assets/images/media.png',
-	merge:'./assets/images/merge.gif',
+	merge:'./assets/images/merge1.gif',
 	shangbao:'./assets/images/shangbao.png',
 	setting:'./assets/images/setting.png',
 	poster:'./assets/images/poster.gif',

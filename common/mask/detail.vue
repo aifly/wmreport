@@ -19,7 +19,7 @@
 						-webkit-justify-content: space-between;
 						justify-content: space-between;
 						">
-				<div style="height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;">{{reportList[currentReportIndex].filetitle}}</div>
+				<div v-if='false' style="height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;">{{reportList[currentReportIndex].filetitle}}</div>
 				<div style="
 						flex:1;
 						-webkit-flex:1;
@@ -31,18 +31,18 @@
 						">
 					<img style="position:relative;top:50%;
 						transform:translate(0,-50%);
-						-webkit-transform:translate(0,-50%);
-						;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
+						-webkit-transform:translate(0,-50%)
+						;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum.replace('uploads//','uploads/')||imgs.poster" alt="" />
 				</div>
-				<div style="height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000">{{reportList[currentReportIndex].filedesc}}</div>
+				<div v-if='false' style="height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000">{{reportList[currentReportIndex].filedesc}}</div>
 
-				<div  style="display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;">
+				<div v-if='false' style="display:flex;-webkit-display:flex;width:100%;height:10vh;-webkit-justify-content: space-between;justify-content: space-between;-webkit-align-items: center;align-items: center;">
 					<div>上传者：{{reportList[currentReportIndex].username}}</div>
 					<div v-if='reportList[currentReportIndex].fileattr'>
 						尺寸：{{reportList[currentReportIndex].fileattr}}
 					</div>
 				</div>
-				<div style="width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;">
+				<div v-if='false' style="width:100%;height:40px;line-height:50px;overflow:hidden;padding:10px;">
 					<div style="padding:0 10px;line-height:40px;;font-size:13px;border:1px solid #ddd;color:#ddd;border-radius:5px;text-align:center;margin:6px 20px 0 0;display:inline-block;" v-for='(tag,i) in reportList[currentReportIndex].userlabel.split(",")' :key='i'>{{tag}}</div>
 				</div>
 			</section>
@@ -230,7 +230,12 @@ var printAreaCount = 0;
         },
 		 
 		methods:{
+
+			pagesetup_null() {
+				
+			},
 			printPage(){//打印页面
+				
 				$(this.$refs['page']).printArea();
 			},
 			getviews(id){
