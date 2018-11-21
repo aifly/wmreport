@@ -393,6 +393,7 @@
 					clearTimeout(this.clickTimer);
 					this.showPreview = true;
 					this.currentReportIndex = index;
+					
 				}
 				if(flag){
 					//symbinUtil.changeURLPar(window.location.href,'id',-1);

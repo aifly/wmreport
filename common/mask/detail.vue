@@ -10,29 +10,10 @@
 			<span class="wm-report-close" @click="closePreview"></span>
 		</div>
 		<div class="wm-report-print" ref='page' >
-			<section style="display:flex;
-						-webkit-display:flex;
-						flex-flow: column;
-						-webkit-flex-flow: column;
-						width:100%;
-						height:100%;
-						-webkit-justify-content: space-between;
-						justify-content: space-between;
-						">
+			<section style="display:flex;-webkit-display:flex;flex-flow: column;-webkit-flex-flow: column;width:100%;height:100%;-webkit-justify-content: space-between;justify-content: space-between;">
 				<div v-if='false' style="height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;">{{reportList[currentReportIndex].filetitle}}</div>
-				<div style="
-						flex:1;
-						-webkit-flex:1;
-						box-sizing:border-box;
-						overflow:hidden;
-						margin-top:20px;
-						text-align:center;
-						
-						">
-					<img style="position:relative;top:50%;
-						transform:translate(0,-50%);
-						-webkit-transform:translate(0,-50%)
-						;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum.replace('uploads//','uploads/')||imgs.poster" alt="" />
+				<div style="flex:1;-webkit-flex:1;box-sizing:border-box;overflow:hidden;margin-top:20px;text-align:center;">
+					<img style="position:relative;top:50%;transform:translate(0,-50%);-webkit-transform:translate(0,-50%);display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum.replace('uploads//','uploads/')||imgs.poster" alt="" />
 				</div>
 				<div v-if='false' style="height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000">{{reportList[currentReportIndex].filedesc}}</div>
 
@@ -48,9 +29,9 @@
 			</section>
 
 		</div>
-		<div  :class='{"original":showOriginalImg}' v-if='"mp3 mp4 mov webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
+		<div :class='{"original":showOriginalImg}' v-if='"mp3 mp4 mov webm aac wma ogg".indexOf(reportList[currentReportIndex].fileextname)<=-1'>
 			<img :title='showOriginalImg?"点击还原":"点击放大"' :style="{cursor:'url('+imgs[showOriginalImg?'small':'big']+'), auto'}" @click.stop="showOriginalImg = !showOriginalImg"  :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex]['pcbilethum']||imgs.poster" alt="" />
-			<div class="wm-report-detail"  :class="{'hide':showMaskDetail,[reportList[currentReportIndex].fileextname]:1}" >
+			<div class="wm-report-detail"  :class="{'hide':showMaskDetail}" >
 				<span v-if='"xlsx doc docx pdf dmg txt ppt pptx xls rar html css scss js vb shtml zip m4a".indexOf(reportList[currentReportIndex].fileextname)<=-1 '  @click='showMaskDetail = !showMaskDetail'>{{showMaskDetail?'展开':'收起'}}</span>
 				<div  class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i' v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>
 					<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
@@ -223,6 +204,7 @@ var printAreaCount = 0;
             (Vue.obserable|| this.obserable).on('closeOriginalImg',()=>{
             	this.showOriginalImg = false;
 			})
+
 
 			
 			
