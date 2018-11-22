@@ -77,11 +77,22 @@
             margin-right: 10px;
             flex: 3;
             -webkit-flex: 3;
+            span {
+                color: #444 ;
+                margin: 0 10px;
+                display: inline-block;
+                margin-top: 10px;
+                label{
+                    color: #fcb90a;
+                    font-size:22px;
+
+                }
+            }
         }
 
         &.wm-statistics-file-count-C {
-            flex: 5;
-            -webkit-flex: 5;
+            flex: 4;
+            -webkit-flex: 4;
 
             .wm-statistics-file-checked-status-C {
                 @include displayFlex(row);
@@ -96,11 +107,15 @@
                             div {
                                 color: #333333;
                             }
-                             div:nth-of-type(1){
-                                 
-                             }
+
+                            div:nth-of-type(1){
+                                
+                            }
                             div:nth-of-type(2) {
                                 color: #999999;
+                            }
+                            div:nth-of-type(3) {
+                               
                             }
                         }
                     }

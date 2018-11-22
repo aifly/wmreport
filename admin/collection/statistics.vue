@@ -7,11 +7,16 @@
                     <div class='wm-statistics-user-count'>
                         <div>{{userList.length}}</div>
                         <div>总上报人数</div>
+                        <div>
+                            <span>今日上报量：<label for="">{{statustotal.reporttodaynum}}</label></span> 
+                            <span>今日审核量：<label>{{statustotal.todayauditnum}}</label></span>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
             <div class='wm-statistics-user-upload-list'>
-                <Table :width="(viewW-200-100)*3/8" :bordered="false" :data='userList' :columns='columns'></Table>
+                <Table :width="(viewW-200-100)*3/7" :bordered="false" :data='userList' :columns='columns'></Table>
             </div>
         </div>
 		<div class='wm-statistics-file-count-C'>
@@ -68,6 +73,7 @@
                 statustotal:{},
                 usertotalnum:0,
                 viewW:window.innerWidth,
+                
                 columns:[
                     {
                         title:'上传者',
@@ -82,6 +88,17 @@
                         align:'center',
                         width:100,
                        fixed: 'left'
+                    },
+                    {
+                        title:'总浏览量',
+                        key:'viewsnum',
+                        align:'center',
+                        width:110,
+                    }, {
+                        title:'总下载量',
+                        key:'downloadsnum',
+                        align:'center',
+                        width:110,
                     },
                     {
                         title:'已审核',

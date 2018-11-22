@@ -67094,7 +67094,7 @@
 						});
 					}
 				} else {
-					s.downloadImg = status.filepath;
+					s.downloadImg = status.filepath.replace('uploads//', 'uploads/');
 					if (index === 1) {
 						//s.downloadImg = window.config.baseUrl+'/wmadvuser/downloadfile?id='+status.id;
 

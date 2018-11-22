@@ -128,9 +128,21 @@
   -webkit-flex: 3;
 }
 
+.wm-collection-statistics-manager > div.wm-statistics-user-count-C span {
+  color: #444;
+  margin: 0 10px;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.wm-collection-statistics-manager > div.wm-statistics-user-count-C span label {
+  color: #fcb90a;
+  font-size: 22px;
+}
+
 .wm-collection-statistics-manager > div.wm-statistics-file-count-C {
-  flex: 5;
-  -webkit-flex: 5;
+  flex: 4;
+  -webkit-flex: 4;
 }
 
 .wm-collection-statistics-manager > div.wm-statistics-file-count-C .wm-statistics-file-checked-status-C {
