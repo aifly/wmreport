@@ -44,7 +44,7 @@
 										<img :src="imgs.pass1" alt="">
 									</div>
 									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-										<img :src="report.upfilemergerstatus<2 ? imgs.merge:( report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
+										<img :src="report.mobilethum||imgs.poster" alt="">
 									</div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
 									
@@ -651,12 +651,8 @@
 				this.showOriginalImg = false;
 			},
 
-			previewReport(report){//双击预览作品、
+			previewReport(){//双击预览作品、
 				if(this.isUpLoading){
-					return;
-				}
-				if(report.upfilemergerstatus === 0){
-					this.$Message.error('请稍等，文件正在合并中...');
 					return;
 				}
 				this.showPreview = true;
@@ -841,11 +837,6 @@
 				if(s.uploader){
 					s.uploader.destroy();
 				}
-
-
-				
-
-
 				var accepts  =  s.accepts;
 				var uploader = WebUploader.create({
 					// 选完文件后，是否自动上传。
@@ -858,12 +849,10 @@
 					// 选择文件的按钮。可选。
 					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
 					pick: '.wm-upload-before',
-					chunkSize:5*1024*1024,
+					chunkSize:10*1024*1024,
 					chunked: true, //开启分片上传
 					threads: 1, //上传并发数
 					method: 'POST',
-					chunkRetry:100,
-					timeout: 0,
 					compress:false,
 					prepareNextFile:true,//是否允许在文件传输时提前把下一个文件准备好。 对于一个文件的准备工作比较耗时，比如图片压缩，md5序列化。 如果能提前在当前文件传输期处理，可以节省总体耗时。
 					formData:p,
@@ -1018,7 +1007,8 @@
 					});
 				 
 				});
- 
+
+				// 文件上传成功，给item添加成功class, 用样式标记上传成功。
 				var iNow = 0;
 				uploader.on('uploadSuccess', function (file,response) {
 					if(response.getret === 2000){
@@ -1111,111 +1101,20 @@
 				});
 
 				// 文件上传失败，显示上传出错。
-				uploader.on('uploadError', function (file,type,tr) {
-					
-					setTimeout(() => {
-						s.$Modal.confirm({
-							title: '确认继续重试吗?',
-							content: '',
-							okText: '确定',
-							cancelText: '取消',
-							onOk:()=>{
-								tr && tr.send();
-							},
-							onCancel:()=>{
-								uploader.stop();
-							}
-						});
-					},400);
+				uploader.on('uploadError', function (file) {
+					console.log('error')
+					s.$Message.error('文件上传超时，请刷新重试');
 					//$('#' + file.id).find('p.state').text('上传出错');
 				});
 
 				// 完成上传完了，成功或者失败，先删除进度条。
 				
 				uploader.on('uploadComplete', function (file) {
-					 //console.log(uploader.tr.send);
+					
+					//
+					/* $('#' + file.id).find('.progress').remove();
+					$('#' + file.id).find('p.state').text('已上传'); */
 				});
-
-				return;
-
-				var fileMd5 = 0;
-
-				WebUploader.Uploader.register({
-					'before-send-file': 'beforeSendFile',
-					'before-send': 'beforeSend'
-				}, {
-					beforeSendFile: function (file) {
-						
-						console.log("beforeSendFile");
-						// Deferred对象在钩子回掉函数中经常要用到，用来处理需要等待的异步操作。
-						var task = new $.Deferred();
-						// 根据文件内容来查询MD5
-				 
-						 (new WebUploader.Uploader()).md5File(file,0,10*1024*1024).progress(function (percentage) {   // 及时显示进度
-							console.log('计算md5进度:', percentage);
-							
-						}).then(function (val) { // 完成
-							console.log('md5 result:', val);
-							file.md5 = val;
-							fileMd5 = val;
-							// 模拟用户id
-							// file.uid = new Date().getTime() + "_" + Math.random() * 100;
-							file.uid = WebUploader.Base.guid();
-							// 进行md5判断
-
-							
-							
-							task.resolve();
-						});
-						return $.when(task);
-					},
-					beforeSend: function (block) {
-						console.log("block")
-						var task = new $.Deferred();
-						
-						$.ajax({
-							url: window.config.baseUrl+'/wmadvuser/uploadfile/',
-							type:'post',
-							data:{
-								md5: fileMd5,
-								chunks: Math.ceil(file.size / 5*1024*1024),
-								chunk:block.chunk,
-								chunkSize:block.end - block.start ,
-								username:s.userinfo.username,
-								usertoken:s.userinfo.accesstoken,
-								resourceid:id,
-								uploadfilename:s.formUpload.filetitle,
-								filedesc:s.formUpload.filedesc,
-								publicadtype:s.menus[s.currentType],
-								userlabel:s.formUpload.tagList.concat([]).join(','),
-								author:s.formUpload.author,
-								telphone:s.formUpload.telphone,
-								previewurl:s.formUpload.previewurl
-							},
-							success(data) {
-								
-								var status = data.getret;
-								task.resolve();
-								if (status == 1005) {
-									// 文件不存在，那就正常流程
-								} else if (status == 100) {
-									// 忽略上传过程，直接标识上传成功；
-									uploader.skipFile(file);
-									file.pass = true;
-								} else if (status == 102) {
-									// 部分已经上传到服务器了，但是差几个模块。
-									file.missChunks = data.data;
-								}
-							}
-						});
-						return $.when(task);
-					}
-				});
-
-				
-
-				/** 实现webupload hook，触发上传前，中，后的调用关键 **/
-				 
 				
 			},
 			ok(){
