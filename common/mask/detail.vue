@@ -2,7 +2,7 @@
     <div class="lt-full wm-collection-report-C" v-if='showPreview'>
 		<div class="wm-preview-action">
 			<span title='下载'>
-				<a target="_blank" :href='reportList[currentReportIndex].filepath' :download="reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname">
+				<a target="_blank" :href="reportList[currentReportIndex].filepath.replace('uploads//','uploads/')" :download="reportList[currentReportIndex].filetitle+'.'+reportList[currentReportIndex].fileextname">
 					<Icon type="ios-download-outline" />
 				</a>
 			</span>
@@ -45,7 +45,7 @@
 			</div>
 		</div>
 		<div v-if='"mp4 webm mov".indexOf(reportList[currentReportIndex].fileextname)>-1'>
-			<video autoplay controls :src='reportList[currentReportIndex].filepath'></video>
+			<video autoplay controls :src="reportList[currentReportIndex].filepath.replace('uploads//','uploads/')"></video>
 			<!-- <div class='video' id='video' ref='video'></div> -->
 			
 			<div class="wm-report-detail wm-video-detail" :class="{'hide':showMaskDetail}" >
@@ -59,7 +59,7 @@
 			</div>
 		</div>
 		<div v-if='reportList[currentReportIndex].fileextname=== "mp3" ||reportList[currentReportIndex].fileextname=== "ogg"||reportList[currentReportIndex].fileextname=== "aac"||reportList[currentReportIndex].fileextname=== "wma" '>
-			<audio autoplay controls :src='reportList[currentReportIndex].filepath'></audio>
+			<audio autoplay controls :src="reportList[currentReportIndex].filepath.replace('uploads//','uploads/')"></audio>
 			<div class="wm-report-detail wm-audio" :class="{'wm-audio':showMaskDetail}"  >
 				<div class="wm-myreport-title wm-myreport-field-item" v-for='(item,i) in configList' :key='i'>
 					<div v-if='item.fieldname === "filetitle" || item.fieldname === "filedesc"'>{{item.name}}：</div>
@@ -176,7 +176,7 @@ var printAreaCount = 0;
 						}, 100);
 					}
 					if(s.reportList[s.currentReportIndex].publicadtype === "视频-zmiti"){
-						var video = s.reportList[s.currentReportIndex].filepath;
+						var video = s.reportList[s.currentReportIndex].filepath.replace('uploads//','uploads/');
 						return;
 
 						setTimeout(() => {
