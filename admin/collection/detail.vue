@@ -29,8 +29,9 @@
 							text-align:center;
 							
 							">
-						<img style="position:relative;top:50%;
+						<img style="position:absolute;top:50%;
 							transform:translate(0,-50%);
+							left:50%;
 							-webkit-transform:translate(0,-50%);
 							;display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum||imgs.poster" alt="" />
 					</div>
