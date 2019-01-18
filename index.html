@@ -3,7 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=750,user-scalable=no" />
-	<meta name="renderer" content="webkit,ie-comp">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="renderer" content="webkit" />
 	<title>中国文明网公益广告上报系统</title>
 	<style>
 		html,body{
@@ -27,16 +28,28 @@
 		window.protocol = location.protocol;
 	</script>
 	<style>
-		
+		.zmiti-error{
+			position:absolute;
+			left:50%;
+			top:50%;
+			margin-left:-500px;
+		}
 	</style>
 </head>
 <body>
 	<div id="app">
 		<router-view></router-view>
 	</div>
+	
+	<div class='zmiti-error' id='zmiti-error' style='display:none;'>
+		<img src='./assets/images/brower1.png'/>
+	</div>
+
 	<script src="./assets/js/jquery.min.js"></script>
 	
 	<script type="text/javascript" src="./assets/js/webuploader.js"></script>
+	<script src="./assets/js/base.js?v=6"></script>
+	<script src="./assets/js/index.js?v=6"></script>
 	<script>
 		
 		function loadScript(src){ 
@@ -44,15 +57,19 @@
 			script.src =src+"?t="+new Date().getTime(); 
 			document.body.appendChild(script);
 		}
+		
+		if(!window.jQuery){
+			document.getElementById('zmiti-error').style.display = 'block';
+		}
 	/*
 	loadScript('./assets/js/base.js');
 	loadScript('./assets/js/index.js'); 
 	*/
 	</script>
 	
+	<!--
 	<script src='./assets/js/base.js'></script>
 	<script src='http://localhost:4047/index.js'></script>  
-	<!--
 	-->
 
 </body>

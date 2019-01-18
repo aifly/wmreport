@@ -1,4 +1,3 @@
-import symbinUtil from './util';
 var sysbinVerification = {
 	validate($this){
 		try{

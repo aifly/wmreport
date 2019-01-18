@@ -299,6 +299,7 @@
 				split1: 0.8,
 				viewH:window.innerHeight,
 				showUploadFile:false,
+				isLowIE:false,
 				configList:[],
 				formUpload:{
 					tagList:[]
@@ -346,7 +347,12 @@
 		mounted(){
 			json = this;
 
+			var nav = navigator.userAgent;
+			this.isLowIE = /MSIE 9/.test(nav) || /MSIE 8/.test(nav)||/MSIE 7/.test(nav)||/MSIE 6/.test(nav)||/MSIE 7/.test(nav)
 
+			if(this.isLowIE){
+				$('#zmiti-error').show();
+			}
 			
 
 
@@ -819,7 +825,13 @@
 
 				
 				var s = this;
-				var data = s.configList.filter((item)=>{return  item.fieldname === 'publicadtype'})[0].data
+				var data = s.configList.filter((item)=>{return  item.fieldname === 'publicadtype'})[0];
+				if(data){
+					data = data.data;
+				}
+				else{
+					window.location.hash = '/login';
+				}
 				s.formUpload.tagList = s.formUpload.tagList || [];
 				var p = {
 						username:s.userinfo.username,

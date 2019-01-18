@@ -11,7 +11,7 @@
 			</div>
 		</header>
 		<section :style="{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}" > 
-			<div class="wm-login-C">
+			<div class="wm-login-C" v-show='!isLowIE'>
 				<h2>公益广告上报系统</h2>
 				<div class="wm-login-form">
 					<div>
@@ -63,6 +63,7 @@
 				isMove:false,
 				showLoading:false,
 				isNotChrome:false,
+				isLowIE:false,
 				showError:false,
 				errorMsg:'',
 				loginType:"员工登录",
@@ -155,7 +156,13 @@
 			
 			var ua = navigator.userAgent.toLowerCase();
 			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/)
-
+			
+			var nav = navigator.userAgent;
+			this.isLowIE = /MSIE 9/.test(nav) || /MSIE 8/.test(nav)||/MSIE 7/.test(nav)||/MSIE 6/.test(nav)||/MSIE 7/.test(nav)
+			if(this.isLowIE){
+				$('#zmiti-error').show();
+			}
+			
 		}
 	}
 </script>

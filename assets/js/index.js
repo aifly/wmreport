@@ -23643,45 +23643,7 @@
 				window.location.hash = '/login';
 			}
 
-			return loginObj;
-		},
-
-		getStandard: function getStandard(fn) {
-			//获取得分标准
-
-			if (window.sessionStorage.getItem('wm_standard')) {
-				fn && fn(JSON.parse(window.sessionStorage.getItem('wm_standard')));
-				//return;
-			}
-
-			var loginObj = '',
-			    validate = {};
-
-			try {
-				loginObj = JSON.parse(this.getCookie('login'));
-				validate.username = loginObj.userinfo.username;
-				validate.usertoken = loginObj.userinfo.usertoken;
-			} catch (error) {
-				window.sessionStorage.clear();
-				this.clearCookie('login');
-				window.location.hash = '/login';
-			}
-
-			this.ajax({
-				url: window.config.baseUrl + '/wmuser/getcheckitem/',
-				validate: validate,
-				data: {},
-				success: function success(data) {
-					fn && fn(data.list);
-					console.log(data.list, ' ---------- ');
-					window.sessionStorage.setItem('wm_standard', JSON.stringify(data.list));
-				}
-			});
-			return;
-			$.getJSON('/components/data/standard.json', function (data) {
-				fn && fn(data.list);
-				window.sessionStorage.setItem('wm_standard', JSON.stringify(data.list));
-			});
+			return loginObj || {};
 		},
 
 		ajax: function ajax(option) {
@@ -68210,6 +68172,10 @@
 	        var obserable = _vue2['default'].obserable;
 
 	        var userinfo = _libUtil2['default'].getUserInfo();
+	        if (!userinfo || !userinfo.userid) {
+	            window.location.hash = '/login';
+	            return;
+	        }
 
 	        this.userinfo = userinfo;
 	        if (this.$route.name !== 'login' && this.$route.name !== 'register') {
@@ -68373,20 +68339,13 @@
 
 /***/ }),
 /* 150 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 		value: true
 	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _util = __webpack_require__(98);
-
-	var _util2 = _interopRequireDefault(_util);
-
 	var sysbinVerification = {
 		validate: function validate($this) {
 			try {
@@ -68494,7 +68453,7 @@
 	// 			</div>
 	// 		</header>
 	// 		<section :style="{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}" >
-	// 			<div class="wm-login-C">
+	// 			<div class="wm-login-C" v-show='!isLowIE'>
 	// 				<h2>公益广告上报系统</h2>
 	// 				<div class="wm-login-form">
 	// 					<div>
@@ -68559,6 +68518,7 @@
 				isMove: false,
 				showLoading: false,
 				isNotChrome: false,
+				isLowIE: false,
 				showError: false,
 				errorMsg: '',
 				loginType: "员工登录",
@@ -68647,6 +68607,12 @@
 
 			var ua = navigator.userAgent.toLowerCase();
 			this.isNotChrome = !ua.match(/chrome\/([\d.]+)/);
+
+			var nav = navigator.userAgent;
+			this.isLowIE = /MSIE 9/.test(nav) || /MSIE 8/.test(nav) || /MSIE 7/.test(nav) || /MSIE 6/.test(nav) || /MSIE 7/.test(nav);
+			if (this.isLowIE) {
+				$('#zmiti-error').show();
+			}
 		}
 	};
 
@@ -68700,7 +68666,7 @@
 
 
 	// module
-	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-login-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-login-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-login-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-login-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-login-ui > header a {\n  color: #cc0000;\n}\n\n.wm-login-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-login-ui > section {\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n}\n\n.wm-login-ui > section .wm-login-C {\n  width: 600px;\n  position: relative;\n  top: -4vh;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-title {\n  margin-bottom: 7vh;\n}\n\n.wm-login-ui > section .wm-login-C > h2 {\n  color: #be0000;\n  font-size: 44px;\n  margin: 30px 0;\n  text-align: center;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  background: #fff;\n  height: 50px;\n  line-height: 50px;\n  padding: 0 20px;\n  border-radius: 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\n  color: #f00;\n  margin-top: -12px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  margin: 0 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\n  width: 120px;\n  color: #fff;\n  text-align: center;\n  line-height: 50px;\n  cursor: pointer;\n  font-size: 16px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\n  background: #f90;\n  border-radius: 10px;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\n  position: absolute;\n  width: 100%;\n  left: 0;\n  color: #be0000;\n  margin-top: -3px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\n  border: none;\n  height: 30px;\n  background: transparent;\n  outline: none;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form img {\n  width: 20px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-browner-tip {\n  text-align: center;\n  color: #fff;\n  margin-top: 30px;\n  font-size: 14px;\n  position: absolute;\n  top: -100px;\n  -webkit-animation: 1s flash infinite alternate;\n  animation: 1s flash infinite alternate;\n}\n\n@-webkit-keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n@keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n@-moz-keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n.wm-login-ui > section .wm-copyright {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  text-align: center;\n  height: 50px;\n  line-height: 50px;\n  color: #fff;\n  left: 0;\n  background: #cc0000;\n}\n", ""]);
+	exports.push([module.id, "/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {\r\n    background-color: #fff;\r\n    border-color: #bf1616;\r\n    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);\r\n}*/\n.lt-full {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n}\n\n.zmiti-text-overflow {\n  overflow: hidden;\n  white-space: nowrap;\n  word-break: break-all;\n  text-overflow: ellipsis;\n  -webkit-text-overflow: ellipsis;\n}\n\n.zmiti-play {\n  width: .8rem;\n  height: .8rem;\n  border-radius: 50%;\n  position: fixed;\n  z-index: 1000;\n  right: .5rem;\n  top: .5rem;\n}\n\n.zmiti-play.rotate {\n  -webkit-animation: rotate 5s linear infinite;\n  animation: rotate 5s linear infinite;\n}\n\n.symbin-left {\n  float: left !important;\n}\n\n.symbin-right {\n  float: right !important;\n}\n\n@-webkit-keyframes rotate {\n  to {\n    -webkit-transform: rotate(360deg);\n    transform: rotate(360deg);\n  }\n}\n\n.wm-login-ui {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: column;\n}\n\n.wm-login-ui > header {\n  height: 64px;\n  line-height: 64px;\n  width: 100%;\n  position: relative;\n}\n\n.wm-login-ui > header > div {\n  width: 1000px;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  margin: 0 auto;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > header:before {\n  content: '';\n  background: #cc0000;\n  width: 100%;\n  height: 3px;\n  left: 0;\n  position: absolute;\n  bottom: 0;\n  box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);\n}\n\n.wm-login-ui > header img {\n  width: 100px;\n  margin-left: 30px;\n  vertical-align: middle;\n  font-size: 0;\n}\n\n.wm-login-ui > header a {\n  color: #cc0000;\n}\n\n.wm-login-ui > header a:hover {\n  text-decoration: underline;\n}\n\n.wm-login-ui > section {\n  flex-grow: 1;\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: center;\n  justify-content: center;\n  -webkit-align-items: center;\n  align-items: center;\n  height: 90%;\n}\n\n.wm-login-ui > section .wm-login-C {\n  width: 600px;\n  position: relative;\n  top: -4vh;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-title {\n  margin-bottom: 7vh;\n}\n\n.wm-login-ui > section .wm-login-C > h2 {\n  color: #be0000;\n  font-size: 44px;\n  margin: 30px 0;\n  text-align: center;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form {\n  display: flex;\n  display: -webkit-flex;\n  flex-flow: row;\n  -webkit-justify-content: space-between;\n  justify-content: space-between;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1), .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  background: #fff;\n  height: 50px;\n  line-height: 50px;\n  padding: 0 20px;\n  border-radius: 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(1) .wm-login-error, .wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) .wm-login-error {\n  color: #f00;\n  margin-top: -12px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(2) {\n  margin: 0 10px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) {\n  width: 120px;\n  color: #fff;\n  text-align: center;\n  line-height: 50px;\n  cursor: pointer;\n  font-size: 16px;\n  position: relative;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) > div {\n  background: #f90;\n  border-radius: 10px;\n  width: 100%;\n  height: 100%;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div:nth-of-type(3) label {\n  position: absolute;\n  width: 100%;\n  left: 0;\n  color: #be0000;\n  margin-top: -3px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form > div input {\n  border: none;\n  height: 30px;\n  background: transparent;\n  outline: none;\n}\n\n.wm-login-ui > section .wm-login-C .wm-login-form img {\n  width: 20px;\n}\n\n.wm-login-ui > section .wm-login-C .wm-browner-tip {\n  text-align: center;\n  color: #fff;\n  margin-top: 30px;\n  font-size: 14px;\n  position: absolute;\n  top: -100px;\n  -webkit-animation: 1s flash infinite alternate;\n  animation: 1s flash infinite alternate;\n}\n\n@-webkit-keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n@keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n@-moz-keyframes flash {\n  to {\n    opacity: .2;\n  }\n}\n\n.wm-login-ui > section .wm-copyright {\n  position: absolute;\n  bottom: 0;\n  width: 100%;\n  text-align: center;\n  height: 50px;\n  line-height: 50px;\n  color: #fff;\n  left: 0;\n  background: #cc0000;\n}\n", ""]);
 
 	// exports
 
@@ -68709,7 +68675,7 @@
 /* 158 */
 /***/ (function(module, exports) {
 
-	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}\" > \r\n\t\t\t<div class=\"wm-login-C\">\r\n\t\t\t\t<h2>公益广告上报系统</h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"ios-loading\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='wm-browner-tip' v-if='isNotChrome'>\r\n\t\t\t\t\t<img draggable=\"false\" :src=\"imgs.brower\" alt=\"\">\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
+	module.exports = "\r\n\t<div  class=\"wm-login-ui lt-full\">\r\n\t\t<header>\r\n\t\t\t<div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<img :src=\"imgs.logo\"  />\r\n\t\t\t\t</div>\r\n\t\t\t\t<div>\r\n\t\t\t\t\t<a href='#/register'>用户注册></a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</header>\r\n\t\t<section :style=\"{background:'url('+imgs.loginBg+') no-repeat center bottom',backgroundSize:'cover'}\" > \r\n\t\t\t<div class=\"wm-login-C\" v-show='!isLowIE'>\r\n\t\t\t\t<h2>公益广告上报系统</h2>\r\n\t\t\t\t<div class=\"wm-login-form\">\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginPerson\" alt=\"\">\r\n\t\t\t\t\t\t\t<input type=\"text\" v-model=\"username\" placeholder=\"请输入账号\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t<div class='wm-login-error' v-if='loginError'>{{loginError}}</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<label>\r\n\t\t\t\t\t\t\t<img :src=\"imgs.loginLock\" alt=\"\">\r\n\t\t\t\t\t\t\t<input @keydown.13='login' type=\"password\" v-model=\"password\" placeholder=\"请输入密码\">\r\n\t\t\t\t\t\t</label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div>\r\n\t\t\t\t\t\t<div @click=\"login\">登录 <Icon v-if='showLoading' type=\"ios-loading\" class=\"demo-spin-icon-load\"></Icon></div>\r\n\t\t\t\t\t\t<label><Checkbox v-model=\"checked\">记住密码</Checkbox></label>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class='wm-browner-tip' v-if='isNotChrome'>\r\n\t\t\t\t\t<img draggable=\"false\" :src=\"imgs.brower\" alt=\"\">\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"wm-copyright\">\r\n\t\t\t\t中国文明网 &copy;版权所有\r\n\t\t\t</div>\r\n\t\t</section>\r\n\t</div>\r\n";
 
 /***/ }),
 /* 159 */
@@ -69477,6 +69443,7 @@
 				split1: 0.8,
 				viewH: window.innerHeight,
 				showUploadFile: false,
+				isLowIE: false,
 				configList: [],
 				formUpload: {
 					tagList: []
@@ -69527,6 +69494,13 @@
 			var _this2 = this;
 
 			json = this;
+
+			var nav = navigator.userAgent;
+			this.isLowIE = /MSIE 9/.test(nav) || /MSIE 8/.test(nav) || /MSIE 7/.test(nav) || /MSIE 6/.test(nav) || /MSIE 7/.test(nav);
+
+			if (this.isLowIE) {
+				$('#zmiti-error').show();
+			}
 
 			this.userinfo = _libUtil2['default'].getUserInfo();
 			this.getAuth();
@@ -69992,7 +69966,12 @@
 				var s = this;
 				var data = s.configList.filter(function (item) {
 					return item.fieldname === 'publicadtype';
-				})[0].data;
+				})[0];
+				if (data) {
+					data = data.data;
+				} else {
+					window.location.hash = '/login';
+				}
 				s.formUpload.tagList = s.formUpload.tagList || [];
 				var p = {
 					username: s.userinfo.username,

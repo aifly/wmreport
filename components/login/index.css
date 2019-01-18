@@ -107,6 +107,7 @@
   justify-content: center;
   -webkit-align-items: center;
   align-items: center;
+  height: 90%;
 }
 
 .wm-login-ui > section .wm-login-C {

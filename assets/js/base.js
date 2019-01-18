@@ -28,7 +28,7 @@ var imgs = {
 	uncheck1:'./assets/images/uncheck1.png',
 	pass:'./assets/images/pass.png',
 	pass1:'./assets/images/pass1.png',
-	brower:'./assets/images/brower.png',
+	brower:'./assets/images/brower1.png',
 	pass2:'./assets/images/pass2.png',
 	reject:'./assets/images/reject.png',
 	reject1:'./assets/images/reject1.png',

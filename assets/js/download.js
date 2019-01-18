@@ -23091,45 +23091,7 @@
 				window.location.hash = '/login';
 			}
 
-			return loginObj;
-		},
-
-		getStandard: function getStandard(fn) {
-			//获取得分标准
-
-			if (window.sessionStorage.getItem('wm_standard')) {
-				fn && fn(JSON.parse(window.sessionStorage.getItem('wm_standard')));
-				//return;
-			}
-
-			var loginObj = '',
-			    validate = {};
-
-			try {
-				loginObj = JSON.parse(this.getCookie('login'));
-				validate.username = loginObj.userinfo.username;
-				validate.usertoken = loginObj.userinfo.usertoken;
-			} catch (error) {
-				window.sessionStorage.clear();
-				this.clearCookie('login');
-				window.location.hash = '/login';
-			}
-
-			this.ajax({
-				url: window.config.baseUrl + '/wmuser/getcheckitem/',
-				validate: validate,
-				data: {},
-				success: function success(data) {
-					fn && fn(data.list);
-					console.log(data.list, ' ---------- ');
-					window.sessionStorage.setItem('wm_standard', JSON.stringify(data.list));
-				}
-			});
-			return;
-			$.getJSON('/components/data/standard.json', function (data) {
-				fn && fn(data.list);
-				window.sessionStorage.setItem('wm_standard', JSON.stringify(data.list));
-			});
+			return loginObj || {};
 		},
 
 		ajax: function ajax(option) {
