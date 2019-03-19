@@ -21,6 +21,7 @@ body{
 		height: 300px;
 		background: #eee;
 		@include pos(r);
+		z-index: 100;
 		&>h2 {
 			font-size: 14px; //font-weight: normal;
 			//margin: 60px auto;

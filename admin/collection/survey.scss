@@ -1,0 +1,160 @@
+@import "../css/base.scss";
+
+.wm-collection-survey-manager {
+    width: 100%;
+    background: #f5f5f5;
+    box-sizing: border-box;
+
+    @include pos(r);
+
+    &>div.lt-full{
+        @include displayFlex(column);
+
+        justify-content: space-between;
+        -webkit-justify-content: space-between;
+    }
+
+    .zmiti-survey-header{
+        height: 150px;
+        h2{
+            width: 100%;
+            height: 40px;
+            color:#b20000;
+            font-weight: normal;
+            line-height: 40px;
+            text-align: center;
+            background:#fff;
+        }
+
+        .zmiti-survey-classic{
+            width: 100%;
+            @include displayFlex(row);
+            &>div{
+                padding: 10px 0;
+                flex:1;
+                -webkit-flex:1;
+                margin: 10px;
+                background:pink;
+                color:#fff;
+                @include pos(r);
+                @include displayFlex(row);
+                 &:before{
+                    content:'';
+                    @include pos(a);
+                    width: 40px;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    z-index: 1;
+                    background:#da4941;
+                    
+                }
+                &.zmiti-survey-pv{
+                    background:#e15b54;
+                    &>div:nth-of-type(1){
+                        
+                        @include pos(r);
+                        z-index: 2;
+
+                    }
+                }
+                &.zmiti-survey-download{
+                    background:#f5c443;
+                     &:before{
+                        background:#f2af3d;
+                    }
+                    &>div:nth-of-type(1){
+                        background:#f2af3d;
+                        @include pos(r);
+                        z-index: 2;
+
+
+                    }
+                }
+                &.zmiti-survey-upload{
+                    background:#63c4d8;
+                    &:before{
+                        background:#55b5d0;
+                    }
+                    &>div:nth-of-type(1){
+                        background:#55b5d0;
+                        @include pos(r);
+                        z-index: 2;
+                    }
+                }
+                &.zmiti-survey-works{
+                    background:#968cd8;
+                    &:before{
+                        background:#8276d1;
+                    }
+                     &>div:nth-of-type(1){
+                        background:#8276d1;
+                        @include pos(r);
+                        z-index: 2;
+                    }
+                }
+                &.zmiti-survey-users{
+                    background:#98cb4c;
+                    &:before{
+                        background:#8bbe3f;
+                    }
+                     &>div:nth-of-type(1){
+                        background:#8bbe3f;
+                        @include pos(r);
+                        z-index: 2;
+                    }
+                }
+                &>div{
+                    &:nth-of-type(1){
+                        width: 40px;
+                        margin-right: 10px;
+                        text-align:center;
+                        line-height: 65px;
+                        img{
+                            width: 30px;
+                        }
+                    }
+                    &:nth-of-type(2){
+                        flex:1;
+                        -webkit-flex:1;
+                        @include displayFlex(column);
+                        span{
+                            font-size:20px;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+    .zmiti-survey-main{
+        -webkit-flex:1;
+        flex: 1;
+        background: #fff;
+        margin:0 10px;
+        @include displayFlex(row);
+        .zmiti-survey-map{
+            flex:1;
+            -webkit-flex:1;
+            @include pos(r);
+            .zmiti-survey-chart{
+                width: 100%;
+                height: 100%;
+            }
+            .zmiti-survey-select{
+                @include pos(a);
+                left: 30px;
+                top: 30px;
+                z-index: 10;
+            }
+        }
+        .zmiti-survey-rank{
+            width: 400px;
+
+            .zmiti-survey-collapse{
+                width: 90%;
+                margin: 40px auto;
+            }
+        }
+    }
+}

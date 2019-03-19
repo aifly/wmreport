@@ -2,7 +2,7 @@
 
 .wm-collection-statistics-manager {
     width: 100%;
-    background: #eee;
+    background: #fff;
     padding: 10px;
     box-sizing: border-box;
 
@@ -30,8 +30,7 @@
             }
 
             .wm-statistics-user-upload-count {
-                padding: 0 10px 10px 10px;
-                margin-top: -10px;
+               
                 box-sizing: border-box;
 
                 @include displayFlex(column);

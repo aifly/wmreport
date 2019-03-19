@@ -61,6 +61,14 @@ var imgs = {
 	音频:'./assets/images/t-mp3.png',
 	
 	动漫:'./assets/images/t-dongman.png',
+
+
+	upload:'./assets/images/upload.png',
+	users:'./assets/images/users.png',
+	eye:'./assets/images/eye.png',
+	download:'./assets/images/download.png',
+	works:'./assets/images/works.png',
+
 	
 
 
@@ -146,7 +154,7 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	}
 
 	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
-		//window.config.baseUrl = "https://api.symbin.cn/v1";
+		window.config.baseUrl = "https://api.symbin.cn/v1";
 	}
 
 })();

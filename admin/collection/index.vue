@@ -3,17 +3,20 @@
 		<div  class="wm-collection-left-pannel" :style="{height:viewH -   64+'px'}">
 			<h2 class="zmiti-text-overflow">{{resourcecnname}}</h2>
 			<ul>
-				<li @click='mainType = 0' :class="{'active':mainType === 0}">上报审核</li>
-				<li @click='mainType = 1' :class="{'active':mainType === 1}">评分管理</li>
-				<li @click='mainType = 2' :class="{'active':mainType === 2}">终审归档</li>
-				<li @click='mainType = 3' :class="{'active':mainType === 3}">统计</li>
+				<li @click='mainType = 0' :class="{'active':mainType === 0}">概况</li>
+				<li @click='mainType = 1' :class="{'active':mainType === 1}">上报审核</li>
+				<li @click='mainType = 2' :class="{'active':mainType === 2}">评分管理</li>
+				<li @click='mainType = 3' :class="{'active':mainType === 3}">终审归档</li>
+				<li @click='mainType = 4' :class="{'active':mainType === 4}">统计</li>
 			</ul>
 		</div>
-		<Result  v-if='mainType  === 1'></Result>
-		<LastCheck  v-if='mainType  === 2'></LastCheck>
-		<Statistics  v-if='mainType  === 3'></Statistics>
 
-		<Split v-model='scale' v-if='mainType === 0'> 
+		<Survey :id='$route.params.id' :resourcecnname='resourcecnname'  v-if='mainType  === 0'></Survey>
+		<Result  v-if='mainType  === 2'></Result>
+		<LastCheck  v-if='mainType  === 3'></LastCheck>
+		<Statistics  v-if='mainType  === 4'></Statistics>
+
+		<Split v-model='scale' v-if='mainType === 1'> 
 			<div slot='left' class="wm-collection-left-main-ui">
 					<header class='wm-collection-left-header'>
 						<div class="wm-collection-title">
@@ -143,6 +146,7 @@
 	import './index.css';
 	import symbinUtil from '../lib/util';
 	import Result from './result.vue';
+	import Survey from './survey.vue';
 	import LastCheck from './lastcheck.vue'
 	import Statistics from './statistics.vue'
 	import Vue from "vue";
@@ -171,7 +175,7 @@
 				reportList:[],
 				showPreview:false,
 				showMaskDetail:true,
-				mainType:2,
+				mainType:0,
 				showCheckAction:false,
 				configList:[],
 				currentReportIndex:0,
@@ -196,6 +200,7 @@
 			LastCheck,
 			Detail,
 			Download,
+			Survey,
 			Statistics
 		},
 		watch:{
