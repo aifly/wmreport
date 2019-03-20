@@ -135,8 +135,8 @@
                 	{
                 		align:'center',
                 		title:'浏览量',
-
-sortable: true,                		key:'views'
+                		key:'views',
+                		sortable: true,
                 	}
                 ],
                 companyColumns:[
@@ -146,17 +146,17 @@ sortable: true,                		key:'views'
                         key: 'username'
                     },
                     {
-                    	align:'center',
-                        title: '下载量',
-                        sortable: true,
-                        key: 'downloads'
-                    },
-                    {
-                    	align:'center',
-                        title: '浏览量',
-                        sortable: true,
-                        key: 'views'
-                    }
+                		align:'center',
+                		title:'下载量',
+                		sortable: true,
+                		key:'downloads'
+                	},
+                	{
+                		align:'center',
+                		title:'浏览量',
+                		key:'views',
+                		sortable: true,
+                	}
                 ],
                 proviceColumns: [
                     {
@@ -182,11 +182,11 @@ sortable: true,                		key:'views'
 			}
 		},
 		beforeDestroy() {
-	      if (!this.chart) {
+	      if (!this.myChart) {
 	        return;
 	      }
-	      this.chart.dispose();
-	      this.chart = null;
+	      this.myChart.dispose();
+	      this.myChart = null;
 	    },
 		components:{
 		},
