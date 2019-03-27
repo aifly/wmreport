@@ -93,12 +93,14 @@
             var obserable = Vue.obserable;
             
             var userinfo = symbinUtil.getUserInfo();
+
+
             if(!userinfo || !userinfo.userid){
                 window.location.hash = '/login';
                 return;
             }
-            
             this.userinfo = userinfo; 
+            this.saveIPinfo();
             if(this.$route.name !== 'login' && this.$route.name !== 'register'){
                 this.getSourceList();
             }
@@ -114,6 +116,8 @@
             }
         },
 		methods:{
+
+            
             logout(){
                 var s = this;
                 

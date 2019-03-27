@@ -259,6 +259,7 @@
 			},
 			getMapData(groupby='province'){
 				var s = this;
+				s.mapList = [];
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadadmin/getprovincialip',
 					data:{
@@ -275,9 +276,9 @@
 									name:item.province.replace('市','').replace('省',''),
 									value:item.num
 								};
+								
 								s.mapList.push(obj);
 							});
-
 							s.chinaConfigure(s.mapList);
 
 							
@@ -287,6 +288,7 @@
 			},
 
 			mapConfig(mapList){
+				var s = this;
 				return { // 进行相关配置
 		          backgroundColor: "#fff",
 		          tooltip: {}, // 鼠标移到图里面的浮动提示框
@@ -328,7 +330,7 @@
 		              type: 'scatter',
 		              coordinateSystem: 'geo' // 对应上方配置
 		            },{
-		              name: '', // 浮动框的标题
+		              name: s.mapType === 'downloads' ? '下载量':'浏览量', // 浮动框的标题
 		              type: 'map',
 		              geoIndex: 0,
 		              data:mapList

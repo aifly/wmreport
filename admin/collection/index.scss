@@ -358,7 +358,7 @@ body{
 			 	.wm-report-item-name {
 			 		text-align: center;
 			 		margin: 4px 0;
-			 		font-size: 14px;
+					 font-size: 14px;
 				 }
 				 .wm-collection-check{
 					 @include pos(a);
@@ -632,6 +632,8 @@ body{
 												min-width: 40px;
 											}
 										}
+
+										
 										
 										.wm-tag-list{
 											width: 88%;
@@ -849,11 +851,16 @@ body{
 				}
 				input {
 					height: 24px;
-					border: 1px solid #eee;
+					border: 1px solid #ddd;
 					outline: none;
 					@include pos(a);
 					left: 0;
 					top: 0;
+				}
+				textarea {
+					border: 1px solid #ddd;
+					resize:none;
+					min-height: 60px;
 				}
 			}
 		}

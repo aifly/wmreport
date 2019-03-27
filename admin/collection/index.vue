@@ -105,7 +105,9 @@
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
 					<div v-if='item.fieldname!=="userlabel" && item.fieldname!=="filesize"&&(item.type === "text" ||item.type === "textarea")' @dblclick="editItem(item)" >
 						<span v-if='!item.edit'>{{reportList[currentReportIndex][item.fieldname]}}</span>
-						<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+						<input  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit && item.type === "text"' type="text" v-model="reportList[currentReportIndex][item.fieldname]">
+						<textarea  @blur='modifyReport(reportList[currentReportIndex][item.fieldname],item.fieldname)' v-if='item.edit && item.type === "textarea"' v-model="reportList[currentReportIndex][item.fieldname]">
+						</textarea>
 					</div>
 
 					<div v-if='item.fieldname ==="filesize" &&(item.type === "text" ||item.type === "textarea"  ||item.type === "select")'>{{item.name}}：</div>
@@ -152,6 +154,7 @@
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
 	import Download from '../../common/mask/download';
+
 
 	export default {
 		props:['obserable'],
@@ -428,6 +431,24 @@
 				})
 			},
 
+
+			saveIPinfo(key='views',resourceid,ids){
+                var s = this;
+                symbinUtil.ajax({
+                    _this:s,
+                    url:window.config.baseUrl+'/wmadadmin/getipaddress',
+                    data:{
+						id:ids.join(','),
+						field:key,
+						resourceid
+                    },
+                    success(data){
+                        
+                    }
+                })
+            },
+
+
 			getviews(key='views',resourceid,ids){
 				if(ids.length<=0){
 					return;
@@ -477,6 +498,7 @@
 					s.isdownloading = true;
 
 					s.getviews('downloads',s.$route.params.id,ids);
+					s.saveIPinfo('downloads',s.$route.params.id,ids);
 					symbinUtil.ajax({
 						url:window.config.baseUrl+'/wmadadmin/createzip',
 						data:{
@@ -624,6 +646,7 @@
 									});
 
 									s.getviews('views',id,ids);
+									s.saveIPinfo('views',id,ids);
 									 
 									///s.selectAll  = false;
 									if(s.reportList.length){

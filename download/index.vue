@@ -439,6 +439,7 @@
 				
 				if(status === 'download'){
 					s.getviews('downloads',s.$route.params.id ||1,ids);
+					s.saveIPinfo('downloads',s.$route.params.id ||1,ids);
 
 					if(!urls.length){
 						s.$Message.error('请至少选择一个要下载的作品');
@@ -492,6 +493,7 @@
 						}
 						s.isdownloading = true;
 						s.getviews('downloads',s.$route.params.id ||1,ids);
+						s.saveIPinfo('downloads',s.$route.params.id ||1,ids);
 						symbinUtil.ajax({
 							url:window.config.baseUrl+'/wmshare/createzip',
 							data:{
@@ -535,6 +537,7 @@
 					}
 					
 					 s.getviews('downloads',s.$route.params.id ||1,[status.id]);
+					 s.saveIPinfo('downloads',s.$route.params.id ||1,[status.id]);
 					 
 					 setTimeout(() => {
 						 s.$refs['downloadimg'].click();
@@ -584,6 +587,23 @@
 
 				
 			},
+
+
+			saveIPinfo(key='views',resourceid,ids){
+                var s = this;
+                symbinUtil.ajax({
+                    _this:s,
+                    url:window.config.baseUrl+'/wmadadmin/getipaddress',
+                    data:{
+						id:ids.join(','),
+						field:key,
+						resourceid
+                    },
+                    success(data){
+                        
+                    }
+                })
+            },
 
 			getviews(key='views',resourceid,ids){
 				var s = this;
@@ -702,6 +722,7 @@
 							});
 
 							s.getviews('views',p.resourceid,ids);
+							s.saveIPinfo('views',p.resourceid,ids);
 						
 							///s.selectAll  = false;
 							if(s.reportList.length){
