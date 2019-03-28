@@ -590,6 +590,9 @@
 
 
 			saveIPinfo(key='views',resourceid,ids){
+				if(ids.length<=0){
+					return;
+				}
                 var s = this;
                 symbinUtil.ajax({
                     _this:s,
@@ -607,6 +610,9 @@
 
 			getviews(key='views',resourceid,ids){
 				var s = this;
+				if(ids.length<=0){
+					return;
+				}
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmshare/getviews',
 					data:{
