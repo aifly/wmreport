@@ -68,7 +68,8 @@
 						</div>
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
-						<ul>
+						<ul ref='ul1'>
+							<!-- -->
 							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
 								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
@@ -85,9 +86,67 @@
 									<div class="wm-report-action-icon"></div>
 								</div>
 								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-							</li>	
+							</li> 	
 						</ul>
-						<div class="wm-collection-pagetion" v-if='!selectAll'>
+						<!-- <ul ref='ul2'>
+							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList2' :key="i">
+								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
+								</div>
+								<div class="wm-collection-report-status">
+									<img v-if='report.status===1' :src="imgs.pass" alt="">
+									<img  v-if='report.status===2' :src="imgs.reject" alt="">
+								</div>
+								
+								<div class="wm-collection-check" @click='toggleChecked(i)'>
+									<Checkbox  v-model="report.checked"></Checkbox>
+								</div>
+								<div class="wm-report-action" v-if='report.isLoaded'>
+									<div class="wm-report-action-icon"></div>
+								</div>
+								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+							</li> 
+						</ul>
+						<ul ref='ul3'>
+							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList3' :key="i">
+								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
+								</div>
+								<div class="wm-collection-report-status">
+									<img v-if='report.status===1' :src="imgs.pass" alt="">
+									<img  v-if='report.status===2' :src="imgs.reject" alt="">
+								</div>
+								
+								<div class="wm-collection-check" @click='toggleChecked(i)'>
+									<Checkbox  v-model="report.checked"></Checkbox>
+								</div>
+								<div class="wm-report-action" v-if='report.isLoaded'>
+									<div class="wm-report-action-icon"></div>
+								</div>
+								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+							</li> 
+						</ul>
+						<ul ref='ul4'>
+							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList4' :key="i">
+								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
+								</div>
+								<div class="wm-collection-report-status">
+									<img v-if='report.status===1' :src="imgs.pass" alt="">
+									<img  v-if='report.status===2' :src="imgs.reject" alt="">
+								</div>
+								
+								<div class="wm-collection-check" @click='toggleChecked(i)'>
+									<Checkbox  v-model="report.checked"></Checkbox>
+								</div>
+								<div class="wm-report-action" v-if='report.isLoaded'>
+									<div class="wm-report-action-icon"></div>
+								</div>
+								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+							</li> 
+						</ul> -->
+
+						<div v-show='false' class="wm-collection-pagetion" v-if='!selectAll'>
 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 						</div>
 					</div>
@@ -176,6 +235,10 @@
 				fieldname:-1,
 				nextReport:false,
 				reportList:[],
+				reportList1:[],
+				reportList2:[],
+				reportList3:[],
+				reportList4:[],
 				showPreview:false,
 				showMaskDetail:true,
 				mainType:0,
@@ -645,6 +708,9 @@
 										})
 									});
 
+
+									s.waterfull();
+
 									s.getviews('views',id,ids);
 									s.saveIPinfo('views',id,ids);
 									 
@@ -683,6 +749,18 @@
 						},30)
 					}
 				});
+			},
+			waterfull(){//瀑布流布局。
+				var ul1 = this.$refs['ul1'];
+				var ul2 = this.$refs['ul2'];
+				var ul3 = this.$refs['ul3'];
+				var ul4 = this.$refs['ul4'];
+				
+				
+			
+
+
+				
 			}
 			
 		},
@@ -692,6 +770,8 @@
 			
 			this.mainType = this.$route.params.type*1
 			this.getReportList();
+
+			
 			
 			window.s = this;
 

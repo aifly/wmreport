@@ -100,7 +100,7 @@
                 return;
             }
             this.userinfo = userinfo; 
-            this.saveIPinfo();
+            //this.saveIPinfo();
             if(this.$route.name !== 'login' && this.$route.name !== 'register'){
                 this.getSourceList();
             }

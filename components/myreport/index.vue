@@ -199,10 +199,11 @@
 			@on-ok="ok"
 			@on-cancel="cancel">
 			<Form  ref="formUpload" :model="formUpload" :label-width="90" >
-				<FormItem class="wm-report-upload-item" v-if='item.edit || item.fieldname === "userlabel"' :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' :key='i'  :class="{'wm-require':item.notnull}"> 
-					<Input @on-blur='checkUpload' v-if='item.type === "text"&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.placeholder||item.name" autocomplete="off" />
+				<FormItem class="wm-report-upload-item"  :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' v-if='item.edit || item.fieldname === "userlabel"' :key='i'  :class="{'wm-require':item.notnull}"> 
+
+					<Input @on-blur='checkUpload' v-if='(item.type === "text" ||item.fieldname === "filetitle")&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.placeholder||item.name" autocomplete="off" />
 					
-					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc"'  :type="item.type"  v-model="formUpload[item.fieldname]"  :placeholder="item.placeholder||item.name" autocomplete="off"/>
+					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc" '  type="textarea"  v-model="formUpload[item.fieldname]"  :placeholder="item.placeholder||item.name" autocomplete="off"/>
 					<div  v-if='item.type === "select"'>
 						<Select @on-change='checkUpload($event,"select")' v-model="formAdmin[item.fieldname]">
 							<Option v-for="(dt,k) in item.data" :value="dt" :key="dt">{{ dt.split('-')[0] }}</Option>

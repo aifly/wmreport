@@ -13,7 +13,7 @@
 			<section style="display:flex;-webkit-display:flex;flex-flow: column;-webkit-flex-flow: column;width:100%;height:100%;-webkit-justify-content: space-between;justify-content: space-between;">
 				<div v-if='false' style="height:60px;font-size:30px;text-align:center;border-bottom:1px solid #ddd;position:relative;z-index:1;">{{reportList[currentReportIndex].filetitle}}</div>
 				<div style="flex:1;-webkit-flex:1;box-sizing:border-box;overflow:hidden;margin-top:20px;text-align:center;">
-					<img style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);-webkit-transform:translate(-50%,-50%);display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].pcbilethum.replace('uploads//','uploads/')||imgs.poster" alt="" />
+					<img style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);-webkit-transform:translate(-50%,-50%);display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto;" :class="reportList[currentReportIndex].fileextname" :src="reportList[currentReportIndex].filepath.replace('uploads//','uploads/')||imgs.poster" alt="" />
 				</div>
 				<div v-if='false' style="height:100px;font-size:14px;line-height:30px;height:90px;overflow:hidden;color:#000">{{reportList[currentReportIndex].filedesc}}</div>
 
