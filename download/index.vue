@@ -654,7 +654,6 @@
 			/*测试下载接口结束*/
 			 
 			getReportList(fn){
-				
 				var s = this;
 				s.showLoading = true;
 				s.reportList.length = 0;
@@ -663,6 +662,28 @@
 					pagenum:s.pagenum,
 					page:s.page
 				};
+
+
+				/* var D = new Date();
+				var year = D.getFullYear(),
+					month = D.getMonth() + 1,
+					day = D.getDate();
+
+				var date = year + (month<10?'0'+month:month)+(day<10?'0'+day:day);
+				 
+
+				symbinUtil.ajax({
+					url:window.config.baseUrl.replace('/v1','')+'/uploads/json/'+date+"/"+p.resourceid+'.json',
+					type:'get',
+					success(data){
+						consle.log(data);
+					}
+				});
+
+
+				return; */
+
+
 				if(this.status !== -1){
 					p.status = this.status;
 				}

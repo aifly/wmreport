@@ -10,7 +10,7 @@ import MyDownload from './admin/download/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
 import './components/css/index.css';
-import 'iview/dist/styles/iview.css';
+//import 'iview/dist/styles/iview.css';
 
 Vue.use(VueRouter)
 Vue.use(iView)
@@ -74,7 +74,7 @@ new Vue({
 	router,
 	data: {
 		obserable,
-		imgs,
+		imgs:window.imgs,
 		viewH: document.documentElement.clientHeight,
 	},
 	el: '#app',

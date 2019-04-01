@@ -30,7 +30,7 @@
 						<div>
 							<div>上传量</div>
 							<div>总：<span>{{total.totalnum}}</span></div>
-							<div>(今日：{{total.todayuploadnumber}})</div>
+							<div>(今日：{{total.todayuploadnum}})</div>
 						</div>
 					</div>
 
@@ -50,8 +50,7 @@
 						</div>
 						<div>
 							<div>上传人数</div>
-							<div>总：<span>{{total.uploadnumber}}</span></div>
-							<div>(今日上传人数：{{total.todayuploadnumber}})</div>
+							<div>总：<span>{{total.totalnumber}}</span></div>
 						</div>
 					</div>
 
@@ -212,6 +211,8 @@
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadadmin/getrankinglist',
 					data:{
+						order:1,//降序
+						status:1,//1分页 2 不分页
 						adminusername:s.userinfo.adminusername,
 						admintoken:s.userinfo.admintoken,
 						resourceid:s.id,
@@ -295,7 +296,7 @@
 		          dataRange: {
 		            show: true,
 		            min: 0,
-		            max: 1000,
+		            max: 1000*100,
 		            text: ['', ''],
 		            realtime: true,
 		            calculable: true,
@@ -350,16 +351,36 @@
 			        this.myChart = myChart;
 			        this.myChart.setOption(this.mapConfig(mapList));
          		}
-		      }
+			},
+			getJsonFile(){
+				var s = this;
+				s.mapList = [];
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/getjsonfile',
+					url:'https://h5.wenming.cn/v1/wmadadmin/getjsonfile',
+					data:{
+						adminusername:s.userinfo.adminusername,
+						admintoken:s.userinfo.admintoken,
+						type:"provinceviews"
+					},
+					success(data){
+						if(data.getret === 0){
+							console.log(data);
+						}
+					}
+				})
+			}
 		     
 
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
-            this.getMapData();
-            this.getsurvey();
-			this.getRankingList();
- 
+			if(this.$route.params.type*1 === 0){
+				this.getMapData();
+				this.getsurvey();
+				this.getRankingList();
+				this.getJsonFile();
+			}
 		}
 	}
 </script>

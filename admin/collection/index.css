@@ -507,9 +507,9 @@ body {
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item,
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item {
   display: inline-block;
-  width: 17.8%;
+  width: 150px;
   margin: 12px;
-  height: 130px;
+  height: 150px;
   background: #f4f4f4;
   position: relative;
   cursor: pointer;
@@ -529,6 +529,34 @@ body {
   -webkit-align-items: center;
   align-items: center;
   overflow: hidden;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg:hover .zmiti-report-fullname,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg:hover .zmiti-report-fullname, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg:hover .zmiti-report-fullname,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg:hover .zmiti-report-fullname {
+  opacity: 1;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+  padding: 6px;
+  opacity: 0;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname.active,
+.wm-collection-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname.active, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname.active,
+.wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg .zmiti-report-fullname.active {
+  -webkit-transform: translateY(100%);
+  transform: translateY(100%);
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-report-list li.wm-collection-report-item > div.wm-report-item-bg img,

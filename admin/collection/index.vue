@@ -68,85 +68,29 @@
 						</div>
 					</header>
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
-						<ul ref='ul1'>
+						<ul ref='ul1' class='zmiti-report-ul'>
 							<!-- -->
-							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item"  v-for='(report,i) in reportList' :key="i">
+								<div @mouseover="mouseover(report)" @mouseout="mouseout(report)" :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
+									<div  class='zmiti-report-fullname'>{{report.filetitle}}</div>
 								</div>
-								<div class="wm-collection-report-status">
-									<img v-if='report.status===1' :src="imgs.pass" alt="">
-									<img  v-if='report.status===2' :src="imgs.reject" alt="">
-								</div>
-								
-								<div class="wm-collection-check" @click='toggleChecked(i)'>
-									<Checkbox  v-model="report.checked"></Checkbox>
-								</div>
-								<div class="wm-report-action" v-if='report.isLoaded'>
-									<div class="wm-report-action-icon"></div>
-								</div>
-								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-							</li> 	
-						</ul>
-						<!-- <ul ref='ul2'>
-							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList2' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
-								</div>
-								<div class="wm-collection-report-status">
-									<img v-if='report.status===1' :src="imgs.pass" alt="">
-									<img  v-if='report.status===2' :src="imgs.reject" alt="">
-								</div>
-								
-								<div class="wm-collection-check" @click='toggleChecked(i)'>
-									<Checkbox  v-model="report.checked"></Checkbox>
-								</div>
-								<div class="wm-report-action" v-if='report.isLoaded'>
-									<div class="wm-report-action-icon"></div>
-								</div>
-								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-							</li> 
-						</ul>
-						<ul ref='ul3'>
-							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList3' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
-								</div>
-								<div class="wm-collection-report-status">
-									<img v-if='report.status===1' :src="imgs.pass" alt="">
-									<img  v-if='report.status===2' :src="imgs.reject" alt="">
-								</div>
-								
-								<div class="wm-collection-check" @click='toggleChecked(i)'>
-									<Checkbox  v-model="report.checked"></Checkbox>
-								</div>
-								<div class="wm-report-action" v-if='report.isLoaded'>
-									<div class="wm-report-action-icon"></div>
-								</div>
-								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-							</li> 
-						</ul>
-						<ul ref='ul4'>
-							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item" v-for='(report,i) in reportList4' :key="i">
-								<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
-									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
-								</div>
-								<div class="wm-collection-report-status">
-									<img v-if='report.status===1' :src="imgs.pass" alt="">
-									<img  v-if='report.status===2' :src="imgs.reject" alt="">
-								</div>
-								
-								<div class="wm-collection-check" @click='toggleChecked(i)'>
-									<Checkbox  v-model="report.checked"></Checkbox>
-								</div>
-								<div class="wm-report-action" v-if='report.isLoaded'>
-									<div class="wm-report-action-icon"></div>
-								</div>
-								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
-							</li> 
-						</ul> -->
 
-						<div v-show='false' class="wm-collection-pagetion" v-if='!selectAll'>
+								<div class="wm-collection-report-status">
+									<img v-if='report.status===1' :src="imgs.pass" alt="">
+									<img  v-if='report.status===2' :src="imgs.reject" alt="">
+								</div>
+								
+								<div class="wm-collection-check" @click='toggleChecked(i)'>
+									<Checkbox  v-model="report.checked"></Checkbox>
+								</div>
+								<div class="wm-report-action" v-if='report.isLoaded'>
+									<div class="wm-report-action-icon"></div>
+								</div>
+								<div v-if='report' :title='report.filetitle' class="wm-report-item-name zmiti-text-overflow">{{report.filetitle}}</div>
+							</li> 
+						</ul>
+						<div  class="wm-collection-pagetion" v-if='!selectAll'>
 							<Page :current='currentPage' @on-page-size-change='pagesizeChange' show-elevator show-sizer  @on-change='loadMoreReport' :total="totalnum" show-total :page-size='pagenum' />
 						</div>
 					</div>
@@ -215,6 +159,7 @@
 	import Download from '../../common/mask/download';
 
 
+
 	export default {
 		props:['obserable'],
 		name:'zmitiindex',
@@ -267,7 +212,7 @@
 			Detail,
 			Download,
 			Survey,
-			Statistics
+			Statistics,
 		},
 		watch:{
 			selectAll(val){
@@ -289,6 +234,17 @@
 			}
 		},
 		methods:{
+
+			mouseover(report){
+				report.showFullName = true;
+
+				this.reportList = this.reportList.concat([]);
+			},
+			mouseout(report){
+				report.showFullName = false;
+
+				this.reportList = this.reportList.concat([]);
+			},
 			deltag(name){
 
 				var taglist = this.reportList[this.currentReportIndex].userlabel.split(',');

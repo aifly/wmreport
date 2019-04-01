@@ -3,8 +3,7 @@ import Obserable from './components/lib/obserable';
 import Download from './download/index'
 import './components/css/index.css';
 import iView from 'iview';
-import 'iview/dist/styles/iview.css';
-import './components/css/admin.less'
+import './components/css/admin.less';
 import VueRouter from 'vue-router'
 var obserable = new Obserable();
 Vue.obserable = obserable;
@@ -28,7 +27,7 @@ new Vue({
     router,
     data: {
         obserable,
-        imgs,
+        imgs:window.imgs,
         viewW:window.innerWidth,
         viewH: document.documentElement.clientHeight,
     },

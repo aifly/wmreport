@@ -110,7 +110,6 @@
 </template>
 <script>
 	import Vue from 'vue';
-	import $ from 'jquery';
 	import './detail.css';
 	import QRCode from '../../components/lib/qrcode';
 import symbinUtil from '../../components/lib/util';

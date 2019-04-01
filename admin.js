@@ -98,7 +98,7 @@ new Vue({
 	router,
 	data: {
 		obserable,
-		imgs,
+		imgs:window.imgs,
 		viewH: document.documentElement.clientHeight,
 	},
 	el: '#app',

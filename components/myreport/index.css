@@ -55,10 +55,6 @@
   position: relative;
 }
 
-.wm-myreport-main-ui.webuploader-dnd-over {
-  background: red;
-}
-
 .wm-myreport-main-ui .webuploader-container {
   position: relative;
 }
