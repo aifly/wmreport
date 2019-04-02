@@ -3,7 +3,7 @@
 	<section  class="wm-collection-survey-manager">
 		<div class="lt-full" style="">
 			<div class="zmiti-survey-header">
-				<h2>{{resourcecnname}}</h2>
+				<h2 v-if='false'>{{resourcecnname}}</h2>
 				<div class="zmiti-survey-classic">
 					<div class="zmiti-survey-pv">
 						<div>
@@ -11,7 +11,7 @@
 						</div>
 						<div>
 							<div>浏览量</div>
-							<div>总：<span>{{total.viewsnum}}</span></div>
+							<div>总：<span>{{tranNumber(total.viewsnum)}}</span></div>
 						</div>
 					</div>
 					<div class="zmiti-survey-download">
@@ -20,7 +20,7 @@
 						</div>
 						<div>
 							<div>下载量</div>
-							<div>总：<span>{{total.downloads}}</span></div>
+							<div>总：<span>{{tranNumber(total.downloads)}}</span></div>
 						</div>
 					</div>
 					<div class="zmiti-survey-upload">
@@ -29,8 +29,8 @@
 						</div>
 						<div>
 							<div>上传量</div>
-							<div>总：<span>{{total.totalnum}}</span></div>
-							<div>(今日：{{total.todayuploadnum}})</div>
+							<div>总：<span>{{tranNumber(total.totalnum)}}</span></div>
+							<div>(今日：{{tranNumber(total.todayuploadnum)}})</div>
 						</div>
 					</div>
 
@@ -40,8 +40,8 @@
 						</div>
 						<div>
 							<div>作品数</div>
-							<div>总：<span>{{total.totalnum}}</span></div>
-							<div>(H5：{{total.typenum}})</div>
+							<div>总：<span>{{tranNumber(total.totalnum)}}</span></div>
+							<div>(H5：{{tranNumber(total.typenum)}})</div>
 						</div>
 					</div>
 					<div class="zmiti-survey-users">
@@ -50,7 +50,7 @@
 						</div>
 						<div>
 							<div>上传人数</div>
-							<div>总：<span>{{total.totalnumber}}</span></div>
+							<div>总：<span>{{tranNumber(total.totalnumber)}}</span></div>
 						</div>
 					</div>
 
@@ -125,17 +125,23 @@
                 		title:'作品名称',
                 		key:'filetitle',
                 	},
-                	{
+                	 {
                 		align:'center',
                 		title:'下载量',
                 		sortable: true,
-                		key:'downloads'
+						key:'downloads',
+						render:(h,params)=>{
+							return h('div',{},this.tranNumber(params.row.downloads))
+						}
                 	},
                 	{
                 		align:'center',
                 		title:'浏览量',
                 		key:'views',
-                		sortable: true,
+						sortable: true,
+						render:(h,params)=>{
+							return h('div',{},this.tranNumber(params.row.views))
+						}
                 	}
                 ],
                 companyColumns:[
@@ -148,13 +154,19 @@
                 		align:'center',
                 		title:'下载量',
                 		sortable: true,
-                		key:'downloads'
+						key:'downloads',
+						render:(h,params)=>{
+							return h('div',{},this.tranNumber(params.row.downloads))
+						}
                 	},
                 	{
                 		align:'center',
                 		title:'浏览量',
                 		key:'views',
-                		sortable: true,
+						sortable: true,
+						render:(h,params)=>{
+							return h('div',{},this.tranNumber(params.row.views))
+						}
                 	}
                 ],
                 proviceColumns: [
@@ -163,18 +175,24 @@
                         title: '省份',
                         key: 'province'
                     },
-                    {
-                    	align:'center',
-                        title: '下载量',
-                        sortable: true,
-                        key: 'downloads'
-                    },
-                    {
-                    	align:'center',
-                        title: '浏览量',
-                        sortable: true,
-                        key: 'views'
-                    }
+                     {
+                		align:'center',
+                		title:'下载量',
+                		sortable: true,
+						key:'downloads',
+						render:(h,params)=>{
+							return h('div',{},this.tranNumber(params.row.downloads))
+						}
+                	},
+                	{
+                		align:'center',
+                		title:'浏览量',
+                		key:'views',
+						sortable: true,
+						render:(h,params)=>{
+							return h('div',{},this.tranNumber(params.row.views))
+						}
+                	}
                 ],
                  
 
@@ -195,6 +213,24 @@
 			
 		},
 		methods:{
+
+			tranNumber(num, point = 2) {
+				let numStr = num+"";
+				// 十万以内直接返回 
+				if (numStr.length < 6) {
+					return numStr;
+				}
+				//大于8位数是亿
+				else if (numStr.length > 8) {
+					let decimal = numStr.substring(numStr.length - 8, numStr.length - 8 + point);
+					return parseFloat(parseInt(num / 100000000) + '.' + decimal) + '亿';
+				}
+				//大于6位数是十万 (以10W分割 10W以下全部显示)
+				else if (numStr.length > 5) {
+					let decimal = numStr.substring(numStr.length - 4, numStr.length - 4 + point)
+					return parseFloat(parseInt(num / 10000) + '.' + decimal) + '万';
+				}
+			},
 
 			change(){
 				var key = this.value2[0]*1;
@@ -290,13 +326,18 @@
 
 			mapConfig(mapList){
 				var s = this;
+
+				var max = 0;
+				mapList.map(item=>{
+					max = Math.max(max,item.value);
+				})
 				return { // 进行相关配置
 		          backgroundColor: "#fff",
 		          tooltip: {}, // 鼠标移到图里面的浮动提示框
 		          dataRange: {
 		            show: true,
 		            min: 0,
-		            max: 1000*100,
+		            max: max*1.5,
 		            text: ['', ''],
 		            realtime: true,
 		            calculable: true,
@@ -353,11 +394,12 @@
          		}
 			},
 			getJsonFile(){
+				return;
 				var s = this;
 				s.mapList = [];
 				symbinUtil.ajax({
 					url:window.config.baseUrl+'/wmadadmin/getjsonfile',
-					url:'https://h5.wenming.cn/v1/wmadadmin/getjsonfile',
+					//url:'https://h5.wenming.cn/v1/wmadadmin/getjsonfile',
 					data:{
 						adminusername:s.userinfo.adminusername,
 						admintoken:s.userinfo.admintoken,

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --hot --inline --port 4047  --mode development"
+    "start": "webpack-dev-server --hot --inline --port 4047  --mode development",
+    "build":"webpack -w --mode production --config webpack.config.build.js"
   },
   "author": "",
   "license": "ISC",

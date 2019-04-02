@@ -99,6 +99,7 @@
 
 				this.showLoading = true;
 				var s = this;
+				
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/login/',
@@ -106,7 +107,13 @@
 						username:_this.username,
 						userpwd:_this.password
 					},
+					error(){
+						s.showLoading = false;
+
+					},
 					success(data){
+						s.showLoading = false;
+						
 						if(data.getret === 0){
 							var param = data;
 							delete param.getret;

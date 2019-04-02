@@ -46,12 +46,12 @@ var symbinUtil = {
 				option._this && option._this.$Message.error('服务器开小差了，请稍后重试');
 			}
 		}).done((dt)=>{
+			option.fn && option.fn(dt);
+			option.success && option.success(dt);
 			if (dt.getret === 1000) {
 				window.localStorage['login'] = '';
 				window.location.hash = '/login';
 			} else {}
-			option.fn && option.fn(dt);
-			option.success && option.success(dt);
 		})
 	},
 	setCookie(cname, cvalue, exdays){

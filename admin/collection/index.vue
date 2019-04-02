@@ -7,14 +7,14 @@
 				<li @click='mainType = 1' :class="{'active':mainType === 1}">上报审核</li>
 				<li @click='mainType = 2' :class="{'active':mainType === 2}">评分管理</li>
 				<li @click='mainType = 3' :class="{'active':mainType === 3}">终审归档</li>
-				<li @click='mainType = 4' :class="{'active':mainType === 4}">统计</li>
+				<!-- <li @click='mainType = 4' :class="{'active':mainType === 4}">统计</li> -->
 			</ul>
 		</div>
 
 		<Survey :id='$route.params.id' :resourcecnname='resourcecnname'  v-if='mainType  === 0'></Survey>
 		<Result  v-if='mainType  === 2'></Result>
 		<LastCheck  v-if='mainType  === 3'></LastCheck>
-		<Statistics  v-if='mainType  === 4'></Statistics>
+		<!-- <Statistics  v-if='mainType  === 4'></Statistics> -->
 
 		<Split v-model='scale' v-if='mainType === 1'> 
 			<div slot='left' class="wm-collection-left-main-ui">
@@ -153,7 +153,7 @@
 	import Result from './result.vue';
 	import Survey from './survey.vue';
 	import LastCheck from './lastcheck.vue'
-	import Statistics from './statistics.vue'
+	//import Statistics from './statistics.vue'
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
 	import Download from '../../common/mask/download';
@@ -212,7 +212,7 @@
 			Detail,
 			Download,
 			Survey,
-			Statistics,
+			//Statistics,
 		},
 		watch:{
 			selectAll(val){
