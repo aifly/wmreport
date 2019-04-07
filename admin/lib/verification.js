@@ -1,10 +1,9 @@
-import symbinUtil from './util';
 var sysbinVerification = {
 	validate($this){
 		try{
 			var obj = JSON.parse(localStorage.getItem('adminlogin'));;
-			
 			if(obj){
+				console.log(obj,'obj')
 				return obj.userinfo;
 			}
 		}catch(e){

@@ -101,7 +101,8 @@
 		components:{
 		},
         beforeCreate(){
-            this.validateData = sysbinVerification.validate(this);
+            ///this.validateData = sysbinVerification.validate(this);
+          
         },
         watch:{
            $route(e){
@@ -114,8 +115,12 @@
             var obserable = Vue.obserable;
             
             var userinfo = symbinUtil.getUserInfo();
+      
+            console.log(this,'userinfo')
 
             this.userinfo = userinfo; 
+
+
             
             window.onresize = ()=>{
                 this.viewW  = window.innerWidth;

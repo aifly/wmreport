@@ -21,7 +21,10 @@ var symbinUtil = {
 			this.clearCookie('adminlogin');
 			window.location.hash = '/login';
 		}
-
+		if(loginObj === null){
+			this.clearCookie('adminlogin');
+			window.location.hash = '/login';
+		}
 		return loginObj;
 	},
 
@@ -31,8 +34,8 @@ var symbinUtil = {
 		var opt = option.data || {};
 	
 		if(option.validate){
-			opt.username = option.validate.username;
-			opt.usertoken = option.validate.usertoken;
+			/* opt.username = option.validate.username;
+			opt.usertoken = option.validate.usertoken; */
 		}
 		
 		$.ajax({

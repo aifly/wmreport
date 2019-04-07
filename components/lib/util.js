@@ -21,7 +21,10 @@ var symbinUtil = {
 			this.clearCookie('login');
 			window.location.hash = '/login';
 		}
-
+		if (loginObj === null) {
+			this.clearCookie('adminlogin');
+			window.location.hash = '/login';
+		}
 		return loginObj ||{};
 	},
 

@@ -225,6 +225,13 @@
   z-index: 10;
 }
 
+.wm-collection-survey-manager .zmiti-survey-main .zmiti-survey-map .zmiti-refresh-btn {
+  position: absolute;
+  right: 30px;
+  z-index: 10;
+  top: 30px;
+}
+
 .wm-collection-survey-manager .zmiti-survey-main .zmiti-survey-rank {
   width: 400px;
 }
@@ -232,4 +239,11 @@
 .wm-collection-survey-manager .zmiti-survey-main .zmiti-survey-rank .zmiti-survey-collapse {
   width: 90%;
   margin: 40px auto;
+}
+
+.wm-collection-survey-manager .zmiti-survey-main .zmiti-survey-rank .zmiti-survey-collapse .zmiti-survey-more {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  cursor: pointer;
 }

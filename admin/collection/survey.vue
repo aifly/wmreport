@@ -64,6 +64,13 @@
 							<Option value='views'>浏览量</Option>
 						</Select>
 					</div>
+
+					<div class='zmiti-refresh-btn'>
+							<Button type="primary" :loading="loading" @click="refresh">
+									<span v-if="!loading">刷新</span>
+									<span v-else>刷新中...</span>
+							</Button>
+					</div>
 					<div ref='myEchart' class="zmiti-survey-chart">
 						
 					</div>
@@ -72,14 +79,17 @@
 					 <Collapse class='zmiti-survey-collapse' @on-change='change' v-model="value2" accordion>
 				        <Panel name="1">
 				            省份排行榜
+										<div  class='zmiti-survey-more' @click="getMore('province')">更多>></div>
 				            <Table slot="content" :columns="proviceColumns" :data="proviceData" :height='viewH-64-150 - 200'></Table>
 				        </Panel>
 				        <Panel name="2">
 				            作品排行榜
+										<div  class='zmiti-survey-more'>更多>></div>
 				            <Table slot="content" :columns="worksColumns" :data="worksData" :height='viewH-64-150 - 200'></Table>
 				        </Panel>
 				        <Panel name="3">
 				            上传单位排行榜
+										<div  class='zmiti-survey-more'>更多>></div>
 				            <Table slot="content" :columns="companyColumns" :data="userData" :height='viewH-64-150 - 200'></Table>
 				        </Panel>
 				    </Collapse>
@@ -104,7 +114,8 @@
                chart: null,
                imgs:window.imgs,
                value2:'1',
-               mapType:'downloads',
+							 mapType:'downloads',
+							 loading:false,
                viewH:window.innerHeight,
                total:{
 	               downloads:0,//总下载量
@@ -214,6 +225,14 @@
 		},
 		methods:{
 
+			toLoading(){
+				
+			},
+
+			getMore(e){
+				return false;
+			},
+
 			tranNumber(num, point = 2) {
 				let numStr = num+"";
 				// 十万以内直接返回 
@@ -292,13 +311,74 @@
 				})
 			},
 			loadMapData(){
+				//this.getJsonFile();
 				this.getMapData();
+			},
+
+			refreshMapData(groupby='province'){
+
+				var s = this;
+				s.loading = true;
+
+					var p = {
+						adminusername:s.userinfo.adminusername,
+						admintoken:s.userinfo.admintoken,
+						resourceid:s.id,
+						groupby,
+						status:s.mapType === 'downloads' ? 2 : 1
+					};
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmadadmin/getprovincialip',
+						data:p,
+						success(data){
+							s.loading = false;
+							if(data.getret === 0){
+								s.$Message.success('刷新成功!!!');
+								s.mapList = [];
+								data.list.forEach((item,i)=>{
+									var obj = {
+										name:item.province.replace('市','').replace('省',''),
+										value:item.num
+									};
+									
+									s.mapList.push(obj);
+								});
+								window.localStorage.setItem(s.mapType,JSON.stringify(s.mapList));
+								s.chinaConfigure(s.mapList);
+								s.getMapData();
+								s.getRankingList();
+								s.getsurvey();
+							}
+						}
+					})
+			},
+			refresh(groupby='province'){
+
+				var s = this;
+			//	this.loading = true;
+		
+				s.refreshMapData();
+
+				return;
+			
+			
+				
 			},
 			getMapData(groupby='province'){
 				var s = this;
 				s.mapList = [];
+
+				if(window.localStorage.getItem(s.mapType)){//优先加载缓存数据
+					s.mapList = JSON.parse(window.localStorage.getItem(s.mapType));
+					s.chinaConfigure(s.mapList);
+				}
+
+				var url = window.config.host+'/uploads/json/'+(s.mapType === 'downloads' ?  "provincedownloads": "provinceviews")+'.json';
+				
 				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadadmin/getprovincialip',
+					//url:window.config.baseUrl+'/wmadadmin/getprovincialip',
+					url,
+					type:"get",
 					data:{
 						adminusername:s.userinfo.adminusername,
 						admintoken:s.userinfo.admintoken,
@@ -308,6 +388,7 @@
 					},
 					success(data){
 						if(data.getret === 0){
+							s.mapList = [];
 							data.list.forEach((item,i)=>{
 								var obj = {
 									name:item.province.replace('市','').replace('省',''),
@@ -316,6 +397,7 @@
 								
 								s.mapList.push(obj);
 							});
+							window.localStorage.setItem(s.mapType,JSON.stringify(s.mapList));
 							s.chinaConfigure(s.mapList);
 
 							
@@ -381,20 +463,21 @@
 		        }
 			},
 			 
-         	chinaConfigure(mapList) {
-         		var s = this;
-         		if(this.myChart){
-		        	this.myChart.setOption(this.mapConfig(mapList));
-         		}
-         		else{
-			        let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置  
-			        window.onresize = myChart.resize;
-			        this.myChart = myChart;
-			        this.myChart.setOption(this.mapConfig(mapList));
-         		}
+			chinaConfigure(mapList) {
+				var s = this;
+				if(this.myChart){
+					this.myChart.setOption(this.mapConfig(mapList));
+				}
+				else{
+					let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置  
+					if(myChart){
+						window.onresize = myChart.resize;
+					}
+					this.myChart = myChart;
+					this.myChart.setOption(this.mapConfig(mapList));
+				}
 			},
 			getJsonFile(){
-				return;
 				var s = this;
 				s.mapList = [];
 				symbinUtil.ajax({
@@ -403,11 +486,15 @@
 					data:{
 						adminusername:s.userinfo.adminusername,
 						admintoken:s.userinfo.admintoken,
-						type:"provinceviews"
+						type:s.mapType === 'downloads' ?  "provincedownloads": "provinceviews"
 					},
 					success(data){
+						if(typeof data === 'string'){
+							data = JSON.parse(data);
+						}
 						if(data.getret === 0){
-							console.log(data);
+							//s.getMapData(data.list);
+
 						}
 					}
 				})
@@ -418,10 +505,10 @@
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
 			if(this.$route.params.type*1 === 0){
-				this.getMapData();
+			
 				this.getsurvey();
 				this.getRankingList();
-				this.getJsonFile();
+				this.getMapData()
 			}
 		}
 	}

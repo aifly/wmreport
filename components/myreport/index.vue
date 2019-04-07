@@ -303,10 +303,10 @@
 				isLowIE:false,
 				configList:[],
 				formUpload:{
-					tagList:[]
+					tagList:(window.config.defaultLabbel||'').split(' ')
 				},
 				formAdmin:{
-					tagList:[]
+					tagList:(window.config.defaultLabbel||'').split(' ')
 				},
 				ruleValidate: {
                      author:{

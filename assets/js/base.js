@@ -97,10 +97,13 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	textExtensions = ' xlsx, pdf, doc, ppt, xlsx, doc, docx, pdf, txt, ppt, pptx, xls, rar, css, scss,vb, zip'.split(',');
 (function () {
 	var allExtensions = imgExtensions.concat(videoExtensions).concat(textExtensions);
+	var host = 'http://h5.wenming.cn';
 	window.config = {
 		swf: './assets/ckplayer/ckplayer.swf',
-		baseUrl: 'http://h5.wenming.cn/v1',
+		baseUrl: host +'/v1',
+		host:host,
 		uploadUrl: 'http://h5.wenming.cn/wmreport/index.html#/',
+		defaultLabbel: '2019公益广告 时代楷模',
 		isRequestLocal:false,//下载页面是否请求本地的json文件。
 		"图片-zmiti":"./assets/js/img.json",
 		"视频-zmiti":"./assets/js/video.json",
@@ -154,7 +157,7 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	}
 
 	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
-		window.config.baseUrl = "https://api.symbin.cn/v1";
+		//window.config.baseUrl = "https://api.symbin.cn/v1";
 	}
 
 })();

@@ -96,7 +96,11 @@
 						adminusername:_this.username,
 						adminpwd:_this.password
 					},
+					error(){
+						_this.showLoading = false;
+					},
 					success(data){
+						_this.showLoading = false;
 						if(data.getret === 0){
 							var param = data;
 							delete param.getret;
