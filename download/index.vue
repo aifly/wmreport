@@ -234,6 +234,7 @@
 				raterReportList:[],
 				isdownloading :false,
 				checkedList:[],
+
 			}
 		},
 		components:{
@@ -595,7 +596,7 @@
 				}
                 var s = this;
                 symbinUtil.ajax({
-                    _this:s,
+					///_this:s,
                     url:window.config.baseUrl+'/wmadadmin/getipaddress',
                     data:{
 						id:ids.join(','),
@@ -707,17 +708,20 @@
 				if(window.config.isRequestLocal){
 					url = window.config[p.publicadtype]+"?t="+new Date().getTime();
 					type = 'get';
-					var data = window.localStorage.getItem(p.publicadtype);
-					if(data){
-						try{
-							var list = JSON.parse(data);
-							s.reportList = list;
-							s.totalnum = s.reportList.length;
-						}catch(e){
+					
+				}
 
-						}
+				var data = window.localStorage.getItem(p.publicadtype);
+				if(data){
+					try{
+						var list = JSON.parse(data);
+						s.reportList = list;
+						s.totalnum = s.reportList.length;
+					}catch(e){
+
 					}
 				}
+				
 				symbinUtil.ajax({
 					_this:s,
 					url,
@@ -774,7 +778,11 @@
 		},
 		mounted(){
 			var key =  this.isUser ?　'login':'adminlogin';
-			this.userinfo = symbinUtil.getUserInfo(key);
+			//console.log(this.isUser,this.isAdmin)
+			if(this.isUser || this.isAdmin){
+				this.userinfo = symbinUtil.getUserInfo(key);
+			}
+			//
 			this.getReportList(()=>{
 				var id = this.$route.params.id;
 				if(id){
