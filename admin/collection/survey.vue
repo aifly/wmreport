@@ -390,8 +390,15 @@
 						if(data.getret === 0){
 							s.mapList = [];
 							data.list.forEach((item,i)=>{
+								var name = item.province.replace('市','').replace('省','');
+								if(name.length>3){
+									name = name.substring(0,2);
+								}
+								if(item.province.indexOf('内蒙古自治区')>-1){
+									name = '内蒙古';
+								}
 								var obj = {
-									name:item.province.replace('市','').replace('省',''),
+									name,
 									value:item.num
 								};
 								
