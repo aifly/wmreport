@@ -102,6 +102,7 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 		swf: './assets/ckplayer/ckplayer.swf',
 		baseUrl: host +'/v1',
 		host:host,
+		downloadjsonfileUrl: host + '/uploads/json/alldownload_1.json',
 		uploadUrl: 'http://h5.wenming.cn/wmreport/index.html#/',
 		defaultLabbel: '2019公益广告 时代楷模',
 		isRequestLocal:false,//下载页面是否请求本地的json文件。

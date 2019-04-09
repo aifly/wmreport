@@ -37,17 +37,23 @@ var symbinUtil = {
 			opt.username = option.validate.username;
 			opt.usertoken = option.validate.usertoken;
 		}
+
+		
 		
 		$.ajax({
 			url:option.url,
 			type:option.type || 'post',
 			data:opt,
+			timeout: 20000,
 			error(){
 				option.fnError && option.fnError();
 				option.error && option.error();
-				option._this && option._this.$Message.error('服务器开小差了，请稍后重试');
+				
+				//option._this && option._this.$Message.error('服务器开小差了，请稍后重试');
 			}
 		}).done((dt)=>{
+
+			
 			option.fn && option.fn(dt);
 			option.success && option.success(dt);
 			if (dt.getret === 1000) {

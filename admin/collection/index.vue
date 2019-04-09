@@ -411,6 +411,24 @@
 				},200);
 			},
 
+			createJSON(){
+				var id = this.$route.params.id;
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmadadmin/createh5json/',
+					data:{
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername,
+						resourceid:id
+					},
+					success(data){
+						if(data.getret === 0){
+							console.log('json文件生成成功');
+						}
+					},
+				});
+			},
+
 			check(status,ids,remark=''){
 				var s = this;
 				var id = this.$route.params.id;
@@ -430,6 +448,9 @@
 						s.$Message[data.getret === 0 ? 'success':'error'](data.getmsg);
 						if(data.getret === 0){
 							s.selectAll = false;
+							if(status === 1){
+								s.createJSON();
+							}
 							s.getReportList();
 							s.checkedList.length = 0;
 							if(s.showPreview){

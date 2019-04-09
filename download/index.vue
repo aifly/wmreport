@@ -11,11 +11,11 @@
 			</header>
 			<header class="wm-collection-left-search-condition-header">
 
-				<div class='wm-download-header-label'>
+				<div class='wm-download-header-label' style="line-height:80px;">
 					<div>
 						分类：<span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span> 
 					</div>
-					<div>
+					<div v-if='false'>
 						排序：
 						<span @click.stop='searchBySort("time")' :class="{'active':sort===-1||sort === 1}">审核时间<Icon type="md-arrow-up" v-if='sort===-1' /><Icon type="md-arrow-down" v-if='sort ===1' /></span>
 						<span @click.stop='searchBySort("name")' :class="{'active':sort===2||sort === 3}">作品名称<Icon type="md-arrow-up" v-if='sort===3' /><Icon type="md-arrow-down" v-if='sort===2' /></span>
@@ -306,8 +306,8 @@
 			searchBySort(type){
 
 				if(window.config.isRequestLocal){
-					this.$Message.error('当前下载量过大，此功能暂停使用');
-					return;
+					//this.$Message.error('当前下载量过大，此功能暂停使用');
+					//return;
 				}
 
 				if(type === 'time'){
@@ -316,7 +316,7 @@
 				else{
 					this.sort = this.sort === 2 ? 3:2;
 				}
-				this.getReportList();
+				this.initJsonData();
 			},
 
 		 
@@ -324,8 +324,8 @@
 				
 				if(this.keyword){
 					if(window.config.isRequestLocal){
-						this.$Message.error('当前下载量过大，此功能暂停使用');
-						return;
+						//this.$Message.error('当前下载量过大，此功能暂停使用');
+						//return;
 					}
 					clearTimeout(this.timer);
 					this.timer = setTimeout(() => {
@@ -337,7 +337,15 @@
 						this.fieldname = this.kwType ===  '上传者' ? 'username' : this.kwType ===  '关键字'? 'searchkey' : -1;
 						this.fieldname = 'searchkey';
 						this.page = 1;
-						this.getReportList();
+
+						
+
+						///this.initJsonData();
+
+						this.reportList = this.defaultReportList.concat([]).filter((item)=>{
+							return item.filetitle.indexOf(this.keyword)>-1||item.filename.indexOf(this.keyword)>-1||item.userlabel.indexOf(this.keyword)>-1;
+						});
+						this.totalnum = this.reportList.length;
 
 					}, 400);
 				}
@@ -584,7 +592,7 @@
 					this.publicadtype = -1;
 				}
 				this.page = 1;
-				this.getReportList();
+				this.initJsonData();
 
 				
 			},
@@ -636,33 +644,20 @@
 					}
 				})
 			},
-			/*测试下载接口*/
-			gettestviews(){
-				var s = this;
-				symbinUtil.ajax({
-					url:window.config.baseUrl+'/wmadvuser/downloadfile',
-					type:'get',
-					data:{
-						/*resourceid,*/
-						id:'1913551438'
-						
-					},
-					success(data){
-						console.log(data);
-					}
-				})
-			},
-			/*测试下载接口结束*/
-			 
+			
 			getReportList(fn){
+
+				
 				var s = this;
-				s.showLoading = true;
-				s.reportList.length = 0;
+				//s.showLoading = true;
+				//s.reportList.length = 0;
 				var  p  ={
 					resourceid:s.$route.params.resourceid ||1,
 					pagenum:s.pagenum,
 					page:s.page
 				};
+
+				s.initJsonData();
 
 
 				/* var D = new Date();
@@ -701,6 +696,10 @@
 
 				//console.log(p);
 
+
+
+				return;
+
 				
 				var url = window.config.baseUrl+'/wmshare/getthefinallist/',
 					type = 'post';
@@ -708,7 +707,6 @@
 				if(window.config.isRequestLocal){
 					url = window.config[p.publicadtype]+"?t="+new Date().getTime();
 					type = 'get';
-					
 				}
 
 				var data = window.localStorage.getItem(p.publicadtype);
@@ -722,6 +720,8 @@
 					}
 				}
 				
+
+
 				symbinUtil.ajax({
 					_this:s,
 					url,
@@ -729,6 +729,8 @@
 					data:p,
 					error(){
 						s.showLoading = false;
+						window.config.isRequestLocal = true;
+						s.getReportList();
 					},
 					success(data){
 						s.showLoading = false;
@@ -773,6 +775,107 @@
 						}
 					}
 				});
+			},
+			initJsonData(fn){
+
+				var s = this;
+				s.showLoading = true;
+				s.reportList.length = 0;
+				var  p  ={
+					resourceid:s.$route.params.resourceid ||1,
+					pagenum:s.pagenum,
+					page:s.page
+				};
+
+				if(this.status !== -1){
+					p.status = this.status;
+				}
+				if(this.publicadtype !== -1){
+					p.publicadtype = this.publicadtype;
+				}
+				if(this.fieldname !== -1){
+					p[this.fieldname] = this.keyword;
+				}
+				if(this.sort !== -1){
+					p['sort'] = this.sort;
+				}
+
+				var url = window.config.downloadjsonfileUrl,
+				
+				type = 'get';
+
+				///url = './assets/js/alldownload.json?t='+new Date().getTime();
+
+			 
+				var data = window.localStorage.getItem(p.publicadtype);
+				if(data){
+					try{
+						var list = JSON.parse(data);
+						s.reportList = list.filter(item=>{
+							return item.publicadtype === p.publicadtype;
+						});
+						s.totalnum = s.reportList.length;
+					}catch(e){
+
+					}
+				}
+
+
+				symbinUtil.ajax({
+					url,
+					type,
+					error(){
+						s.showLoading = false;
+						//window.config.isRequestLocal = true;
+						console.log('err');
+						//s.getReportList();
+					},
+					success(data){
+						s.showLoading = false;
+						if(data.getret === 0){
+							s.currentPage = 1;
+							 
+							
+							s.reportList = data.list.filter((item,i)=>{
+								return item.publicadtype === p.publicadtype;
+							});
+							s.defaultReportList = s.reportList.concat([]);
+							s.totalnum = window.config.isRequestLocal? data.list.length :data.totalnum.num;
+							s.totalnum = s.reportList.length;
+							window.localStorage.setItem(p.publicadtype,JSON.stringify(data.list));
+							var ids = [];
+							s.reportList.forEach((item)=>{
+								item.filepath1 = item.filepath.replace('uploads/','');
+								ids.push(item.id);
+								item.checked = false;
+								s.checkedList.forEach((ls)=>{
+									if(ls.id === item.id){
+										item.checked = true;
+									}
+								})
+							});
+
+							s.getviews('views',p.resourceid,ids);
+							s.saveIPinfo('views',p.resourceid,ids);
+						
+							///s.selectAll  = false;
+							if(s.reportList.length){
+
+								//s.currentReportIndex = 0;
+
+								s.formAdmin = s.reportList[s.currentReportIndex];
+								if(!s.formAdmin){
+									s.currentReportIndex =  0;
+									s.formAdmin = s.reportList[s.currentReportIndex];
+								}
+								/* if(this.formAdmin && this.formAdmin.userlabel){
+									this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
+								} */
+							}
+							fn && fn();
+						}
+					}
+				});
 			}
 			
 		},
@@ -783,7 +886,10 @@
 				this.userinfo = symbinUtil.getUserInfo(key);
 			}
 			//
-			this.getReportList(()=>{
+
+			var s = this;
+		
+			this.initJsonData(()=>{
 				var id = this.$route.params.id;
 				if(id){
 					var index = -1,
@@ -794,6 +900,7 @@
 							report = item;
 						}
 					});
+					
 					index > -1 && this.previewReport(index,report,true);
 					
 				}
@@ -819,12 +926,6 @@
 					clearInterval(t);
 				}
 			},30)
-
-			
-
-
-			
-
 
 			window.onkeydown = (e)=>{
 				if(e.keyCode === 27 ){
