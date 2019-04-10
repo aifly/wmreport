@@ -65,11 +65,21 @@ const router = new VueRouter({
 				isUser:true
 			}
 		}
-
-		
 	]
 });
-
+router.beforeEach((to, from, next) => { //导航守卫。
+	var loginObj = {};
+	try {
+		loginObj = JSON.parse(localStorage.getItem('login'));
+	} catch (error) {
+		window.location.hash = '/login';
+	}
+	if (loginObj === null) {
+		window.location.hash = '/login';
+	}else{
+	}
+	next();
+});
 new Vue({
 	router,
 	data: {

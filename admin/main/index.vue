@@ -116,7 +116,6 @@
             
             var userinfo = symbinUtil.getUserInfo();
       
-            console.log(this,'userinfo')
 
             this.userinfo = userinfo; 
 

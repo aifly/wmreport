@@ -6,40 +6,7 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        *{margin: 0;padding: 0;}
-        ul,li{
-            list-style: none;
-        }
-        img{
-            width: 100%;
-            height: auto;
-        }
-        #wm-ul li{
-            float:left;
-            width: 80px;
-            height: 121px;
-            position:relative;
-            margin-right: 20px;
-            background:#eee;
-            
-        }
-        #wm-ul li a{
-            display:block;
-            height: 100%;
-            width: 100%;
-            -webkit-display:flex;
-            display:flex;
-            justify-content: center;
-            -webkit-justify-content: center;
-            
-        }
-        #wm-ul li img{
-           display: block;
-           width: auto;
-           height: auto;
-           max-width: 100%;
-           max-height: 100%;
-        }
+       
     </style>
 </head>
 <body>
@@ -49,30 +16,78 @@
     <script src='http://images.wenming.cn/web_wenming/images/public-jquery-1.9.1.min.js'></script>
 
     <script>
-        $(function(){
-            $.ajax({
-                url:'http://api.symbin.cn/v1/wmshare/getresourceslist',
-                type:'post',
-                data:{
-                    resourceid:1
-                },
-                success:function(data){
-                    if(data.getret === 0){
-                        var arr = [];
-                        for(var i =0 ;i<3;i++){
-                            var index = (data.list.length*Math.random())|0;
-                            arr.push(data.list[index]);
-                        }
-                        var html = '';
-                        for(var i = 0,len = arr.length;i<len;i++){
-                            html+='<li><a target="_blank" href="http://h5.zmiti.com/public/wmreport/download.html"><img src="'+arr[i].mobilethum+'"/></a></li>'
-                        }
-                        $('#wm-ul').html(html);
+    
+        window.addEventListener('error', function (msg, url, line, col, error){
+        //没有URL不上报！上报也不知道错误
 
-                    }
+                
+   
+
+                if (msg != "Script error." && !url) {
+                   // return true;
                 }
-            })
+                //采用异步的方式
+                //我遇到过在window.onunload进行ajax的堵塞上报
+                //由于客户端强制关闭webview导致这次堵塞上报有Network Error
+                //我猜测这里window.onerror的执行流在关闭前是必然执行的
+                //而离开文章之后的上报对于业务来说是可丢失的
+                //所以我把这里的执行流放到异步事件去执行
+                //脚本的异常数降低了10倍
+
+                setTimeout(function () {
+                var data = {};
+                //不一定所有浏览器都支持col参数
+                col = col || (window.event && window.event.errorCharacter) || 0;
+
+                data.url = url;
+                data.line = line;
+                data.col = col;
+                
+                if(typeof msg === 'object'){
+                    //var mymsg = JSON.stringify(msg);
+                    data.message = msg.message;
+                    data.filename = msg.filename;
+                    data.lineno = msg.lineno;
+                    data.colno = msg.colno;
+                    data.error = msg.error;
+                }
+                else{
+                    data.msg = msg;
+                }
+
+
+                console.log(data)
+               
+                var u = window.navigator.userAgent;
+                data.userAgent = u;
+
+                data.localStorage = window.localStorage.getItem('login') || window.localStorage.getItem('adminlogin') || '无';
+                
+                $.ajax({
+                    url: 'http://h5.wenming.cn/v1/wmshare/h5_view/',
+                    type: 'post',
+                    data: {
+                        h5id: 'wm-gongyiguanggao-error-info',
+                        subh5id: 'wm-gongyiguanggao' + new Date().getTime(),
+                        name: '文明网公益广告错误日志',
+                        appsecret:'c9GxtUre3kOJCgvp',
+                        content: JSON.stringify(data)
+                    },
+                    success: function (data) {
+                        console.log(data, 'h5_view');
+                    }
+                })
+
+
+
+                //把data上报到后台！
+                }, 0);
+
+                return true;
         });
+
+
+       
     </script>
 </body>
 </html>

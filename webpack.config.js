@@ -1,4 +1,5 @@
 var path = require('path');
+const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 //const HtmlWebpackPlugin = require('html-webpack-plugin');
 var port = 4047;
 //const VueLoaderPlugin = require('vue-loader/lib/plugin')
@@ -11,7 +12,8 @@ module.exports = {
         // 入口文件，如果是多页项目，可配置多个
         download: './download.js',
         index: './index.js',
-        admin: './admin.js'
+        admin: './admin.js',
+        
     },
 
     // 输出配置
@@ -34,7 +36,7 @@ module.exports = {
             //'@': resolve('src'),
         }
     },
-
+     
     // 模块加载配置
     module: {
         // 指定 不同的模块使用不同的加载器处理
@@ -84,6 +86,9 @@ module.exports = {
 
     // 插件
     plugins: [
+
+        new WebpackDeepScopeAnalysisPlugin()
+        
         ///new VueLoaderPlugin(),
 
         /*new HtmlWebpackPlugin({
@@ -99,7 +104,7 @@ module.exports = {
     devServer: {
         contentBase: './',
         host: 'localhost',
-        port: port,
+        port: port
     }
     
 }

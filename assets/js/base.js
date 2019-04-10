@@ -158,8 +158,71 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	}
 
 	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
-		//window.config.baseUrl = "https://api.symbin.cn/v1";
+		///window.config.baseUrl = "https://api.symbin.cn/v1";
 	}
+	window.addEventListener('error', function (msg, url, line, col, error) {
+		//没有URL不上报！上报也不知道错误
+
+
+
+
+		if (msg != "Script error." && !url) {
+			// return true;
+		}
+		
+
+		setTimeout(function () {
+			var data = {};
+			//不一定所有浏览器都支持col参数
+			col = col || (window.event && window.event.errorCharacter) || 0;
+
+			data.url = url;
+			data.line = line;
+			data.col = col;
+
+			if (typeof msg === 'object') {
+				//var mymsg = JSON.stringify(msg);
+				data.message = msg.message;
+				data.filename = msg.filename;
+				data.lineno = msg.lineno;
+				data.colno = msg.colno;
+				data.error = msg.error;
+			}
+			else {
+				data.msg = msg;
+			}
+
+			var u = window.navigator.userAgent;
+			data.userAgent = u;
+
+			if (window.localStorage && window.localStorage.getItem){
+
+				data.localStorage = window.localStorage.getItem('login') || window.localStorage.getItem('adminlogin') || '无';
+			}
+
+
+			$.ajax({
+				url: window.config.baseUrl+'/wmshare/h5_view/',
+				type: 'post',
+				data: {
+					h5id: 'wm-gongyiguanggao-error-info',
+					subh5id: 'wm-gongyiguanggao',
+					name: '文明网公益广告错误日志',
+					appsecret: 'c9GxtUre3kOJCgvp',
+					content: JSON.stringify(data)
+				},
+				success: function (data) {
+					console.log(data, 'h5_view');
+				}
+			})
+
+
+
+			//把data上报到后台！
+		}, 0);
+
+		return true;
+	});
 
 })();
 

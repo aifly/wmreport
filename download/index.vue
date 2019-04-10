@@ -800,11 +800,11 @@
 					p['sort'] = this.sort;
 				}
 
-				var url = window.config.downloadjsonfileUrl,
+				var url = window.config.downloadjsonfileUrl+'?t='+new Date().getTime(),
 				
 				type = 'get';
 
-				///url = './assets/js/alldownload.json?t='+new Date().getTime();
+				//url = './assets/js/alldownload.json?t='+new Date().getTime();
 
 			 
 				var data = window.localStorage.getItem(p.publicadtype);
