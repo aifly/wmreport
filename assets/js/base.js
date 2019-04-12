@@ -195,11 +195,16 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 			var u = window.navigator.userAgent;
 			data.userAgent = u;
 
+			var name = '文明网公益广告下载页面错误日志';
 			if (window.localStorage && window.localStorage.getItem){
-
 				data.localStorage = window.localStorage.getItem('login') || window.localStorage.getItem('adminlogin') || '无';
+				if( window.localStorage.getItem('login')){
+					name = '文明网公益广告用户上传端错误日志';
+				}
+				if (window.localStorage.getItem('adminlogin')) {
+					name = '文明网公益广告管理端错误日志';
+				}
 			}
-
 
 			$.ajax({
 				url: window.config.baseUrl+'/wmshare/h5_view/',
@@ -207,7 +212,7 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 				data: {
 					h5id: 'wm-gongyiguanggao-error-info',
 					subh5id: 'wm-gongyiguanggao',
-					name: '文明网公益广告错误日志',
+					name: name,
 					appsecret: 'c9GxtUre3kOJCgvp',
 					content: JSON.stringify(data)
 				},
