@@ -328,12 +328,12 @@
 						status:s.mapType === 'downloads' ? 2 : 1
 					};
 					symbinUtil.ajax({
-						url:window.config.baseUrl+'/wmadadmin/getprovincialip',
+						url:window.config.baseUrl+'/wmadadmin/createh5json',
 						data:p,
 						success(data){
 							s.loading = false;
 							if(data.getret === 0){
-								s.$Message.success('刷新成功!!!');
+							/* 	s.$Message.success('刷新成功!!!');
 								s.mapList = [];
 								data.list.forEach((item,i)=>{
 									var obj = {
@@ -341,9 +341,9 @@
 										value:item.num
 									};
 									
-									s.mapList.push(obj);
-								});
-								window.localStorage.setItem(s.mapType,JSON.stringify(s.mapList));
+									s.mapList.push(obj); 
+								});*/
+								//window.localStorage.setItem(s.mapType,JSON.stringify(s.mapList));
 								s.chinaConfigure(s.mapList);
 								s.getMapData();
 								s.getRankingList();
