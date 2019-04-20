@@ -1,0 +1,201 @@
+/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {
+    background-color: #fff;
+    border-color: #bf1616;
+    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);
+}*/
+.lt-full {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.zmiti-text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
+}
+
+.zmiti-play {
+  width: .8rem;
+  height: .8rem;
+  border-radius: 50%;
+  position: fixed;
+  z-index: 1000;
+  right: .5rem;
+  top: .5rem;
+}
+
+.zmiti-play.rotate {
+  -webkit-animation: rotate 5s linear infinite;
+  animation: rotate 5s linear infinite;
+}
+
+.symbin-left {
+  float: left !important;
+}
+
+.symbin-right {
+  float: right !important;
+}
+
+@-webkit-keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.wm-clip-main-ui .wm-report-move-C {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div {
+  min-height: 400px;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1), .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) {
+  flex: 1;
+  -webkit-flex: 1;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) header, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) header {
+  font-size: 14px;
+  color: #000;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) .wm-report-checked-work-list, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) .wm-report-checked-work-list {
+  height: 400px;
+  overflow: hidden;
+  padding: 2px 0;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul {
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  height: 50px;
+  margin-top: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-ico, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-ico {
+  margin-right: 10px;
+  background: rgba(250, 184, 46, 0.2);
+  width: 40px;
+  height: 40px;
+  position: relative;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 10px;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name {
+  position: relative;
+  flex: 1;
+  font-size: 14px;
+  -webkit-box-flex: 1;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name .wm-report-work-staus, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name .wm-report-work-staus {
+  position: absolute;
+  right: 0;
+  font-size: 20px;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name:before, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name:after, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name:before, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  left: 0;
+  background: #ddd;
+  bottom: 14px;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name:after, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name:after {
+  background: #fab82e;
+  -webkit-transform: scale(0, 1);
+  transform: scale(0, 1);
+  -webkit-transform-origin: left;
+  transform-origin: left;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name.active:after, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name.active:after {
+  -webkit-transform: scale(1, 1);
+  transform: scale(1, 1);
+  -webkit-transition: 1s;
+  transition: 1s;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div:nth-of-type(1) ul li img, .wm-clip-main-ui .wm-report-move-C > div:nth-of-type(3) ul li img {
+  width: 20px;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div.wm-report-move-ico {
+  width: 40px;
+  margin: 0 10px;
+  position: relative;
+}
+
+.wm-clip-main-ui .wm-report-move-C > div.wm-report-move-ico img {
+  position: absolute;
+  top: 50%;
+  margin-top: -10px;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C {
+  height: 400px;
+  background: #f1f1f1;
+  width: 100%;
+  border-radius: 14px;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C ol {
+  padding: 10px;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C ol li {
+  cursor: pointer;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid #fff;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  height: 50px;
+  line-height: 46px;
+  background: #fff;
+  justify-content: flex-start;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C ol li.active {
+  border: 1px solid #f5a420;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C ol li div {
+  margin: 0 10px;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C ol li div:nth-of-type(1) {
+  margin-left: 20px;
+}
+
+.wm-clip-main-ui .wm-report-move-C .wm-report-resource-C ol li img {
+  width: 40px;
+  background: green;
+  border-radius: 50%;
+}

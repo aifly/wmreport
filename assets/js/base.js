@@ -25,11 +25,12 @@ var imgs = {
 	logout:'./assets/images/logout.png',
 	file:'./assets/images/file.png',
 	uncheck:'./assets/images/uncheck.png',
-	uncheck1:'./assets/images/uncheck1.png',
+	uncheck1:'./assets/images/uncheck2.png',
 	pass:'./assets/images/pass.png',
-	pass1:'./assets/images/pass1.png',
+	pass1:'./assets/images/pass3.png',
 	brower:'./assets/images/brower1.png',
 	pass2:'./assets/images/pass2.png',
+	move:'./assets/images/move.png',
 	reject:'./assets/images/reject.png',
 	reject1:'./assets/images/reject1.png',
 	user:'./assets/images/user.png',
@@ -158,14 +159,11 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	}
 
 	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
-		///window.config.baseUrl = "https://api.symbin.cn/v1";
+		window.config.baseUrl = "https://api.symbin.cn/v1";
+		window.config.downloadjsonfileUrl = "https://api.symbin.cn/uploads/json/alldownload_1.json";
 	}
 	window.addEventListener('error', function (msg, url, line, col, error) {
 		//没有URL不上报！上报也不知道错误
-
-
-
-
 		if (msg != "Script error." && !url) {
 			// return true;
 		}

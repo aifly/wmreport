@@ -70,7 +70,7 @@
 			</div>
 		</div>
 
-		<section v-if='type*1 === 0' class="wm-report-check-in-mask" :class="{'hide':nextReport}">
+		<section v-if='type*1 === 1' class="wm-report-check-in-mask" :class="{'hide':nextReport}">
 			<div>
 				<Input placeholder="请输入拒绝的原因(非必填)" :disabled='!!reportList[currentReportIndex].raterid' type="textarea" v-model="reportList[currentReportIndex].remark"/>
 				<span v-if='!reportList[currentReportIndex].remark && false' class="wm-collection-placeholder">请输入拒绝的原因(非必填)</span>

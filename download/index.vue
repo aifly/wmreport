@@ -635,6 +635,7 @@
 								s.reportList.forEach((item,i)=>{
 									ids.forEach((id,k)=>{
 										if(item.id === id){
+											item.downloads *= 1;
 											item.downloads += 1;
 										}
 									})

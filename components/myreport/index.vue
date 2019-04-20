@@ -21,6 +21,21 @@
 							 上报{{menu.split('-')[0]}}
 						 </li>
 					 </ul>
+					 <div class='wm-report-operator-btns'>
+						 <div><Checkbox v-model="selectAll">全选</Checkbox></div>
+						 <div size='small' class='wm-report-copy'>复制到其它库</div>
+						 <div size='small' class='wm-report-copy'>剪切到其它库</div>
+						 <div size='small' class='wm-report-del' >
+							 <Poptip	
+								style="color:#000"
+								confirm
+								title="确定要删除此作品吗?"
+								@on-ok="deleteReport('all')"
+								>
+								<div class="wm-del-ico">删除</div>
+							</Poptip>
+						 </div>
+					 </div>
 					 <a :href="'#/download/'+$route.params.id">查看全部>></a>
 				</header>
 				<section>
@@ -34,16 +49,19 @@
 								<div class="wm-upload"  @click='showUploadDialog = true' ></div>
 							</div>
 						</div>
-						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-60-20- 80+'px'}">
+						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-70-20- 80+'px'}">
 							<ul>
-								<li @dblclick="previewReport(report)" @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+								<li @dblclick="previewReport(report)" @contextmenu.prevent='showContextMenuDialog(report,$event)' @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
 									<div class="wm-report-status" v-if='report.status === 0'>
 										<img :src="imgs.uncheck1" alt="">
+									</div>
+									<div class="wm-report-check" @click="toggleChecked(i)">
+										<Checkbox v-model="report.checked"></Checkbox>
 									</div>
 									<div  class="wm-report-status" v-if='report.status === 1'>
 										<img :src="imgs.pass1" alt="">
 									</div>
-									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
+									<div :class="{'active':i === currentReportIndex}" class='wm-report-item-bg' >
 										<img :src="report.mobilethum||imgs.poster" alt="">
 									</div>
 									<span v-if='!report.isLoaded' class="wm-file-progress">{{report.process}}</span>
@@ -55,7 +73,7 @@
 										</span>
 										被管理员发回，不可用
 									</span>
-									<div class="wm-report-action" v-if='report.isLoaded && !isUpLoading'>
+									<div class="wm-report-action" v-if='report.isLoaded && !isUpLoading && false'>
 										<div class="wm-report-action-icon"></div>
 										<ul>
 											<li @click='showReportDetail(report)'>
@@ -191,6 +209,34 @@
 			</Form>
 		</Modal>
 
+		<div class='wm-report-context-menu-ui'  v-if='showContextMenu' >
+			<div class='lt-full' @mousedown= 'showContextMenu = false'></div>
+			<div class="wm-report-context-menu-C" :style="contextMenuStyle">
+				<ul>
+					<li @click='showReportDetail()' >
+						<Icon type="ios-create"  /> 编辑
+					</li>
+					<li @click="showClipDialog = true">
+						<Icon type="md-folder" />复制
+					</li>
+					<li >
+						<Icon type="ios-folder-open" />剪切
+					</li>
+					<li>
+						<Poptip	
+							style="color:#000;z-index:200"
+							confirm
+							title="确定要删除此作品吗?"
+							@on-ok="deleteReport('single')"
+							>
+							<div class="wm-del-ico"><Icon type="ios-trash-outline" /> 删除</div>
+						</Poptip>
+						
+					</li>
+				</ul>
+			</div>
+		</div>
+
 
 		<Modal
 			:footer-hide='true'
@@ -238,7 +284,50 @@
 		</div>
 
 
+		
 
+		<!-- <Modal
+			v-model="showClipDialog"
+			title="编辑作品信息"
+			@on-ok="ok"
+			width='600'
+			@on-cancel="cancel">
+			<div class='wm-report-move-C'>
+				<div class='wm-report-checked-work-ui'>
+					<header>我要{{moveType===1?'复制':'剪切'}}的内容</header>
+					<div class='wm-report-checked-work-list'>
+						<ul>
+							<li v-for='(report,i) in reportList' :key="i">
+								<div class='wm-report-work-ico'><img :src="imgs.imgIco" alt=""></div>
+								<div class='wm-report-work-name' :class='{"active":report.isDone}'>
+									{{report.filetitle}}
+									<Icon class='wm-report-work-staus' :type="report.isDone?'ios-checkmark-circle':'ios-close-circle'" />
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class='wm-report-move-ico'>
+					<img :src="imgs.move" alt="">
+				</div>
+				<div class='wm-report-resource-ui'>
+					<header>目标库</header>
+					<div class='wm-report-resource-C'>
+						<ol>
+							<li @click='destinationid = resource.resourceid' v-for='(resource,i) in resourceList' :key="i" :class="{'active':destinationid === resource.resourceid}">
+								<div>
+									<img :style="{background:WmColors[i]}" :src="resource.resourceicopath" alt="">
+								</div>
+								<div>
+									{{resource.resourcecnname}}
+								</div>
+							</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</Modal> -->
+		<Transfer :moveType='moveType' :id='currentReport.id' :checkedList='reportList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
 	</div>
 </template>
 
@@ -249,7 +338,10 @@
 	import Vue from 'vue';
 	import QRCode from '../lib/qrcode';
 	import Detail from '../../common/mask/detail';
+	import WmColors from '../lib/color';
 
+	import Transfer from '../../common/transfer';
+	
 	var json = {};
 	export default {
 		props:['obserable'],
@@ -258,11 +350,19 @@
 			return{
 				showUploadDialog:false,
 				visible:false,
+				showClipDialog:false,
 				imgs:window.imgs,
+				WmColors,
+				moveType:1,//文件迁移类型1：复制 2:剪切
+				selectAll:false,
 				isUpLoading:false,
+				showContextMenu:false,
 				tag:"",
+				destinationid:-1,
+				currentReport:{},
 				beforeUploadTag:"",
 				currentType:0,
+				resourceList:[],
 				accepts:[
 					{
 						title: 'Images',
@@ -295,6 +395,10 @@
 				showReportTip:false,
 				defaultReportList:[],
 				hasAuth:false,
+				contextMenuStyle:{
+					left:0,
+					top:0
+				},
 				menus:[],
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				split1: 0.8,
@@ -314,13 +418,14 @@
 						 trigger:'blur'
 					 }
                 },
-				
+				checkedList:[],
 				reportList:[],
 				userinfo:{}
 			}
 		},
 		components:{
-			Detail
+			Detail,
+			Transfer
 		},
 
 		beforeCreate(){
@@ -331,6 +436,36 @@
 			///this.validate = validate;
 		},
 		watch:{
+
+			showClipDialog:{
+				handler(val){
+					this.showContextMenu = false;
+					if(val){
+						this.resourceList =  Vue.obserable.trigger({type:'getResourceList'});
+						console.log(this.resourceList)
+					}
+				}
+			},
+
+			showContextMenu(val){
+				if(!val){
+					this.curentReport  = {};
+				}
+			},
+			selectAll(val){
+
+				var len = this.reportList.length;
+				this.reportList.forEach((item)=>{
+					item.checked = val;
+					if(val){
+						this.checkedList.push(item);
+					}
+					else{
+						this.checkedList.length = 0;
+					}
+				});
+
+			},
 			showUploadDialog(val){
 				this.configList.forEach((item)=>{
 					if(item.fieldname === 'previewurl' && this.menus[this.currentType] === 'h5-zmiti'){
@@ -357,12 +492,14 @@
 			
 
 
+
 			this.userinfo = symbinUtil.getUserInfo();
 			this.getAuth();
 			this.getMyreportList(()=>{
 				this.changeCurrentType(0,'first');
 			});
 			var {obserable} = Vue;
+			
 			var t = setInterval(()=>{
 				
 				var id  = this.$route.params.id;
@@ -412,6 +549,16 @@
 		},
 		
 		methods:{
+
+
+			showContextMenuDialog(report,e){
+				this.contextMenuStyle = {
+					left:e.pageX + 'px',
+					top:e.pageY + 'px'
+				};
+				this.currentReport = report;
+				this.showContextMenu = true;
+			},
 
 			getAuth(){
 				var id = this.$route.params.id;
@@ -508,13 +655,46 @@
 
 
 			},
+			toggleChecked(index){
+				var isChecked = !this.reportList[index].checked;
+				this.reportList[index].checked = isChecked;
+				this.reportList = this.reportList.concat([]);
+				if(isChecked){
+					this.checkedList.push(this.reportList[index]);
+				}else{
+					this.checkedList.forEach((item,i)=>{
+						if(item.id === this.reportList[index].id){
+							this.checkedList.splice(i,1);
+						}
+					});
+				}
+			},
 
-			deleteReport(i){
+			deleteReport(type='single'){
 				if(this.isUpLoading){
 					return;
 				}
+
 				var s = this;
 				var id = this.$route.params.id;
+				var ids = [];
+
+				if(type === 'single'){
+					ids = [this.currentReport.id];
+				}
+				else if(type === 'all'){//批量删除
+					this.checkedList.map((item)=>{
+						ids.push(item.id);
+					})
+				}
+
+
+				if(ids.length<=0){
+					this.$Message.warning('请选择一个要删除的文件');
+					return;
+				}
+
+
 				symbinUtil.ajax({
 					_this:s,
 					url:window.config.baseUrl+'/wmadvuser/delresource/',
@@ -522,13 +702,14 @@
 						username:s.userinfo.username,
 						usertoken:s.userinfo.accesstoken,
 						resourceid:id,
-						id:s.formAdmin.id
+						id:ids.join(',')
 					},
 					success(data){
 						s.$Message[data.getret === 0?'success':'error'](data.getmsg); 
-						s.reportList.splice(i,1);
+						//s.reportList.splice(i,1);
 
-						s.currentReportIndex  = s.reportList.length -1;
+
+						//s.currentReportIndex  = s.reportList.length -1;
 						s.getMyreportList();
 						
 					}
@@ -684,10 +865,14 @@
 				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 				//this.currentReport = report;
 			},
-			showReportDetail(report){
+			showReportDetail(){
+				
+				var report = this.currentReport;
 				if(this.isUpLoading){
 					return;
 				}
+
+				this.showContextMenu = false;
 				this.visible = true;
 				this.formAdmin = report;
 				this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
@@ -797,6 +982,20 @@
 									});
 									s.reportList = data.list.concat([]);
 									s.defaultReportList =  JSON.stringify(data.list);
+									var ids = [];
+									
+									s.reportList.forEach((item)=>{
+										ids.push(item.id);
+										item.checked = false;
+										s.checkedList.forEach((ls)=>{
+											if(ls.id === item.id){
+												item.checked = true;
+											}
+										})
+									});
+
+									s.getviews('views',id,ids);
+									s.saveIPinfo('views',id,ids);
 
 									window.list=  JSON.stringify(data.list);
 									
@@ -818,6 +1017,52 @@
 					
 				},20)
 
+			},
+
+			saveIPinfo(key='views',resourceid,ids){
+                var s = this;
+                symbinUtil.ajax({
+                    _this:s,
+                    url:window.config.baseUrl+'/wmadadmin/getipaddress',
+                    data:{
+						id:ids.join(','),
+						field:key,
+						resourceid
+                    },
+                    success(data){
+                        
+                    }
+                })
+            },
+
+
+			getviews(key='views',resourceid,ids){
+				if(ids.length<=0){
+					return;
+				}
+				var s = this;
+				symbinUtil.ajax({
+					url:window.config.baseUrl+'/wmshare/getviews',
+					data:{
+						resourceid,
+						id:ids.join(','),
+						field:key
+					},
+					success(data){
+						console.log(data);
+						if(data.getret === 0){
+							if(key === 'downloads'){
+								s.reportList.forEach((item,i)=>{
+									ids.forEach((id,k)=>{
+										if(item.id === id){
+											item.downloads += 1;
+										}
+									})
+								})
+							}
+						}
+					}
+				})
 			},
 
 
@@ -1001,10 +1246,10 @@
 					
 				});
 				// 文件上传过程中创建进度条实时显示。
+					var index = -1;
 				uploader.on('uploadProgress', function (file, percentage) {
 
 					
-					var index = -1;
 					var scale = (percentage * 100|0);
 					s.reportList.forEach((item,i)=>{
 						if(item.reportid === file.id){
@@ -1014,7 +1259,8 @@
 								setTimeout(()=>{
 									item.isLoaded = true;
 									s.reportList = s.reportList.concat([]);
-								},500)
+									s.getMyreportList();
+								},1500)
 							}
 						}
 					});

@@ -160,20 +160,34 @@
                         if(data.getret === 0){
                                 s.sourceList = data.list;
 
+                                obserable.on('getResourceList',()=>{
+                                    return data.list.concat([]);
+                                })
+                                
+                               
+
                                 if(data.list.length<=0){
                                     window.location.hash = '#/user/';
                                 }
                                
                                 obserable.on("getCurrentSourceId",()=>{
                                     return data.list[0].resourceid;
-                                })
+                                }) ;
+                               
+
                                 obserable.on("getFeildList",(index)=>{
                                     var obj = {};
                                     data.list.forEach((item)=>{
+                                       
                                         if(item.resourceid === index){
                                             obj = item;
                                         }
                                     })
+
+                                    if(!obj.tablefield){
+                                        return {};
+                                    }
+
                                     return JSON.parse(obj.tablefield).fieldlist;
                                 })
                             }
