@@ -197,7 +197,7 @@
   width: 400px;
   height: 30px;
   line-height: 30px;
-  z-index: 50000;
+  z-index: 1000;
   display: flex;
   display: -webkit-flex;
   flex-flow: row;

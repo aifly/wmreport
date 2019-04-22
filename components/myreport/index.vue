@@ -216,10 +216,10 @@
 					<li @click='showReportDetail()' >
 						<Icon type="ios-create"  /> 编辑
 					</li>
-					<li @click="showClipDialog = true">
+					<li @click="showClipDialog = true;moveType = 1">
 						<Icon type="md-folder" />复制
 					</li>
-					<li >
+					<li @click="showClipDialog = true;moveType = 2">
 						<Icon type="ios-folder-open" />剪切
 					</li>
 					<li>
@@ -282,52 +282,8 @@
 		<div class="wm-report-tips lt-full" v-if='showReportTip'>
 			<img :src="imgs.tip" alt="" @click="showReportTip = false">
 		</div>
-
-
-		
-
-		<!-- <Modal
-			v-model="showClipDialog"
-			title="编辑作品信息"
-			@on-ok="ok"
-			width='600'
-			@on-cancel="cancel">
-			<div class='wm-report-move-C'>
-				<div class='wm-report-checked-work-ui'>
-					<header>我要{{moveType===1?'复制':'剪切'}}的内容</header>
-					<div class='wm-report-checked-work-list'>
-						<ul>
-							<li v-for='(report,i) in reportList' :key="i">
-								<div class='wm-report-work-ico'><img :src="imgs.imgIco" alt=""></div>
-								<div class='wm-report-work-name' :class='{"active":report.isDone}'>
-									{{report.filetitle}}
-									<Icon class='wm-report-work-staus' :type="report.isDone?'ios-checkmark-circle':'ios-close-circle'" />
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div class='wm-report-move-ico'>
-					<img :src="imgs.move" alt="">
-				</div>
-				<div class='wm-report-resource-ui'>
-					<header>目标库</header>
-					<div class='wm-report-resource-C'>
-						<ol>
-							<li @click='destinationid = resource.resourceid' v-for='(resource,i) in resourceList' :key="i" :class="{'active':destinationid === resource.resourceid}">
-								<div>
-									<img :style="{background:WmColors[i]}" :src="resource.resourceicopath" alt="">
-								</div>
-								<div>
-									{{resource.resourcecnname}}
-								</div>
-							</li>
-						</ol>
-					</div>
-				</div>
-			</div>
-		</Modal> -->
-		<Transfer :moveType='moveType' :id='currentReport.id' :checkedList='reportList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+ 
+		<Transfer @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
 	</div>
 </template>
 
@@ -442,7 +398,14 @@
 					this.showContextMenu = false;
 					if(val){
 						this.resourceList =  Vue.obserable.trigger({type:'getResourceList'});
-						console.log(this.resourceList)
+						this.reportList.forEach((item)=>{
+							item.checked = false;
+							this.checkedList = this.checkedList.slice(0,0);
+						})
+						this.currentReport.checked = true;
+						//this.reportList = this.reportList.concat([])
+						this.checkedList.push(this.currentReport);
+						
 					}
 				}
 			},
@@ -550,7 +513,9 @@
 		
 		methods:{
 
-
+			closeClipDialog(){
+				this.showClipDialog = false;
+			},
 			showContextMenuDialog(report,e){
 				this.contextMenuStyle = {
 					left:e.pageX + 'px',
@@ -674,6 +639,8 @@
 				if(this.isUpLoading){
 					return;
 				}
+
+				this.showContextMenu = false;
 
 				var s = this;
 				var id = this.$route.params.id;
@@ -1093,6 +1060,7 @@
 				}
 				this.p = p;
 				if(s.uploader){
+					
 					s.uploader.destroy();
 				}
 				var accepts  =  s.accepts;

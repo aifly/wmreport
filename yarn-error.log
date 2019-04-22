@@ -1,5 +1,5 @@
 Arguments: 
-  F:\Program Files\nodejs\node.exe C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js start
+  F:\Program Files\nodejs\node.exe C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js star
 
 PATH: 
   C:\Users\13910\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\13910\bin;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files\Git\cmd;C:\Program Files\TortoiseSVN\bin;C:\Program Files (x86)\MySQL\MySQL Fabric 1.5 & MySQL Utilities 1.5;C:\Program Files (x86)\MySQL\MySQL Fabric 1.5 & MySQL Utilities 1.5\Doctrine extensions for PHP;F:\xuchang2018\tools\Microsoft VS Code\bin;C:\WINDOWS\System32\OpenSSH;F:\Program Files\nodejs;C:\Ruby25-x64\bin;C:\Users\13910\AppData\Local\Microsoft\WindowsApps;F:\install\Microsoft VS Code\bin;F:\mysql\MySQL Server 5.5\bin;F:\xuchang2018\tools\Microsoft VS Code\bin;F:\Anaconda3;F:\Anaconda3\Scripts;F:\Program Files\nodejs;C:\Users\13910\AppData\Roaming\npm;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
@@ -21,7 +21,8 @@ npm manifest:
     "main": "index.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "webpack-dev-server --hot --inline --port 4047  --mode development"
+      "start": "webpack-dev-server --hot --inline --port 4047  --mode development",
+      "build": "webpack -w --mode production --config webpack.config.build.js"
     },
     "author": "",
     "license": "ISC",
@@ -59,7 +60,8 @@ npm manifest:
       "vue-js-tap": "^1.2.3",
       "vue-router": "^3.0.1",
       "vue-style-loader": "^3.0.1",
-      "vue-touch": "^1.1.0"
+      "vue-touch": "^1.1.0",
+      "webpack-deep-scope-plugin": "^1.6.0"
     },
     "devDependencies": {
       "@babel/core": "^7.3.3",
@@ -71,6 +73,7 @@ npm manifest:
       "babel-preset-env": "^1.7.0",
       "extend-shallow": "^3.0.2",
       "html-webpack-plugin": "^2.30.1",
+      "purifycss-webpack": "^0.7.0",
       "vue": "^2.6.6",
       "vue-loader": "^14.2.2",
       "vue-template-compiler": "^2.6.6",
@@ -836,7 +839,7 @@ Lockfile:
     version "3.4.0"
     resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-3.4.0.tgz#4b831e7b531415a7cc518cd404e73f6193c6349d"
   
-  ajv@^4.9.1:
+  ajv@^4.11.2, ajv@^4.9.1:
     version "4.11.8"
     resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.11.8.tgz#82ffb02b29e662ae53bdc20af15947706739c536"
     dependencies:
@@ -2867,6 +2870,13 @@ Lockfile:
     version "0.6.0"
     resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
   
+  deep-scope-analyser@^1.6.0:
+    version "1.6.0"
+    resolved "https://registry.yarnpkg.com/deep-scope-analyser/-/deep-scope-analyser-1.6.0.tgz#3010f6115a026654be4e9b81e7fd61e283179f0e"
+    dependencies:
+      esrecurse "^4.2.1"
+      estraverse "^4.2.0"
+  
   deepmerge@^2.2.1:
     version "2.2.1"
     resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
@@ -3213,13 +3223,13 @@ Lockfile:
     version "3.1.3"
     resolved "https://registry.yarnpkg.com/esprima/-/esprima-3.1.3.tgz#fdca51cee6133895e3c88d535ce49dbff62a4633"
   
-  esrecurse@^4.1.0:
+  esrecurse@^4.1.0, esrecurse@^4.2.1:
     version "4.2.1"
     resolved "https://registry.yarnpkg.com/esrecurse/-/esrecurse-4.2.1.tgz#007a3b9fdbc2b3bb87e4879ea19c92fdbd3942cf"
     dependencies:
       estraverse "^4.1.0"
   
-  estraverse@^4.1.0, estraverse@^4.1.1:
+  estraverse@^4.1.0, estraverse@^4.1.1, estraverse@^4.2.0:
     version "4.2.0"
     resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-4.2.0.tgz#0dee3fed31fcd469618ce7342099fc1afa0bdb13"
   
@@ -6317,6 +6327,13 @@ Lockfile:
     version "2.1.1"
     resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   
+  purifycss-webpack@^0.7.0:
+    version "0.7.0"
+    resolved "https://registry.yarnpkg.com/purifycss-webpack/-/purifycss-webpack-0.7.0.tgz#07c9ce7988f608f1928102ed3ff19178ce38f0e0"
+    dependencies:
+      ajv "^4.11.2"
+      webpack-sources "^0.1.4"
+  
   q@^1.1.2:
     version "1.5.1"
     resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
@@ -6991,7 +7008,7 @@ Lockfile:
     dependencies:
       is-plain-obj "^1.0.0"
   
-  source-list-map@^0.1.4:
+  source-list-map@^0.1.4, source-list-map@~0.1.7:
     version "0.1.8"
     resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
   
@@ -7032,7 +7049,7 @@ Lockfile:
     dependencies:
       amdefine ">=0.0.4"
   
-  source-map@0.5.x, source-map@^0.5.0, source-map@^0.5.1, source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7, source-map@~0.5.0, source-map@~0.5.1:
+  source-map@0.5.x, source-map@^0.5.0, source-map@^0.5.1, source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7, source-map@~0.5.0, source-map@~0.5.1, source-map@~0.5.3:
     version "0.5.7"
     resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   
@@ -7897,6 +7914,12 @@ Lockfile:
       v8-compile-cache "^2.0.2"
       yargs "^12.0.5"
   
+  webpack-deep-scope-plugin@^1.6.0:
+    version "1.6.0"
+    resolved "https://registry.yarnpkg.com/webpack-deep-scope-plugin/-/webpack-deep-scope-plugin-1.6.0.tgz#5a3a26dc8a40863c7c362840df1fb63f5ca4c441"
+    dependencies:
+      deep-scope-analyser "^1.6.0"
+  
   webpack-dev-middleware@^3.5.1:
     version "3.6.1"
     resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-3.6.1.tgz#91f2531218a633a99189f7de36045a331a4b9cd4"
@@ -7947,6 +7970,13 @@ Lockfile:
     dependencies:
       ansi-colors "^3.0.0"
       uuid "^3.3.2"
+  
+  webpack-sources@^0.1.4:
+    version "0.1.5"
+    resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-0.1.5.tgz#aa1f3abf0f0d74db7111c40e500b84f966640750"
+    dependencies:
+      source-list-map "~0.1.7"
+      source-map "~0.5.3"
   
   webpack-sources@^1.0.1, webpack-sources@^1.1.0, webpack-sources@^1.3.0:
     version "1.3.0"
@@ -8136,17 +8166,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/zrender/-/zrender-4.0.7.tgz#15ae960822f5efed410995d37e5107fe3de10e6d"
 
 Trace: 
-  Error: Command failed.
-  Exit code: 1
-  Command: C:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c webpack-dev-server --hot --inline --port 4047  --mode development
-  Directory: F:\xuchang2018\project\wmreport
-  Output:
-  
-      at ProcessTermError.MessageError (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
-      at new ProcessTermError (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:226:113)
-      at ChildProcess.<anonymous> (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:30281:17)
-      at emitTwo (events.js:135:13)
-      at ChildProcess.emit (events.js:224:7)
-      at maybeClose (internal/child_process.js:943:16)
-      at Process.ChildProcess._handle.onexit (internal/child_process.js:220:5)
+  Error: Command "star" not found. Did you mean "start"?
+      at new MessageError (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
+      at C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:87307:17
+      at Generator.next (<anonymous>)
+      at step (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:98:30)
+      at C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:116:14
+      at new Promise (<anonymous>)
+      at new F (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:23451:28)
+      at C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:95:12
+      at runCommand (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:87312:22)
+      at Object.<anonymous> (C:\Users\13910\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:87412:14)

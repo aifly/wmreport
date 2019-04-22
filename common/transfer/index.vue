@@ -1,6 +1,7 @@
 <template>
 	<div class="wm-clip-main-ui">
 			<Modal
+			@on-visible-change = 'visibleChange'
 			v-model="showClipDialog"
 			title="编辑作品信息"
             :loading='showDialog'
@@ -113,6 +114,12 @@
 		
 		methods:{
 
+			visibleChange(val){
+				if(!val){
+					this.$emit('closeClipDialog')
+				}
+			},
+
             ok(){
                 var s = this;
                 var ids = [];
@@ -156,7 +163,7 @@
                     success(data){
                         if(data.getret === 0){
                             s.$Message.success(data.getmsg);
-                            
+							s.$emit('closeClipDialog')
 
                         }
                     }
