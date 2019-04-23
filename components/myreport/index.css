@@ -179,6 +179,7 @@
 .wm-myreport-main-ui .wm-myreport-left header {
   height: 70px;
   line-height: 90px;
+  z-index: 1001;
   width: 100%;
   position: relative;
   position: relative;

@@ -11,7 +11,7 @@
 			<div class='wm-report-move-C'>
 				<div class='wm-report-checked-work-ui'>
 					<header>我要{{moveType===1?'复制':'剪切'}}的内容</header>
-					<div class='wm-report-checked-work-list'>
+					<div class='wm-report-checked-work-list' ref='list'>
 						<ul>
 							<li v-for='(report,i) in checkedList' :key="i">
 								<div class='wm-report-work-ico'><img :src="imgs.imgIco" alt=""></div>
@@ -50,6 +50,7 @@
 	import symbinUtil from '../../components/lib/util';
     import Vue from 'vue';
     import WmColors from '../../components/lib/color';
+	import IScroll from 'iscroll';
 	export default {
 		props:['obserable','moveType','checkedList','sourceid','id'],
 		name:'zmitiindex',
@@ -81,8 +82,17 @@
 				handler(val){
 					if(val){
                         this.resourceList =  Vue.obserable.trigger({type:'getResourceList'}).filter((item=>{
+							
                             return this.sourceid !== item.resourceid;
-                        }));
+						}));
+						this.destinationid1 = this.resourceList[0].resourceid;
+
+						setTimeout(()=>{
+
+							console.log(1);
+							this.scroll.refresh();
+						},1000)
+						
 					}
 				}
 			},
@@ -110,6 +120,10 @@
 		},
 		mounted(){
 			this.userinfo = symbinUtil.getUserInfo();
+			this.scroll = new IScroll(this.$refs['list'],{
+				scrollbars:true,
+				mouseWheel:true
+			});
 		},
 		
 		methods:{
@@ -143,13 +157,24 @@
                     this.showClipDialog = false;
                 }, 3000);
 
-                return; */
+				return; */
+				
+				if(s.destinationid<=-1){
+					s.$Message.error('请先选择一个要复制的目标库');
+					s.showDialog = false;
+					return;
+				}
                 
                 this.checkedList.map((item)=>{
                     ids.push(item.id);
-                });
-
-                ids = [this.id];
+				});
+				
+				if(!ids.length){
+					s.$Message.error('请选择一个要复制的资源');
+					s.showDialog = false;
+					return;
+				}
+                
                 symbinUtil.ajax({
                     url:window.config.baseUrl+ '/wmadvuser/operasourcedata/',
                     data:{
@@ -163,9 +188,9 @@
                     success(data){
                         if(data.getret === 0){
                             s.$Message.success(data.getmsg);
-							s.$emit('closeClipDialog')
 
                         }
+						s.$emit('closeClipDialog')
                     }
                 })
             },

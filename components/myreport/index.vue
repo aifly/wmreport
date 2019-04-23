@@ -23,8 +23,8 @@
 					 </ul>
 					 <div class='wm-report-operator-btns'>
 						 <div><Checkbox v-model="selectAll">全选</Checkbox></div>
-						 <div size='small' class='wm-report-copy'>复制到其它库</div>
-						 <div size='small' class='wm-report-copy'>剪切到其它库</div>
+						 <div size='small' class='wm-report-copy' @click="fileMove(1,'batch')">复制到其它库</div>
+						 <div size='small' class='wm-report-copy' @click="fileMove(2,'batch')">剪切到其它库</div>
 						 <div size='small' class='wm-report-del' >
 							 <Poptip	
 								style="color:#000"
@@ -216,15 +216,15 @@
 					<li @click='showReportDetail()' >
 						<Icon type="ios-create"  /> 编辑
 					</li>
-					<li @click="showClipDialog = true;moveType = 1">
+					<li @click="fileMove(1)">
 						<Icon type="md-folder" />复制
 					</li>
-					<li @click="showClipDialog = true;moveType = 2">
+					<li @click="fileMove(2)">
 						<Icon type="ios-folder-open" />剪切
 					</li>
 					<li>
 						<Poptip	
-							style="color:#000;z-index:200"
+							style="color:#000;z-index:200;width:100%"
 							confirm
 							title="确定要删除此作品吗?"
 							@on-ok="deleteReport('single')"
@@ -283,7 +283,7 @@
 			<img :src="imgs.tip" alt="" @click="showReportTip = false">
 		</div>
  
-		<Transfer @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+		<Transfer  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
 	</div>
 </template>
 
@@ -351,6 +351,7 @@
 				showReportTip:false,
 				defaultReportList:[],
 				hasAuth:false,
+				isBatch:false,//是否是批量操作作品（复制和剪切的时候）
 				contextMenuStyle:{
 					left:0,
 					top:0
@@ -398,6 +399,10 @@
 					this.showContextMenu = false;
 					if(val){
 						this.resourceList =  Vue.obserable.trigger({type:'getResourceList'});
+						 
+						if(this.isBatch){
+							return;
+						}
 						this.reportList.forEach((item)=>{
 							item.checked = false;
 							this.checkedList = this.checkedList.slice(0,0);
@@ -440,6 +445,8 @@
 				json.getMyreportList(()=>{
 					json.changeCurrentType(0,'first');
 				});
+				json.checkedList = json.checkedList.slice(0,0);
+				json.selectAll = false;
 				json.getAuth();
 			}
 		},
@@ -513,8 +520,16 @@
 		
 		methods:{
 
+			fileMove(moveType,type){
+				this.moveType = moveType;
+				this.showClipDialog = true;
+				this.isBatch = !!type;
+			},
+
 			closeClipDialog(){
 				this.showClipDialog = false;
+				this.checkedList = this.checkedList.slice(0,0);
+				this.getMyreportList();
 			},
 			showContextMenuDialog(report,e){
 				this.contextMenuStyle = {
@@ -559,7 +574,10 @@
 					}
 				});
 
-				if(s.menus[this.currentType] === 'h5-zmiti'){
+
+				
+
+				if(s.menus && s.menus[this.currentType] === 'h5-zmiti'){
 					if(!this.formUpload['previewurl']){
 						this.showUploadFile = false;	
 					}
@@ -580,7 +598,7 @@
 						}
 					});
 				
-					s.menus.map((item,i)=>{
+					s.menus && s.menus.map((item,i)=>{
 						if(item === val){
 							this.changeCurrentType(i);
 						}
@@ -636,6 +654,8 @@
 			},
 
 			deleteReport(type='single'){
+
+				console.log('deleting the report',this.isUpLoading);
 				if(this.isUpLoading){
 					return;
 				}
@@ -660,6 +680,8 @@
 					this.$Message.warning('请选择一个要删除的文件');
 					return;
 				}
+
+				
 
 
 				symbinUtil.ajax({
@@ -1243,7 +1265,7 @@
 						return;
 					};
 					setTimeout(() => {
-						
+						s.isUpLoading = false;	
 						if(s.formAdmin.publicadtype !== '图片-zmiti'){
 							iNow++;
 							if(iNow === i){
@@ -1254,7 +1276,7 @@
 									tagList:[]
 								}
 								s.getMyreportList();
-								s.isUpLoading = false;
+								
 							}
 							return;
 						}
