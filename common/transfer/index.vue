@@ -48,11 +48,16 @@
 
 <script>
 	import symbinUtil from '../../components/lib/util';
-    import Vue from 'vue';
+	import {symbinAdminUtil} from '../../admin/lib/util';
+	import Vue from 'vue';
+
+	 
+
     import WmColors from '../../components/lib/color';
 	import IScroll from 'iscroll';
+	import './index.css';
 	export default {
-		props:['obserable','moveType','checkedList','sourceid','id'],
+		props:['obserable','moveType','checkedList','sourceid','id','isAdmin'],
 		name:'zmitiindex',
 		data(){
 			return{
@@ -81,6 +86,8 @@
                 immediate: true,
 				handler(val){
 					if(val){
+
+						console.log( Vue.obserable.trigger({type:'getResourceList'}))
                         this.resourceList =  Vue.obserable.trigger({type:'getResourceList'}).filter((item=>{
 							
                             return this.sourceid !== item.resourceid;
@@ -119,7 +126,13 @@
 		
 		},
 		mounted(){
-			this.userinfo = symbinUtil.getUserInfo();
+			var util = {
+				symbinUtil,
+				symbinAdminUtil
+			}
+			this.userinfo =  util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].getUserInfo();
+			
+			console.log(this.userinfo,'userinfo')
 			this.scroll = new IScroll(this.$refs['list'],{
 				scrollbars:true,
 				mouseWheel:true
@@ -127,6 +140,10 @@
 		},
 		
 		methods:{
+
+			getResource(){
+				
+			},
 
 			visibleChange(val){
 				if(!val){
@@ -174,12 +191,16 @@
 					s.showDialog = false;
 					return;
 				}
-                
-                symbinUtil.ajax({
+                var util = {
+					symbinUtil,
+					symbinAdminUtil
+				}
+				console.log(s.userinfo,'userinfo')
+                util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].ajax({
                     url:window.config.baseUrl+ '/wmadvuser/operasourcedata/',
                     data:{
-						username:s.userinfo.username,
-						usertoken:s.userinfo.accesstoken,
+						username:s.userinfo[s.isAdmin?'adminusername':'username'],
+						usertoken:s.userinfo[s.isAdmin?'admintoken':'accesstoken'],
                         fileids:ids.join(','),
                         operatype:s.moveType,
                         sourceid:s.sourceid,

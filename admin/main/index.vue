@@ -52,6 +52,18 @@
                                 {{resource.resourcecnname}}
                             </MenuItem> -->
                         </Submenu>
+                         <Submenu name='3'>
+                            <template slot="title">
+                                <Icon type="ios-paper-plane" />
+                                标签管理
+                            </template>
+                            <MenuItem name='lable' to='/label/' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name.indexOf("label")>-1}'>
+                                标签管理
+                            </MenuItem>
+                            <!-- <MenuItem v-for='(resource,i) in resourceList' :key="i" :name='"collection"+i' :to='"/collection/"+resource.resourceid+"/0"' :class='{"ivu-menu-item-active ivu-menu-item-selected":$route.name === "collection"}'>
+                                {{resource.resourcecnname}}
+                            </MenuItem> -->
+                        </Submenu>
                         <Submenu name='2'>
                             <template slot="title">
                                 <Icon type="ios-paper" />
@@ -158,8 +170,12 @@
                     success(data){
                         if(data.getret === 0){
                             s.resourceList = data.list;
-                         
+
                             Vue.obserable.on('getResource',()=>{
+                                return data.list;
+                            });
+                         
+                            Vue.obserable.on('getResourceList',()=>{
                                 return data.list;
                             });
                         }

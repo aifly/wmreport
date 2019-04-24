@@ -1,0 +1,99 @@
+/*.ant-btn:focus, .ant-btn:hover,.ant-input:focus, .ant-input:hover {
+    background-color: #fff;
+    border-color: #bf1616;
+    box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);
+}*/
+.wm-label-ui > header {
+  width: 100%;
+  height: 70px;
+  line-height: 100px;
+  background: #fff;
+  margin-top: 10px;
+  text-indent: 1em;
+  font-size: 20px;
+}
+
+.wm-label-ui .wm-label-main-content > header {
+  width: 100%;
+  height: 70px;
+}
+
+.wm-label-ui .wm-label-main-content > header ul {
+  position: relative;
+  top: 32px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li {
+  position: relative;
+  z-index: 3;
+  background: #fff;
+  margin-left: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li .wm-decorate {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  cursor: pointer;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li .wm-decorate:before {
+  content: '';
+  width: 30px;
+  left: -20px;
+  background: #fff;
+  position: absolute;
+  height: 18px;
+  bottom: 0;
+  z-index: 1;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li .wm-decorate:after {
+  content: '';
+  z-index: 2;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #f5f7f9;
+  border-radius: 0 0 20px 0;
+  right: 100%;
+  top: 20px;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li:before {
+  content: '';
+  width: 30px;
+  right: -20px;
+  background: #fff;
+  position: absolute;
+  height: 18px;
+  bottom: 0;
+  z-index: 1;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li:after {
+  content: '';
+  z-index: 2;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  background: #f5f7f9;
+  border-radius: 0 0 0 20px;
+  left: 100%;
+  top: 20px;
+}
+
+.wm-label-ui .wm-label-main-content .wm-lable-list {
+  width: 100%;
+  height: 400px;
+  background: #fff;
+}

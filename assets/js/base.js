@@ -167,7 +167,9 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 		if (msg != "Script error." && !url) {
 			// return true;
 		}
-		
+		;
+
+		return;
 
 		setTimeout(function () {
 			var data = {};

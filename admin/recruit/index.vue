@@ -77,7 +77,7 @@
 			
 			var t = setInterval(()=>{
 				var dataList = Vue.obserable.trigger({
-					type:'getResource'
+					type:'getResourceList'
 				});
 				if(dataList){
 					clearInterval(t);

@@ -20,9 +20,8 @@
 			<div slot='left' class="wm-collection-left-main-ui">
 					<header class='wm-collection-left-header'>
 						<div class="wm-collection-title">
+							
 							<div>征集管理 > {{resourcecnname}}</div>
-						</div>
-						<div class="wm-collection-search-content">
 							<div class="wm-collection-search-input-C">
 								<div>
 									<img :src='imgs.search'/>
@@ -36,9 +35,22 @@
 									<input v-model="keyword" @keydown='searchReport' placeholder="查询关键字"/>
 								</div>
 							</div>
+						</div>
+						<div class="wm-collection-search-content">
+							
 							<div class="wm-collection-check-action">
 								<Checkbox v-model="selectAll">全选</Checkbox>
-								<Button type="primary" size='small' @click.stop='showCheckAction = true'>操作 <Icon type="ios-arrow-up" /></Button>
+								<div v-press class='wm-collection-copy wm-collection-' @click="fileMove(1,'batch')" >复制到其它库</div>
+						 		<div v-press class='wm-collection-copy wm-collection-' @click="fileMove(2,'batch')">剪切到其它库</div>
+						 		<div v-press class='wm-collection-copy wm-collection-'  @click.stop="checkAction('download')">
+									<label  v-if='!isdownloading' ><Icon type="ios-cloud-download-outline" /></label>
+									<label  v-else  class="demo-spin-icon-load1"><Icon type="ios-loading" /></label> 下载
+								 </div>
+						 		<div v-press class='wm-collection-copy wm-collection-reject' @click.stop="checkAction(2)">拒绝</div>
+						 		<div v-press class='wm-collection-copy wm-collection-pass' @click.stop="checkAction(1)">通过</div>
+						 		<div v-press class='wm-collection-copy wm-collection-del'>删除</div>
+								
+								<!-- <Button type="primary" size='small' @click.stop='showCheckAction = true'>操作 <Icon type="ios-arrow-up" /></Button>
 								<ul v-if='showCheckAction'>
 									<li @click.stop="checkAction(1)">
 										<label for=""><Icon type="ios-checkmark-circle-outline" /></label>
@@ -54,7 +66,7 @@
 										<label  v-if='!isdownloading' ><Icon type="ios-cloud-download-outline" /></label>
 										<label  v-else  class="demo-spin-icon-load1"><Icon type="ios-loading" /></label> 下载
 									</li>
-								</ul>
+								</ul> -->
 							</div>
 						</div>
 					</header>
@@ -70,7 +82,7 @@
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul ref='ul1' class='zmiti-report-ul'>
 							<!-- -->
-							<li @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item"  v-for='(report,i) in reportList' :key="i">
+							<li @contextmenu.prevent='showContextMenuDialog(report,i,$event)' @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item"  v-for='(report,i) in reportList' :key="i">
 								<div @mouseover="mouseover(report)" @mouseout="mouseout(report)" :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
 									<div  class='zmiti-report-fullname'>{{report.filetitle}}</div>
@@ -144,6 +156,10 @@
 		</Split>
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 		<Download :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></Download>
+		<Transfer :isAdmin='true'  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+		<ContextMenu :deleteReport='deleteReport' :fileMove='fileMove'   @closeMenu='closeMenu' :contextMenuStyle='contextMenuStyle' v-if='showContextMenu'>
+			
+		</ContextMenu>
 	</div>
 </template>
 
@@ -157,8 +173,9 @@
 	import Vue from "vue";
 	import Detail from '../../common/mask/detail';
 	import Download from '../../common/mask/download';
-
-
+	import '../../common/directive'
+	import Transfer from '../../common/transfer';
+	import ContextMenu from '../../common/contextmenu'
 
 	export default {
 		props:['obserable'],
@@ -168,6 +185,7 @@
 				colorList:['default','success','primary','error','warning','red','orange','gold','yellow'],
 				isLoading:false,
 				selectAll:false,
+				moveType:1,//文件迁移类型1：复制 2:剪切
 				showDownloadtip:false,
 				beforeUploadTag:"",
 				scale:.8,
@@ -190,6 +208,8 @@
 				showCheckAction:false,
 				configList:[],
 				currentReportIndex:0,
+				curentReport:{},
+				showClipDialog:false,
 				menus:[],
 				classicType:'图片-zmiti',
 				statusType:'待审核',
@@ -200,9 +220,14 @@
 				classic:-1,
 				page:1,
 				pagenum:20,
+				showContextMenu:false,
 				raterReportList:[],
 				isdownloading :false,
-				checkedList:[]
+				checkedList:[],
+				contextMenuStyle:{
+					left:0,
+					top:0
+				},
 
 			}
 		},
@@ -212,9 +237,37 @@
 			Detail,
 			Download,
 			Survey,
+			Transfer,
+			ContextMenu
 			//Statistics,
 		},
 		watch:{
+			showClipDialog:{
+				handler(val){
+					this.showContextMenu = false;
+					if(val){
+						this.resourceList =  Vue.obserable.trigger({type:'getResourceList'});
+						 
+						if(this.isBatch){
+							return;
+						}
+						this.reportList.forEach((item)=>{
+							item.checked = false;
+							this.checkedList = this.checkedList.slice(0,0);
+						})
+						this.currentReport.checked = true;
+						//this.reportList = this.reportList.concat([])
+						this.checkedList.push(this.currentReport);
+						
+					}
+				}
+			},
+			showContextMenu(val){
+				if(!val){
+					this.curentReport  = {};
+				}
+				
+			},
 			selectAll(val){
 
 				var len = this.reportList.length;
@@ -235,6 +288,27 @@
 		},
 		methods:{
 
+			closeMenu(){
+				this.showContextMenu = false;
+				
+			},
+
+			closeClipDialog(){
+				this.showClipDialog = false;
+				this.checkedList = this.checkedList.slice(0,0);
+				this.loadMoreReport();
+				this.selectAll = false;
+			},
+
+			deleteReport(){
+
+			},
+			fileMove(moveType,type){
+				this.moveType = moveType;
+				this.showClipDialog = true;
+				this.isBatch = !!type;
+			},
+
 			mouseover(report){
 				report.showFullName = true;
 
@@ -244,6 +318,15 @@
 				report.showFullName = false;
 
 				this.reportList = this.reportList.concat([]);
+			},
+			showContextMenuDialog(report,index,e){
+				this.contextMenuStyle = {
+					left:e.pageX + 'px',
+					top:e.pageY + 'px'
+				};
+				this.currentReportIndex = index;
+				this.currentReport = report;
+				this.showContextMenu = true;
 			},
 			deltag(name){
 
@@ -664,8 +747,9 @@
 						
 						var t = setInterval(()=>{
 							var  resourceList = Vue.obserable.trigger({
-								type:"getResource",
+								type:"getResourceList",
 							});
+
 							if(resourceList){
 								clearInterval(t);
 								console.log(resourceList);

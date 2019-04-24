@@ -23,8 +23,8 @@
 					 </ul>
 					 <div class='wm-report-operator-btns'>
 						 <div><Checkbox v-model="selectAll">全选</Checkbox></div>
-						 <div size='small' class='wm-report-copy' @click="fileMove(1,'batch')">复制到其它库</div>
-						 <div size='small' class='wm-report-copy' @click="fileMove(2,'batch')">剪切到其它库</div>
+						 <div size='small' class='wm-report-copy' v-press @click="fileMove(1,'batch')">复制到其它库</div>
+						 <div size='small' class='wm-report-copy' v-press @click="fileMove(2,'batch')">剪切到其它库</div>
 						 <div size='small' class='wm-report-del' >
 							 <Poptip	
 								style="color:#000"
@@ -32,7 +32,7 @@
 								title="确定要删除此作品吗?"
 								@on-ok="deleteReport('all')"
 								>
-								<div class="wm-del-ico">删除</div>
+								<div  v-press class="wm-del-ico">删除</div>
 							</Poptip>
 						 </div>
 					 </div>
@@ -51,7 +51,7 @@
 						</div>
 						<div v-if='reportList.length>0' class="wm-report-list" :style="{height:viewH - 60-70-20- 80+'px'}">
 							<ul>
-								<li @dblclick="previewReport(report)" @contextmenu.prevent='showContextMenuDialog(report,$event)' @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
+								<li @dblclick="previewReport(report)" @contextmenu.prevent='showContextMenuDialog(report,i,$event)' @click.prevent='showDetail(report,i)'  class="wm-report-item" v-for='(report,i) in reportList' :key="i">
 									<div class="wm-report-status" v-if='report.status === 0'>
 										<img :src="imgs.uncheck1" alt="">
 									</div>
@@ -209,35 +209,6 @@
 			</Form>
 		</Modal>
 
-		<div class='wm-report-context-menu-ui'  v-if='showContextMenu' >
-			<div class='lt-full' @mousedown= 'showContextMenu = false'></div>
-			<div class="wm-report-context-menu-C" :style="contextMenuStyle">
-				<ul>
-					<li @click='showReportDetail()' >
-						<Icon type="ios-create"  /> 编辑
-					</li>
-					<li @click="fileMove(1)">
-						<Icon type="md-folder" />复制
-					</li>
-					<li @click="fileMove(2)">
-						<Icon type="ios-folder-open" />剪切
-					</li>
-					<li>
-						<Poptip	
-							style="color:#000;z-index:200;width:100%"
-							confirm
-							title="确定要删除此作品吗?"
-							@on-ok="deleteReport('single')"
-							>
-							<div class="wm-del-ico"><Icon type="ios-trash-outline" /> 删除</div>
-						</Poptip>
-						
-					</li>
-				</ul>
-			</div>
-		</div>
-
-
 		<Modal
 			:footer-hide='true'
 			v-model="showUploadDialog "
@@ -284,6 +255,11 @@
 		</div>
  
 		<Transfer  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+		<ContextMenu :deleteReport='deleteReport' :fileMove='fileMove'  @closeMenu='closeMenu' :contextMenuStyle='contextMenuStyle' v-if='showContextMenu'>
+			<li @click='showReportDetail()' slot='edit'>
+				<Icon type="ios-create"  /> 编辑
+			</li>
+		</ContextMenu>
 	</div>
 </template>
 
@@ -295,8 +271,10 @@
 	import QRCode from '../lib/qrcode';
 	import Detail from '../../common/mask/detail';
 	import WmColors from '../lib/color';
+	import '../../common/directive.js'
 
 	import Transfer from '../../common/transfer';
+	import ContextMenu from '../../common/contextmenu'
 	
 	var json = {};
 	export default {
@@ -371,8 +349,8 @@
 				},
 				ruleValidate: {
                      author:{
-						 required:true,
-						 trigger:'blur'
+						required:true,
+						trigger:'blur'
 					 }
                 },
 				checkedList:[],
@@ -382,7 +360,8 @@
 		},
 		components:{
 			Detail,
-			Transfer
+			Transfer,
+			ContextMenu
 		},
 
 		beforeCreate(){
@@ -419,6 +398,7 @@
 				if(!val){
 					this.curentReport  = {};
 				}
+				
 			},
 			selectAll(val){
 
@@ -520,6 +500,11 @@
 		
 		methods:{
 
+
+			closeMenu(){
+				this.showContextMenu = false;
+			},
+
 			fileMove(moveType,type){
 				this.moveType = moveType;
 				this.showClipDialog = true;
@@ -529,14 +514,18 @@
 			closeClipDialog(){
 				this.showClipDialog = false;
 				this.checkedList = this.checkedList.slice(0,0);
+				this.selectAll = false;
 				this.getMyreportList();
 			},
-			showContextMenuDialog(report,e){
+			showContextMenuDialog(report,index,e){
 				this.contextMenuStyle = {
 					left:e.pageX + 'px',
 					top:e.pageY + 'px'
 				};
+				this.currentReportIndex = index;
 				this.currentReport = report;
+				this.formAdmin = report;
+				 
 				this.showContextMenu = true;
 			},
 

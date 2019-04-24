@@ -12,6 +12,7 @@ import Recruitaction from './admin/recruitaction/index';
 import Rater from './admin/rater/index';
 import Download from './admin/download/index';
 import Collection from './admin/collection/index';
+import Label from './admin/label/index';
 import iView from 'iview';
 import VueRouter from 'vue-router'
 import './admin/css/index.css';
@@ -88,6 +89,11 @@ const router = new VueRouter({
 			path: '/result/',
 			name: 'result',
 			component: Result,
+			props: true
+		}, {
+			path: '/label/',
+			name: 'label',
+			component: Label,
 			props: true
 		}
 		
