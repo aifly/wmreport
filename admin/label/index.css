@@ -3,6 +3,10 @@
     border-color: #bf1616;
     box-shadow: 0 0 0 2px rgba(191, 22, 22, 0.1);
 }*/
+.wm-label-ui {
+  background: #eee;
+}
+
 .wm-label-ui > header {
   width: 100%;
   height: 70px;
@@ -29,71 +33,104 @@
 .wm-label-ui .wm-label-main-content > header ul li {
   position: relative;
   z-index: 3;
-  background: #fff;
+  background: #f7f7f7;
   margin-left: 20px;
-  padding: 10px;
-  border-radius: 10px;
-  position: relative;
-}
-
-.wm-label-ui .wm-label-main-content > header ul li .wm-decorate {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  bottom: 0;
+  padding: 10px 10px;
+  margin: 0 20px;
+  height: 38px;
   cursor: pointer;
+  -webkit-user-select: none;
 }
 
-.wm-label-ui .wm-label-main-content > header ul li .wm-decorate:before {
-  content: '';
-  width: 30px;
-  left: -20px;
+.wm-label-ui .wm-label-main-content > header ul li .wm-label-edit-ico {
+  position: absolute;
+  top: 3px;
+  right: -6px;
+  z-index: 10;
+  font-size: 14px;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li.active {
   background: #fff;
-  position: absolute;
-  height: 18px;
-  bottom: 0;
-  z-index: 1;
+  z-index: 4;
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+  -webkit-transform-origin: bottom;
+  transform-origin: bottom;
+  font-size: 14px;
+  color: #be0000;
 }
 
-.wm-label-ui .wm-label-main-content > header ul li .wm-decorate:after {
-  content: '';
-  z-index: 2;
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #f5f7f9;
-  border-radius: 0 0 20px 0;
-  right: 100%;
-  top: 20px;
+.wm-label-ui .wm-label-main-content > header ul li:last-of-type {
+  color: #f90;
 }
 
-.wm-label-ui .wm-label-main-content > header ul li:before {
-  content: '';
-  width: 30px;
-  right: -20px;
-  background: #fff;
-  position: absolute;
-  height: 18px;
-  bottom: 0;
-  z-index: 1;
+.wm-label-ui .wm-label-main-content > header ul li:last-of-type i {
+  font-size: 16px;
+  margin-right: 4px;
 }
 
-.wm-label-ui .wm-label-main-content > header ul li:after {
-  content: '';
-  z-index: 2;
+.wm-label-ui .wm-label-main-content > header ul li canvas {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  background: inherit;
-  background: #f5f7f9;
-  border-radius: 0 0 0 20px;
   left: 100%;
-  top: 20px;
+  top: 0;
+}
+
+.wm-label-ui .wm-label-main-content > header ul li canvas.wm-label-tab-ico1 {
+  left: auto;
+  right: 100%;
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 .wm-label-ui .wm-label-main-content .wm-lable-list {
+  background: #fff;
   width: 100%;
   height: 400px;
-  background: #fff;
+  padding-top: 20px;
+}
+
+.wm-label-ui .wm-label-main-content .wm-lable-list .wm-lable-list-table {
+  width: 96%;
+  overflow: hidden;
+  margin: 0 auto;
+  position: relative;
+}
+
+.wm-label-ui .wm-label-main-content .wm-lable-list .wm-lable-list-table .ivu-table {
+  width: 100%;
+}
+
+.wm-label-ui .wm-label-main-content .wm-lable-list .wm-label-table-footer {
+  position: absolute;
+  left: 50%;
+  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+  width: 60px;
+  height: 30px;
+  background: #f90;
+  text-align: center;
+  line-height: 26px;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.wm-label-ui .wm-label-main-content .wm-lable-list .wm-label-table-footer canvas {
+  position: absolute;
+  left: 100%;
+  top: 0;
+}
+
+.wm-label-ui .wm-label-main-content .wm-lable-list .wm-label-table-footer canvas.wm-label-tab-ico1 {
+  left: auto;
+  right: 100%;
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+.mw-labelclass-modal-header {
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
 }

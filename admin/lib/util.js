@@ -37,6 +37,14 @@ var symbinUtil = {
 			/* opt.username = option.validate.username;
 			opt.usertoken = option.validate.usertoken; */
 		}
+		if(!opt.adminusername && !opt.admintoken){
+			var userinfo = this.getUserInfo();
+			var { adminusername, admintoken} = userinfo;
+			if (adminusername && admintoken){
+				opt.adminusername = adminusername;
+				opt.admintoken = admintoken;
+			}
+		}
 		
 		$.ajax({
 			url:option.url,

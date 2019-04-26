@@ -13,11 +13,11 @@
 					<header>我要{{moveType===1?'复制':'剪切'}}的内容</header>
 					<div class='wm-report-checked-work-list' ref='list'>
 						<ul>
-							<li v-for='(report,i) in checkedList' :key="i">
+							<li v-for='(report,i) in myCheckedList' :key="i">
 								<div class='wm-report-work-ico'><img :src="imgs.imgIco" alt=""></div>
 								<div class='wm-report-work-name' :class='{"active":report.isDone}'>
 									{{report.filetitle}}
-									<Icon class='wm-report-work-staus' :type="report.isDone?'ios-checkmark-circle':'ios-close-circle'" />
+									<Icon :style="{color:report.isDone?'green':'#333'}" class='wm-report-work-staus' :type="report.isDone?'ios-checkmark-circle':'ios-close-circle'" />
 								</div>
 							</li>
 						</ul>
@@ -63,7 +63,8 @@
 			return{
                 imgs:window.imgs,
                 showClipDialog:true,
-                destinationid:-1,
+				destinationid:-1,
+				myCheckedList:[],
                 resourceList:[],
                 userinfo:{},
                 WmColors,
@@ -131,7 +132,7 @@
 				symbinAdminUtil
 			}
 			this.userinfo =  util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].getUserInfo();
-			
+			this.myCheckedList = this.checkedList;
 			console.log(this.userinfo,'userinfo')
 			this.scroll = new IScroll(this.$refs['list'],{
 				scrollbars:true,
@@ -209,9 +210,20 @@
                     success(data){
                         if(data.getret === 0){
                             s.$Message.success(data.getmsg);
-
-                        }
-						s.$emit('closeClipDialog')
+						}
+						var iNow = 0 
+						var t = setInterval(() => {
+							if(s.myCheckedList[iNow]){
+								s.myCheckedList[iNow].isDone = true;
+								s.myCheckedList = s.myCheckedList.concat([]);
+							}
+							else{
+								clearInterval(t);
+								s.$emit('closeClipDialog')
+							}
+							iNow++;
+						}, 300);
+						//
                     }
                 })
             },

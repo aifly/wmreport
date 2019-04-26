@@ -22,7 +22,7 @@
 						 </li>
 					 </ul>
 					 <div class='wm-report-operator-btns'>
-						 <div><Checkbox v-model="selectAll">全选</Checkbox></div>
+						 <Checkbox v-model="selectAll">全选</Checkbox>
 						 <div size='small' class='wm-report-copy' v-press @click="fileMove(1,'batch')">复制到其它库</div>
 						 <div size='small' class='wm-report-copy' v-press @click="fileMove(2,'batch')">剪切到其它库</div>
 						 <div size='small' class='wm-report-del' >

@@ -4,99 +4,145 @@ $baseColor: #fcffb4;
 $viewW: 750px;
 $color: #be0000;
 
-.wm-label-ui{
-	
-	&>header{
-		width: 100%;
-		height: 70px;
-		line-height: 100px;
-		background: #fff;
-		margin-top: 10px;;
-		text-indent: 1em;
-		font-size:20px;
-	}
+.wm-label-ui {
+    background: #eee;
 
-	.wm-label-main-content{
-		&>header{
-			width: 100%;
-			height: 70px;
-			
-			ul{
-				@include pos(r);
-				top: 32px;
-				@include displayFlex(row);
-				li{
-					@include pos(r);
-					z-index: 3;;
-					background: #fff;
-					margin-left:20px;;
-					padding: 10px;
-					@include br(10px);
-					@include pos(r);
-					.wm-decorate{
-						@include pos(a);
-						width: 100%;
-						height: 100%;
-						left: 0;
-						bottom: 0;
-						cursor: pointer;
+    & > header {
+        width: 100%;
+        height: 70px;
+        line-height: 100px;
+        background: #fff;
+        margin-top: 10px;
+        text-indent: 1em;
+        font-size: 20px;
+    }
 
-						&:before {
-							content: '';
-							width: 30px;
-							left: -20px;
-							background: #fff;
-							@include pos(a);
-							height: 18px;
-							bottom: 0;
-							z-index: 1;
-						}
+    .wm-label-main-content {
+        & > header {
+            width: 100%;
+            height: 70px;
 
-						&:after {
-							content: '';
-							z-index: 2;
-							@include pos(a);
-							width: 20px;
-							height: 20px;
-							background: #f5f7f9;
-							//background: #f00;
-							
-							@include br(0 0  20px 0);
-							right: 100%;
-							top: 20px;
-						}
+            ul {
+                @include pos(r);
 
-					}
-					&:before{
-						content:'';
-						width: 30px;
-						right: -20px;
-						background: #fff;
-						@include pos(a);
-						height: 18px;
-						bottom: 0;
-						z-index: 1;
-					}
-					&:after{
-						content:'';
-						z-index: 2;
-						@include pos(a);
-						width: 20px;
-						height: 20px;
-						background: inherit;
-						background: #f5f7f9;
-						@include br(0 0 0 20px);
-						left: 100%;
-						top: 20px;
-					}
-				}
-			}
-		}
-		.wm-lable-list{
-			width: 100%;
-			height: 400px;
-			background: #fff;
-		}
-	}
+                top: 32px;
 
+                @include displayFlex(row);
+
+                li {
+                    @include pos(r);
+
+                    z-index: 3;
+                    background: #f7f7f7;
+                    margin-left: 20px;
+                    padding: 10px 10px;
+                    margin: 0 20px;
+                    height: 38px;
+
+                    //@include br(10px);
+                    cursor: pointer;
+                    -webkit-user-select: none;
+
+                    .wm-label-edit-ico {
+                        @include pos(a);
+
+                        top: 3px;
+                        right: -6px;
+                        z-index: 10;
+                        font-size: 14px;
+                    }
+
+                    &.active {
+                        background: #fff;
+                        z-index: 4;
+
+                        @include transform(scale(1.2));
+                        @include transformOrigin(bottom);
+
+                        font-size: 14px;
+                        color: #be0000;
+                    }
+
+                    &:last-of-type {
+                        color: #f90;
+
+                        i {
+                            font-size: 16px;
+                            margin-right: 4px;
+                        }
+                    }
+
+                    canvas {
+                        @include pos(a);
+
+                        left: 100%;
+                        top: 0;
+
+                        &.wm-label-tab-ico1 {
+                            left: auto;
+                            right: 100%;
+
+                            @include transform(rotateY(180deg));
+                        }
+                    }
+                }
+            }
+        }
+
+        .wm-lable-list {
+            background: #fff;
+            width: 100%;
+            height: 400px;
+            padding-top: 20px;
+
+            .wm-lable-list-table {
+                width: 96%;
+                overflow: hidden;
+                margin: 0 auto;
+
+                @include pos(r);
+
+                .ivu-table {
+                    width: 100%;
+                }
+            }
+
+            .wm-label-table-footer {
+                @include pos(a);
+
+				left: 50%;
+
+				@include transform(rotateX(180deg));
+				
+				width: 60px;
+				height: 30px;
+				background: #f90;
+				text-align: center;
+				line-height: 26px;;
+				font-size:20px;
+				color:#fff;
+				cursor: pointer;
+
+                canvas {
+                    @include pos(a);
+
+                    left: 100%;
+                    top: 0;
+
+                    &.wm-label-tab-ico1 {
+                        left: auto;
+                        right: 100%;
+
+                        @include transform(rotateY(180deg));
+                    }
+                }
+            }
+        }
+    }
+}
+
+.mw-labelclass-modal-header {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
 }
