@@ -5,144 +5,167 @@ $viewW: 750px;
 $color: #be0000;
 
 .wm-label-ui {
-    background: #eee;
+  background: #eee;
 
+  & > header {
+    width: 100%;
+    height: 70px;
+    line-height: 100px;
+    background: #fff;
+    margin-top: 10px;
+    text-indent: 1em;
+    font-size: 20px;
+  }
+  .wm-labelclass-dialog-footer{
+    @include displayFlex(row);
+    justify-content: space-between;
+    -webkit-justify-content: space-between;
+    div{cursor: pointer}
+  }
+
+  .ivu-poptip-confirm .ivu-poptip-body .ivu-icon{
+      left:20px;
+  }
+
+  .wm-label-main-content {
+    .ivu-table-overflowX {
+      overflow: hidden !important;
+    }
     & > header {
-        width: 100%;
-        height: 70px;
-        line-height: 100px;
-        background: #fff;
-        margin-top: 10px;
-        text-indent: 1em;
-        font-size: 20px;
-    }
+      width: 100%;
+      height: 70px;
 
-    .wm-label-main-content {
-        & > header {
-            width: 100%;
-            height: 70px;
+      ul {
+        @include pos(r);
 
-            ul {
-                @include pos(r);
+        top: 32px;
 
-                top: 32px;
+        @include displayFlex(row);
 
-                @include displayFlex(row);
+        li {
+          @include pos(r);
 
-                li {
-                    @include pos(r);
+          z-index: 3;
+          background: #f7f7f7;
+          margin-left: 20px;
+          padding: 10px 10px;
+          margin: 0 20px;
+          height: 38px;
 
-                    z-index: 3;
-                    background: #f7f7f7;
-                    margin-left: 20px;
-                    padding: 10px 10px;
-                    margin: 0 20px;
-                    height: 38px;
+          //@include br(10px);
+          cursor: pointer;
+          -webkit-user-select: none;
 
-                    //@include br(10px);
-                    cursor: pointer;
-                    -webkit-user-select: none;
+          .wm-label-edit-ico {
+            @include pos(a);
 
-                    .wm-label-edit-ico {
-                        @include pos(a);
+            top: 3px;
+            right: -6px;
+            z-index: 10;
+            font-size: 14px;
+          }
 
-                        top: 3px;
-                        right: -6px;
-                        z-index: 10;
-                        font-size: 14px;
-                    }
-
-                    &.active {
-                        background: #fff;
-                        z-index: 4;
-
-                        @include transform(scale(1.2));
-                        @include transformOrigin(bottom);
-
-                        font-size: 14px;
-                        color: #be0000;
-                    }
-
-                    &:last-of-type {
-                        color: #f90;
-
-                        i {
-                            font-size: 16px;
-                            margin-right: 4px;
-                        }
-                    }
-
-                    canvas {
-                        @include pos(a);
-
-                        left: 100%;
-                        top: 0;
-
-                        &.wm-label-tab-ico1 {
-                            left: auto;
-                            right: 100%;
-
-                            @include transform(rotateY(180deg));
-                        }
-                    }
-                }
-            }
-        }
-
-        .wm-lable-list {
+          &.active {
             background: #fff;
-            width: 100%;
-            height: 400px;
-            padding-top: 20px;
+            z-index: 4;
 
-            .wm-lable-list-table {
-                width: 96%;
-                overflow: hidden;
-                margin: 0 auto;
+            @include transform(scale(1.2));
+            @include transformOrigin(bottom);
 
-                @include pos(r);
+            font-size: 14px;
+            color: #be0000;
+          }
 
-                .ivu-table {
-                    width: 100%;
-                }
+          &:last-of-type {
+            color: #f90;
+
+            i {
+              font-size: 16px;
+              margin-right: 4px;
             }
+          }
 
-            .wm-label-table-footer {
-                @include pos(a);
+          canvas {
+            @include pos(a);
 
-				left: 50%;
+            left: 100%;
+            top: 0;
 
-				@include transform(rotateX(180deg));
-				
-				width: 60px;
-				height: 30px;
-				background: #f90;
-				text-align: center;
-				line-height: 26px;;
-				font-size:20px;
-				color:#fff;
-				cursor: pointer;
+            &.wm-label-tab-ico1 {
+              left: auto;
+              right: 100%;
 
-                canvas {
-                    @include pos(a);
-
-                    left: 100%;
-                    top: 0;
-
-                    &.wm-label-tab-ico1 {
-                        left: auto;
-                        right: 100%;
-
-                        @include transform(rotateY(180deg));
-                    }
-                }
+              @include transform(rotateY(180deg));
             }
+          }
         }
+      }
     }
+
+    .wm-lable-list {
+      background: #fff;
+      width: 100%;
+      height: 400px;
+      padding-top: 20px;
+      padding-bottom: 40px;
+
+      @include pos(r);
+      
+      .wm-label-page{
+        @include pos(a);
+        bottom:0;
+        left: 50%;
+        @include transform(translateX(-50%));
+      }
+
+      .wm-lable-list-table {
+        width: 96%;
+        overflow: hidden;
+        margin: 0 auto;
+
+        @include pos(r);
+
+        .ivu-table {
+          width: 100%;
+        }
+      }
+
+      .wm-label-table-footer {
+        @include pos(a);
+
+        left: 50%;
+
+        @include transform(rotateX(180deg));
+
+        width: 60px;
+        height: 30px;
+        background: #f90;
+        text-align: center;
+        line-height: 26px;
+        font-size: 20px;
+        color: #fff;
+        cursor: pointer;
+
+        canvas {
+          @include pos(a);
+
+          left: 100%;
+          top: 0;
+
+          &.wm-label-tab-ico1 {
+            left: auto;
+            right: 100%;
+
+            @include transform(rotateY(180deg));
+          }
+        }
+      }
+    }
+  }
 }
 
 .mw-labelclass-modal-header {
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
 }

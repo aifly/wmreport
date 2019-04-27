@@ -1308,6 +1308,7 @@
 											height:h
 										},
 										success(data){
+											console.log(data);
 											if(data.getret === 0){
 												iNow++;
 												if(iNow === i){

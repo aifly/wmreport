@@ -209,7 +209,7 @@
                     },
                     success(data){
                         if(data.getret === 0){
-                            s.$Message.success(data.getmsg);
+                            
 						}
 						var iNow = 0 
 						var t = setInterval(() => {
@@ -219,6 +219,7 @@
 							}
 							else{
 								clearInterval(t);
+								s.$Message.success(data.getmsg);
 								s.$emit('closeClipDialog')
 							}
 							iNow++;
