@@ -207,7 +207,8 @@ body {
 
             .wm-collection-search-content {
                 flex:2;
-                -webkit-box-flex:2;
+				-webkit-box-flex:2;
+				
 
                 @include pos(a);
                 right: 0;
@@ -254,16 +255,7 @@ body {
                         margin: 0 2px;
                         @include br(4px);
                         @include pos(r);
-                        &:before{
-                            content:'';
-                            @include pos(a);
-                            width: 100%;
-                            height: 100%;
-                            left:0;
-                            top: 0;
-                            box-shadow: 2px 2px 4px rgba(0,0,0,.3);
-                            @include br(4px);
-                        }
+                        
                     }
 
                    

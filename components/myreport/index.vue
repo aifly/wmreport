@@ -1071,7 +1071,6 @@
 				}
 				this.p = p;
 				if(s.uploader){
-					
 					s.uploader.destroy();
 				}
 				var accepts  =  s.accepts;
@@ -1122,6 +1121,20 @@
 					data.author = s.formUpload.author;
 					data.telphone = s.formUpload.telphone;
 					data.previewurl = s.formUpload.previewurl;
+					var D = new Date();
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmshare/writelog',
+						type:'get',
+						data:{
+							type:'info',
+							msg:JSON.stringify({
+								msg:"uploadBeforeSend ....",
+								data,
+								date:[D.getFullYear(),D.getMonth()+1,D.getDate(),D.getHours(),D.getMinutes(),D.getSeconds()].join('-'),
+								userinfo:s.userinfo
+							})
+						}
+					})
 				});
 				
 				uploader.on('dndAccept',(file,a)=>{
@@ -1283,6 +1296,19 @@
 						uploader.makeThumb( file, function( error, ret ) {
 						
 							if ( error ) {
+								var D = new Date();
+								symbinUtil.ajax({
+									url:window.config.baseUrl+'/wmshare/writelog',
+									type:'get',
+									data:{
+										msg:JSON.stringify({
+											msg:"uploader.makeThumb error (uploader 生成缩略图失败)",
+											date:[D.getFullYear(),D.getMonth()+1,D.getDate(),D.getHours(),D.getMinutes(),D.getSeconds()].join('-'),
+											userinfo:s.userinfo
+										})
+									}
+								})
+
 							} else {
 								uploader.base64 = ret;
 								if(uploader.base64 && response.id){
@@ -1308,7 +1334,7 @@
 											height:h
 										},
 										success(data){
-											console.log(data);
+										 
 											if(data.getret === 0){
 												iNow++;
 												if(iNow === i){
@@ -1332,10 +1358,6 @@
 					}, 100);
 
 					
-					
-				
-
-					
 				//	$('#' + file.id).addClass('upload-state-done');
 				});
 
@@ -1343,6 +1365,19 @@
 				uploader.on('uploadError', function (file) {
 					console.log('error')
 					s.$Message.error('文件上传超时，请刷新重试');
+					var D = new Date();
+					symbinUtil.ajax({
+						url:window.config.baseUrl+'/wmshare/writelog',
+						type:'get',
+						data:{
+							type:'error',
+							msg:JSON.stringify({
+								msg:"文件上传超时，请刷新重试",
+								date:[D.getFullYear(),D.getMonth()+1,D.getDate(),D.getHours(),D.getMinutes(),D.getSeconds()].join('-'),
+								userinfo:s.userinfo
+							})
+						}
+					})
 					//$('#' + file.id).find('p.state').text('上传出错');
 				});
 

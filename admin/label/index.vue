@@ -47,7 +47,7 @@
         <FormItem label="名称：">
           <Input v-model="labelClassForm.classrealname"/>
         </FormItem>
-        <FormItem label="显示名称：">
+        <FormItem label="显示名称：" v-if="false">
           <Input v-model="labelClassForm.classviewname"/>
         </FormItem>
         <FormItem label="筛选显示：">
@@ -537,11 +537,15 @@ export default {
         },
         success(data) {
           if (data.getret === 0) {
-		console.log(data,'getlablebyclass');
+			//s.refreshTabIco();
             if (data.list.length) {
-              s.dataSource = data.list.filter(item => {
+				if(data.list.filter(item => {
                 return item.lableclassid === classid;
-              })[0].lable;
+              })[0]){
+				  s.dataSource = data.list.filter(item => {
+					return item.lableclassid === classid;
+				  })[0].lable;
+			  }
             } else {
               s.dataSource = [];
             }
@@ -557,7 +561,7 @@ export default {
           this.initTabIco(i);
           this.initTabIco(i, "canvas2");
         });
-      }, 100);
+      }, 10);
     },
 
     getLabelClassList() {
@@ -571,8 +575,8 @@ export default {
           if (data.getret === 0) {
             s.labelClassList = data.list;
             if (s.labelClassList.length) {
-              s.currentClassId = s.labelClassList[0].lableclassid;
-              s.getLableByLabelClass(s.currentClassId);
+			  s.currentClassId = s.labelClassList[0].lableclassid;
+			  s.toggleClass(s.labelClassList[0],0);
             }
             s.refreshTabIco();
           }

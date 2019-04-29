@@ -793,6 +793,9 @@
 									resourceList.map((item)=>{
 										if(item.resourceid === id){
 											s.resourcecnname = item.resourcecnname;
+											if(!item.tablefield){
+												return;
+											}
 											s.configList = JSON.parse(item.tablefield).fieldlist;
 											s.configList.map((item)=>{
 												if(item.fieldname === 'publicadtype'){

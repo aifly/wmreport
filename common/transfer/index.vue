@@ -93,11 +93,10 @@
 							
                             return this.sourceid !== item.resourceid;
 						}));
-						this.destinationid1 = this.resourceList[0].resourceid;
+						this.destinationid = this.resourceList[0].resourceid;
 
 						setTimeout(()=>{
 
-							console.log(1);
 							this.scroll.refresh();
 						},1000)
 						
@@ -196,7 +195,7 @@
 					symbinUtil,
 					symbinAdminUtil
 				}
-				console.log(s.userinfo,'userinfo')
+				
                 util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].ajax({
                     url:window.config.baseUrl+ '/wmadvuser/operasourcedata/',
                     data:{

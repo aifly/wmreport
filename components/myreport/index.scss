@@ -98,7 +98,7 @@ $color: #be0000;
             .wm-report-operator-btns{
                 @include pos(a);
                 right: 0;
-                top: 0;
+                top: 5px;
                 width: 400px;
                 height: 30px;
                 line-height: 30px;
@@ -120,7 +120,7 @@ $color: #be0000;
                         height: 100%;
                         left: 0;
                         top: 0;
-                        box-shadow: 2px 2px 4px rgba(0, 0, 0, .3);
+                       // box-shadow: 2px 2px 4px rgba(0, 0, 0, .3);
                         @include br(4px);
                     }
                 }
