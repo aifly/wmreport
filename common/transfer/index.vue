@@ -43,6 +43,26 @@
 				</div>
 			</div>
 		</Modal>
+
+		<Modal v-model="showRepeatModal" width="360" :transfer='false'>
+
+			<p slot="header" style="color:#f60;text-align:center">
+				<Icon type="ios-information-circle"></Icon>
+				<span>替换或者跳过</span>
+			</p>
+			<div style="text-align:center" v-if='repeatList.length'>
+				<div>目录中 {{repeatList[0].filetitle}}文件同名</div>
+				<Button class='wm-repeat-action-btn' icon='md-checkmark-circle' long >替换</Button>
+				<Button icon='md-return-left' long @click="skip">跳过</Button>
+			</div>
+			<div slot="footer" class='wm-repeat-footer'>
+				<div>
+					<Checkbox>全部都按此方式执行</Checkbox>
+				</div>
+				<div>
+				</div>
+			</div>
+		</Modal>
 	</div>
 </template>
 
@@ -57,7 +77,7 @@
 	import IScroll from 'iscroll';
 	import './index.css';
 	export default {
-		props:['obserable','moveType','checkedList','sourceid','id','isAdmin'],
+		props:['obserable','moveType','checkedList','sourceid','id','isAdmin','input','currentType','menus'],
 		name:'zmitiindex',
 		data(){
 			return{
@@ -67,8 +87,12 @@
 				myCheckedList:[],
                 resourceList:[],
                 userinfo:{},
-                WmColors,
-                showDialog:true,
+				WmColors,
+				showRepeatModal:false,
+				destinationList:[],
+				showDialog:true,
+				repeatList:[],//复制的时候，有重复的数据列表。
+				
 			}
 		},
 		components:{
@@ -114,6 +138,7 @@
 				var len = this.reportList.length;
 				this.reportList.forEach((item)=>{
 					item.checked = val;
+					
 					if(val){
 						this.checkedList.push(item);
 					}
@@ -141,40 +166,70 @@
 		
 		methods:{
 
+			skip(){//跳过
+				this.repeatList.shift();
+				if(this.repeatList.length<=0){
+					this.showRepeatModal = false;
+				}else{
+					this.showRepeatModal = false;
+					setTimeout(() => {
+						this.showRepeatModal = true;
+					}, 500);
+				}
+
+
+			},
+
 			getResource(){
 				
 			},
 
 			visibleChange(val){
 				if(!val){
-					this.$emit('closeClipDialog')
+					//this.$emit('update:transferShow',false);
+					this.$emit('input',false);
 				}
 			},
 
+			getReportList(fn){
+				var util = {
+					symbinUtil,
+					symbinAdminUtil
+				}
+				this.showRepeatModal = true;
+				var url = window.config.baseUrl+"/wmadvuser/getmyreportdata";
+				if(this.isAdmin){
+					url = window.config.baseUrl+'/wmadadmin/getresouredetaillist/'
+				}
+				
+                util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].ajax({
+					url,
+					data:{
+						username:s.userinfo.username,
+						accesstoken:s.userinfo.accesstoken,
+						adminusername:s.userinfo[s.isAdmin?'adminusername':'username'],
+						admintoken:s.userinfo[s.isAdmin?'admintoken':'accesstoken'],
+						resourceid:s.destinationid
+					},
+					success(data){
+						if(data.getret === 0){
+							s.destinationList = data.list.concat([]).filter((item)=>{
+								return item.publicadtype === s.menus[s.currentType] || s.currentType <= -1;
+							});
+							fn && fn(s.destinationList);
+						}
+					}
+				});
+			},
+
             ok(){
-                var s = this;
+				var s = this;
+				
+
+
+
                 var ids = [];
 
-               /*  s.checkedList.forEach((item)=>{
-                    item.isDone = true;
-                });
-                var i = 0;
-                var t = setInterval(() => {
-                    if(s.checkedList[i]){
-                        s.checkedList[i].isDone = true;
-                        s.checkedList = s.checkedList.concat([]);
-                    }else{
-                        clearInterval(t);
-                        s.checkedList = s.checkedList.concat([]);
-                    }
-                    i++;
-                }, 600);
-                
-                setTimeout(() => {
-                    this.showClipDialog = false;
-                }, 3000);
-
-				return; */
 				
 				if(s.destinationid<=-1){
 					s.$Message.error('请先选择一个要复制的目标库');
@@ -195,6 +250,48 @@
 					symbinUtil,
 					symbinAdminUtil
 				}
+
+				 s.getReportList(()=>{
+					s.destinationList.forEach(dest=>{
+						s.myCheckedList.forEach(check=>{
+							if(dest.id === check.id){
+								s.repeatList.push(dest);
+							}
+						})
+					})
+
+					/* s.$Modal.confirm({
+						title:"替换或者跳过文件", 
+						render:(h)=>{
+							return h('div',{},[
+								h('div',{},'目标中'+ s.repeatList[0].filetitle + '文件同名'),
+								h('Button',{
+									props:{
+										long:true,
+										type:'primary',
+										icon:'md-checkmark-circle'
+									},
+									style:{
+										margin:'10px 0'
+									}
+								},'替换'),
+								h('Button',{
+									props:{
+										long:true,
+										icon:'md-return-left'
+									}
+								},'跳过')
+							]) 
+						}
+					}); */
+
+					
+
+				});
+
+				return;
+				
+			     
 				
                 util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].ajax({
                     url:window.config.baseUrl+ '/wmadvuser/operasourcedata/',
@@ -207,9 +304,17 @@
                         destinationid:s.destinationid
                     },
                     success(data){
+
+
                         if(data.getret === 0){
-                            
+							var arr = [];
+							
+                           
+
+							
 						}
+
+						return;
 						var iNow = 0 
 						var t = setInterval(() => {
 							if(s.myCheckedList[iNow]){
@@ -219,7 +324,13 @@
 							else{
 								clearInterval(t);
 								s.$Message.success(data.getmsg);
-								s.$emit('closeClipDialog')
+								//s.$emit('update:transferShow',false);
+								s.$emit('input',false);
+								setTimeout(() => {
+									s.myCheckedList.forEach((item)=>{
+										item.isDone = false;
+									})
+								}, 100);
 							}
 							iNow++;
 						}, 300);

@@ -71,7 +71,7 @@
 						</div>
 					</header>
 					<header class="wm-collection-left-search-condition-header">
-						<div>分类： <span @click.stop='searchByClassic(menu)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span><span @click.stop='searchByClassic("全部")'  :class="{'active':classicType == '全部'}">全部</span> </div>
+						<div>分类： <span @click.stop='searchByClassic(menu,i)' :class="{'active':classicType == menu}" v-for='(menu,i) in menus' :key="i">{{menu.split('-')[0]}}</span><span @click.stop='searchByClassic("全部",-1)'  :class="{'active':classicType == '全部'}">全部</span> </div>
 						<div>状态：
 							<span @click.stop='searchByStatus("待审核")' :class="{'active':statusType == '待审核'}">待审核</span>
 							<span :class="{'active':statusType == '已通过'}" @click.stop='searchByStatus("已通过")'>已通过</span>
@@ -156,7 +156,7 @@
 		</Split>
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 		<Download :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></Download>
-		<Transfer :isAdmin='true'  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+		<Transfer  :currentType='currentType' :menus='menus'  v-model='showClipDialog' :isAdmin='true'  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
 		<ContextMenu :deleteReport='deleteReport' :fileMove='fileMove'   @closeMenu='closeMenu' :contextMenuStyle='contextMenuStyle' v-if='showContextMenu'>
 			
 		</ContextMenu>
@@ -196,6 +196,7 @@
 				showCondition:false,
 				keyword:'',
 				fieldname:-1,
+				
 				nextReport:false,
 				reportList:[],
 				reportList1:[],
@@ -212,6 +213,7 @@
 				showClipDialog:false,
 				menus:[],
 				classicType:'图片-zmiti',
+				currentType:0,
 				statusType:'待审核',
 				publicadtype:'图片-zmiti',
 				totalnum:0,
@@ -685,8 +687,9 @@
 				console.log(this.kwType)
 				this.showCondition = false;
 			},
-			searchByClassic(type){
+			searchByClassic(type,index){
 				this.classicType  = type;
+				this.currentType = index;
 				//this.statusType  = '全部';
 				//publicadtype
 

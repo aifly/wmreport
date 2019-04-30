@@ -75,7 +75,7 @@
   content: '';
   position: absolute;
   width: 100%;
-  height: 1px;
+  height: 4px;
   left: 0;
   background: #ddd;
   bottom: 14px;
@@ -92,8 +92,8 @@
 .wm-report-move-C > div:nth-of-type(1) ul li .wm-report-work-name.active:after, .wm-report-move-C > div:nth-of-type(3) ul li .wm-report-work-name.active:after {
   -webkit-transform: scale(1, 1);
   transform: scale(1, 1);
-  -webkit-transition: 1s;
-  transition: 1s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 .wm-report-move-C > div:nth-of-type(1) ul li img, .wm-report-move-C > div:nth-of-type(3) ul li img {
@@ -153,4 +153,21 @@
   width: 40px;
   background: green;
   border-radius: 50%;
+}
+
+.wm-clip-main-ui .wm-repeat-footer {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  line-height: 40px;
+}
+
+.wm-clip-main-ui .wm-repeat-action-btn {
+  margin: 10px 0;
+}
+
+.wm-clip-main-ui .wm-repeat-action-btn i {
+  font-size: 16px;
 }

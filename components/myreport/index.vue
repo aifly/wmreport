@@ -254,7 +254,7 @@
 			<img :src="imgs.tip" alt="" @click="showReportTip = false">
 		</div>
  
-		<Transfer  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+		<Transfer  :currentType='currentType' :menus='menus' v-model='showClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
 		<ContextMenu :deleteReport='deleteReport' :fileMove='fileMove'  @closeMenu='closeMenu' :contextMenuStyle='contextMenuStyle' v-if='showContextMenu'>
 			<li @click='showReportDetail()' slot='edit'>
 				<Icon type="ios-create"  /> 编辑
