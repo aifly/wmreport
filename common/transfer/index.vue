@@ -52,12 +52,12 @@
 			</p>
 			<div style="text-align:center" v-if='repeatList.length'>
 				<div>目录中 {{repeatList[0].filetitle}}文件同名</div>
-				<Button class='wm-repeat-action-btn' icon='md-checkmark-circle' long >替换</Button>
+				<Button class='wm-repeat-action-btn' icon='md-checkmark-circle' long @click='replace' >替换</Button>
 				<Button icon='md-return-left' long @click="skip">跳过</Button>
 			</div>
 			<div slot="footer" class='wm-repeat-footer'>
 				<div>
-					<Checkbox>全部都按此方式执行</Checkbox>
+					<Checkbox v-model='isSelectAll'>全部都按此方式执行</Checkbox>
 				</div>
 				<div>
 				</div>
@@ -92,6 +92,8 @@
 				destinationList:[],
 				showDialog:true,
 				repeatList:[],//复制的时候，有重复的数据列表。
+				unRepeatList:[],
+				isSelectAll:false,
 				
 			}
 		},
@@ -157,7 +159,6 @@
 			}
 			this.userinfo =  util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].getUserInfo();
 			this.myCheckedList = this.checkedList;
-			console.log(this.userinfo,'userinfo')
 			this.scroll = new IScroll(this.$refs['list'],{
 				scrollbars:true,
 				mouseWheel:true
@@ -167,15 +168,47 @@
 		methods:{
 
 			skip(){//跳过
-				this.repeatList.shift();
-				if(this.repeatList.length<=0){
+				this.operatorType = 0;//跳过
+				if(this.isSelectAll){
+					this.repeatList = this.repeatList.slice(0,0);
 					this.showRepeatModal = false;
+					this.$emit('input',false);
 				}else{
-					this.showRepeatModal = false;
-					setTimeout(() => {
-						this.showRepeatModal = true;
-					}, 500);
+					this.repeatList.shift();
+
+					if(this.repeatList.length<=0){
+						this.showRepeatModal = false;
+						this.$emit('input',false);
+					}else{
+						this.showRepeatModal = false;
+						setTimeout(() => {
+							this.showRepeatModal = true;
+						}, 500);
+					}
 				}
+
+			},
+			replace(){
+				this.operatorType = 1;//替换
+				if(this.isSelectAll){
+					var fileid = this.checkedList;
+					this.operasourcedata(fileid);				
+				}else{
+					var fileid = [this.checkedList.shift()];
+					if(this.checkedList.length){
+
+						this.operasourcedata(fileid);
+						this.showRepeatModal = false;
+
+						setTimeout(()=>{
+							this.showRepeatModal = true;
+						},500)
+					}else{
+						this.operasourcedata(fileid,true);
+					}
+				}
+
+				
 
 
 			},
@@ -196,7 +229,7 @@
 					symbinUtil,
 					symbinAdminUtil
 				}
-				this.showRepeatModal = true;
+				
 				var url = window.config.baseUrl+"/wmadvuser/getmyreportdata";
 				if(this.isAdmin){
 					url = window.config.baseUrl+'/wmadadmin/getresouredetaillist/'
@@ -213,22 +246,21 @@
 					},
 					success(data){
 						if(data.getret === 0){
+
 							s.destinationList = data.list.concat([]).filter((item)=>{
 								return item.publicadtype === s.menus[s.currentType] || s.currentType <= -1;
 							});
 							fn && fn(s.destinationList);
+							
 						}
 					}
 				});
 			},
 
-            ok(){
-				var s = this;
-				
 
+			operasourcedata(checkedList,isDone=false){
 
-
-                var ids = [];
+				var ids = [];
 
 				
 				if(s.destinationid<=-1){
@@ -237,7 +269,7 @@
 					return;
 				}
                 
-                this.checkedList.map((item)=>{
+               	checkedList.map((item)=>{
                     ids.push(item.id);
 				});
 				
@@ -246,59 +278,19 @@
 					s.showDialog = false;
 					return;
 				}
-                var util = {
+
+			 	var util = {
 					symbinUtil,
 					symbinAdminUtil
 				}
 
-				 s.getReportList(()=>{
-					s.destinationList.forEach(dest=>{
-						s.myCheckedList.forEach(check=>{
-							if(dest.id === check.id){
-								s.repeatList.push(dest);
-							}
-						})
-					})
-
-					/* s.$Modal.confirm({
-						title:"替换或者跳过文件", 
-						render:(h)=>{
-							return h('div',{},[
-								h('div',{},'目标中'+ s.repeatList[0].filetitle + '文件同名'),
-								h('Button',{
-									props:{
-										long:true,
-										type:'primary',
-										icon:'md-checkmark-circle'
-									},
-									style:{
-										margin:'10px 0'
-									}
-								},'替换'),
-								h('Button',{
-									props:{
-										long:true,
-										icon:'md-return-left'
-									}
-								},'跳过')
-							]) 
-						}
-					}); */
-
-					
-
-				});
-
-				return;
-				
-			     
-				
-                util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].ajax({
+				 util[this.isAdmin?'symbinAdminUtil':'symbinUtil'].ajax({
                     url:window.config.baseUrl+ '/wmadvuser/operasourcedata/',
                     data:{
 						username:s.userinfo[s.isAdmin?'adminusername':'username'],
 						usertoken:s.userinfo[s.isAdmin?'admintoken':'accesstoken'],
                         fileids:ids.join(','),
+                        isreplace:s.operatorType,
                         operatype:s.moveType,
                         sourceid:s.sourceid,
                         destinationid:s.destinationid
@@ -308,13 +300,11 @@
 
                         if(data.getret === 0){
 							var arr = [];
-							
-                           
-
-							
 						}
-
-						return;
+						if(!isDone){
+							return;
+						}
+						
 						var iNow = 0 
 						var t = setInterval(() => {
 							if(s.myCheckedList[iNow]){
@@ -337,6 +327,47 @@
 						//
                     }
                 })
+
+			},
+
+            ok(){
+				var s = this;
+				
+				 s.getReportList(()=>{
+				 	
+					s.destinationList.forEach(dest=>{
+						var isRepeat = false;
+						s.myCheckedList.forEach(check=>{
+							if(dest.id === check.id){
+								s.repeatList.push(dest);
+								isRepeat = true;
+							}
+						});
+						if(!isRepeat){
+							s.unRepeatList.push(dest);
+						}
+					});
+
+					if(s.repeatList.length){
+						s.showRepeatModal = true;
+					}
+
+					if(!s.destinationList.length){//目库里面的文件没有
+						s.operasourcedata(s.checkedList);//未重复的时候，直接复制过去。
+					}else{
+						if(s.unRepeatList.length){
+							s.operasourcedata(s.unRepeatList);//未重复的时候，直接复制过去。
+						}
+					}
+
+
+
+				});
+
+				
+			     
+				
+               
             },
             cancel(){
 
