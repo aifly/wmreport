@@ -66,7 +66,9 @@ body {
             top: 0;
         }
 
-        padding: 20px;
+		padding: 20px;
+		@include pos(r);
+		z-index: 102;
 
         .wm-collection-left-header {
             height: 60px;
@@ -225,9 +227,12 @@ body {
                     
                     
                     @include pos(r);
-                    top: 4px;
+					top: 5px;
+					line-height: 30px;
                     
-                    @include displayFlex(row);
+					@include displayFlex(row);
+					align-items:center;
+					-webkit-align-items:center;
                     width: 100%;
                     min-width: 500px;
                     text-align: right;
@@ -250,8 +255,10 @@ body {
                         }
                         &.wm-collection-del {
                             background:#f90;
-                            color: #fff;
-                        }
+							color: #fff;
+
+						}
+							
                         margin: 0 2px;
                         @include br(4px);
                         @include pos(r);
@@ -261,7 +268,15 @@ body {
                    
                 }
             }
-        }
+		}
+		
+		.ivu-poptip-confirm .ivu-poptip-body .ivu-icon{
+			left: 30px;
+		}
+
+		.ivu-poptip-popper{
+			color:#000;
+		}
 
         .wm-collection-left-search-condition-header {
             height: 80px;

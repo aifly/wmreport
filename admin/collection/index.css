@@ -50,6 +50,8 @@ body {
 .wm-collection-ui .wm-collection-rater-manager, .wm-lastcheck-ui .wm-collection-left-main-ui,
 .wm-lastcheck-ui .wm-collection-rater-manager {
   padding: 20px;
+  position: relative;
+  z-index: 102;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui:before,
@@ -231,10 +233,13 @@ body {
 .wm-collection-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action, .wm-lastcheck-ui .wm-collection-left-main-ui .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action,
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action {
   position: relative;
-  top: 4px;
+  top: 5px;
+  line-height: 30px;
   display: flex;
   display: -webkit-flex;
   flex-flow: row;
+  align-items: center;
+  -webkit-align-items: center;
   width: 100%;
   min-width: 500px;
   text-align: right;
@@ -275,6 +280,18 @@ body {
 .wm-lastcheck-ui .wm-collection-rater-manager .wm-collection-left-header .wm-collection-search-content .wm-collection-check-action > div.wm-collection-del {
   background: #f90;
   color: #fff;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon,
+.wm-collection-ui .wm-collection-rater-manager .ivu-poptip-confirm .ivu-poptip-body .ivu-icon, .wm-lastcheck-ui .wm-collection-left-main-ui .ivu-poptip-confirm .ivu-poptip-body .ivu-icon,
+.wm-lastcheck-ui .wm-collection-rater-manager .ivu-poptip-confirm .ivu-poptip-body .ivu-icon {
+  left: 30px;
+}
+
+.wm-collection-ui .wm-collection-left-main-ui .ivu-poptip-popper,
+.wm-collection-ui .wm-collection-rater-manager .ivu-poptip-popper, .wm-lastcheck-ui .wm-collection-left-main-ui .ivu-poptip-popper,
+.wm-lastcheck-ui .wm-collection-rater-manager .ivu-poptip-popper {
+  color: #000;
 }
 
 .wm-collection-ui .wm-collection-left-main-ui .wm-collection-left-search-condition-header,

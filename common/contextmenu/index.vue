@@ -60,7 +60,7 @@
 		
 		},
 		mounted(){
-			this.userinfo = symbinUtil.getUserInfo();
+			///this.userinfo = symbinUtil.getUserInfo();
 			
 		},
 		

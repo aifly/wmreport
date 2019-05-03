@@ -5,9 +5,9 @@
 			<ul>
 				<li @click='mainType = 0' :class="{'active':mainType === 0}">概况</li>
 				<li @click='mainType = 1' :class="{'active':mainType === 1}">上报审核</li>
-				<li @click='mainType = 2' :class="{'active':mainType === 2}">评分管理</li>
+				<!-- <li @click='mainType = 2' :class="{'active':mainType === 2}">评分管理</li>
 				<li @click='mainType = 3' :class="{'active':mainType === 3}">终审归档</li>
-				<!-- <li @click='mainType = 4' :class="{'active':mainType === 4}">统计</li> -->
+				<li @click='mainType = 4' :class="{'active':mainType === 4}">统计</li> -->
 			</ul>
 		</div>
 
@@ -46,9 +46,19 @@
 									<label  v-if='!isdownloading' ><Icon type="ios-cloud-download-outline" /></label>
 									<label  v-else  class="demo-spin-icon-load1"><Icon type="ios-loading" /></label> 下载
 								 </div>
+								
 						 		<div v-press class='wm-collection-copy wm-collection-reject' @click.stop="checkAction(2)">拒绝</div>
 						 		<div v-press class='wm-collection-copy wm-collection-pass' @click.stop="checkAction(1)">通过</div>
-						 		<div v-press class='wm-collection-copy wm-collection-del'>删除</div>
+						 		 <div v-press class='wm-collection-copy wm-collection-del'>
+									  <Poptip	
+										style="color:#fff"
+										confirm
+										title="确定要删除吗?"
+										@on-ok="deleteReport('all')"
+										>
+										删除
+									</Poptip>
+								 </div>
 								
 								<!-- <Button type="primary" size='small' @click.stop='showCheckAction = true'>操作 <Icon type="ios-arrow-up" /></Button>
 								<ul v-if='showCheckAction'>
@@ -82,7 +92,7 @@
 					<div class="wm-scroll wm-collection-report-list" :style="{height:viewH - 230+'px'}">
 						<ul ref='ul1' class='zmiti-report-ul'>
 							<!-- -->
-							<li @contextmenu.prevent='showContextMenuDialog(report,i,$event)' @dblclick="previewReport(report,i)" @click.prevent='showDetail(report,i)'  class="wm-collection-report-item"  v-for='(report,i) in reportList' :key="i">
+							<li @contextmenu.prevent='showContextMenuDialog(report,i,$event)' @dblclick="previewReport(report,i)" @click='showDetail(report,i)'  class="wm-collection-report-item"  v-for='(report,i) in reportList' :key="i">
 								<div @mouseover="mouseover(report)" @mouseout="mouseout(report)" :class="{'active':i === currentReportIndex}" class='wm-report-item-bg'>
 									<img :src="report.upfilemergerstatus<2 ? imgs.merge :(report.mobilethum.replace('uploads//','uploads/')||imgs.poster)" alt="">
 									<div  class='zmiti-report-fullname'>{{report.filetitle}}</div>
@@ -93,7 +103,7 @@
 									<img  v-if='report.status===2' :src="imgs.reject" alt="">
 								</div>
 								
-								<div class="wm-collection-check" @click='toggleChecked(i)'>
+								<div class="wm-collection-check"  @click='toggleChecked'>
 									<Checkbox  v-model="report.checked"></Checkbox>
 								</div>
 								<div class="wm-report-action" v-if='report.isLoaded'>
@@ -156,7 +166,7 @@
 		</Split>
 		<Detail :checkReportById='checkReportById' :configList='configList' :type="$route.params.type" :showPreview='showPreview'  :nextReport='nextReport' :showMaskDetail='showMaskDetail' :currentReportIndex='currentReportIndex' :closePreview='closePreview' :reportList='reportList'></Detail>
 		<Download :isdownloading='showDownloadtip' :hideDownloadTip="hideDownloadTip"></Download>
-		<Transfer  :currentType='currentType' :menus='menus'  v-model='showClipDialog' :isAdmin='true'  @closeClipDialog='closeClipDialog' :moveType='moveType' :id='currentReport.id' :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
+		<Transfer  :currentType='currentType' :menus='menus'  v-model='showClipDialog' :isAdmin='true'  @closeClipDialog='closeClipDialog' :moveType='moveType'  :checkedList='checkedList' :sourceid='$route.params.id' v-if='showClipDialog' ></Transfer>
 		<ContextMenu :deleteReport='deleteReport' :fileMove='fileMove'   @closeMenu='closeMenu' :contextMenuStyle='contextMenuStyle' v-if='showContextMenu'>
 			
 		</ContextMenu>
@@ -302,8 +312,48 @@
 				this.selectAll = false;
 			},
 
-			deleteReport(){
+			deleteReport(type='single'){
 
+			
+
+				this.showContextMenu = false;
+
+				var s = this;
+				var id = this.$route.params.id;
+				var ids = [];
+
+				if(type === 'single'){
+					ids = [this.currentReport.id];
+				}
+				else if(type === 'all'){//批量删除
+					this.checkedList.map((item)=>{
+						ids.push(item.id);
+					})
+				}
+
+		
+
+
+				if(ids.length<=0){
+					this.$Message.warning('请选择一个要删除的文件');
+					return;
+				}
+				symbinUtil.ajax({
+					_this:s,
+					url:window.config.baseUrl+'/wmadadmin/delresource/',
+					data:{
+						admintoken:s.userinfo.admintoken,
+						adminusername:s.userinfo.adminusername,
+						resourceid:id,
+						id:ids.join(',')
+					},
+					success(data){
+						s.$Message[data.getret === 0?'success':'error'](data.getmsg); 
+
+						s.getReportList();
+						
+					}
+				})
 			},
 			fileMove(moveType,type){
 				this.moveType = moveType;
@@ -322,12 +372,14 @@
 				this.reportList = this.reportList.concat([]);
 			},
 			showContextMenuDialog(report,index,e){
+			
 				this.contextMenuStyle = {
 					left:e.pageX + 'px',
 					top:e.pageY + 'px'
 				};
 				this.currentReportIndex = index;
 				this.currentReport = report;
+
 				this.showContextMenu = true;
 			},
 			deltag(name){
@@ -486,10 +538,21 @@
 
 			showDetail(report,index){
 				clearTimeout(this.clickTimer);
+				var isChecked = !this.reportList[index].checked;
+				if(isChecked){
+					this.checkedList.push(this.reportList[index]);
+				}else{
+					this.checkedList.forEach((item,i)=>{
+						if(item.id === this.reportList[index].id){
+							this.checkedList.splice(i,1);
+						}
+					});
+				}
 				this.clickTimer = setTimeout(() => {
 					report.checked = !report.checked;
 					this.currentReportIndex = index;
 					this.formAdmin = report;
+					this.currentReport = report;
 					this.formAdmin.tagList = this.formAdmin.userlabel.split(',');
 					//this.currentReport = report;
 					this.reportList = this.reportList.concat([]);

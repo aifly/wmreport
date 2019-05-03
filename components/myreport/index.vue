@@ -373,6 +373,10 @@
 		},
 		watch:{
 
+			currentType(){
+				this.selectAll = false;
+			},
+
 			showClipDialog:{
 				handler(val){
 					this.showContextMenu = false;

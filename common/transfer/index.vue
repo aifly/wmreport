@@ -15,7 +15,7 @@
 						<ul>
 							<li v-for='(report,i) in myCheckedList' :key="i">
 								<div class='wm-report-work-ico'><img :src="imgs.imgIco" alt=""></div>
-								<div class='wm-report-work-name' :class='{"active":report.isDone}'>
+								<div class='wm-report-work-name zmiti-text-overflow' :class='{"active":report.isDone}'>
 									{{report.filetitle}}
 									<Icon :style="{color:report.isDone?'green':'#333'}" class='wm-report-work-staus' :type="report.isDone?'ios-checkmark-circle':'ios-close-circle'" />
 								</div>
@@ -50,8 +50,8 @@
 				<Icon type="ios-information-circle"></Icon>
 				<span>替换或者跳过</span>
 			</p>
-			<div style="text-align:center" v-if='repeatList.length'>
-				<div>目录中 {{repeatList[0].filetitle}}文件同名</div>
+			<div style="text-align:center" v-if='havefile.length'>
+				<div>目录中 {{havefile[0].filetitle}}文件同名</div>
 				<Button class='wm-repeat-action-btn' icon='md-checkmark-circle' long @click='replace' >替换</Button>
 				<Button icon='md-return-left' long @click="skip">跳过</Button>
 			</div>
@@ -70,8 +70,6 @@
 	import symbinUtil from '../../components/lib/util';
 	import {symbinAdminUtil} from '../../admin/lib/util';
 	import Vue from 'vue';
-
-	 
 
     import WmColors from '../../components/lib/color';
 	import IScroll from 'iscroll';
@@ -94,6 +92,7 @@
 				repeatList:[],//复制的时候，有重复的数据列表。
 				unRepeatList:[],
 				isSelectAll:false,
+				havefile:[],
 				
 			}
 		},
@@ -108,6 +107,15 @@
 			///this.validate = validate;
 		},
 		watch:{
+
+			havefile:{
+				deep:true,
+				handler(val){
+					if(!val.length){
+						this.showRepeatModal = false;
+					}
+				}
+			},
 
 			showClipDialog:{
                 immediate: true,
@@ -170,15 +178,17 @@
 			skip(){//跳过
 				this.operatorType = 0;//跳过
 				if(this.isSelectAll){
-					this.repeatList = this.repeatList.slice(0,0);
+					this.havefile = this.havefile.slice(0,0);
 					this.showRepeatModal = false;
 					this.$emit('input',false);
+					this.checkedList = [];
 				}else{
-					this.repeatList.shift();
+					this.havefile.shift();
 
-					if(this.repeatList.length<=0){
+					if(this.havefile.length<=0){
 						this.showRepeatModal = false;
 						this.$emit('input',false);
+						this.checkedList = [];
 					}else{
 						this.showRepeatModal = false;
 						setTimeout(() => {
@@ -186,20 +196,19 @@
 						}, 500);
 					}
 				}
-
 			},
 			replace(){
 				this.operatorType = 1;//替换
+				
 				if(this.isSelectAll){
-					var fileid = this.checkedList;
-					this.operasourcedata(fileid);				
+					var fileid = this.havefile;
+					this.operasourcedata(fileid,true);	
+					this.showRepeatModal = false;			
 				}else{
-					var fileid = [this.checkedList.shift()];
-					if(this.checkedList.length){
-
+					var fileid = [this.havefile.shift()];
+					if(this.havefile.length){
 						this.operasourcedata(fileid);
 						this.showRepeatModal = false;
-
 						setTimeout(()=>{
 							this.showRepeatModal = true;
 						},500)
@@ -301,11 +310,17 @@
                         if(data.getret === 0){
 							var arr = [];
 						}
-						if(!isDone){
+
+						if(data.havefile && data.havefile.length){
+							s.havefile = data.havefile;
+							s.showRepeatModal = true;
+							return;
+						}
+						if(!isDone && s.operatorType　!== undefined){
 							return;
 						}
 						
-						var iNow = 0 
+						var iNow = 0;
 						var t = setInterval(() => {
 							if(s.myCheckedList[iNow]){
 								s.myCheckedList[iNow].isDone = true;
@@ -332,6 +347,10 @@
 
             ok(){
 				var s = this;
+				s.operasourcedata(s.checkedList);//未重复的时候，直接复制过去。
+
+
+				return;
 				
 				 s.getReportList(()=>{
 				 	
