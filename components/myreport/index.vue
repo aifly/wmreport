@@ -218,7 +218,7 @@
 			<Form  ref="formUpload" :model="formUpload" :label-width="90" >
 				<FormItem class="wm-report-upload-item"  :label="item.name+'：'" :prop="item.field" v-for='(item,i) in configList' v-if='item.edit || item.fieldname === "userlabel"' :key='i'  :class="{'wm-require':item.notnull}"> 
 
-					<Input @on-blur='checkUpload' v-if='(item.type === "text" ||item.fieldname === "filetitle")&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.placeholder||item.name" autocomplete="off" />
+					<Input @on-change='checkUpload'  v-if='(item.type === "text" ||item.fieldname === "filetitle")&& item.fieldname !== "userlabel"'  v-model="formUpload[item.fieldname]" :placeholder="item.placeholder||item.name" autocomplete="off" />
 					
 					<Input  @on-blur='checkUpload' v-if='item.fieldname === "filedesc" '  type="textarea"  v-model="formUpload[item.fieldname]"  :placeholder="item.placeholder||item.name" autocomplete="off"/>
 					<div  v-if='item.type === "select"'>
@@ -558,6 +558,8 @@
 
 			checkUpload(val,type){
 				this.showUploadFile = true;
+
+				
 				
 				this.configList.map((item)=>{
 					if(item.notnull && item.edit){
@@ -597,8 +599,9 @@
 						}
 					})
 				}
-				//console.log(this.showUploadFile);
+				
 				if(this.showUploadFile){
+					
 					var id  = this.$route.params.id;
 					this.upload(id);
 				}
