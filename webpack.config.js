@@ -1,4 +1,5 @@
 var path = require('path');
+var webpack = require('webpack');
 const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 //const HtmlWebpackPlugin = require('html-webpack-plugin');
 var port = 4047;
@@ -12,7 +13,8 @@ module.exports = {
         // 入口文件，如果是多页项目，可配置多个
         download: './download.js',
         index: './index.js',
-        admin: './admin.js',
+		admin: './admin.js',
+		vendor: ["vue", 'iscroll','iview'],
         
     },
 
@@ -86,6 +88,16 @@ module.exports = {
 
     // 插件
     plugins: [
+
+		new webpack.optimize.SplitChunksPlugin({
+			name: "vendor",
+			// filename: "vendor.js"
+			// (给 chunk 一个不同的名字)
+
+			minChunks: Infinity,
+			// (随着 entry chunk 越来越多，
+			// 这个配置保证没其它的模块会打包进 vendor chunk)
+		}),
 
         new WebpackDeepScopeAnalysisPlugin()
         

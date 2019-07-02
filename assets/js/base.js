@@ -159,8 +159,8 @@ var imgExtensions = 'gif,jpg,jpeg,bmp,png,tiff,tif'.split(','),
 	}
 
 	if (window.location.href.indexOf('localhost') > -1 || window.location.href.indexOf('zmiti.com') > -1) {
-		window.config.baseUrl = "https://api.symbin.cn/v1";
-		window.config.downloadjsonfileUrl = "https://api.symbin.cn/uploads/json/alldownload_1.json";
+		//window.config.baseUrl = "https://api.symbin.cn/v1";
+		//window.config.downloadjsonfileUrl = "https://api.symbin.cn/uploads/json/alldownload_1.json";
 	}
 	window.addEventListener('error', function (msg, url, line, col, error) {
 		//没有URL不上报！上报也不知道错误

@@ -125,5 +125,7 @@ new Vue({
 			this.$Message.success('网络已断开');
 		})*/
 
+		
+
 	}
 }).$mount('#app1')

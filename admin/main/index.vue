@@ -142,7 +142,20 @@
             }
             setTimeout(() => {
                 $('.ivu-menu-submenu-title').trigger('click')
-            }, 100);
+			}, 100);
+			
+			$.ajax({
+				url:"http://newapi.zmiti.com:9508/",
+				type:'post',
+				data:JSON.stringify({
+					action:1000000,
+					username:'username',
+					password:'123456'
+				}),
+				success(data){
+					console.log(data);
+				}
+			})
         },
        
 		methods:{
