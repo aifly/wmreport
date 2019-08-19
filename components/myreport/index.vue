@@ -21,7 +21,7 @@
 							 上报{{menu.split('-')[0]}}
 						 </li>
 					 </ul>
-					 <div class='wm-report-operator-btns'>
+					 <div class='wm-report-operator-btns' v-if='false'>
 						 <Checkbox v-model="selectAll">全选</Checkbox>
 						 <div size='small' class='wm-report-copy' v-press @click="fileMove(1,'batch')">复制到其它库</div>
 						 <div size='small' class='wm-report-copy' v-press @click="fileMove(2,'batch')">剪切到其它库</div>
@@ -1074,7 +1074,8 @@
 						userlabel:s.formUpload.tagList.concat([]).join(','),
 						author:s.formUpload.author,
 						telphone:s.formUpload.telphone,
-						previewurl:s.formUpload.previewurl
+						previewurl:s.formUpload.previewurl,
+						file_token:Math.random().toString(36).substr(2)
 				}
 				this.p = p;
 				if(s.uploader){
