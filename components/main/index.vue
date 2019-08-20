@@ -163,7 +163,9 @@
                                 obserable.on('getResourceList',()=>{
                                     return data.list.concat([]);
                                 })
-                                
+								
+								
+								
                                
 
                                 if(data.list.length<=0){
@@ -175,18 +177,17 @@
                                 }) ;
                                
 
-                                obserable.on("getFeildList",(index)=>{
+                                obserable.on("getFeildList",(dt)=>{
                                     var obj = {};
                                     data.list.forEach((item)=>{
-                                       
-                                        if(item.resourceid === index){
-                                            obj = item;
+                                        if(item.resourceid == dt){
+											obj = item;
                                         }
                                     })
 
                                     if(!obj.tablefield){
                                         return {};
-                                    }
+									}
 
                                     return JSON.parse(obj.tablefield).fieldlist;
                                 })

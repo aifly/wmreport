@@ -134,7 +134,7 @@
 
             
             window.onresize = ()=>{
-                this.viewW  = window.innerWidth;
+                //this.viewW  = window.innerWidth;
             }
             
             if(this.$route.name !== 'login'){

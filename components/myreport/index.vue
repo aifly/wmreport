@@ -12,7 +12,7 @@
 				<header > 
 					 <span>我的上报 </span><span style='font-size:12px;color:#f5a420;left:70px;'>(双击打开浏览)</span>
 					 <ul>
-						 <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key="i" :class="{'active':currentType === i}">
+						 <li @click='changeCurrentType(i)' v-for='(menu,i) in menus' :key="i" class='zmiti-text-overflow' :class="{'active':currentType === i}">
 							 <img v-if='i===0' :src="imgs.imgIco" alt="">
 							 <img v-if='i===1' :src="imgs.videoIco" alt="">
 							 <img v-if='i===2' :src="imgs.audioIco" alt="">
@@ -1238,7 +1238,7 @@
 							}
 							
 						}
-					})
+					});
 
 					
 					 

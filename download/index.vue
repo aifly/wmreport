@@ -911,14 +911,13 @@
 
 
 			var t = setInterval(()=>{
-
 				this.configList = Vue.obserable.trigger({
 					type:"getFeildList",
 					data:this.$route.params.id
 				});
 
-				if(this.configList){
-
+				if(this.configList && this.configList instanceof Array ){
+					
 					this.configList.forEach((item)=>{
 						if(item.fieldname === 'publicadtype'){
 							this.menus = item.data;
